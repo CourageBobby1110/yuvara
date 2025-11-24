@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCurrency } from "@/context/CurrencyContext";
+import styles from "./Checkout.module.css";
 
 interface ShippingRate {
   state: string;
@@ -251,11 +252,11 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center space-y-4">
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 inline-block">
+      <div className={styles.emptyCartContainer}>
+        <div className={styles.emptyCartContent}>
+          <div className={styles.emptyIconWrapper}>
             <svg
-              className="w-12 h-12 text-gray-300 mx-auto"
+              className={styles.emptyIcon}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -268,15 +269,13 @@ export default function CheckoutPage() {
               />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Your cart is empty
-          </h1>
-          <p className="text-gray-500">
+          <h1 className={styles.emptyTitle}>Your cart is empty</h1>
+          <p className={styles.emptyText}>
             Looks like you haven't added anything yet.
           </p>
           <button
             onClick={() => router.push("/")}
-            className="inline-block bg-black text-white px-8 py-3 rounded-full font-medium hover:bg-gray-800 transition-colors"
+            className={styles.returnButton}
           >
             Return to Shop
           </button>
@@ -292,47 +291,39 @@ export default function CheckoutPage() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-black tracking-tight text-gray-900 mb-2">
-            Checkout
-          </h1>
-          <p className="text-gray-500">Complete your purchase securely.</p>
+    <div className={styles.container}>
+      <div className={styles.contentWrapper}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>Checkout</h1>
+          <p className={styles.subtitle}>Complete your purchase securely.</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+        <div className={styles.grid}>
           {/* Order Summary - Left Side on Desktop */}
-          <div className="lg:col-span-5 lg:order-2">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-24">
-              <h2 className="text-xl font-bold mb-6 flex items-center justify-between">
+          <div className={styles.summarySection}>
+            <div className={styles.summaryCard}>
+              <h2 className={styles.summaryHeader}>
                 <span>Order Summary</span>
-                <span className="text-sm font-normal text-gray-500">
-                  {items.length} items
-                </span>
+                <span className={styles.itemCount}>{items.length} items</span>
               </h2>
 
-              <div className="space-y-6 mb-8 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+              <div className={`${styles.itemsList} custom-scrollbar`}>
                 {items.map((item) => (
-                  <div key={item.id} className="flex gap-4">
-                    <div className="relative w-20 h-24 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
+                  <div key={item.id} className={styles.item}>
+                    <div className={styles.imageWrapper}>
                       <Image
                         src={item.image || "/placeholder.png"}
                         alt={item.name}
                         fill
-                        className="object-cover"
+                        className={styles.image}
                       />
                     </div>
-                    <div className="flex-1 flex flex-col justify-between py-1">
+                    <div className={styles.itemDetails}>
                       <div>
-                        <h3 className="font-semibold text-gray-900 line-clamp-1">
-                          {item.name}
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          Qty: {item.quantity}
-                        </p>
+                        <h3 className={styles.itemName}>{item.name}</h3>
+                        <p className={styles.itemQty}>Qty: {item.quantity}</p>
                       </div>
-                      <p className="font-medium text-gray-900">
+                      <p className={styles.itemPrice}>
                         {formatPrice(item.price * item.quantity)}
                       </p>
                     </div>
@@ -341,17 +332,15 @@ export default function CheckoutPage() {
               </div>
 
               {/* Coupon Input */}
-              <div className="mb-6 pt-6 border-t border-gray-100">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Coupon Code
-                </label>
-                <div className="flex gap-2">
+              <div className={styles.couponSection}>
+                <label className={styles.couponLabel}>Coupon Code</label>
+                <div className={styles.couponInputGroup}>
                   <input
                     type="text"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
                     disabled={!!appliedCoupon}
-                    className="flex-1 rounded-lg border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-black focus:ring-black"
+                    className={styles.couponInput}
                     placeholder="Enter code"
                   />
                   {appliedCoupon ? (
@@ -361,7 +350,7 @@ export default function CheckoutPage() {
                         setAppliedCoupon(null);
                         setCouponCode("");
                       }}
-                      className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300"
+                      className={styles.removeButton}
                     >
                       Remove
                     </button>
@@ -369,28 +358,28 @@ export default function CheckoutPage() {
                     <button
                       type="button"
                       onClick={handleApplyCoupon}
-                      className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800"
+                      className={styles.applyButton}
                     >
                       Apply
                     </button>
                   )}
                 </div>
                 {couponError && (
-                  <p className="text-red-500 text-xs mt-1">{couponError}</p>
+                  <p className={styles.errorText}>{couponError}</p>
                 )}
                 {appliedCoupon && (
-                  <p className="text-green-600 text-xs mt-1">
+                  <p className={styles.successText}>
                     Coupon applied! You saved {formatPrice(discountInUSD)}
                   </p>
                 )}
               </div>
 
-              <div className="border-t border-gray-100 pt-6 space-y-4">
-                <div className="flex justify-between text-gray-500">
+              <div className={styles.totalsSection}>
+                <div className={styles.totalRow}>
                   <span>Subtotal</span>
                   <span>{formatPrice(totalPrice())}</span>
                 </div>
-                <div className="flex justify-between text-gray-500">
+                <div className={styles.totalRow}>
                   <span>Shipping ({formData.state || "Select State"})</span>
                   <span>
                     {selectedStateFee > 0
@@ -399,12 +388,12 @@ export default function CheckoutPage() {
                   </span>
                 </div>
                 {appliedCoupon && (
-                  <div className="flex justify-between text-green-600 font-medium">
+                  <div className={styles.discountRow}>
                     <span>Discount</span>
                     <span>-{formatPrice(discountInUSD)}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-xl font-bold text-gray-900 pt-4 border-t border-gray-100">
+                <div className={styles.grandTotalRow}>
                   <span>Total</span>
                   <span>{formatPrice(calculateTotal())}</span>
                 </div>
@@ -413,52 +402,46 @@ export default function CheckoutPage() {
           </div>
 
           {/* Shipping Form - Right Side on Desktop */}
-          <div className="lg:col-span-7 lg:order-1">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
-              <h2 className="text-xl font-bold mb-6">Shipping Information</h2>
+          <div className={styles.formSection}>
+            <div className={styles.formCard}>
+              <h2 className={styles.formTitle}>Shipping Information</h2>
 
-              <form onSubmit={handleCheckout} className="space-y-6">
-                <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+              <form onSubmit={handleCheckout} className={styles.form}>
+                <div className={styles.formGrid}>
                   <div className="sm:col-span-2">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Street Address
-                    </label>
+                    <label className={styles.label}>Street Address</label>
                     <input
                       type="text"
                       name="street"
                       required
                       value={formData.street}
                       onChange={handleChange}
-                      className="block w-full rounded-xl border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 focus:border-black focus:ring-black focus:bg-white transition-all duration-200"
+                      className={styles.input}
                       placeholder="123 Main St"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      City
-                    </label>
+                    <label className={styles.label}>City</label>
                     <input
                       type="text"
                       name="city"
                       required
                       value={formData.city}
                       onChange={handleChange}
-                      className="block w-full rounded-xl border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 focus:border-black focus:ring-black focus:bg-white transition-all duration-200"
+                      className={styles.input}
                       placeholder="New York"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Country
-                    </label>
+                    <label className={styles.label}>Country</label>
                     <select
                       name="country"
                       required
                       value={formData.country}
                       onChange={handleChange}
-                      className="block w-full rounded-xl border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 focus:border-black focus:ring-black focus:bg-white transition-all duration-200"
+                      className={styles.select}
                     >
                       {COUNTRIES.map((c) => (
                         <option key={c} value={c}>
@@ -469,16 +452,14 @@ export default function CheckoutPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      State / Province
-                    </label>
+                    <label className={styles.label}>State / Province</label>
                     {shippingRates.length > 0 ? (
                       <select
                         name="state"
                         required
                         value={formData.state}
                         onChange={handleChange}
-                        className="block w-full rounded-xl border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 focus:border-black focus:ring-black focus:bg-white transition-all duration-200"
+                        className={styles.select}
                       >
                         <option value="">Select State</option>
                         {shippingRates.map((rate) => (
@@ -494,32 +475,30 @@ export default function CheckoutPage() {
                         required
                         value={formData.state}
                         onChange={handleChange}
-                        className="block w-full rounded-xl border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 focus:border-black focus:ring-black focus:bg-white transition-all duration-200"
+                        className={styles.input}
                         placeholder="State"
                       />
                     )}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      ZIP / Postal Code
-                    </label>
+                    <label className={styles.label}>ZIP / Postal Code</label>
                     <input
                       type="text"
                       name="zip"
                       required
                       value={formData.zip}
                       onChange={handleChange}
-                      className="block w-full rounded-xl border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 focus:border-black focus:ring-black focus:bg-white transition-all duration-200"
+                      className={styles.input}
                       placeholder="10001"
                     />
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Email Address <span className="text-red-500">*</span>
+                    <label className={styles.label}>
+                      Email Address <span className={styles.required}>*</span>
                     </label>
-                    <p className="text-xs text-gray-500 mb-2">
+                    <p className={styles.helperText}>
                       ⚠️ Please ensure this email is correct. Your order
                       confirmation and updates will be sent here.
                     </p>
@@ -529,14 +508,14 @@ export default function CheckoutPage() {
                       required
                       value={formData.email}
                       onChange={handleChange}
-                      className="block w-full rounded-xl border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 focus:border-black focus:ring-black focus:bg-white transition-all duration-200"
+                      className={styles.input}
                       placeholder="your.email@example.com"
                     />
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Phone Number <span className="text-red-500">*</span>
+                    <label className={styles.label}>
+                      Phone Number <span className={styles.required}>*</span>
                     </label>
                     <input
                       type="tel"
@@ -544,36 +523,36 @@ export default function CheckoutPage() {
                       required
                       value={formData.phone}
                       onChange={handleChange}
-                      className="block w-full rounded-xl border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 focus:border-black focus:ring-black focus:bg-white transition-all duration-200"
+                      className={styles.input}
                       placeholder="+234 800 000 0000"
                     />
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="flex items-center space-x-2 cursor-pointer">
+                    <label className={styles.checkboxLabel}>
                       <input
                         type="checkbox"
                         checked={saveAddress}
                         onChange={(e) => setSaveAddress(e.target.checked)}
-                        className="rounded border-gray-300 text-black focus:ring-black"
+                        className={styles.checkbox}
                       />
-                      <span className="text-sm text-gray-700">
+                      <span className={styles.checkboxText}>
                         Save this address for future orders
                       </span>
                     </label>
                   </div>
                 </div>
 
-                <div className="pt-6">
+                <div className={styles.submitSection}>
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full flex justify-center items-center py-4 px-6 border border-transparent rounded-xl shadow-lg text-base font-bold text-white bg-black hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-200 transform hover:-translate-y-0.5"
+                    className={styles.submitButton}
                   >
                     {loading ? (
                       <>
                         <svg
-                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                          className={styles.spinner}
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
                           viewBox="0 0 24 24"
@@ -600,7 +579,7 @@ export default function CheckoutPage() {
                       `Pay ${formatPrice(calculateTotal())}`
                     )}
                   </button>
-                  <p className="text-center text-xs text-gray-400 mt-4">
+                  <p className={styles.secureText}>
                     Secure payment powered by Paystack. Your data is encrypted.
                   </p>
                 </div>

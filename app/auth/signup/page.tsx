@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import styles from "./SignUp.module.css";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -52,91 +53,77 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-[#0a0a0a]">
-      {/* Background Elements - Darker and more subtle */}
-      <div className="absolute inset-0 z-0">
+    <div className={styles.container}>
+      {/* Background Elements - Light and subtle */}
+      <div className={styles.backgroundWrapper}>
         <Image
-          src="/hero-shoe.png"
+          src="/images/auth-bg.jpg"
           alt="Background"
           fill
-          className="object-cover opacity-10 scale-110 blur-md grayscale"
+          className={styles.backgroundImage}
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/90 to-black" />
+        <div className={styles.backgroundOverlay} />
       </div>
 
-      <div className="w-full max-w-md p-8 relative z-10">
-        {/* Matte Ceramic Container */}
-        <div className="bg-[#111] p-10 border border-zinc-800 shadow-2xl rounded-2xl animate-fade-in-up relative overflow-hidden">
-          {/* Subtle top highlight for ceramic feel */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-zinc-700 to-transparent opacity-50" />
+      <div className={styles.contentWrapper}>
+        {/* Clean Light Container */}
+        <div className={styles.card}>
+          {/* Subtle top highlight */}
+          <div className={styles.cardHighlight} />
 
-          <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold tracking-tight text-white mb-2">
-              YUVARA
-            </h1>
-            <p className="text-zinc-500 text-xs uppercase tracking-[0.2em] font-medium">
-              Create Account
-            </p>
+          <div className={styles.header}>
+            <h1 className={styles.title}>YUVARA</h1>
+            <p className={styles.subtitle}>Create Account</p>
           </div>
 
-          {error && (
-            <div className="mb-6 p-3 bg-red-900/20 border border-red-900/50 text-red-400 text-sm rounded-lg">
-              {error}
-            </div>
-          )}
+          {error && <div className={styles.error}>{error}</div>}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-[10px] uppercase tracking-widest text-zinc-400 mb-2 font-bold">
-                Full Name
-              </label>
-              <div className="relative group">
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Full Name</label>
+              <div className={styles.inputWrapper}>
                 <input
                   name="name"
                   type="text"
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-600 focus:bg-zinc-900 transition-all duration-300"
+                  className={styles.input}
                   placeholder="John Doe"
                 />
               </div>
             </div>
 
-            <div>
-              <label className="block text-[10px] uppercase tracking-widest text-zinc-400 mb-2 font-bold">
-                Email Address
-              </label>
-              <div className="relative group">
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Email Address</label>
+              <div className={styles.inputWrapper}>
                 <input
                   name="email"
                   type="email"
                   required
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-600 focus:bg-zinc-900 transition-all duration-300"
+                  className={styles.input}
                   placeholder="name@example.com"
                 />
               </div>
             </div>
 
-            <div>
-              <label className="block text-[10px] uppercase tracking-widest text-zinc-400 mb-2 font-bold">
-                Password
-              </label>
-              <div className="relative group">
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Password</label>
+              <div className={styles.inputWrapper}>
                 <input
                   name="password"
                   type={showPassword ? "text" : "password"}
                   required
                   minLength={6}
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-600 focus:bg-zinc-900 transition-all duration-300 pr-12"
+                  className={`${styles.input} ${styles.passwordInput}`}
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
+                  className={styles.toggleButton}
                 >
                   {showPassword ? (
                     <svg
-                      className="w-5 h-5"
+                      className={styles.icon}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -150,7 +137,7 @@ export default function SignUpPage() {
                     </svg>
                   ) : (
                     <svg
-                      className="w-5 h-5"
+                      className={styles.icon}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -173,15 +160,13 @@ export default function SignUpPage() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-[10px] uppercase tracking-widest text-zinc-400 mb-2 font-bold">
-                Referral Code (Optional)
-              </label>
-              <div className="relative group">
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Referral Code (Optional)</label>
+              <div className={styles.inputWrapper}>
                 <input
                   name="referralCode"
                   type="text"
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-600 focus:bg-zinc-900 transition-all duration-300"
+                  className={styles.input}
                   placeholder="ABC123456"
                 />
               </div>
@@ -189,14 +174,14 @@ export default function SignUpPage() {
 
             <button
               type="submit"
-              className="w-full bg-white text-black py-3.5 rounded-lg font-bold hover:bg-zinc-200 transition-all transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-black/20"
+              className={styles.submitButton}
               disabled={loading}
             >
               {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                <span className={styles.loadingContent}>
+                  <svg className={styles.spinner} viewBox="0 0 24 24">
                     <circle
-                      className="opacity-25"
+                      className={styles.spinnerCircle}
                       cx="12"
                       cy="12"
                       r="10"
@@ -205,7 +190,7 @@ export default function SignUpPage() {
                       fill="none"
                     />
                     <path
-                      className="opacity-75"
+                      className={styles.spinnerPath}
                       fill="currentColor"
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
@@ -218,22 +203,19 @@ export default function SignUpPage() {
             </button>
           </form>
 
-          <div className="mt-8 text-center space-y-3">
-            <p className="text-sm text-zinc-500">
+          <div className={styles.footer}>
+            <p className={styles.footerText}>
               Already have an account?{" "}
               <Link
                 href={`/auth/signin?callbackUrl=${encodeURIComponent(
                   callbackUrl
                 )}`}
-                className="text-white font-medium hover:text-zinc-300 transition-colors"
+                className={styles.link}
               >
                 Sign In
               </Link>
             </p>
-            <Link
-              href="/"
-              className="inline-block text-xs text-zinc-600 hover:text-zinc-400 transition-colors"
-            >
+            <Link href="/" className={styles.returnLink}>
               Return to Store
             </Link>
           </div>

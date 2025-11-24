@@ -1,6 +1,6 @@
 .section {
   padding: 6rem 1rem;
-  background-color: #f9f9f9;
+  background-color: var(--color-bg-secondary);
   text-align: center;
 }
 
@@ -14,10 +14,11 @@
   font-weight: 600;
   margin-bottom: 1rem;
   letter-spacing: -0.02em;
+  color: var(--color-text-primary);
 }
 
 .description {
-  color: #666;
+  color: var(--color-text-secondary);
   margin-bottom: 2rem;
   font-size: 1.1rem;
   line-height: 1.6;
@@ -33,38 +34,47 @@
 .input {
   flex: 1;
   padding: 1rem 1.5rem;
-  border: 1px solid #e5e5e5;
+  border: 2px solid var(--color-border-light);
   border-radius: 8px;
   font-size: 1rem;
   transition: border-color 0.2s;
   outline: none;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
 }
 
 .input:focus {
-  border-color: #000;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.input::placeholder {
+  color: var(--color-text-light);
 }
 
 .button {
   padding: 1rem 2rem;
-  background-color: #000;
-  color: #fff;
+  background-color: var(--color-primary);
+  color: #ffffff;
   border: none;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s, opacity 0.2s;
+  transition: transform 0.2s, background-color 0.2s;
+  box-shadow: var(--shadow-sm);
 }
 
 .button:hover {
   transform: translateY(-2px);
-  opacity: 0.9;
+  background-color: var(--color-secondary);
+  box-shadow: var(--shadow-md);
 }
 
 @media (max-width: 640px) {
   .form {
     flex-direction: column;
   }
-  
+
   .button {
     width: 100%;
   }

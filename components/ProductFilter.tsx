@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useCurrency } from "@/context/CurrencyContext";
+import styles from "./ProductFilter.module.css";
 
 export default function ProductFilter({
   categories = [],
@@ -37,44 +38,50 @@ export default function ProductFilter({
   };
 
   return (
-    <div className="flex flex-col gap-6 p-6 rounded-2xl bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl">
+    <div className={styles.container}>
       <div
-        className="flex items-center justify-between cursor-pointer md:cursor-default"
+        className={styles.header}
         onClick={() => setIsOpen(!isOpen)}
+        role="button"
+        aria-expanded={isOpen}
+        aria-controls="filter-content"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            setIsOpen(!isOpen);
+            e.preventDefault();
+          }
+        }}
       >
-        <h3 className="font-bold text-xl text-gray-900 tracking-tight">
-          Filters
-        </h3>
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Refine
-          </span>
-          <svg
-            className={`w-5 h-5 text-gray-500 md:hidden transition-transform ${
-              isOpen ? "rotate-180" : ""
-            }`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </div>
+        <h3 className={styles.title}>Filters</h3>
+        <svg
+          className={`${styles.toggleIcon} ${isOpen ? styles.open : ""}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
       </div>
 
-      <div className={`space-y-6 ${isOpen ? "block" : "hidden md:block"}`}>
-        <div className="space-y-3">
-          <label className="block text-sm font-semibold text-gray-700">
+      <div
+        id="filter-content"
+        className={`${styles.content} ${!isOpen ? styles.hidden : ""}`}
+      >
+        <div className={styles.filterGroup}>
+          <label htmlFor="category-select" className={styles.label}>
             Category
           </label>
-          <div className="relative">
+          <div className={styles.selectWrapper}>
             <select
-              className="w-full appearance-none bg-white/50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-black transition-all duration-200 cursor-pointer hover:bg-white/80"
+              id="category-select"
+              className={styles.select}
               onChange={(e) => handleFilterChange("category", e.target.value)}
               defaultValue={searchParams.get("category")?.toString()}
             >
@@ -85,12 +92,13 @@ export default function ProductFilter({
                 </option>
               ))}
             </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+            <div className={styles.selectIcon}>
               <svg
-                className="h-4 w-4"
+                className={styles.icon}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -103,33 +111,33 @@ export default function ProductFilter({
           </div>
         </div>
 
-        <div className="space-y-3">
-          <label className="block text-sm font-semibold text-gray-700">
-            Price Range ({currency})
-          </label>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+        <div className={styles.filterGroup}>
+          <label className={styles.label}>Price Range ({currency})</label>
+          <div className={styles.priceGrid}>
+            <div className={styles.inputWrapper}>
+              <span className={styles.currencySymbol}>
                 {getCurrencySymbol()}
               </span>
               <input
                 type="number"
                 placeholder="Min"
-                className="w-full bg-white/50 border border-gray-200 rounded-xl py-2.5 pl-7 pr-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-black transition-all duration-200 placeholder:text-gray-400"
+                className={styles.input}
                 onChange={(e) => handleFilterChange("minPrice", e.target.value)}
                 defaultValue={searchParams.get("minPrice")?.toString()}
+                aria-label="Minimum price"
               />
             </div>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+            <div className={styles.inputWrapper}>
+              <span className={styles.currencySymbol}>
                 {getCurrencySymbol()}
               </span>
               <input
                 type="number"
                 placeholder="Max"
-                className="w-full bg-white/50 border border-gray-200 rounded-xl py-2.5 pl-7 pr-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-black transition-all duration-200 placeholder:text-gray-400"
+                className={styles.input}
                 onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
                 defaultValue={searchParams.get("maxPrice")?.toString()}
+                aria-label="Maximum price"
               />
             </div>
           </div>

@@ -7,6 +7,7 @@ import { notFound, useParams } from "next/navigation";
 import { useCurrency } from "@/context/CurrencyContext";
 import { Star } from "lucide-react";
 import { useSession } from "next-auth/react";
+import styles from "./Product.module.css";
 
 interface ProductType {
   _id: string;
@@ -131,9 +132,9 @@ export default function ProductPage() {
 
   if (loading) {
     return (
-      <main className="container mx-auto px-4 py-12">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      <main className={styles.container}>
+        <div className={styles.loadingContainer}>
+          <div className={styles.spinner}></div>
         </div>
       </main>
     );
@@ -150,16 +151,16 @@ export default function ProductPage() {
     : "0.0";
 
   return (
-    <main className="container mx-auto px-4 py-12">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
+    <main className={styles.container}>
+      <div className={styles.grid}>
         {/* Media Gallery */}
-        <div className="space-y-4">
-          <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-gray-100">
+        <div className={styles.mediaSection}>
+          <div className={styles.mainMediaWrapper}>
             {activeMedia?.type === "video" ? (
               <video
                 src={activeMedia.url}
                 controls
-                className="w-full h-full object-cover"
+                className={styles.mainVideo}
                 autoPlay
               />
             ) : (
@@ -167,27 +168,25 @@ export default function ProductPage() {
                 src={activeMedia?.url || "/placeholder.png"}
                 alt={product.name}
                 fill
-                className="object-cover object-center"
+                className={styles.mainImage}
                 priority
               />
             )}
           </div>
-          <div className="grid grid-cols-5 gap-4">
+          <div className={styles.thumbnailsGrid}>
             {product.images.map((image, index) => (
               <button
                 key={`img-${index}`}
                 onClick={() => setActiveMedia({ type: "image", url: image })}
-                className={`relative aspect-square overflow-hidden rounded-lg bg-gray-100 border-2 transition-all ${
-                  activeMedia?.url === image
-                    ? "border-black"
-                    : "border-transparent"
+                className={`${styles.thumbnailButton} ${
+                  activeMedia?.url === image ? styles.thumbnailButtonActive : ""
                 }`}
               >
                 <Image
                   src={image}
                   alt={`${product.name} ${index + 1}`}
                   fill
-                  className="object-cover object-center"
+                  className={styles.thumbnailImage}
                 />
               </button>
             ))}
@@ -195,35 +194,29 @@ export default function ProductPage() {
               <button
                 key={`vid-${index}`}
                 onClick={() => setActiveMedia({ type: "video", url: video })}
-                className={`relative aspect-square overflow-hidden rounded-lg bg-gray-900 border-2 transition-all flex items-center justify-center ${
-                  activeMedia?.url === video
-                    ? "border-black"
-                    : "border-transparent"
+                className={`${styles.thumbnailButton} ${
+                  styles.videoThumbnail
+                } ${
+                  activeMedia?.url === video ? styles.thumbnailButtonActive : ""
                 }`}
               >
-                <span className="text-white text-xs font-bold">VIDEO</span>
+                <span className={styles.videoLabel}>VIDEO</span>
               </button>
             ))}
           </div>
         </div>
 
         {/* Product Info */}
-        <div className="flex flex-col gap-6">
+        <div className={styles.infoSection}>
           <div>
-            <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
-              {product.name}
-            </h1>
-            <div className="flex items-center gap-4 mt-2">
-              <p className="text-lg text-gray-500 font-medium">
-                {product.category}
-              </p>
+            <h1 className={styles.title}>{product.name}</h1>
+            <div className={styles.meta}>
+              <p className={styles.category}>{product.category}</p>
               {product.reviewsEnabled && (
-                <div className="flex items-center gap-1">
+                <div className={styles.ratingWrapper}>
                   <Star size={18} fill="#fbbf24" color="#fbbf24" />
-                  <span className="font-bold text-gray-900">
-                    {averageRating}
-                  </span>
-                  <span className="text-gray-500">
+                  <span className={styles.ratingValue}>{averageRating}</span>
+                  <span className={styles.reviewCount}>
                     ({reviews.length} reviews)
                   </span>
                 </div>
@@ -231,15 +224,13 @@ export default function ProductPage() {
             </div>
           </div>
 
-          <div className="text-3xl font-bold text-gray-900">
-            {formatPrice(product.price)}
-          </div>
+          <div className={styles.price}>{formatPrice(product.price)}</div>
 
-          <div className="prose prose-lg text-gray-600 leading-relaxed">
+          <div className={styles.description}>
             <p>{product.description}</p>
           </div>
 
-          <div className="border-t border-gray-200 pt-8">
+          <div className={styles.addToCartWrapper}>
             <AddToCart product={product} />
           </div>
         </div>
@@ -247,100 +238,84 @@ export default function ProductPage() {
 
       {/* Reviews Section */}
       {product.reviewsEnabled && (
-        <div className="border-t border-gray-200 pt-16">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8">
-            Customer Reviews
-          </h2>
+        <div className={styles.reviewsSection}>
+          <h2 className={styles.reviewsTitle}>Customer Reviews</h2>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          <div className={styles.reviewsGrid}>
             {/* Review Form */}
-            <div className="lg:col-span-1">
-              <div className="bg-gray-50 p-6 rounded-2xl">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">
-                  Write a Review
-                </h3>
-                {session ? (
-                  <form onSubmit={handleSubmitReview} className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Rating
-                      </label>
-                      <div className="flex gap-1">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <button
-                            key={star}
-                            type="button"
-                            onClick={() => setRating(star)}
-                            className="focus:outline-none"
-                          >
-                            <Star
-                              size={24}
-                              fill={star <= rating ? "#fbbf24" : "none"}
-                              color={star <= rating ? "#fbbf24" : "#d1d5db"}
-                            />
-                          </button>
-                        ))}
-                      </div>
+            <div className={styles.reviewFormCard}>
+              <h3 className={styles.formTitle}>Write a Review</h3>
+              {session ? (
+                <form onSubmit={handleSubmitReview}>
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>Rating</label>
+                    <div className={styles.starRatingInput}>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setRating(star)}
+                          className={styles.starButton}
+                        >
+                          <Star
+                            size={24}
+                            fill={star <= rating ? "#fbbf24" : "none"}
+                            color={star <= rating ? "#fbbf24" : "#d1d5db"}
+                          />
+                        </button>
+                      ))}
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Comment
-                      </label>
-                      <textarea
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                        rows={4}
-                        className="w-full rounded-lg border-gray-300 shadow-sm focus:border-black focus:ring-black"
-                        placeholder="Share your thoughts..."
-                        required
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      disabled={submittingReview}
-                      className="w-full bg-black text-white py-3 rounded-lg font-bold hover:bg-gray-900 transition-colors disabled:opacity-50"
-                    >
-                      {submittingReview ? "Submitting..." : "Submit Review"}
-                    </button>
-                  </form>
-                ) : (
-                  <p className="text-gray-600">
-                    Please{" "}
-                    <a
-                      href="/api/auth/signin"
-                      className="text-black font-bold underline"
-                    >
-                      sign in
-                    </a>{" "}
-                    to write a review.
-                  </p>
-                )}
-              </div>
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>Comment</label>
+                    <textarea
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                      rows={4}
+                      className={styles.textarea}
+                      placeholder="Share your thoughts..."
+                      required
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={submittingReview}
+                    className={styles.submitButton}
+                  >
+                    {submittingReview ? "Submitting..." : "Submit Review"}
+                  </button>
+                </form>
+              ) : (
+                <p className={styles.signInText}>
+                  Please{" "}
+                  <a href="/api/auth/signin" className={styles.signInLink}>
+                    sign in
+                  </a>{" "}
+                  to write a review.
+                </p>
+              )}
             </div>
 
             {/* Reviews List */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className={styles.reviewsList}>
               {reviews.length > 0 ? (
                 reviews.map((review) => (
-                  <div
-                    key={review._id}
-                    className="border-b border-gray-100 pb-6 last:border-0"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold">
+                  <div key={review._id} className={styles.reviewItem}>
+                    <div className={styles.reviewHeader}>
+                      <div className={styles.userInfo}>
+                        <div className={styles.userAvatar}>
                           {review.user?.name?.charAt(0) || "U"}
                         </div>
                         <div>
-                          <div className="font-bold text-gray-900">
+                          <div className={styles.userName}>
                             {review.user?.name || "Anonymous"}
                           </div>
-                          <div className="text-xs text-gray-500">
+                          <div className={styles.reviewDate}>
                             {new Date(review.createdAt).toLocaleDateString()}
                           </div>
                         </div>
                       </div>
-                      <div className="flex gap-0.5">
+                      <div className={styles.starDisplay}>
                         {Array.from({ length: 5 }).map((_, i) => (
                           <Star
                             key={i}
@@ -351,13 +326,11 @@ export default function ProductPage() {
                         ))}
                       </div>
                     </div>
-                    <p className="text-gray-600 leading-relaxed">
-                      {review.comment}
-                    </p>
+                    <p className={styles.reviewComment}>{review.comment}</p>
                   </div>
                 ))
               ) : (
-                <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-2xl">
+                <div className={styles.noReviews}>
                   No reviews yet. Be the first to review this product!
                 </div>
               )}

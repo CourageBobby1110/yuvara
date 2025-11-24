@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCartStore } from "@/store/cart";
 import { useCurrency } from "@/context/CurrencyContext";
+import styles from "./Wishlist.module.css";
 
 interface WishlistItem {
   _id: string;
@@ -111,47 +112,37 @@ export default function WishlistClient() {
     }
   };
 
-  if (loading)
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading...
-      </div>
-    );
+  if (loading) return <div className={styles.loadingContainer}>Loading...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-black mb-8">
-          My Wishlist ({items.length})
-        </h1>
+    <div className={styles.container}>
+      <div className={styles.wrapper}>
+        <h1 className={styles.title}>My Wishlist ({items.length})</h1>
 
         {items.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl shadow-sm">
-            <p className="text-gray-500 mb-6">Your wishlist is empty.</p>
-            <Link href="/collections" className="btn-primary">
+          <div className={styles.emptyState}>
+            <p className={styles.emptyText}>Your wishlist is empty.</p>
+            <Link href="/collections" className={styles.emptyLink}>
               Start Shopping
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className={styles.grid}>
             {items.map((item) => (
-              <div
-                key={item._id}
-                className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group"
-              >
-                <div className="relative h-64 bg-gray-100">
+              <div key={item._id} className={styles.card}>
+                <div className={styles.imageWrapper}>
                   <Image
                     src={item.product.images[0]}
                     alt={item.product.name}
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    className={styles.image}
                   />
                   <button
                     onClick={() => handleRemove(item.product._id)}
-                    className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur-sm rounded-full text-gray-400 hover:text-red-500 transition-colors"
+                    className={styles.removeButton}
                   >
                     <svg
-                      className="w-5 h-5"
+                      className={styles.removeIcon}
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -164,26 +155,22 @@ export default function WishlistClient() {
                   </button>
                 </div>
 
-                <div className="p-6">
+                <div className={styles.content}>
                   <Link
                     href={`/product/${item.product.slug}`}
-                    className="block mb-2"
+                    className={styles.productLink}
                   >
-                    <h3 className="font-bold text-lg text-gray-900 hover:text-gray-600 transition-colors line-clamp-1">
-                      {item.product.name}
-                    </h3>
+                    <h3 className={styles.productName}>{item.product.name}</h3>
                   </Link>
-                  <p className="text-gray-900 font-medium mb-4">
+                  <p className={styles.price}>
                     {formatPrice(item.product.price)}
                   </p>
 
-                  <div className="space-y-3 mb-6">
+                  <div className={styles.options}>
                     {/* Size Selector */}
                     {item.product.sizes.length > 0 && (
-                      <div>
-                        <label className="block text-xs uppercase text-gray-500 mb-1">
-                          Size
-                        </label>
+                      <div className={styles.optionGroup}>
+                        <label className={styles.optionLabel}>Size</label>
                         <select
                           value={item.selectedSize || ""}
                           onChange={(e) =>
@@ -193,7 +180,7 @@ export default function WishlistClient() {
                               e.target.value
                             )
                           }
-                          className="w-full text-sm border-gray-200 rounded-lg focus:border-black focus:ring-black"
+                          className={styles.select}
                         >
                           <option value="">Select Size</option>
                           {item.product.sizes.map((size) => (
@@ -207,10 +194,8 @@ export default function WishlistClient() {
 
                     {/* Color Selector */}
                     {item.product.colors.length > 0 && (
-                      <div>
-                        <label className="block text-xs uppercase text-gray-500 mb-1">
-                          Color
-                        </label>
+                      <div className={styles.optionGroup}>
+                        <label className={styles.optionLabel}>Color</label>
                         <select
                           value={item.selectedColor || ""}
                           onChange={(e) =>
@@ -220,7 +205,7 @@ export default function WishlistClient() {
                               e.target.value
                             )
                           }
-                          className="w-full text-sm border-gray-200 rounded-lg focus:border-black focus:ring-black"
+                          className={styles.select}
                         >
                           <option value="">Select Color</option>
                           {item.product.colors.map((color) => (
@@ -235,10 +220,10 @@ export default function WishlistClient() {
 
                   <button
                     onClick={() => handleAddToCart(item)}
-                    className="w-full bg-black text-white py-3 rounded-xl font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
+                    className={styles.addToCartButton}
                   >
                     <svg
-                      className="w-5 h-5"
+                      className={styles.cartIcon}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"

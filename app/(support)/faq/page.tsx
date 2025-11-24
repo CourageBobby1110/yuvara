@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "./FAQ.module.css";
 
 export default function FAQ() {
   const faqs = [
@@ -30,29 +31,22 @@ export default function FAQ() {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">
-        Frequently Asked Questions
-      </h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Frequently Asked Questions</h1>
 
-      <div className="space-y-6">
+      <div className={styles.faqList}>
         {faqs.map((faq, index) => (
-          <div
-            key={index}
-            className="bg-white p-6 rounded-lg shadow-sm border border-gray-100"
-          >
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              {faq.question}
-            </h3>
-            <p className="text-gray-600">{faq.answer}</p>
+          <div key={index} className={styles.faqItem}>
+            <h3 className={styles.question}>{faq.question}</h3>
+            <p className={styles.answer}>{faq.answer}</p>
           </div>
         ))}
       </div>
 
-      <div className="mt-12 text-center">
-        <p className="text-gray-600">
+      <div className={styles.footer}>
+        <p className={styles.footerText}>
           Can't find what you're looking for?{" "}
-          <a href="/contact" className="text-black font-semibold underline">
+          <a href="/contact" className={styles.contactLink}>
             Contact Us
           </a>
         </p>

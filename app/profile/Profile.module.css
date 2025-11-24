@@ -3,6 +3,7 @@
   margin: 0 auto;
   padding: 4rem 1rem;
   font-family: "Inter", sans-serif;
+  background-color: var(--color-bg-primary);
 }
 
 .title {
@@ -10,15 +11,15 @@
   font-weight: 800;
   margin-bottom: 3rem;
   text-align: center;
-  color: #111;
+  color: var(--color-text-primary);
 }
 
 .form {
-  background: #fff;
-  border: 1px solid #f3f4f6;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-light);
   border-radius: 24px;
   padding: 2rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-lg);
 }
 
 @media (min-width: 768px) {
@@ -35,9 +36,9 @@
   font-size: 1.25rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
-  color: #111;
+  color: var(--color-text-primary);
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .avatarGrid {
@@ -56,15 +57,18 @@
   border: 3px solid transparent;
   transition: all 0.2s;
   padding: 2px;
+  background-color: var(--color-bg-secondary);
 }
 
 .avatarWrapper:hover {
   transform: scale(1.05);
+  box-shadow: var(--shadow-md);
 }
 
 .selectedAvatar {
-  border-color: #000;
-  background-color: #f3f4f6;
+  border-color: var(--color-primary);
+  background-color: var(--color-bg-tertiary);
+  box-shadow: var(--shadow-md);
 }
 
 .avatar {
@@ -82,44 +86,53 @@
   font-size: 0.875rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: #374151;
+  color: var(--color-text-secondary);
 }
 
 .input {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid #e5e7eb;
+  border: 2px solid var(--color-border-light);
   border-radius: 12px;
   font-size: 1rem;
   transition: all 0.2s;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
 }
 
 .input:focus {
   outline: none;
-  border-color: #000;
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.input::placeholder {
+  color: var(--color-text-light);
 }
 
 .submitButton {
   width: 100%;
   padding: 1rem;
-  background-color: #000;
-  color: #fff;
+  background-color: var(--color-primary);
+  color: #ffffff;
   font-weight: 600;
   font-size: 1rem;
   border-radius: 12px;
   border: none;
   cursor: pointer;
   transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
 }
 
 .submitButton:hover {
-  background-color: #171717;
+  background-color: var(--color-secondary);
   transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .submitButton:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+  background-color: var(--color-text-muted);
 }

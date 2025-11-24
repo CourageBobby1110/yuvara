@@ -330,3 +330,59 @@ export async function sendOrderStatusUpdate(order: any) {
     console.error("Failed to send order status update", error);
   }
 }
+
+export async function sendPasswordResetEmail(email: string, token: string) {
+  const resetUrl = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${token}`;
+
+  const mailOptions = {
+    from: `Yuvara <${process.env.EMAIL_FROM}>`,
+    to: email,
+    subject: "Reset Your Password - Yuvara",
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="text-align: center; padding: 20px 0; border-bottom: 1px solid #eee;">
+          <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 2px; color: #000;">YUVARA</h1>
+        </div>
+        
+        <div style="padding: 20px 0;">
+          <h2 style="color: #333; margin-top: 0;">Reset Your Password</h2>
+          <p style="color: #666; line-height: 1.6;">
+            We received a request to reset your password. Click the button below to create a new password:
+          </p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${resetUrl}" 
+               style="background: #000; color: #fff; padding: 14px 40px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">
+              Reset Password
+            </a>
+          </div>
+          
+          <p style="color: #666; line-height: 1.6;">
+            Or copy and paste this link into your browser:
+          </p>
+          <p style="color: #999; word-break: break-all; font-size: 14px;">
+            ${resetUrl}
+          </p>
+          
+          <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0;">
+            <p style="margin: 0; color: #856404; font-size: 14px;">
+              <strong>⚠️ Security Notice:</strong> This link will expire in 1 hour. If you didn't request a password reset, please ignore this email.
+            </p>
+          </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px;">
+          <p>&copy; ${new Date().getFullYear()} Yuvara. All rights reserved.</p>
+        </div>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Password reset email sent to ${email}`);
+  } catch (error) {
+    console.error("Failed to send password reset email", error);
+    throw error;
+  }
+}

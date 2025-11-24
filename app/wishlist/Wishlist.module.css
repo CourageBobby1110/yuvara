@@ -1,0 +1,231 @@
+.container {
+  min-height: 100vh;
+  background-color: var(--color-bg-secondary); /* gray-50 */
+  padding: 3rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.wrapper {
+  max-width: 80rem; /* max-w-7xl */
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 1.875rem; /* text-3xl */
+  font-weight: 900;
+  margin-bottom: 2rem;
+  color: var(--color-text-primary);
+}
+
+.emptyState {
+  text-align: center;
+  padding: 5rem 0;
+  background-color: var(--color-bg-primary);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.emptyText {
+  color: var(--color-text-secondary); /* gray-500 */
+  margin-bottom: 1.5rem;
+}
+
+.emptyLink {
+  background-color: var(--color-text-primary); /* black */
+  color: var(--color-bg-primary); /* white */
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.emptyLink:hover {
+  background-color: #1f2937; /* gray-800 */
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.card {
+  background-color: var(--color-bg-primary);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-light); /* gray-100 */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.imageWrapper {
+  position: relative;
+  height: 16rem;
+  background-color: var(--color-bg-secondary); /* gray-100 */
+}
+
+.image {
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.card:hover .image {
+  transform: scale(1.05);
+}
+
+.removeButton {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  border-radius: 9999px;
+  color: var(--color-text-secondary); /* gray-400 */
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.removeButton:hover {
+  color: #ef4444; /* red-500 */
+}
+
+.removeIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.content {
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.productLink {
+  display: block;
+  margin-bottom: 0.5rem;
+  text-decoration: none;
+}
+
+.productName {
+  font-weight: 700;
+  font-size: 1.125rem; /* text-lg */
+  color: var(--color-text-primary);
+  transition: color 0.2s ease;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.productName:hover {
+  color: var(--color-text-secondary); /* gray-600 */
+}
+
+.price {
+  color: var(--color-text-primary);
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.optionGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.optionLabel {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--color-text-secondary); /* gray-500 */
+  margin-bottom: 0.25rem;
+}
+
+.select {
+  width: 100%;
+  font-size: 0.875rem;
+  border: 1px solid var(--color-border-light); /* gray-200 */
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  background-color: var(--color-bg-primary);
+}
+
+.select:focus {
+  border-color: var(--color-text-primary);
+  box-shadow: 0 0 0 1px var(--color-text-primary);
+  outline: none;
+}
+
+.addToCartButton {
+  width: 100%;
+  background-color: var(--color-text-primary); /* black */
+  color: var(--color-bg-primary); /* white */
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.addToCartButton:hover {
+  background-color: #1f2937; /* gray-800 */
+}
+
+.cartIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.loadingContainer {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

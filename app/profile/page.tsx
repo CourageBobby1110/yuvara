@@ -22,7 +22,7 @@ const AVATARS = [
 ];
 
 export default function ProfilePage() {
-  const { data: session, update } = useSession();
+  const { data: session, status, update } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -77,7 +77,15 @@ export default function ProfilePage() {
     }
   };
 
-  if (!session) {
+  if (status === "loading") {
+    return (
+      <div className={styles.container}>
+        <div style={{ textAlign: "center", padding: "2rem" }}>Loading...</div>
+      </div>
+    );
+  }
+
+  if (status === "unauthenticated") {
     return (
       <div className={styles.container}>Please sign in to view this page.</div>
     );

@@ -1,0 +1,81 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-bg-secondary);
+}
+
+.card {
+  text-align: center;
+  padding: 2rem;
+  background-color: var(--color-bg-primary);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-md);
+  max-width: 28rem;
+  width: 100%;
+}
+
+.iconWrapper {
+  width: 4rem;
+  height: 4rem;
+  background-color: #dcfce7; /* green-100 */
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  margin-bottom: 1.5rem;
+}
+
+.icon {
+  width: 2rem;
+  height: 2rem;
+  color: #16a34a; /* green-600 */
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--color-text-primary);
+}
+
+.message {
+  color: var(--color-text-secondary);
+  margin-bottom: 2rem;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.primaryButton {
+  display: block;
+  width: 100%;
+  background-color: var(--color-text-primary);
+  color: var(--color-bg-primary);
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.primaryButton:hover {
+  background-color: var(--color-text-secondary);
+}
+
+.secondaryButton {
+  display: block;
+  width: 100%;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.secondaryButton:hover {
+  color: var(--color-text-primary);
+}

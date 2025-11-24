@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCartStore } from "@/store/cart";
+import styles from "./Callback.module.css";
 
 export default function CheckoutCallbackPage() {
   const router = useRouter();
@@ -68,13 +69,13 @@ export default function CheckoutCallbackPage() {
   }, [reference, router, clearCart]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="text-center p-10 bg-white rounded-2xl shadow-xl border border-gray-100 max-w-md w-full">
-        <div className="mb-6 flex justify-center">
+    <div className={styles.container}>
+      <div className={styles.card}>
+        <div className={styles.iconWrapper}>
           {status.includes("successful") ? (
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+            <div className={styles.successIcon}>
               <svg
-                className="w-8 h-8 text-green-600"
+                className={styles.successSvg}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -88,9 +89,9 @@ export default function CheckoutCallbackPage() {
               </svg>
             </div>
           ) : status.includes("failed") || status.includes("Error") ? (
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+            <div className={styles.errorIcon}>
               <svg
-                className="w-8 h-8 text-red-600"
+                className={styles.errorSvg}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -104,13 +105,13 @@ export default function CheckoutCallbackPage() {
               </svg>
             </div>
           ) : (
-            <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className={styles.loadingIcon}>
+              <div className={styles.spinner}></div>
             </div>
           )}
         </div>
 
-        <h1 className="text-2xl font-bold mb-2 text-gray-900">
+        <h1 className={styles.title}>
           {status.includes("successful")
             ? "Payment Successful"
             : status.includes("failed") || status.includes("Error")
@@ -118,12 +119,12 @@ export default function CheckoutCallbackPage() {
             : "Processing Payment"}
         </h1>
 
-        <p className="text-gray-500 mb-8">{status}</p>
+        <p className={styles.message}>{status}</p>
 
         {(status.includes("failed") || status.includes("Error")) && (
           <button
             onClick={() => router.push("/checkout")}
-            className="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors"
+            className={styles.button}
           >
             Return to Checkout
           </button>

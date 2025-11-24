@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCurrency } from "@/context/CurrencyContext";
+import styles from "./Orders.module.css";
 
 interface Order {
   _id: string;
@@ -93,24 +94,23 @@ export default function UserOrdersPage() {
 
   if (loading)
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      <div className={styles.loadingContainer}>
+        <div className={styles.spinner}></div>
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
-          <h1 className="text-3xl font-bold">My Orders</h1>
+    <div className={styles.container}>
+      <div className={styles.wrapper}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>My Orders</h1>
 
-          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+          <div className={styles.controls}>
             {/* Search */}
-            {/* Search */}
-            <div className="relative w-full sm:w-72">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className={styles.searchWrapper}>
+              <div className={styles.searchIconWrapper}>
                 <svg
-                  className="h-5 w-5 text-gray-400"
+                  className={styles.searchIcon}
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
@@ -131,19 +131,17 @@ export default function UserOrdersPage() {
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-full leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-black focus:border-black sm:text-sm transition duration-150 ease-in-out shadow-sm"
+                className={styles.searchInput}
               />
             </div>
 
             {/* Sort */}
-            <div className="flex items-center gap-2 whitespace-nowrap">
-              <label className="text-sm font-medium text-gray-700">
-                Sort by:
-              </label>
+            <div className={styles.sortWrapper}>
+              <label className={styles.sortLabel}>Sort by:</label>
               <select
                 value={sortOption}
                 onChange={(e) => setSortOption(e.target.value)}
-                className="rounded-lg border-gray-200 text-sm focus:border-black focus:ring-black"
+                className={styles.sortSelect}
               >
                 <option value="date-desc">Newest First</option>
                 <option value="date-asc">Oldest First</option>
@@ -155,56 +153,53 @@ export default function UserOrdersPage() {
         </div>
 
         {orders.length === 0 ? (
-          <div className="bg-white shadow rounded-lg p-8 text-center">
-            <p className="text-gray-600 mb-4">
+          <div className={styles.emptyState}>
+            <p className={styles.emptyText}>
               You haven't placed any orders yet.
             </p>
-            <Link href="/" className="text-black underline font-medium">
+            <Link href="/" className={styles.emptyLink}>
               Start Shopping
             </Link>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className={styles.ordersList}>
             {paginatedOrders.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
+              <div className={styles.noResults}>
                 No orders found matching your search.
               </div>
             ) : (
               paginatedOrders.map((order) => (
-                <div
-                  key={order._id}
-                  className="bg-white shadow rounded-lg overflow-hidden"
-                >
-                  <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex flex-wrap justify-between items-center gap-4">
-                    <div>
-                      <div className="text-sm text-gray-500">Order Placed</div>
-                      <div className="font-medium">
+                <div key={order._id} className={styles.orderCard}>
+                  <div className={styles.orderHeader}>
+                    <div className={styles.headerInfo}>
+                      <div className={styles.headerLabel}>Order Placed</div>
+                      <div className={styles.headerValue}>
                         {new Date(order.createdAt).toLocaleDateString()}
                       </div>
                     </div>
-                    <div>
-                      <div className="text-sm text-gray-500">Total</div>
-                      <div className="font-medium">
+                    <div className={styles.headerInfo}>
+                      <div className={styles.headerLabel}>Total</div>
+                      <div className={styles.headerValue}>
                         {/* Order Total is in NGN, so we normalize it */}
                         {formatPrice(normalizePrice(order.total))}
                       </div>
                     </div>
-                    <div>
-                      <div className="text-sm text-gray-500">Order #</div>
-                      <div className="font-medium">
+                    <div className={styles.headerInfo}>
+                      <div className={styles.headerLabel}>Order #</div>
+                      <div className={styles.headerValue}>
                         {order._id.substring(0, 8).toUpperCase()}...
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className={styles.headerActions}>
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
+                        className={`${styles.statusBadge} ${
                           order.status === "delivered"
-                            ? "bg-green-100 text-green-800"
+                            ? styles.statusDelivered
                             : order.status === "shipped"
-                            ? "bg-blue-100 text-blue-800"
+                            ? styles.statusShipped
                             : order.status === "cancelled"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-yellow-100 text-yellow-800"
+                            ? styles.statusCancelled
+                            : styles.statusPending
                         }`}
                       >
                         {order.status}
@@ -214,34 +209,29 @@ export default function UserOrdersPage() {
                         order.status === "processing") && (
                         <button
                           onClick={() => handleCancelOrder(order._id)}
-                          className="text-red-600 hover:text-red-800 text-sm font-medium underline"
+                          className={styles.cancelButton}
                         >
                           Cancel Order
                         </button>
                       )}
                     </div>
                   </div>
-                  <div className="px-6 py-4">
+                  <div className={styles.orderItems}>
                     {order.items.map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-center py-4 border-b border-gray-100 last:border-0"
-                      >
-                        <div className="relative w-16 h-16 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                      <div key={idx} className={styles.itemRow}>
+                        <div className={styles.itemImageWrapper}>
                           <Image
                             src={item.image || "/placeholder.png"}
                             alt={item.name}
                             fill
-                            className="object-cover"
+                            className={styles.itemImage}
                           />
                         </div>
-                        <div className="ml-4 flex-1">
-                          <h4 className="font-medium">{item.name}</h4>
-                          <p className="text-sm text-gray-500">
-                            Qty: {item.quantity}
-                          </p>
+                        <div className={styles.itemDetails}>
+                          <h4 className={styles.itemName}>{item.name}</h4>
+                          <p className={styles.itemQty}>Qty: {item.quantity}</p>
                         </div>
-                        <div className="font-medium">
+                        <div className={styles.itemPrice}>
                           {/* Item price is already in USD, so NO normalization needed */}
                           {formatPrice(item.price * item.quantity)}
                         </div>
@@ -254,15 +244,15 @@ export default function UserOrdersPage() {
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-2 mt-8">
+              <div className={styles.pagination}>
                 <button
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className={styles.pageButton}
                 >
                   Previous
                 </button>
-                <span className="text-sm text-gray-700">
+                <span className={styles.pageInfo}>
                   Page {currentPage} of {totalPages}
                 </span>
                 <button
@@ -270,7 +260,7 @@ export default function UserOrdersPage() {
                     setCurrentPage((p) => Math.min(totalPages, p + 1))
                   }
                   disabled={currentPage === totalPages}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className={styles.pageButton}
                 >
                   Next
                 </button>

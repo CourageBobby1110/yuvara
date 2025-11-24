@@ -1,26 +1,23 @@
 import React from "react";
+import styles from "./Contact.module.css";
 
 export default function Contact() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-        Contact Us
-      </h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Contact Us</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Get in Touch
-          </h2>
-          <p className="text-gray-600 mb-6">
+      <div className={styles.grid}>
+        <div className={styles.infoSection}>
+          <h2 className={styles.sectionTitle}>Get in Touch</h2>
+          <p className={styles.description}>
             Have a question or need assistance? We're here to help! Fill out the
             form below or reach out to us via email or phone.
           </p>
 
-          <div className="space-y-4">
-            <div className="flex items-start">
+          <div className={styles.contactList}>
+            <div className={styles.contactItem}>
               <svg
-                className="w-6 h-6 text-gray-400 mt-1 mr-3"
+                className={styles.icon}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -33,14 +30,14 @@ export default function Contact() {
                 />
               </svg>
               <div>
-                <p className="font-medium text-gray-900">Email</p>
-                <p className="text-gray-600">support@yuvara.com</p>
+                <p className={styles.contactLabel}>Email</p>
+                <p className={styles.contactValue}>support@yuvara.com</p>
               </div>
             </div>
 
-            <div className="flex items-start">
+            <div className={styles.contactItem}>
               <svg
-                className="w-6 h-6 text-gray-400 mt-1 mr-3"
+                className={styles.icon}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -53,14 +50,14 @@ export default function Contact() {
                 />
               </svg>
               <div>
-                <p className="font-medium text-gray-900">Phone</p>
-                <p className="text-gray-600">+234 123 456 7890</p>
+                <p className={styles.contactLabel}>Phone</p>
+                <p className={styles.contactValue}>+234 123 456 7890</p>
               </div>
             </div>
 
-            <div className="flex items-start">
+            <div className={styles.contactItem}>
               <svg
-                className="w-6 h-6 text-gray-400 mt-1 mr-3"
+                className={styles.icon}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -79,8 +76,8 @@ export default function Contact() {
                 />
               </svg>
               <div>
-                <p className="font-medium text-gray-900">Address</p>
-                <p className="text-gray-600">
+                <p className={styles.contactLabel}>Address</p>
+                <p className={styles.contactValue}>
                   123 Luxury Lane
                   <br />
                   Victoria Island, Lagos
@@ -92,57 +89,45 @@ export default function Contact() {
           </div>
         </div>
 
-        <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-          <form className="space-y-6">
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
+        <div className={styles.formCard}>
+          <form className={styles.form}>
+            <div className={styles.inputGroup}>
+              <label htmlFor="name" className={styles.label}>
                 Name
               </label>
               <input
                 type="text"
                 id="name"
-                className="w-full rounded-lg border-gray-200 focus:border-black focus:ring-black"
+                className={styles.input}
                 placeholder="Your Name"
               />
             </div>
 
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
+            <div className={styles.inputGroup}>
+              <label htmlFor="email" className={styles.label}>
                 Email
               </label>
               <input
                 type="email"
                 id="email"
-                className="w-full rounded-lg border-gray-200 focus:border-black focus:ring-black"
+                className={styles.input}
                 placeholder="your@email.com"
               />
             </div>
 
-            <div>
-              <label
-                htmlFor="message"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
+            <div className={styles.inputGroup}>
+              <label htmlFor="message" className={styles.label}>
                 Message
               </label>
               <textarea
                 id="message"
                 rows={4}
-                className="w-full rounded-lg border-gray-200 focus:border-black focus:ring-black"
+                className={styles.textarea}
                 placeholder="How can we help?"
               ></textarea>
             </div>
 
-            <button
-              type="submit"
-              className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors"
-            >
+            <button type="submit" className={styles.submitButton}>
               Send Message
             </button>
           </form>

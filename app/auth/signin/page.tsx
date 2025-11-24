@@ -2,6 +2,7 @@ import { signIn } from "@/auth";
 import Link from "next/link";
 import Image from "next/image";
 import SignInForm from "./SignInForm";
+import styles from "./SignIn.module.css";
 
 export default async function SignInPage({
   searchParams,
@@ -15,43 +16,37 @@ export default async function SignInPage({
       : "/";
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-[#0a0a0a]">
-      {/* Background Elements - Darker and more subtle */}
-      <div className="absolute inset-0 z-0">
+    <div className={styles.container}>
+      {/* Background Elements - Light and subtle */}
+      <div className={styles.backgroundWrapper}>
         <Image
-          src="/hero-shoe.png"
+          src="/images/auth-bg.jpg"
           alt="Background"
           fill
-          className="object-cover opacity-10 scale-110 blur-md grayscale"
+          className={styles.backgroundImage}
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/90 to-black" />
+        <div className={styles.backgroundOverlay} />
       </div>
 
-      <div className="w-full max-w-md p-8 relative z-10">
-        {/* Matte Ceramic Container */}
-        <div className="bg-[#111] p-10 border border-zinc-800 shadow-2xl rounded-2xl animate-fade-in-up relative overflow-hidden">
-          {/* Subtle top highlight for ceramic feel */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-zinc-700 to-transparent opacity-50" />
+      <div className={styles.contentWrapper}>
+        {/* Clean Light Container */}
+        <div className={styles.card}>
+          {/* Subtle top highlight */}
+          <div className={styles.cardHighlight} />
 
-          <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold tracking-tight text-white mb-2">
-              YUVARA
-            </h1>
-            <p className="text-zinc-500 text-xs uppercase tracking-[0.2em] font-medium">
-              Member Access
-            </p>
+          <div className={styles.header}>
+            <h1 className={styles.title}>YUVARA</h1>
+            <p className={styles.subtitle}>Member Access</p>
           </div>
 
           <SignInForm callbackUrl={callbackUrl} />
 
-          <div className="mt-8 pt-8 border-t border-zinc-800 text-center">
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <div className="h-px bg-zinc-800 flex-1"></div>
-              <span className="text-[10px] text-zinc-600 uppercase tracking-widest">
-                Or continue with
-              </span>
-              <div className="h-px bg-zinc-800 flex-1"></div>
+          <div className={styles.divider}>
+            <div className={styles.dividerContent}>
+              <div className={styles.line}></div>
+              <span className={styles.dividerText}>Or continue with</span>
+              <div className={styles.line}></div>
             </div>
 
             <form
@@ -63,31 +58,25 @@ export default async function SignInPage({
                 });
               }}
             >
-              <button
-                disabled
-                className="w-full py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-500 text-sm font-medium hover:bg-zinc-800 transition-all cursor-not-allowed"
-              >
+              <button disabled className={styles.magicLinkButton}>
                 Magic Link (Coming Soon)
               </button>
             </form>
           </div>
 
-          <div className="mt-8 text-center space-y-3">
-            <p className="text-sm text-zinc-500">
+          <div className={styles.footer}>
+            <p className={styles.footerText}>
               New to Yuvara?{" "}
               <Link
                 href={`/auth/signup?callbackUrl=${encodeURIComponent(
                   callbackUrl
                 )}`}
-                className="text-white font-medium hover:text-zinc-300 transition-colors"
+                className={styles.link}
               >
                 Create Account
               </Link>
             </p>
-            <Link
-              href="/"
-              className="inline-block text-xs text-zinc-600 hover:text-zinc-400 transition-colors"
-            >
+            <Link href="/" className={styles.returnLink}>
               Return to Store
             </Link>
           </div>

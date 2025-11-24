@@ -1,16 +1,15 @@
 import React from "react";
+import styles from "./Privacy.module.css";
 
 export default function PrivacyPolicy() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Privacy Policy</h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Privacy Policy</h1>
 
-      <div className="prose prose-lg text-gray-600">
-        <p className="mb-4">Last updated: {new Date().toLocaleDateString()}</p>
+      <div className={styles.content}>
+        <p>Last updated: {new Date().toLocaleDateString()}</p>
 
-        <h2 className="text-xl font-semibold text-gray-900 mt-8 mb-4">
-          1. Introduction
-        </h2>
+        <h2 className={styles.sectionTitle}>1. Introduction</h2>
         <p>
           Welcome to Yuvara. We respect your privacy and are committed to
           protecting your personal data. This privacy policy will inform you as
@@ -19,14 +18,12 @@ export default function PrivacyPolicy() {
           privacy rights and how the law protects you.
         </p>
 
-        <h2 className="text-xl font-semibold text-gray-900 mt-8 mb-4">
-          2. Data We Collect
-        </h2>
+        <h2 className={styles.sectionTitle}>2. Data We Collect</h2>
         <p>
           We may collect, use, store and transfer different kinds of personal
           data about you which we have grouped together follows:
         </p>
-        <ul className="list-disc pl-5 space-y-2 mt-2">
+        <ul className={styles.list}>
           <li>
             <strong>Identity Data</strong> includes first name, last name,
             username or similar identifier.
@@ -46,15 +43,13 @@ export default function PrivacyPolicy() {
           </li>
         </ul>
 
-        <h2 className="text-xl font-semibold text-gray-900 mt-8 mb-4">
-          3. How We Use Your Data
-        </h2>
+        <h2 className={styles.sectionTitle}>3. How We Use Your Data</h2>
         <p>
           We will only use your personal data when the law allows us to. Most
           commonly, we will use your personal data in the following
           circumstances:
         </p>
-        <ul className="list-disc pl-5 space-y-2 mt-2">
+        <ul className={styles.list}>
           <li>
             Where we need to perform the contract we are about to enter into or
             have entered into with you.
@@ -69,9 +64,7 @@ export default function PrivacyPolicy() {
           </li>
         </ul>
 
-        <h2 className="text-xl font-semibold text-gray-900 mt-8 mb-4">
-          4. Data Security
-        </h2>
+        <h2 className={styles.sectionTitle}>4. Data Security</h2>
         <p>
           We have put in place appropriate security measures to prevent your
           personal data from being accidentally lost, used or accessed in an
@@ -80,9 +73,7 @@ export default function PrivacyPolicy() {
           other third parties who have a business need to know.
         </p>
 
-        <h2 className="text-xl font-semibold text-gray-900 mt-8 mb-4">
-          5. Contact Us
-        </h2>
+        <h2 className={styles.sectionTitle}>5. Contact Us</h2>
         <p>
           If you have any questions about this privacy policy or our privacy
           practices, please contact us at support@yuvara.com.
