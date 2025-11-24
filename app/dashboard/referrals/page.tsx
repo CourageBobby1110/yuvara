@@ -177,37 +177,66 @@ export default function ReferralDashboard() {
           </h2>
 
           {data.referredUsers && data.referredUsers.length > 0 ? (
-            <div className={styles.tableWrapper}>
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th className={styles.th}>User</th>
-                    <th className={styles.th}>Joined Date</th>
-                    <th className={`${styles.th} text-right`}>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.referredUsers.map((user: any) => (
-                    <tr key={user._id}>
-                      <td className={styles.td}>
-                        <div className={styles.userCell}>
-                          <div className={styles.avatar}>
-                            {user.name?.[0] || "U"}
-                          </div>
-                          <span className={styles.userName}>{user.name}</span>
-                        </div>
-                      </td>
-                      <td className={`${styles.td} ${styles.dateCell}`}>
-                        {new Date(user.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className={`${styles.td} text-right`}>
-                        <span className={styles.statusBadge}>Registered</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <>
+              {/* Mobile List View */}
+              <div className={styles.mobileUserList}>
+                {data.referredUsers.map((user: any) => (
+                  <div key={user._id} className={styles.userCard}>
+                    <div className={styles.userCardInfo}>
+                      <div className={styles.avatar}>
+                        {user.name?.[0] || "U"}
+                      </div>
+                      <div className={styles.userCardMeta}>
+                        <span className={styles.userName}>{user.name}</span>
+                        <span className={styles.userCardDate}>
+                          {new Date(user.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                    <span className={styles.statusBadge}>Registered</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className={styles.desktopTableWrapper}>
+                <div className={styles.tableWrapper}>
+                  <table className={styles.table}>
+                    <thead>
+                      <tr>
+                        <th className={styles.th}>User</th>
+                        <th className={styles.th}>Joined Date</th>
+                        <th className={`${styles.th} text-right`}>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.referredUsers.map((user: any) => (
+                        <tr key={user._id}>
+                          <td className={styles.td}>
+                            <div className={styles.userCell}>
+                              <div className={styles.avatar}>
+                                {user.name?.[0] || "U"}
+                              </div>
+                              <span className={styles.userName}>
+                                {user.name}
+                              </span>
+                            </div>
+                          </td>
+                          <td className={`${styles.td} ${styles.dateCell}`}>
+                            {new Date(user.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className={`${styles.td} text-right`}>
+                            <span className={styles.statusBadge}>
+                              Registered
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </>
           ) : (
             <p className={styles.emptyState}>
               No referrals yet. Share your code to get started!

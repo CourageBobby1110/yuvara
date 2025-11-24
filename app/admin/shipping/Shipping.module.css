@@ -80,12 +80,14 @@
 
 .form {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: 0.625rem;
+  align-items: flex-end;
 }
 
 .inputGroup {
-  flex: 1;
+  flex: 1 1 140px; /* Allow growing and shrinking, min-width 140px */
 }
 
 .label {
@@ -112,7 +114,8 @@
 }
 
 .submitButton {
-  width: 100%;
+  width: auto;
+  min-width: 100px;
   padding: 0.5rem 0.875rem;
   background-color: #000;
   color: white;
@@ -134,6 +137,56 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   border: 1px solid #f3f4f6;
   overflow: hidden;
+}
+
+/* Mobile List View */
+.mobileList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.shippingCard {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.cardState {
+  font-weight: 600;
+  color: #111827;
+  font-size: 0.875rem;
+}
+
+.cardFee {
+  font-weight: 600;
+  color: #111827;
+  font-size: 0.875rem;
+}
+
+.cardActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+/* Desktop Table Wrapper - Hidden on Mobile by default, shown on desktop via media query */
+.desktopTableWrapper {
+  display: none;
 }
 
 .tableWrapper {
@@ -323,6 +376,22 @@
 
   .tableCard {
     border-radius: 0.75rem;
+    background: transparent; /* Remove background from card container on desktop if wrapper handles it */
+    box-shadow: none;
+    border: none;
+  }
+
+  .mobileList {
+    display: none;
+  }
+
+  .desktopTableWrapper {
+    display: block;
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f3f4f6;
+    overflow: hidden;
   }
 
   .table {
@@ -396,5 +465,32 @@
 
   .actionButton {
     font-size: 0.875rem;
+  }
+}
+
+/* Mobile - max-width 480px */
+@media (max-width: 480px) {
+  .form {
+    gap: 0.5rem;
+  }
+
+  .inputGroup {
+    flex: 1 1 45%; /* Force side-by-side on small screens */
+    min-width: 120px;
+  }
+
+  .input {
+    padding: 0.25rem 0.5rem; /* Compact padding */
+    font-size: 0.75rem;
+  }
+
+  .label {
+    font-size: 0.625rem;
+    margin-bottom: 0.125rem;
+  }
+
+  .submitButton {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
   }
 }

@@ -37,7 +37,9 @@ export default function WishlistClient() {
     try {
       const res = await fetch("/api/wishlist");
       const data = await res.json();
-      setItems(data);
+      // Filter out items where product might be null (deleted)
+      const validItems = data.filter((item: WishlistItem) => item.product);
+      setItems(validItems);
     } catch (error) {
       console.error("Failed to fetch wishlist", error);
     } finally {
@@ -72,7 +74,7 @@ export default function WishlistClient() {
       id: item.product._id,
       name: item.product.name,
       price: item.product.price,
-      image: item.product.images[0],
+      image: item.product.images?.[0] || "/placeholder.png",
       slug: item.product.slug,
       selectedSize: item.selectedSize,
       selectedColor: item.selectedColor,
@@ -132,7 +134,7 @@ export default function WishlistClient() {
               <div key={item._id} className={styles.card}>
                 <div className={styles.imageWrapper}>
                   <Image
-                    src={item.product.images[0]}
+                    src={item.product.images?.[0] || "/placeholder.png"}
                     alt={item.product.name}
                     fill
                     className={styles.image}

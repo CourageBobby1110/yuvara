@@ -182,82 +182,115 @@ export default function AdminShippingPage() {
       </div>
 
       <div className={styles.tableCard}>
-        <div className={styles.tableWrapper}>
-          <table className={styles.table}>
-            <thead className={styles.tableHead}>
-              <tr>
-                <th className={styles.tableHeadCell}>State/Region</th>
-                <th className={styles.tableHeadCell}>Shipping Fee</th>
-                <th
-                  className={`${styles.tableHeadCell} ${styles.tableHeadCellRight}`}
-                >
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className={styles.tableBody}>
-              {loading ? (
+        {/* Mobile List View */}
+        <div className={styles.mobileList}>
+          {loading ? (
+            <div className={styles.emptyState}>Loading...</div>
+          ) : rates.length === 0 ? (
+            <div className={styles.emptyState}>
+              No rates found for {selectedCountry}. Add one above.
+            </div>
+          ) : (
+            rates.map((rate) => (
+              <div key={rate._id} className={styles.shippingCard}>
+                <div className={styles.cardHeader}>
+                  <div className={styles.cardState}>{rate.state}</div>
+                  <div className={styles.cardFee}>
+                    ₦{rate.fee.toLocaleString()}
+                  </div>
+                </div>
+                <div className={styles.cardActions}>
+                  <button
+                    onClick={() => handleEdit(rate)}
+                    className={`${styles.actionButton} ${styles.editButton}`}
+                  >
+                    Edit
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop Table View */}
+        <div className={styles.desktopTableWrapper}>
+          <div className={styles.tableWrapper}>
+            <table className={styles.table}>
+              <thead className={styles.tableHead}>
                 <tr>
-                  <td colSpan={3} className={styles.emptyState}>
-                    Loading...
-                  </td>
+                  <th className={styles.tableHeadCell}>State/Region</th>
+                  <th className={styles.tableHeadCell}>Shipping Fee</th>
+                  <th
+                    className={`${styles.tableHeadCell} ${styles.tableHeadCellRight}`}
+                  >
+                    Actions
+                  </th>
                 </tr>
-              ) : rates.length === 0 ? (
-                <tr>
-                  <td colSpan={3} className={styles.emptyState}>
-                    No rates found for {selectedCountry}. Add one above.
-                  </td>
-                </tr>
-              ) : (
-                rates.map((rate) => (
-                  <tr key={rate._id} className={styles.tableRow}>
-                    <td className={styles.tableCell}>{rate.state}</td>
-                    <td
-                      className={`${styles.tableCell} ${styles.tableCellSecondary}`}
-                    >
-                      {editingId === rate._id ? (
-                        <input
-                          type="number"
-                          value={editFee}
-                          onChange={(e) => setEditFee(Number(e.target.value))}
-                          className={styles.editInput}
-                        />
-                      ) : (
-                        `₦${rate.fee.toLocaleString()}`
-                      )}
-                    </td>
-                    <td
-                      className={`${styles.tableCell} ${styles.tableCellRight}`}
-                    >
-                      {editingId === rate._id ? (
-                        <div className={styles.actionButtons}>
-                          <button
-                            onClick={() => handleSave(rate)}
-                            className={`${styles.actionButton} ${styles.saveButton}`}
-                          >
-                            Save
-                          </button>
-                          <button
-                            onClick={() => setEditingId(null)}
-                            className={`${styles.actionButton} ${styles.cancelButton}`}
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => handleEdit(rate)}
-                          className={`${styles.actionButton} ${styles.editButton}`}
-                        >
-                          Edit
-                        </button>
-                      )}
+              </thead>
+              <tbody className={styles.tableBody}>
+                {loading ? (
+                  <tr>
+                    <td colSpan={3} className={styles.emptyState}>
+                      Loading...
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : rates.length === 0 ? (
+                  <tr>
+                    <td colSpan={3} className={styles.emptyState}>
+                      No rates found for {selectedCountry}. Add one above.
+                    </td>
+                  </tr>
+                ) : (
+                  rates.map((rate) => (
+                    <tr key={rate._id} className={styles.tableRow}>
+                      <td className={styles.tableCell}>{rate.state}</td>
+                      <td
+                        className={`${styles.tableCell} ${styles.tableCellSecondary}`}
+                      >
+                        {editingId === rate._id ? (
+                          <input
+                            type="number"
+                            value={editFee}
+                            onChange={(e) => setEditFee(Number(e.target.value))}
+                            className={styles.editInput}
+                          />
+                        ) : (
+                          `₦${rate.fee.toLocaleString()}`
+                        )}
+                      </td>
+                      <td
+                        className={`${styles.tableCell} ${styles.tableCellRight}`}
+                      >
+                        {editingId === rate._id ? (
+                          <div className={styles.actionButtons}>
+                            <button
+                              onClick={() => handleSave(rate)}
+                              className={`${styles.actionButton} ${styles.saveButton}`}
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={() => setEditingId(null)}
+                              className={`${styles.actionButton} ${styles.cancelButton}`}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => handleEdit(rate)}
+                            className={`${styles.actionButton} ${styles.editButton}`}
+                          >
+                            Edit
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
