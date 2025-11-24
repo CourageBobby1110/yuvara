@@ -72,6 +72,6 @@ const CouponSchema = new Schema(
 );
 
 // Use a new model name to bust the cache of the old model
-const Coupon = models.CouponV2 || model("CouponV2", CouponSchema, "coupons");
+const Coupon = models.CouponV3 || model("CouponV3", CouponSchema, "coupons");
 
 export default Coupon;

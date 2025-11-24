@@ -135,6 +135,15 @@ export default function AdminSidebar() {
           >
             Messages
           </Link>
+          <Link
+            href="/admin/hero"
+            className={`${styles.link} ${
+              isActive("/admin/hero") ? styles.active : ""
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Hero Image
+          </Link>
         </nav>
 
         <button onClick={() => handleSignOut()} className={styles.logoutButton}>
