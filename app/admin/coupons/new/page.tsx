@@ -13,6 +13,8 @@ export default function NewCouponPage() {
     value: "",
     expirationDate: "",
     usageLimit: "",
+    minPrice: "",
+    maxPrice: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,6 +30,8 @@ export default function NewCouponPage() {
           value: Number(formData.value),
           usageLimit: formData.usageLimit ? Number(formData.usageLimit) : null,
           expirationDate: formData.expirationDate || null,
+          minPrice: formData.minPrice ? Number(formData.minPrice) : 0,
+          maxPrice: formData.maxPrice ? Number(formData.maxPrice) : null,
         }),
       });
 
@@ -138,6 +142,38 @@ export default function NewCouponPage() {
                 name="usageLimit"
                 min="1"
                 value={formData.usageLimit}
+                onChange={handleChange}
+                className="block w-full rounded-lg border-gray-200 px-4 py-3 text-gray-900 focus:border-black focus:ring-black"
+                placeholder="Unlimited"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Minimum Order Amount (Optional)
+              </label>
+              <input
+                type="number"
+                name="minPrice"
+                min="0"
+                value={formData.minPrice}
+                onChange={handleChange}
+                className="block w-full rounded-lg border-gray-200 px-4 py-3 text-gray-900 focus:border-black focus:ring-black"
+                placeholder="0"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Maximum Order Amount (Optional)
+              </label>
+              <input
+                type="number"
+                name="maxPrice"
+                min="0"
+                value={formData.maxPrice}
                 onChange={handleChange}
                 className="block w-full rounded-lg border-gray-200 px-4 py-3 text-gray-900 focus:border-black focus:ring-black"
                 placeholder="Unlimited"

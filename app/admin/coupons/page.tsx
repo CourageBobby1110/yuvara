@@ -14,6 +14,8 @@ interface Coupon {
   usageLimit?: number;
   usedCount: number;
   isActive: boolean;
+  minPrice: number;
+  maxPrice?: number;
 }
 
 export default function AdminCouponsPage() {
@@ -21,6 +23,10 @@ export default function AdminCouponsPage() {
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState<number>(0);
+  const [editMinPrice, setEditMinPrice] = useState<number>(0);
+  const [editMaxPrice, setEditMaxPrice] = useState<number | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     fetchCoupons();
@@ -64,6 +70,8 @@ export default function AdminCouponsPage() {
   const handleEdit = (coupon: Coupon) => {
     setEditingId(coupon._id);
     setEditValue(coupon.value);
+    setEditMinPrice(coupon.minPrice || 0);
+    setEditMaxPrice(coupon.maxPrice);
   };
 
   const handleSaveEdit = async (coupon: Coupon) => {
@@ -74,6 +82,8 @@ export default function AdminCouponsPage() {
         body: JSON.stringify({
           id: coupon._id,
           value: editValue,
+          minPrice: editMinPrice,
+          maxPrice: editMaxPrice,
         }),
       });
 
@@ -175,6 +185,47 @@ export default function AdminCouponsPage() {
                       : "Never"}
                   </div>
                 </div>
+
+                <div className={styles.couponCardDetail}>
+                  <div className={styles.detailLabel}>Price Range</div>
+                  <div className={styles.detailValue}>
+                    {editingId === coupon._id ? (
+                      <div className="flex gap-2">
+                        <input
+                          type="number"
+                          value={editMinPrice}
+                          onChange={(e) =>
+                            setEditMinPrice(Number(e.target.value))
+                          }
+                          className={styles.editInput}
+                          placeholder="Min"
+                        />
+                        <input
+                          type="number"
+                          value={editMaxPrice || ""}
+                          onChange={(e) =>
+                            setEditMaxPrice(
+                              e.target.value
+                                ? Number(e.target.value)
+                                : undefined
+                            )
+                          }
+                          className={styles.editInput}
+                          placeholder="Max"
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        {coupon.minPrice > 0
+                          ? `Min: ₦${coupon.minPrice.toLocaleString()}`
+                          : "No Min"}
+                        {coupon.maxPrice
+                          ? ` - Max: ₦${coupon.maxPrice.toLocaleString()}`
+                          : ""}
+                      </>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div className={styles.actionButtons}>
@@ -230,6 +281,7 @@ export default function AdminCouponsPage() {
               <th className={styles.th}>Discount</th>
               <th className={styles.th}>Usage</th>
               <th className={styles.th}>Status</th>
+              <th className={styles.th}>Price Range</th>
               <th className={styles.th}>Expires</th>
               <th className={styles.th}>Actions</th>
             </tr>
@@ -273,6 +325,43 @@ export default function AdminCouponsPage() {
                     >
                       {coupon.isActive ? "Active" : "Inactive"}
                     </span>
+                  </td>
+                  <td className={styles.td}>
+                    {editingId === coupon._id ? (
+                      <div className="flex flex-col gap-1">
+                        <input
+                          type="number"
+                          value={editMinPrice}
+                          onChange={(e) =>
+                            setEditMinPrice(Number(e.target.value))
+                          }
+                          className={styles.editInput}
+                          placeholder="Min"
+                        />
+                        <input
+                          type="number"
+                          value={editMaxPrice || ""}
+                          onChange={(e) =>
+                            setEditMaxPrice(
+                              e.target.value
+                                ? Number(e.target.value)
+                                : undefined
+                            )
+                          }
+                          className={styles.editInput}
+                          placeholder="Max"
+                        />
+                      </div>
+                    ) : (
+                      <div className="text-sm">
+                        <div>
+                          Min: ₦{coupon.minPrice?.toLocaleString() || 0}
+                        </div>
+                        {coupon.maxPrice && (
+                          <div>Max: ₦{coupon.maxPrice.toLocaleString()}</div>
+                        )}
+                      </div>
+                    )}
                   </td>
                   <td className={styles.td}>
                     {coupon.expirationDate

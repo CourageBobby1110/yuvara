@@ -48,6 +48,14 @@ const CouponSchema = new Schema(
       type: Number,
       required: false,
     },
+    minPrice: {
+      type: Number,
+      default: 0,
+    },
+    maxPrice: {
+      type: Number,
+      required: false,
+    },
     isUsed: {
       type: Boolean,
       default: false,

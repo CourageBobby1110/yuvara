@@ -16,7 +16,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check if order amount exceeds coupon usage limit
+    // Check if order amount exceeds coupon usage limit (Legacy check removed, now dynamic)
+    /*
     if (amount > MAX_COUPON_ORDER_AMOUNT) {
       return NextResponse.json(
         {
@@ -25,6 +26,7 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+    */
 
     const coupon = await Coupon.findOne({
       code: code.toUpperCase(),
@@ -35,6 +37,25 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { error: "Invalid coupon code" },
         { status: 404 }
+      );
+    }
+
+    // Check Price Range
+    if (coupon.minPrice && amount < coupon.minPrice) {
+      return NextResponse.json(
+        {
+          error: `This coupon requires a minimum order of ₦${coupon.minPrice.toLocaleString()}`,
+        },
+        { status: 400 }
+      );
+    }
+
+    if (coupon.maxPrice && amount > coupon.maxPrice) {
+      return NextResponse.json(
+        {
+          error: `This coupon is only valid for orders up to ₦${coupon.maxPrice.toLocaleString()}`,
+        },
+        { status: 400 }
       );
     }
 
