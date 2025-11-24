@@ -1,0 +1,147 @@
+.container {
+  padding: 0;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 2rem;
+  }
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #111;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .title {
+    padding: 0;
+  }
+}
+
+.reviewsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding: 0 1rem;
+}
+
+@media (min-width: 768px) {
+  .reviewsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .reviewsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.reviewCard {
+  background: #fff;
+  border: 1px solid #f3f4f6;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all 0.2s;
+}
+
+.reviewCard:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.userInfo {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #000;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.userName {
+  font-weight: 600;
+  color: #111;
+  font-size: 0.9375rem;
+}
+
+.date {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.deleteButton {
+  color: #ef4444;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.2s;
+  background-color: transparent;
+}
+
+.deleteButton:hover {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.rating {
+  display: flex;
+  gap: 2px;
+}
+
+.comment {
+  color: #374151;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.productInfo {
+  padding-top: 1rem;
+  border-top: 1px solid #f3f4f6;
+  font-size: 0.875rem;
+}
+
+.productLabel {
+  color: #6b7280;
+  margin-right: 0.5rem;
+}
+
+.productName {
+  font-weight: 500;
+  color: #111;
+}
+
+.emptyState {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 4rem;
+  color: #6b7280;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #f3f4f6;
+}

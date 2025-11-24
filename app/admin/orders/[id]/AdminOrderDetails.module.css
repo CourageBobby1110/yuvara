@@ -1,0 +1,194 @@
+.container {
+  max-width: 72rem; /* max-w-6xl */
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: 700;
+}
+
+.backLink {
+  color: #000;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.backLink:hover {
+  color: #374151;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .grid {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+.card {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: 2rem;
+  }
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #f3f4f6;
+  padding-bottom: 1rem;
+}
+
+.itemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.item {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.itemImageWrapper {
+  position: relative;
+  width: 4rem;
+  height: 4rem;
+  background-color: #f9fafb;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.itemImage {
+  object-fit: cover;
+}
+
+.itemInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.itemName {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemQty {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.itemPrice {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.totalRow {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.detailsColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.detailCardTitle {
+  font-weight: 700;
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+}
+
+.detailText {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.detailSubText {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.addressText {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.statusRow {
+  margin-bottom: 1rem;
+}
+
+.currentStatus {
+  font-weight: 700;
+  text-transform: capitalize;
+  margin-left: 0.5rem;
+}
+
+.statusButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.statusButton {
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+  text-transform: capitalize;
+  transition: background-color 0.2s;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.statusButton:hover {
+  background-color: #f9fafb;
+}
+
+.statusButtonActive {
+  background-color: #f3f4f6;
+  border-color: #e5e7eb;
+  font-weight: 700;
+  cursor: default;
+}
+
+.loading {
+  padding: 2rem;
+  text-align: center;
+}

@@ -1,0 +1,17 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "shop": "Boutique",
+    "about": "À Propos",
+    "contact": "Contact",
+    "signin": "Se Connecter"
+  },
+  "home": {
+    "hero_title": "Redéfinir le Luxe",
+    "hero_subtitle": "Découvrez le meilleur savoir-faire de Milan.",
+    "shop_now": "Acheter Maintenant"
+  },
+  "footer": {
+    "rights": "Tous droits réservés."
+  }
+}

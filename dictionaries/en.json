@@ -1,0 +1,17 @@
+{
+  "nav": {
+    "home": "Home",
+    "shop": "Shop",
+    "about": "About",
+    "contact": "Contact",
+    "signin": "Sign In"
+  },
+  "home": {
+    "hero_title": "Redefining Luxury",
+    "hero_subtitle": "Experience the finest craftsmanship from Milan.",
+    "shop_now": "Shop Now"
+  },
+  "footer": {
+    "rights": "All rights reserved."
+  }
+}

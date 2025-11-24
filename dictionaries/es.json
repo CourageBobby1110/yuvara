@@ -1,0 +1,17 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "shop": "Tienda",
+    "about": "Sobre Nosotros",
+    "contact": "Contacto",
+    "signin": "Iniciar Sesión"
+  },
+  "home": {
+    "hero_title": "Redefiniendo el Lujo",
+    "hero_subtitle": "Experimente la mejor artesanía de Milán.",
+    "shop_now": "Comprar Ahora"
+  },
+  "footer": {
+    "rights": "Todos los derechos reservados."
+  }
+}

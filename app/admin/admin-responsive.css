@@ -1,0 +1,204 @@
+/* Shared Admin Responsive Utilities */
+/* Apply these classes to any admin page for instant mobile responsiveness */
+
+/* Container */
+.admin-container {
+  padding: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .admin-container {
+    padding: 1rem;
+  }
+}
+
+/* Header */
+.admin-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .admin-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+}
+
+/* Title */
+.admin-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+@media (min-width: 640px) {
+  .admin-title {
+    font-size: 1.875rem;
+  }
+}
+
+/* Buttons */
+.admin-button {
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .admin-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    width: auto;
+  }
+}
+
+/* Table Container */
+.admin-table-container {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  border: 1px solid #f3f4f6;
+  margin: 0 -0.75rem;
+}
+
+@media (min-width: 640px) {
+  .admin-table-container {
+    margin: 0;
+  }
+}
+
+/* Table Wrapper */
+.admin-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-table-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.admin-table-wrapper::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 3px;
+}
+
+.admin-table-wrapper::-webkit-scrollbar-track {
+  background-color: #f3f4f6;
+}
+
+/* Table */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+/* Table Headers */
+.admin-th {
+  padding: 0.75rem 0.5rem;
+  text-align: left;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+@media (min-width: 640px) {
+  .admin-th {
+    padding: 1rem;
+  }
+}
+
+/* Table Cells */
+.admin-td {
+  padding: 0.75rem 0.5rem;
+  vertical-align: middle;
+  font-size: 0.875rem;
+}
+
+@media (min-width: 640px) {
+  .admin-td {
+    padding: 1rem;
+  }
+}
+
+/* Form Groups */
+.admin-form-group {
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 640px) {
+  .admin-form-group {
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Form Grid */
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .admin-form-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* Labels */
+.admin-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* Inputs */
+.admin-input {
+  width: 100%;
+  padding: 0.625rem;
+  font-size: 0.875rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+}
+
+@media (min-width: 640px) {
+  .admin-input {
+    padding: 0.75rem;
+    font-size: 1rem;
+  }
+}
+
+/* Card */
+.admin-card {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+  padding: 1rem;
+}
+
+@media (min-width: 640px) {
+  .admin-card {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .admin-card {
+    padding: 2rem;
+  }
+}
