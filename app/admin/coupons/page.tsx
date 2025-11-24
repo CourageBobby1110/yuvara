@@ -19,6 +19,8 @@ interface Coupon {
 export default function AdminCouponsPage() {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState<number>(0);
 
   useEffect(() => {
     fetchCoupons();
@@ -33,6 +35,79 @@ export default function AdminCouponsPage() {
       console.error("Failed to fetch coupons", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleToggleActive = async (coupon: Coupon) => {
+    try {
+      const res = await fetch("/api/admin/coupons", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: coupon._id,
+          isActive: !coupon.isActive,
+        }),
+      });
+
+      if (res.ok) {
+        const updated = await res.json();
+        setCoupons(coupons.map((c) => (c._id === coupon._id ? updated : c)));
+      } else {
+        alert("Failed to update coupon");
+      }
+    } catch (error) {
+      console.error("Update error", error);
+      alert("Failed to update coupon");
+    }
+  };
+
+  const handleEdit = (coupon: Coupon) => {
+    setEditingId(coupon._id);
+    setEditValue(coupon.value);
+  };
+
+  const handleSaveEdit = async (coupon: Coupon) => {
+    try {
+      const res = await fetch("/api/admin/coupons", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: coupon._id,
+          value: editValue,
+        }),
+      });
+
+      if (res.ok) {
+        const updated = await res.json();
+        setCoupons(coupons.map((c) => (c._id === coupon._id ? updated : c)));
+        setEditingId(null);
+      } else {
+        alert("Failed to update coupon value");
+      }
+    } catch (error) {
+      console.error("Update error", error);
+      alert("Failed to update coupon value");
+    }
+  };
+
+  const handleDelete = async (couponId: string) => {
+    if (!confirm("Are you sure you want to delete this coupon?")) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/admin/coupons?id=${couponId}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        setCoupons(coupons.filter((c) => c._id !== couponId));
+      } else {
+        alert("Failed to delete coupon");
+      }
+    } catch (error) {
+      console.error("Delete error", error);
+      alert("Failed to delete coupon");
     }
   };
 
@@ -71,9 +146,18 @@ export default function AdminCouponsPage() {
                 <div className={styles.couponCardDetail}>
                   <div className={styles.detailLabel}>Discount</div>
                   <div className={styles.detailValue}>
-                    {coupon.discountType === "percentage"
-                      ? `${coupon.value}%`
-                      : `₦${coupon.value.toLocaleString()}`}
+                    {editingId === coupon._id ? (
+                      <input
+                        type="number"
+                        value={editValue}
+                        onChange={(e) => setEditValue(Number(e.target.value))}
+                        className={styles.editInput}
+                      />
+                    ) : coupon.discountType === "percentage" ? (
+                      `${coupon.value}%`
+                    ) : (
+                      `₦${coupon.value.toLocaleString()}`
+                    )}
                   </div>
                 </div>
                 <div className={styles.couponCardDetail}>
@@ -92,6 +176,46 @@ export default function AdminCouponsPage() {
                   </div>
                 </div>
               </div>
+
+              <div className={styles.actionButtons}>
+                {editingId === coupon._id ? (
+                  <>
+                    <button
+                      onClick={() => handleSaveEdit(coupon)}
+                      className={`${styles.actionButton} ${styles.saveButton}`}
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => setEditingId(null)}
+                      className={`${styles.actionButton} ${styles.cancelButton}`}
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => handleEdit(coupon)}
+                      className={`${styles.actionButton} ${styles.editButton}`}
+                    >
+                      Edit Value
+                    </button>
+                    <button
+                      onClick={() => handleToggleActive(coupon)}
+                      className={`${styles.actionButton} ${styles.toggleButton}`}
+                    >
+                      {coupon.isActive ? "Deactivate" : "Activate"}
+                    </button>
+                    <button
+                      onClick={() => handleDelete(coupon._id)}
+                      className={`${styles.actionButton} ${styles.deleteButton}`}
+                    >
+                      Delete
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           ))
         )}
@@ -107,12 +231,13 @@ export default function AdminCouponsPage() {
               <th className={styles.th}>Usage</th>
               <th className={styles.th}>Status</th>
               <th className={styles.th}>Expires</th>
+              <th className={styles.th}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {coupons.length === 0 ? (
               <tr>
-                <td colSpan={5} className={styles.emptyState}>
+                <td colSpan={6} className={styles.emptyState}>
                   No coupons found. Create one to get started.
                 </td>
               </tr>
@@ -123,9 +248,18 @@ export default function AdminCouponsPage() {
                     {coupon.code}
                   </td>
                   <td className={styles.td}>
-                    {coupon.discountType === "percentage"
-                      ? `${coupon.value}%`
-                      : `₦${coupon.value.toLocaleString()}`}
+                    {editingId === coupon._id ? (
+                      <input
+                        type="number"
+                        value={editValue}
+                        onChange={(e) => setEditValue(Number(e.target.value))}
+                        className={styles.editInput}
+                      />
+                    ) : coupon.discountType === "percentage" ? (
+                      `${coupon.value}%`
+                    ) : (
+                      `₦${coupon.value.toLocaleString()}`
+                    )}
                   </td>
                   <td className={styles.td}>
                     {coupon.usedCount} /{" "}
@@ -144,6 +278,47 @@ export default function AdminCouponsPage() {
                     {coupon.expirationDate
                       ? new Date(coupon.expirationDate).toLocaleDateString()
                       : "Never"}
+                  </td>
+                  <td className={styles.td}>
+                    <div className={styles.actionButtons}>
+                      {editingId === coupon._id ? (
+                        <>
+                          <button
+                            onClick={() => handleSaveEdit(coupon)}
+                            className={`${styles.actionButton} ${styles.saveButton}`}
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={() => setEditingId(null)}
+                            className={`${styles.actionButton} ${styles.cancelButton}`}
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => handleEdit(coupon)}
+                            className={`${styles.actionButton} ${styles.editButton}`}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleToggleActive(coupon)}
+                            className={`${styles.actionButton} ${styles.toggleButton}`}
+                          >
+                            {coupon.isActive ? "Deactivate" : "Activate"}
+                          </button>
+                          <button
+                            onClick={() => handleDelete(coupon._id)}
+                            className={`${styles.actionButton} ${styles.deleteButton}`}
+                          >
+                            Delete
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))

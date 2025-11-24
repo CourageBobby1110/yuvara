@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Coupon from "@/models/Coupon";
 
+const MAX_COUPON_ORDER_AMOUNT = 30000; // 30,000 NGN limit
+
 export async function POST(req: Request) {
   try {
     await dbConnect();
@@ -10,6 +12,16 @@ export async function POST(req: Request) {
     if (!code) {
       return NextResponse.json(
         { error: "Coupon code is required" },
+        { status: 400 }
+      );
+    }
+
+    // Check if order amount exceeds coupon usage limit
+    if (amount > MAX_COUPON_ORDER_AMOUNT) {
+      return NextResponse.json(
+        {
+          error: `Coupons can only be used on orders up to ₦${MAX_COUPON_ORDER_AMOUNT.toLocaleString()}`,
+        },
         { status: 400 }
       );
     }
@@ -47,9 +59,7 @@ export async function POST(req: Request) {
     if (coupon.discountType === "percentage") {
       discountAmount = (amount * coupon.value) / 100;
     } else {
-      discountAmount = coupon.value; // Assuming fixed value is in the same currency (NGN) or handled appropriately
-      // Note: Fixed value coupons might need currency handling if supporting multiple currencies deeply.
-      // For now, assuming fixed value is in NGN since checkout converts to NGN.
+      discountAmount = coupon.value;
     }
 
     // Ensure discount doesn't exceed total amount

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./AdminSidebar.module.css";
 import { handleSignOut } from "@/app/actions/auth";
+import MessageNotification from "./MessageNotification";
 
 export default function AdminSidebar() {
   const pathname = usePathname();
@@ -28,9 +29,16 @@ export default function AdminSidebar() {
       />
 
       <aside className={`${styles.sidebar} ${isOpen ? styles.open : ""}`}>
-        <Link href="/" className={styles.logo} onClick={() => setIsOpen(false)}>
-          Yuvara Admin
-        </Link>
+        <div className={styles.header}>
+          <Link
+            href="/"
+            className={styles.logo}
+            onClick={() => setIsOpen(false)}
+          >
+            Yuvara Admin
+          </Link>
+          <MessageNotification />
+        </div>
 
         <nav className={styles.nav}>
           <Link
@@ -117,6 +125,15 @@ export default function AdminSidebar() {
             onClick={() => setIsOpen(false)}
           >
             Referrals
+          </Link>
+          <Link
+            href="/admin/messages"
+            className={`${styles.link} ${
+              isActive("/admin/messages") ? styles.active : ""
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Messages
           </Link>
         </nav>
 

@@ -1,7 +1,46 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import styles from "./Contact.module.css";
 
 export default function Contact() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess(false);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setSuccess(true);
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        setError(data.error || "Something went wrong. Please try again.");
+      }
+    } catch (err) {
+      setError("Failed to send message. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Contact Us</h1>
@@ -90,7 +129,14 @@ export default function Contact() {
         </div>
 
         <div className={styles.formCard}>
-          <form className={styles.form}>
+          {success && (
+            <div className={styles.successMessage}>
+              Thank you for your message! We'll get back to you soon.
+            </div>
+          )}
+          {error && <div className={styles.errorMessage}>{error}</div>}
+
+          <form className={styles.form} onSubmit={handleSubmit}>
             <div className={styles.inputGroup}>
               <label htmlFor="name" className={styles.label}>
                 Name
@@ -98,8 +144,13 @@ export default function Contact() {
               <input
                 type="text"
                 id="name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 className={styles.input}
                 placeholder="Your Name"
+                required
               />
             </div>
 
@@ -110,8 +161,13 @@ export default function Contact() {
               <input
                 type="email"
                 id="email"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 className={styles.input}
                 placeholder="your@email.com"
+                required
               />
             </div>
 
@@ -122,13 +178,22 @@ export default function Contact() {
               <textarea
                 id="message"
                 rows={4}
+                value={formData.message}
+                onChange={(e) =>
+                  setFormData({ ...formData, message: e.target.value })
+                }
                 className={styles.textarea}
                 placeholder="How can we help?"
+                required
               ></textarea>
             </div>
 
-            <button type="submit" className={styles.submitButton}>
-              Send Message
+            <button
+              type="submit"
+              disabled={loading}
+              className={styles.submitButton}
+            >
+              {loading ? "Sending..." : "Send Message"}
             </button>
           </form>
         </div>

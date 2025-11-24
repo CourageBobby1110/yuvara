@@ -386,3 +386,64 @@ export async function sendPasswordResetEmail(email: string, token: string) {
     throw error;
   }
 }
+
+export async function sendContactFormNotification(
+  name: string,
+  email: string,
+  message: string,
+  messageId: string
+) {
+  const viewUrl = `${process.env.NEXTAUTH_URL}/admin/messages`;
+
+  const mailOptions = {
+    from: `Yuvara <${process.env.EMAIL_FROM}>`,
+    to: process.env.EMAIL_FROM,
+    subject: `New Contact Form Submission from ${name}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="text-align: center; padding: 20px 0; border-bottom: 1px solid #eee;">
+          <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 2px; color: #000;">YUVARA</h1>
+        </div>
+        
+        <div style="padding: 20px 0;">
+          <h2 style="color: #333; margin-top: 0;">New Contact Form Submission</h2>
+          <p style="color: #666; line-height: 1.6;">
+            You have received a new message from your website contact form.
+          </p>
+          
+          <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0;">Contact Details</h3>
+            <p style="margin: 10px 0;"><strong>Name:</strong> ${name}</p>
+            <p style="margin: 10px 0;"><strong>Email:</strong> <a href="mailto:${email}" style="color: #000;">${email}</a></p>
+          </div>
+
+          <div style="background: #fff; border-left: 4px solid #000; padding: 15px; margin: 20px 0;">
+            <h3 style="margin-top: 0;">Message</h3>
+            <p style="color: #333; line-height: 1.6; white-space: pre-wrap;">${message}</p>
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${viewUrl}" 
+               style="background: #000; color: #fff; padding: 14px 40px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">
+              View All Messages
+            </a>
+          </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px;">
+          <p>&copy; ${new Date().getFullYear()} Yuvara. All rights reserved.</p>
+        </div>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(
+      `Contact form notification sent to admin for message ${messageId}`
+    );
+  } catch (error) {
+    console.error("Failed to send contact form notification", error);
+    throw error;
+  }
+}

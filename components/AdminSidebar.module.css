@@ -15,10 +15,16 @@
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 3rem;
+}
+
 .logo {
   font-size: 1.25rem;
   font-weight: 800;
-  margin-bottom: 3rem;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   color: #fff;
