@@ -1,0 +1,669 @@
+/* ============================================
+   CONTAINER
+   ============================================ */
+.container {
+  padding: 0;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: clamp(1.5rem, 3vw, 2rem);
+  }
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.header {
+  padding: clamp(1rem, 3vw, 1.5rem);
+  background: #fff;
+  border-bottom: 1px solid #f3f4f6;
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 2vw, 1rem);
+}
+
+@media (min-width: 768px) {
+  .header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+@media (min-width: 1024px) {
+  .header {
+    background: transparent;
+    border-bottom: none;
+    padding: 0;
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+  }
+}
+
+.title {
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  font-weight: 800;
+  color: #111;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.createButton {
+  background-color: #000;
+  color: #fff;
+  padding: clamp(0.625rem, 2vw, 0.75rem) clamp(1rem, 3vw, 1.25rem);
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: clamp(0.8125rem, 2vw, 0.875rem);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .createButton {
+    width: auto;
+  }
+}
+
+.createButton:hover {
+  background-color: #171717;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.createButton:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .createButton:hover {
+    transform: none;
+  }
+}
+
+/* ============================================
+   FILTERS
+   ============================================ */
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 2vw, 1rem);
+  padding: 0 clamp(0.75rem, 2vw, 1rem);
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+}
+
+@media (min-width: 640px) {
+  .filters {
+    flex-direction: row;
+  }
+}
+
+@media (min-width: 1024px) {
+  .filters {
+    padding: 0;
+  }
+}
+
+.searchInput {
+  flex: 1;
+  padding: clamp(0.625rem, 2vw, 0.75rem) clamp(0.875rem, 2vw, 1rem);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: clamp(0.8125rem, 2vw, 0.875rem);
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.searchInput:focus {
+  border-color: #000;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+.filterSelect {
+  padding: clamp(0.625rem, 2vw, 0.75rem) clamp(0.875rem, 2vw, 1rem);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: clamp(0.8125rem, 2vw, 0.875rem);
+  outline: none;
+  cursor: pointer;
+  background-color: #fff;
+  width: 100%;
+  min-width: 150px;
+}
+
+@media (min-width: 640px) {
+  .filterSelect {
+    width: auto;
+  }
+}
+
+.filterSelect:focus {
+  border-color: #000;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+/* ============================================
+   MOBILE CARDS
+   ============================================ */
+.mobileList {
+  display: flex;
+  flex-direction: column;
+  padding: 0 clamp(0.75rem, 2vw, 1rem);
+  gap: clamp(0.75rem, 2vw, 1rem);
+}
+
+@media (min-width: 1024px) {
+  .mobileList {
+    display: none;
+  }
+}
+
+.giftCardCard {
+  background-color: #fff;
+  padding: clamp(1rem, 3vw, 1.25rem);
+  border-radius: 16px;
+  border: 1px solid #f3f4f6;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 2vw, 1rem);
+  transition: box-shadow 0.2s ease;
+}
+
+.giftCardCard:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.cardCode {
+  font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace;
+  font-weight: 700;
+  color: #111;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  letter-spacing: 0.05em;
+  word-break: break-all;
+}
+
+.cardDetails {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr));
+  gap: clamp(0.625rem, 2vw, 0.75rem);
+  padding-top: clamp(0.625rem, 2vw, 0.75rem);
+  border-top: 1px solid #f3f4f6;
+}
+
+.cardDetail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detailLabel {
+  font-size: clamp(0.625rem, 1.5vw, 0.7rem);
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.detailValue {
+  font-weight: 600;
+  color: #111;
+  font-size: clamp(0.8125rem, 2vw, 0.85rem);
+  word-break: break-word;
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: clamp(0.625rem, 2vw, 0.75rem);
+  border-top: 1px solid #f3f4f6;
+  flex-wrap: wrap;
+}
+
+/* ============================================
+   DESKTOP TABLE
+   ============================================ */
+.desktopTableWrapper {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .desktopTableWrapper {
+    display: block;
+    background-color: #fff;
+    border-radius: 16px;
+    border: 1px solid #f3f4f6;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+    overflow: hidden;
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.th {
+  text-align: left;
+  padding: clamp(0.875rem, 2vw, 1rem) clamp(1rem, 3vw, 1.5rem);
+  font-size: clamp(0.6875rem, 1.5vw, 0.75rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #666;
+  background-color: #f9fafb;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #f3f4f6;
+  white-space: nowrap;
+}
+
+.tr {
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.2s ease;
+}
+
+.tr:hover {
+  background-color: #fafafa;
+}
+
+.tr:last-child {
+  border-bottom: none;
+}
+
+.td {
+  padding: clamp(0.875rem, 2vw, 1rem) clamp(1rem, 3vw, 1.5rem);
+  vertical-align: middle;
+  font-size: clamp(0.8125rem, 2vw, 0.875rem);
+  color: #111;
+}
+
+/* ============================================
+   STATUS BADGES
+   ============================================ */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: clamp(0.2rem, 1vw, 0.25rem) clamp(0.625rem, 2vw, 0.75rem);
+  border-radius: 9999px;
+  font-size: clamp(0.625rem, 1.5vw, 0.7rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.statusBadge.active {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.statusBadge.used {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.statusBadge.expired {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.statusBadge.cancelled {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+/* ============================================
+   ACTION BUTTONS
+   ============================================ */
+.actionButton {
+  padding: clamp(0.4rem, 1.5vw, 0.5rem) clamp(0.75rem, 2vw, 0.875rem);
+  border-radius: 8px;
+  font-size: clamp(0.6875rem, 1.5vw, 0.75rem);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+}
+
+.actionButton:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+
+.activateButton {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.activateButton:hover {
+  background-color: #bbf7d0;
+}
+
+.deactivateButton {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.deactivateButton:hover {
+  background-color: #fecaca;
+}
+
+/* ============================================
+   PAGINATION
+   ============================================ */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border-top: 1px solid #f3f4f6;
+  background-color: #fff;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 639px) {
+  .pagination {
+    justify-content: center;
+  }
+}
+
+.pageButton {
+  padding: clamp(0.4rem, 2vw, 0.5rem) clamp(0.875rem, 2vw, 1rem);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #111;
+  font-size: clamp(0.8125rem, 2vw, 0.875rem);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pageButton:hover:not(:disabled) {
+  background-color: #f9fafb;
+  border-color: #000;
+}
+
+.pageButton:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+
+.pageButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pageInfo {
+  font-size: clamp(0.8125rem, 2vw, 0.875rem);
+  color: #666;
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.emptyState {
+  padding: clamp(2rem, 6vw, 3rem) clamp(1rem, 3vw, 1.5rem);
+  text-align: center;
+  color: #666;
+  font-size: clamp(0.8125rem, 2vw, 0.875rem);
+  line-height: 1.6;
+}
+
+/* ============================================
+   MODAL
+   ============================================ */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: clamp(0.75rem, 2vw, 1rem);
+}
+
+.modal {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: clamp(1.5rem, 4vw, 2rem);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modalTitle {
+  font-size: clamp(1.25rem, 4vw, 1.5rem);
+  font-weight: 700;
+  color: #111;
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+  line-height: 1.3;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 3vw, 1.25rem);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: clamp(0.8125rem, 2vw, 0.875rem);
+  font-weight: 600;
+  color: #374151;
+}
+
+.input {
+  padding: clamp(0.625rem, 2vw, 0.75rem) clamp(0.875rem, 2vw, 1rem);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: clamp(0.8125rem, 2vw, 0.875rem);
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.input:focus {
+  border-color: #000;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+.modalActions {
+  display: flex;
+  gap: clamp(0.75rem, 2vw, 1rem);
+  margin-top: clamp(0.75rem, 2vw, 1rem);
+  flex-direction: column;
+}
+
+@media (min-width: 480px) {
+  .modalActions {
+    flex-direction: row;
+  }
+}
+
+.cancelButton {
+  flex: 1;
+  padding: clamp(0.625rem, 2vw, 0.75rem) clamp(1.25rem, 3vw, 1.5rem);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: clamp(0.8125rem, 2vw, 0.875rem);
+  border: 1px solid #e5e7eb;
+  background-color: #fff;
+  color: #111;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancelButton:hover {
+  background-color: #f9fafb;
+}
+
+.cancelButton:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+
+.submitButton {
+  flex: 1;
+  padding: clamp(0.625rem, 2vw, 0.75rem) clamp(1.25rem, 3vw, 1.5rem);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: clamp(0.8125rem, 2vw, 0.875rem);
+  border: none;
+  background-color: #000;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.submitButton:hover {
+  background-color: #171717;
+}
+
+.submitButton:focus-visible {
+  outline: 2px solid #666;
+  outline-offset: 2px;
+}
+
+/* ============================================
+   USER INFO
+   ============================================ */
+.userName {
+  font-weight: 600;
+  color: #111;
+  font-size: clamp(0.8125rem, 2vw, 0.875rem);
+}
+
+.userEmail {
+  font-size: clamp(0.6875rem, 1.5vw, 0.75rem);
+  color: #666;
+  word-break: break-word;
+}
+
+.unknownUser {
+  font-size: clamp(0.6875rem, 1.5vw, 0.75rem);
+  color: #666;
+  font-style: italic;
+}
+
+.adminUser {
+  font-size: clamp(0.6875rem, 1.5vw, 0.75rem);
+  color: #666;
+  font-weight: 500;
+  background-color: #f3f4f6;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+/* ============================================
+   ACTIONS
+   ============================================ */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.deleteButton {
+  padding: clamp(0.4rem, 2vw, 0.5rem);
+  border-radius: 8px;
+  border: 1px solid #fee2e2;
+  background-color: #fff;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 36px;
+}
+
+.deleteButton:hover {
+  background-color: #fee2e2;
+  border-color: #ef4444;
+}
+
+.deleteButton:focus-visible {
+  outline: 2px solid #ef4444;
+  outline-offset: 2px;
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+@media print {
+  .createButton,
+  .filters,
+  .cardActions,
+  .actions,
+  .pagination {
+    display: none;
+  }
+
+  .mobileList {
+    display: flex;
+  }
+
+  .desktopTableWrapper {
+    display: none;
+  }
+
+  .giftCardCard {
+    page-break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+
+  .container {
+    padding: 0;
+  }
+}

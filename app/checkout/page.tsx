@@ -29,12 +29,24 @@ export default function CheckoutPage() {
   const { items, totalPrice } = useCartStore();
   const { formatPrice, exchangeRates } = useCurrency();
   const [loading, setLoading] = useState(false);
+
+  // Coupon State
   const [couponCode, setCouponCode] = useState("");
   const [couponError, setCouponError] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{
     code: string;
     discountAmount: number;
   } | null>(null);
+
+  // Gift Card State
+  const [giftCardCode, setGiftCardCode] = useState("");
+  const [giftCardError, setGiftCardError] = useState("");
+  const [appliedGiftCard, setAppliedGiftCard] = useState<{
+    code: string;
+    balance: number;
+    amountToUse: number;
+  } | null>(null);
+
   const [shippingRates, setShippingRates] = useState<ShippingRate[]>([]);
   const [selectedStateFee, setSelectedStateFee] = useState(0);
   const [saveAddress, setSaveAddress] = useState(false);
@@ -158,6 +170,54 @@ export default function CheckoutPage() {
     }
   };
 
+  const handleApplyGiftCard = async () => {
+    setGiftCardError("");
+    if (!giftCardCode) return;
+
+    try {
+      const res = await fetch("/api/gift-cards/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: giftCardCode }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setGiftCardError(data.error);
+        setAppliedGiftCard(null);
+      } else {
+        if (!data.valid) {
+          setGiftCardError(data.error || "Invalid gift card");
+          setAppliedGiftCard(null);
+          return;
+        }
+
+        // Calculate how much to use
+        const totalUSD = totalPrice();
+        const rateNGN = exchangeRates["NGN"] || 1500;
+        const shippingInUSD = selectedStateFee / rateNGN;
+        let total = totalUSD + shippingInUSD;
+
+        if (appliedCoupon) {
+          const discountInUSD = appliedCoupon.discountAmount / rateNGN;
+          total -= discountInUSD;
+        }
+
+        const totalInNGN = total * rateNGN;
+        const amountToUse = Math.min(totalInNGN, data.currentBalance);
+
+        setAppliedGiftCard({
+          code: data.code,
+          balance: data.currentBalance,
+          amountToUse,
+        });
+      }
+    } catch (err) {
+      setGiftCardError("Failed to verify gift card");
+    }
+  };
+
   const calculateTotal = () => {
     const subtotal = totalPrice();
     const rateNGN = exchangeRates["NGN"] || 1500;
@@ -168,6 +228,11 @@ export default function CheckoutPage() {
     if (appliedCoupon) {
       const discountInUSD = appliedCoupon.discountAmount / rateNGN;
       total -= discountInUSD;
+    }
+
+    if (appliedGiftCard) {
+      const giftCardAmountInUSD = appliedGiftCard.amountToUse / rateNGN;
+      total -= giftCardAmountInUSD;
     }
 
     return Math.max(0, total);
@@ -210,39 +275,70 @@ export default function CheckoutPage() {
         amountInNGN -= appliedCoupon.discountAmount;
       }
 
-      amountInNGN = Math.max(0, amountInNGN);
-
-      // 1. Initialize Payment
-      const res = await fetch("/api/payment/initialize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: amountInNGN,
-          email: session?.user?.email,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Payment initialization failed");
+      if (appliedGiftCard) {
+        amountInNGN -= appliedGiftCard.amountToUse;
       }
 
-      // 2. Store order details
-      localStorage.setItem(
-        "yuvara_pending_order",
-        JSON.stringify({
-          cartItems: items,
-          shippingAddress: formData,
-          total: amountInNGN, // Store final NGN total
-          shippingFee: selectedStateFee,
-          couponCode: appliedCoupon?.code,
-          discountAmount: appliedCoupon?.discountAmount,
-        })
-      );
+      amountInNGN = Math.max(0, amountInNGN);
 
-      // 3. Redirect to Paystack
-      window.location.href = data.authorizationUrl;
+      // Store order details
+      const orderDetails = {
+        cartItems: items,
+        shippingAddress: formData,
+        total: amountInNGN, // Store final NGN total to pay
+        shippingFee: selectedStateFee,
+        couponCode: appliedCoupon?.code,
+        discountAmount: appliedCoupon?.discountAmount,
+        giftCardCode: appliedGiftCard?.code,
+        giftCardAmountUsed: appliedGiftCard?.amountToUse,
+      };
+
+      if (amountInNGN <= 0) {
+        // Fully paid by gift card/coupon
+        const res = await fetch("/api/payment/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            reference: "FULL_DISCOUNT_" + Date.now(),
+            ...orderDetails,
+            total: 0, // Explicitly 0
+          }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          useCartStore.getState().clearCart();
+          router.push("/checkout/success");
+        } else {
+          throw new Error(data.error || "Failed to create order");
+        }
+      } else {
+        // 1. Initialize Payment
+        const res = await fetch("/api/payment/initialize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            amount: amountInNGN,
+            email: session?.user?.email,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Payment initialization failed");
+        }
+
+        // 2. Store order details
+        localStorage.setItem(
+          "yuvara_pending_order",
+          JSON.stringify(orderDetails)
+        );
+
+        // 3. Redirect to Paystack
+        window.location.href = data.authorizationUrl;
+      }
     } catch (error: any) {
       console.error("Checkout error:", error);
       alert(error.message);
@@ -288,6 +384,9 @@ export default function CheckoutPage() {
   const shippingInUSD = selectedStateFee / rateNGN;
   const discountInUSD = appliedCoupon
     ? appliedCoupon.discountAmount / rateNGN
+    : 0;
+  const giftCardAmountInUSD = appliedGiftCard
+    ? appliedGiftCard.amountToUse / rateNGN
     : 0;
 
   return (
@@ -374,6 +473,50 @@ export default function CheckoutPage() {
                 )}
               </div>
 
+              {/* Gift Card Input */}
+              <div className={styles.couponSection}>
+                <label className={styles.couponLabel}>Gift Card</label>
+                <div className={styles.couponInputGroup}>
+                  <input
+                    type="text"
+                    value={giftCardCode}
+                    onChange={(e) => setGiftCardCode(e.target.value)}
+                    disabled={!!appliedGiftCard}
+                    className={styles.couponInput}
+                    placeholder="Enter gift card code"
+                  />
+                  {appliedGiftCard ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAppliedGiftCard(null);
+                        setGiftCardCode("");
+                      }}
+                      className={styles.removeButton}
+                    >
+                      Remove
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleApplyGiftCard}
+                      className={styles.applyButton}
+                    >
+                      Apply
+                    </button>
+                  )}
+                </div>
+                {giftCardError && (
+                  <p className={styles.errorText}>{giftCardError}</p>
+                )}
+                {appliedGiftCard && (
+                  <p className={styles.successText}>
+                    Gift Card applied! ₦
+                    {appliedGiftCard.amountToUse.toLocaleString()} used
+                  </p>
+                )}
+              </div>
+
               <div className={styles.totalsSection}>
                 <div className={styles.totalRow}>
                   <span>Subtotal</span>
@@ -391,6 +534,12 @@ export default function CheckoutPage() {
                   <div className={styles.discountRow}>
                     <span>Discount</span>
                     <span>-{formatPrice(discountInUSD)}</span>
+                  </div>
+                )}
+                {appliedGiftCard && (
+                  <div className={styles.discountRow}>
+                    <span>Gift Card</span>
+                    <span>-{formatPrice(giftCardAmountInUSD)}</span>
                   </div>
                 )}
                 <div className={styles.grandTotalRow}>

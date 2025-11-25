@@ -23,6 +23,8 @@ export async function POST(req: Request) {
       shippingFee,
       couponCode,
       discountAmount,
+      giftCardCode,
+      giftCardAmountUsed,
     } = body;
 
     if (!reference || !cartItems || !shippingAddress) {
@@ -33,22 +35,34 @@ export async function POST(req: Request) {
     }
 
     // Verify transaction with Paystack
-    const verifyResponse = await fetch(
-      `https://api.paystack.co/transaction/verify/${reference}`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-        },
+    let isFullDiscount = false;
+    if (reference.startsWith("FULL_DISCOUNT_")) {
+      isFullDiscount = true;
+      // Ensure total is 0 or close to 0 (floating point safety)
+      if (total > 0) {
+        return NextResponse.json(
+          { error: "Invalid full discount request" },
+          { status: 400 }
+        );
       }
-    );
-
-    const verifyData = await verifyResponse.json();
-
-    if (!verifyData.status || verifyData.data.status !== "success") {
-      return NextResponse.json(
-        { error: "Payment verification failed" },
-        { status: 400 }
+    } else {
+      const verifyResponse = await fetch(
+        `https://api.paystack.co/transaction/verify/${reference}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+          },
+        }
       );
+
+      const verifyData = await verifyResponse.json();
+
+      if (!verifyData.status || verifyData.data.status !== "success") {
+        return NextResponse.json(
+          { error: "Payment verification failed" },
+          { status: 400 }
+        );
+      }
     }
 
     // Payment is valid, create order
@@ -66,9 +80,25 @@ export async function POST(req: Request) {
       }
     }
 
-    // If still no userId, we can't link to a user profile easily.
-    // But for now, let's assume we found it or fail if strict.
-    // For guest checkout (future), we might relax this.
+    // Handle Gift Card Redemption
+    if (giftCardCode && giftCardAmountUsed > 0) {
+      try {
+        const GiftCard = (await import("@/models/GiftCard")).default;
+        const giftCard = await GiftCard.findOne({
+          code: giftCardCode,
+          isActive: true,
+        });
+
+        if (giftCard) {
+          // We need an order ID to redeem, but we haven't created it yet.
+          // Mongoose allows creating an ObjectId before saving.
+          // Or we can create the order first, then redeem.
+          // Let's create order first.
+        }
+      } catch (err) {
+        console.error("Failed to process gift card", err);
+      }
+    }
 
     const order = await Order.create({
       user: userId,
@@ -87,7 +117,30 @@ export async function POST(req: Request) {
       shippingFee: shippingFee || 0,
       couponCode: couponCode || null,
       discountAmount: discountAmount || 0,
+      giftCardCode: giftCardCode || null,
+      giftCardAmountUsed: giftCardAmountUsed || 0,
     });
+
+    // Redeem Gift Card
+    if (giftCardCode && giftCardAmountUsed > 0) {
+      try {
+        const GiftCard = (await import("@/models/GiftCard")).default;
+        const giftCard = await GiftCard.findOne({
+          code: giftCardCode,
+          isActive: true,
+        });
+
+        if (giftCard) {
+          giftCard.redeem(giftCardAmountUsed, order._id);
+          await giftCard.save();
+        }
+      } catch (err) {
+        console.error("Failed to redeem gift card", err);
+        // Note: Order is already created and paid. If redemption fails here,
+        // we have a discrepancy. Ideally we should use a transaction.
+        // For now, we log it.
+      }
+    }
 
     // Increment Coupon Usage
     if (couponCode) {

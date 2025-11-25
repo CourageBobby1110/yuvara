@@ -39,6 +39,13 @@ const OrderSchema = new Schema(
       type: Number,
       default: 0,
     },
+    giftCardCode: {
+      type: String,
+    },
+    giftCardAmountUsed: {
+      type: Number,
+      default: 0,
+    },
     status: {
       type: String,
       enum: ["pending", "processing", "shipped", "delivered", "cancelled"],

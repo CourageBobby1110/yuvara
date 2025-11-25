@@ -1,0 +1,463 @@
+/* ============================================
+   LAYOUT
+   ============================================ */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(1rem, 5vw, 2rem);
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: clamp(2rem, 5vw, 3rem);
+  }
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.header {
+  margin-bottom: clamp(1.5rem, 4vw, 2rem);
+}
+
+.title {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 800;
+  color: #111;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  color: #666;
+  line-height: 1.5;
+}
+
+/* ============================================
+   TABS
+   ============================================ */
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #f3f4f6;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  padding: clamp(0.625rem, 2vw, 0.75rem) clamp(1rem, 3vw, 1.5rem);
+  border: none;
+  background: transparent;
+  font-size: clamp(0.875rem, 2vw, 0.95rem);
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tab:hover {
+  color: #111;
+}
+
+.tab:focus-visible {
+  color: #111;
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+  border-radius: 8px 8px 0 0;
+}
+
+.activeTab {
+  color: #111;
+  border-bottom-color: #111;
+}
+
+/* ============================================
+   GRID
+   ============================================ */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: clamp(1rem, 3vw, 1.5rem);
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  }
+}
+
+/* ============================================
+   GIFT CARD
+   ============================================ */
+.card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: clamp(1.25rem, 4vw, 1.5rem);
+  color: white;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+
+  .card:hover {
+    transform: none;
+  }
+}
+
+/* Card Header */
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.cardStatus {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.statusBadge {
+  padding: 0.25rem clamp(0.625rem, 2vw, 0.75rem);
+  border-radius: 9999px;
+  font-size: clamp(0.6875rem, 1.5vw, 0.75rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.statusActive {
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.statusUsed {
+  background: rgba(0, 0, 0, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Card Body */
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  flex: 1;
+}
+
+/* Balance */
+.balance {
+  text-align: center;
+}
+
+.balanceLabel {
+  font-size: clamp(0.8125rem, 2vw, 0.875rem);
+  opacity: 0.9;
+  margin-bottom: 0.5rem;
+}
+
+.balanceAmount {
+  font-size: clamp(2rem, 6vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1;
+  word-break: break-word;
+}
+
+.balanceOriginal {
+  font-size: clamp(0.8125rem, 2vw, 0.875rem);
+  opacity: 0.7;
+  margin-top: 0.25rem;
+}
+
+/* Progress Bar */
+.progressBar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: white;
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+/* Code */
+.cardCode {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.codeLabel {
+  font-size: clamp(0.6875rem, 1.5vw, 0.75rem);
+  opacity: 0.8;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.code {
+  font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace;
+  font-size: clamp(1rem, 2.5vw, 1.125rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  word-break: break-all;
+}
+
+/* Message */
+.message {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1rem;
+  border-radius: 12px;
+}
+
+.messageLabel {
+  font-size: clamp(0.6875rem, 1.5vw, 0.75rem);
+  opacity: 0.8;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.messageText {
+  font-size: clamp(0.8125rem, 2vw, 0.875rem);
+  line-height: 1.6;
+  opacity: 0.95;
+}
+
+/* Card Footer */
+.cardFooter {
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: auto;
+}
+
+.purchaseDate {
+  font-size: clamp(0.6875rem, 1.5vw, 0.75rem);
+  opacity: 0.7;
+  text-align: center;
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.emptyState {
+  text-align: center;
+  padding: clamp(2rem, 8vw, 4rem) 2rem;
+}
+
+.emptyIcon {
+  font-size: clamp(3rem, 8vw, 4rem);
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.emptyTitle {
+  font-size: clamp(1.25rem, 4vw, 1.5rem);
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.emptyText {
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  color: #666;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.purchaseButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.75rem, 2vw, 0.875rem) clamp(1.5rem, 4vw, 2rem);
+  background: #000;
+  color: white;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.purchaseButton:hover {
+  background: #171717;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.purchaseButton:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+.purchaseButton:active {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .purchaseButton:hover {
+    transform: none;
+  }
+}
+
+/* ============================================
+   SUMMARY
+   ============================================ */
+.summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: clamp(0.75rem, 2vw, 1rem);
+  margin-top: clamp(2rem, 5vw, 3rem);
+}
+
+.summaryCard {
+  background: #f9fafb;
+  padding: clamp(1.25rem, 4vw, 1.5rem);
+  border-radius: 12px;
+  text-align: center;
+  transition: box-shadow 0.2s ease;
+}
+
+.summaryCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.summaryLabel {
+  font-size: clamp(0.8125rem, 2vw, 0.875rem);
+  color: #666;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.summaryValue {
+  font-size: clamp(1.75rem, 5vw, 2rem);
+  font-weight: 800;
+  color: #111;
+  line-height: 1.2;
+}
+
+/* ============================================
+   LOADING
+   ============================================ */
+.loading {
+  text-align: center;
+  padding: clamp(2rem, 8vw, 4rem) 2rem;
+  font-size: clamp(1rem, 2.5vw, 1.125rem);
+  color: #666;
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================
+   RESPONSIVE UTILITIES
+   ============================================ */
+@media (max-width: 639px) {
+  .grid {
+    gap: 1rem;
+  }
+
+  .card {
+    padding: 1.25rem;
+  }
+
+  .summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+@media print {
+  .tabs,
+  .purchaseButton {
+    display: none;
+  }
+
+  .card {
+    page-break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .container {
+    padding: 1rem;
+  }
+}

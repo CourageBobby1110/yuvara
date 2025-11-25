@@ -447,3 +447,65 @@ export async function sendContactFormNotification(
     throw error;
   }
 }
+
+export async function sendGiftCardEmail(giftCard: any) {
+  const recipientEmail = giftCard.recipientEmail || giftCard.purchasedBy?.email;
+
+  if (!recipientEmail) {
+    console.error("No recipient email found for gift card", giftCard.code);
+    return;
+  }
+
+  const mailOptions = {
+    from: `Yuvara <${process.env.EMAIL_FROM}>`,
+    to: recipientEmail,
+    subject: `You've received a Gift Card!`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="text-align: center; padding: 20px 0; border-bottom: 1px solid #eee;">
+          <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 2px; color: #000;">YUVARA</h1>
+        </div>
+        
+        <div style="padding: 20px 0;">
+          <h2 style="color: #333; margin-top: 0;">You've received a Gift Card!</h2>
+          ${
+            giftCard.message
+              ? `<p style="color: #666; font-style: italic;">"${giftCard.message}"</p>`
+              : ""
+          }
+          
+          <div style="background: #000; color: #fff; padding: 30px; border-radius: 12px; margin: 30px 0; text-align: center;">
+            <p style="margin: 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Gift Card Code</p>
+            <h3 style="margin: 10px 0; font-size: 32px; letter-spacing: 4px; font-family: monospace;">${
+              giftCard.code
+            }</h3>
+            <p style="margin: 10px 0 0; font-size: 24px; font-weight: bold;">₦${giftCard.initialBalance.toLocaleString()}</p>
+          </div>
+          
+          <p style="color: #666; line-height: 1.6;">
+            You can use this code to purchase items on our store. Simply enter the code at checkout.
+          </p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${process.env.NEXTAUTH_URL}" 
+               style="background: #000; color: #fff; padding: 14px 40px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">
+              Start Shopping
+            </a>
+          </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px;">
+          <p>&copy; ${new Date().getFullYear()} Yuvara. All rights reserved.</p>
+        </div>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Gift card email sent to ${recipientEmail}`);
+  } catch (error) {
+    console.error("Failed to send gift card email", error);
+    // Don't throw, just log, so we don't fail the request if email fails
+  }
+}

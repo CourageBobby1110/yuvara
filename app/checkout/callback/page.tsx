@@ -33,6 +33,8 @@ export default function CheckoutCallbackPage() {
           shippingFee,
           couponCode,
           discountAmount,
+          giftCardCode,
+          giftCardAmountUsed,
         } = JSON.parse(pendingOrder);
 
         const res = await fetch("/api/payment/verify", {
@@ -46,6 +48,8 @@ export default function CheckoutCallbackPage() {
             shippingFee,
             couponCode,
             discountAmount,
+            giftCardCode,
+            giftCardAmountUsed,
           }),
         });
 

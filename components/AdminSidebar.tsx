@@ -136,6 +136,15 @@ export default function AdminSidebar() {
             Messages
           </Link>
           <Link
+            href="/admin/gift-cards"
+            className={`${styles.link} ${
+              isActive("/admin/gift-cards") ? styles.active : ""
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Gift Cards
+          </Link>
+          <Link
             href="/admin/hero"
             className={`${styles.link} ${
               isActive("/admin/hero") ? styles.active : ""
