@@ -5,9 +5,13 @@ import ReferralBatch from "@/models/ReferralBatch";
 import Coupon from "@/models/Coupon";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import jwt from "jsonwebtoken";
 
 function generateUserReferralCode(name: string) {
-  const prefix = name.substring(0, 3).toUpperCase().replace(/[^A-Z]/g, "X");
+  const prefix = name
+    .substring(0, 3)
+    .toUpperCase()
+    .replace(/[^A-Z]/g, "X");
   const random = crypto.randomBytes(3).toString("hex").toUpperCase();
   return `${prefix}${random}`;
 }
@@ -48,7 +52,7 @@ export async function POST(req: NextRequest) {
       if (referrer) {
         referredBy = referrer._id;
         referrer.referralCount += 1;
-        
+
         // Check for Coupon Reward (Threshold: 20)
         if (referrer.referralCount === 20) {
           const now = new Date();
@@ -56,12 +60,15 @@ export async function POST(req: NextRequest) {
             isActive: true,
             startDate: { $lte: now },
             endDate: { $gte: now },
-            $expr: { $lt: ["$currentWinners", "$maxWinners"] }
+            $expr: { $lt: ["$currentWinners", "$maxWinners"] },
           });
 
           if (activeBatch) {
             // Generate Coupon
-            const couponCode = `WIN-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
+            const couponCode = `WIN-${crypto
+              .randomBytes(4)
+              .toString("hex")
+              .toUpperCase()}`;
             await Coupon.create({
               code: couponCode,
               user: referrer._id,
@@ -88,15 +95,24 @@ export async function POST(req: NextRequest) {
       referredBy: referredBy,
     });
 
+    // Create JWT token
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.NEXTAUTH_SECRET || "fallback_secret",
+      { expiresIn: "30d" }
+    );
+
     return NextResponse.json(
-      { 
+      {
         message: "User created successfully",
+        token,
         user: {
           id: user._id,
           email: user.email,
           name: user.name,
           referralCode: user.referralCode,
-        }
+          role: user.role,
+        },
       },
       { status: 201 }
     );
