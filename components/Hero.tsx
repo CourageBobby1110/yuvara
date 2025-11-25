@@ -28,7 +28,7 @@ export default function Hero() {
     <div className={styles.container}>
       <Image
         src={heroImage}
-        alt="Luxury Sneaker"
+        alt="Fashion Model"
         fill
         className={styles.backgroundImage}
         priority
@@ -43,8 +43,8 @@ export default function Hero() {
           </span>
         </h1>
         <p className={styles.subheadline}>
-          Discover the pinnacle of luxury footwear. Handcrafted for the
-          distinguished. Experience the future of fashion with Yuvara.
+          Discover the pinnacle of style. Curated for the distinguished.
+          Experience the future of fashion with Yuvara.
         </p>
         <Link href="/collections" className={styles.ctaButton}>
           Shop Collection

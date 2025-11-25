@@ -9,6 +9,7 @@ export default function ResetPasswordPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+  const email = searchParams.get("email");
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -20,10 +21,10 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!token) {
+    if (!token || !email) {
       setError("Invalid reset link. Please request a new password reset.");
     }
-  }, [token]);
+  }, [token, email]);
 
   const validatePassword = () => {
     if (password.length < 8) {
@@ -53,7 +54,7 @@ export default function ResetPasswordPage() {
       const res = await fetch("/api/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, password }),
+        body: JSON.stringify({ token, email, password }),
       });
 
       const data = await res.json();

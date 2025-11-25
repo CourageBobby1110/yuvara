@@ -24,6 +24,8 @@ interface FavoriteItem {
   createdAt: string;
 }
 
+import styles from "./AdminFavorites.module.css";
+
 export default function AdminFavoritesPage() {
   const { formatPrice } = useCurrency();
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
@@ -88,123 +90,197 @@ export default function AdminFavoritesPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
+      <div className={styles.loaderContainer}>
+        <div className={styles.loader}></div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">User Favorites</h1>
-        <p className="text-gray-600">
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>User Favorites</h1>
+        <p className={styles.subtitle}>
           View and manage items users have added to their wishlist.
         </p>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-100">
+      <div className={styles.mobileCardList}>
+        {favorites.length === 0 ? (
+          <div className={styles.emptyState}>No favorites found.</div>
+        ) : (
+          favorites.map((item) => (
+            <div key={item._id} className={styles.favoriteCard}>
+              <div className={styles.cardHeader}>
+                <div className={styles.cardImageWrapper}>
+                  <Image
+                    src={item.product.images?.[0] || "/placeholder.png"}
+                    alt={item.product.name}
+                    fill
+                    className={styles.productImage}
+                  />
+                </div>
+                <div className={styles.cardProductInfo}>
+                  <p className={styles.cardProductName}>{item.product.name}</p>
+                  <p className={styles.cardProductPrice}>
+                    {formatPrice(item.product.price)}
+                  </p>
+                </div>
+              </div>
+
+              <div className={styles.cardBody}>
+                <div className={styles.cardRow}>
+                  <span className={styles.cardLabel}>User</span>
+                  <div className={styles.cardValue}>
+                    <p className={styles.cardUserName}>{item.user.name}</p>
+                    <p className={styles.cardUserEmail}>{item.user.email}</p>
+                  </div>
+                </div>
+
+                {(item.selectedSize || item.selectedColor) && (
+                  <div className={styles.cardRow}>
+                    <span className={styles.cardLabel}>Variant</span>
+                    <div className={styles.cardValue}>
+                      {item.selectedSize && (
+                        <span className={styles.variantBadge}>
+                          Size: {item.selectedSize}
+                        </span>
+                      )}
+                      {item.selectedColor && (
+                        <span className={styles.variantBadge}>
+                          Color: {item.selectedColor}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className={styles.cardFooter}>
+                <span className={styles.cardDate}>
+                  {new Date(item.createdAt).toLocaleDateString()}
+                </span>
+                <button
+                  onClick={() => handleSendEmail(item)}
+                  disabled={sendingEmail === item._id}
+                  className={styles.sendButton}
+                >
+                  {sendingEmail === item._id ? (
+                    <>
+                      <svg
+                        className={styles.spinner}
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className={styles.spinnerCircle}
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className={styles.spinnerPath}
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Sending...
+                    </>
+                  ) : (
+                    "Send Email"
+                  )}
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className={styles.tableCard}>
+        <div className={styles.tableWrapper}>
+          <table className={styles.table}>
+            <thead className={styles.thead}>
               <tr>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                  Product
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                  User
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                  Variant
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                  Date Added
-                </th>
-                <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900">
-                  Actions
-                </th>
+                <th className={styles.th}>Product</th>
+                <th className={styles.th}>User</th>
+                <th className={styles.th}>Variant</th>
+                <th className={styles.th}>Date Added</th>
+                <th className={`${styles.th} ${styles.thRight}`}>Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className={styles.tbody}>
               {favorites.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={5}
-                    className="px-6 py-12 text-center text-gray-500"
-                  >
+                  <td colSpan={5} className={styles.emptyState}>
                     No favorites found.
                   </td>
                 </tr>
               ) : (
                 favorites.map((item) => (
-                  <tr
-                    key={item._id}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-4">
-                        <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                  <tr key={item._id} className={styles.tr}>
+                    <td className={styles.td}>
+                      <div className={styles.productCell}>
+                        <div className={styles.imageWrapper}>
                           <Image
-                            src={item.product.images[0] || "/placeholder.png"}
+                            src={item.product.images?.[0] || "/placeholder.png"}
                             alt={item.product.name}
                             fill
-                            className="object-cover"
+                            className={styles.productImage}
                           />
                         </div>
-                        <div>
-                          <p className="font-medium text-gray-900">
+                        <div className={styles.productInfo}>
+                          <p className={styles.productName}>
                             {item.product.name}
                           </p>
-                          <p className="text-sm text-gray-500">
+                          <p className={styles.productPrice}>
                             {formatPrice(item.product.price)}
                           </p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div>
-                        <p className="font-medium text-gray-900">
-                          {item.user.name}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {item.user.email}
-                        </p>
+                    <td className={styles.td}>
+                      <div className={styles.userInfo}>
+                        <p className={styles.userName}>{item.user.name}</p>
+                        <p className={styles.userEmail}>{item.user.email}</p>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-600">
+                    <td className={styles.td}>
+                      <div className={styles.variantInfo}>
                         {item.selectedSize && (
-                          <span className="inline-block mr-2 px-2 py-1 bg-gray-100 rounded text-xs">
+                          <span className={styles.variantBadge}>
                             Size: {item.selectedSize}
                           </span>
                         )}
                         {item.selectedColor && (
-                          <span className="inline-block px-2 py-1 bg-gray-100 rounded text-xs">
+                          <span className={styles.variantBadge}>
                             Color: {item.selectedColor}
                           </span>
                         )}
                         {!item.selectedSize && !item.selectedColor && "-"}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
+                    <td className={`${styles.td} ${styles.dateText}`}>
                       {new Date(item.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className={`${styles.td} ${styles.tdRight}`}>
                       <button
                         onClick={() => handleSendEmail(item)}
                         disabled={sendingEmail === item._id}
-                        className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className={styles.sendButton}
                       >
                         {sendingEmail === item._id ? (
                           <>
                             <svg
-                              className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                              className={styles.spinner}
                               xmlns="http://www.w3.org/2000/svg"
                               fill="none"
                               viewBox="0 0 24 24"
                             >
                               <circle
-                                className="opacity-25"
+                                className={styles.spinnerCircle}
                                 cx="12"
                                 cy="12"
                                 r="10"
@@ -212,7 +288,7 @@ export default function AdminFavoritesPage() {
                                 strokeWidth="4"
                               ></circle>
                               <path
-                                className="opacity-75"
+                                className={styles.spinnerPath}
                                 fill="currentColor"
                                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                               ></path>

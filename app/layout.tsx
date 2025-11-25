@@ -10,9 +10,9 @@ import { CurrencyProvider } from "@/context/CurrencyContext";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
-  title: "Yuvara - Luxury Footwear",
+  title: "Yuvara - Contemporary Fashion & Accessories",
   description:
-    "Discover the pinnacle of luxury footwear. Handcrafted for the distinguished.",
+    "Discover the latest trends in fashion. From elegant apparel to statement accessories, Yuvara defines modern style.",
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
     apple: [{ url: "/apple-touch-icon.svg", type: "image/svg+xml" }],

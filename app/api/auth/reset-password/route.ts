@@ -7,11 +7,11 @@ export async function POST(req: NextRequest) {
   try {
     await dbConnect();
 
-    const { token, password } = await req.json();
+    const { token, email, password } = await req.json();
 
-    if (!token || !password) {
+    if (!token || !email || !password) {
       return NextResponse.json(
-        { error: "Token and password are required" },
+        { error: "Token, email, and password are required" },
         { status: 400 }
       );
     }
@@ -24,33 +24,31 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Find all users with non-expired reset tokens
-    const users = await User.find({
-      resetPasswordExpires: { $gt: Date.now() },
-    }).select("+resetPasswordToken");
+    // Find user by email with reset fields
+    const user = await User.findOne({
+      email: email.toLowerCase(),
+    }).select("+resetPasswordToken +resetPasswordExpires");
 
-    if (!users || users.length === 0) {
+    if (!user) {
       return NextResponse.json(
         { error: "Invalid or expired reset token" },
         { status: 400 }
       );
     }
 
-    // Find the user with matching token
-    let matchedUser = null;
-    for (const user of users) {
-      if (user.resetPasswordToken) {
-        const isMatch = await bcrypt.compare(token, user.resetPasswordToken);
-        if (isMatch) {
-          matchedUser = user;
-          break;
-        }
-      }
+    // Check if token is expired
+    if (!user.resetPasswordExpires || user.resetPasswordExpires < new Date()) {
+      return NextResponse.json(
+        { error: "Reset token has expired" },
+        { status: 400 }
+      );
     }
 
-    if (!matchedUser) {
+    // Verify token
+    const isMatch = await bcrypt.compare(token, user.resetPasswordToken);
+    if (!isMatch) {
       return NextResponse.json(
-        { error: "Invalid or expired reset token" },
+        { error: "Invalid reset token" },
         { status: 400 }
       );
     }
@@ -59,11 +57,11 @@ export async function POST(req: NextRequest) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Update password and clear reset token fields
-    matchedUser.password = hashedPassword;
-    matchedUser.resetPasswordToken = undefined;
-    matchedUser.resetPasswordExpires = undefined;
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
 
-    await matchedUser.save();
+    await user.save();
 
     return NextResponse.json({
       message: "Password has been reset successfully",

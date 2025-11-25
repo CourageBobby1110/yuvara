@@ -356,7 +356,18 @@ export async function sendOrderStatusUpdate(order: any) {
 }
 
 export async function sendPasswordResetEmail(email: string, token: string) {
-  const resetUrl = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${token}`;
+  const baseUrl = process.env.NEXTAUTH_URL;
+  if (!baseUrl) {
+    console.error("NEXTAUTH_URL is not defined in environment variables");
+    throw new Error("Configuration error: NEXTAUTH_URL is missing");
+  }
+
+  const resetUrl = `${baseUrl}/auth/reset-password?token=${token}&email=${encodeURIComponent(
+    email
+  )}`;
+  console.log(
+    `Preparing to send password reset email to ${email} with link: ${resetUrl}`
+  );
 
   const mailOptions = {
     from: `Yuvara <${process.env.EMAIL_FROM}>`,

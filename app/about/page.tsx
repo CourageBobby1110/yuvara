@@ -11,7 +11,7 @@ export default function AboutPage() {
         <div className={styles.heroContent}>
           <h1 className={styles.heroTitle}>About Yuvara</h1>
           <p className={styles.heroSubtitle}>
-            Redefining luxury footwear for the modern era
+            Redefining modern fashion for the global citizen
           </p>
         </div>
       </section>
@@ -27,9 +27,9 @@ export default function AboutPage() {
           <div className={styles.prose}>
             <p className={styles.text}>
               Founded with a vision to merge timeless craftsmanship with
-              contemporary design, Yuvara represents the pinnacle of luxury
-              footwear. Each piece in our collection tells a story of
-              dedication, artistry, and uncompromising quality.
+              contemporary design, Yuvara represents the pinnacle of modern
+              style. Each piece in our collection tells a story of dedication,
+              artistry, and uncompromising quality.
             </p>
 
             <p className={styles.text}>
@@ -41,7 +41,7 @@ export default function AboutPage() {
 
             <p className={styles.text}>
               Today, Yuvara stands as a testament to what happens when passion
-              meets precision. We don&apos;t just create shoes; we craft
+              meets precision. We don&apos;t just create clothes; we craft
               experiences, memories, and statements of individual style that
               transcend fleeting trends.
             </p>
@@ -62,7 +62,7 @@ export default function AboutPage() {
               <div className={styles.valueIcon}>C</div>
               <h3 className={styles.valueTitle}>Craftsmanship</h3>
               <p className={styles.valueDescription}>
-                Every pair is meticulously handcrafted by skilled artisans,
+                Every piece is meticulously crafted by skilled artisans,
                 ensuring unparalleled quality and attention to detail.
               </p>
             </div>
@@ -72,7 +72,7 @@ export default function AboutPage() {
               <h3 className={styles.valueTitle}>Innovation</h3>
               <p className={styles.valueDescription}>
                 We blend traditional techniques with cutting-edge design,
-                creating footwear that&apos;s both timeless and contemporary.
+                creating fashion that&apos;s both timeless and contemporary.
               </p>
             </div>
 
@@ -94,8 +94,8 @@ export default function AboutPage() {
         <div className={styles.ctaContent}>
           <h2 className={styles.ctaTitle}>Experience Yuvara</h2>
           <p className={styles.ctaText}>
-            Discover our curated collection of luxury footwear, where every step
-            is a statement.
+            Discover our curated collection of fashion and accessories, where
+            every piece is a statement.
           </p>
           <Link href="/collections" className={styles.ctaButton}>
             Explore Collection

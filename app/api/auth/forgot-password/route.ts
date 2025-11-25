@@ -40,7 +40,9 @@ export async function POST(req: NextRequest) {
     await user.save();
 
     // Send email with unhashed token
+    console.log(`Sending password reset email to ${user.email}`);
     await sendPasswordResetEmail(user.email, resetToken);
+    console.log(`Password reset email sent successfully to ${user.email}`);
 
     return NextResponse.json({
       message:

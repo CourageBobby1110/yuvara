@@ -8,8 +8,8 @@ export default function Footer() {
         <div className={styles.brandColumn}>
           <span className={styles.logo}>Yuvara</span>
           <p className={styles.tagline}>
-            Redefining luxury footwear for the modern era. Designed in Milan,
-            crafted for the world.
+            Redefining contemporary fashion for the modern era. Designed in
+            Milan, crafted for the world.
           </p>
         </div>
 

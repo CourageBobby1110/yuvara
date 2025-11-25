@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 import dbConnect from "@/lib/db";
 import Wishlist from "@/models/Wishlist";
+import User from "@/models/User";
+import Product from "@/models/Product";
 import { auth } from "@/auth";
 
 export async function GET() {
@@ -12,6 +15,17 @@ export async function GET() {
     }
 
     await dbConnect();
+
+    // Ensure models are registered (prevent tree-shaking)
+    console.log("Registered models:", Object.keys(mongoose.models));
+    if (!mongoose.models.Product) {
+      console.log(
+        "Product model not found in mongoose.models, explicitly initializing..."
+      );
+      // This is a fallback, but the import should have handled it.
+      // We use the imported Product to ensure it's retained.
+      console.log("Product model status:", Product.modelName);
+    }
 
     // Fetch all wishlists, populated with user and product
     const favorites = await Wishlist.find({})
