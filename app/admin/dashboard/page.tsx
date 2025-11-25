@@ -1,5 +1,5 @@
 "use client";
-
+import AdminLoader from "@/components/AdminLoader";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -36,42 +36,25 @@ export default function AdminDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const [ordersRes, usersRes] = await Promise.all([
-        fetch("/api/admin/orders"), // Corrected endpoint
-        fetch("/api/admin/users"),
-      ]);
+      const res = await fetch("/api/admin/dashboard-stats");
+      const data = await res.json();
 
-      const ordersData = await ordersRes.json();
-      const usersData = await usersRes.json();
+      if (data.error) {
+        console.error("Error fetching stats:", data.error);
+        return;
+      }
 
-      // Calculate stats
-      // Revenue is stored in NGN. We sum it up in NGN first.
-      const revenueNGN = ordersData.reduce(
-        (acc: number, order: Order) => acc + order.total,
-        0
-      );
-
-      // Convert NGN revenue to USD for formatPrice compatibility
-      // formatPrice expects USD input and handles conversion based on selected currency
+      // Revenue is in NGN. Convert to USD for formatPrice compatibility
       const rateNGN = exchangeRates["NGN"] || 1500;
-      const revenueUSD = revenueNGN / rateNGN;
-
-      const activeOrders = ordersData.filter(
-        (order: Order) =>
-          order.status !== "delivered" && order.status !== "cancelled"
-      ).length;
-
-      const customers = usersData.filter(
-        (user: any) => user.role === "user"
-      ).length;
+      const revenueUSD = data.revenue / rateNGN;
 
       setStats({
-        revenue: revenueUSD, // Store as USD for formatPrice
-        activeOrders,
-        customers,
+        revenue: revenueUSD,
+        activeOrders: data.activeOrders,
+        customers: data.customers,
       });
 
-      setOrders(ordersData.slice(0, 5)); // Get recent 5 orders
+      setOrders(data.recentOrders);
     } catch (error) {
       console.error("Failed to fetch dashboard data", error);
     } finally {
@@ -80,6 +63,7 @@ export default function AdminDashboard() {
   };
 
   const getStatusColor = (status: string) => {
+    // ... (keep existing switch case)
     switch (status) {
       case "pending":
         return "#eab308"; // yellow-500
@@ -96,12 +80,9 @@ export default function AdminDashboard() {
     }
   };
 
-  if (status === "loading" || loading)
-    return <div className={styles.loading}>Loading...</div>;
+  if (status === "loading" || loading) return <AdminLoader />;
 
-  // Removed redundant "Access Denied" check as layout handles it.
-  // If session is missing but layout hasn't redirected yet, showing loading is safer/cleaner.
-  if (!session) return <div className={styles.loading}>Loading...</div>;
+  if (!session) return <AdminLoader />;
 
   return (
     <div className={styles.container}>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import styles from "./Messages.module.css";
+import AdminLoader from "@/components/AdminLoader";
 
 interface ContactMessage {
   _id: string;
@@ -84,7 +85,7 @@ export default function AdminMessagesPage() {
   };
 
   if (loading) {
-    return <div className={styles.container}>Loading...</div>;
+    return <AdminLoader />;
   }
 
   return (
