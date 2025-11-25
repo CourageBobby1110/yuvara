@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import AddToCart from "@/components/AddToCart";
+import WishlistButton from "@/components/WishlistButton";
 import Image from "next/image";
 import { notFound, useParams } from "next/navigation";
 import { useCurrency } from "@/context/CurrencyContext";
@@ -209,7 +210,10 @@ export default function ProductPage() {
         {/* Product Info */}
         <div className={styles.infoSection}>
           <div>
-            <h1 className={styles.title}>{product.name}</h1>
+            <div className="flex justify-between items-start">
+              <h1 className={styles.title}>{product.name}</h1>
+              <WishlistButton productId={product._id} />
+            </div>
             <div className={styles.meta}>
               <p className={styles.category}>{product.category}</p>
               {product.reviewsEnabled && (

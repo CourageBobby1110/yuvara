@@ -4,7 +4,7 @@ import Wishlist from "@/models/Wishlist";
 import Product from "@/models/Product"; // Ensure Product model is registered
 import { auth } from "@/auth";
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     const session = await auth();
     if (!session || !session.user) {
@@ -20,7 +20,10 @@ export async function GET(req: Request) {
     return NextResponse.json(wishlist);
   } catch (error) {
     console.error("Wishlist fetch error:", error);
-    return NextResponse.json({ error: "Failed to fetch wishlist" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch wishlist" },
+      { status: 500 }
+    );
   }
 }
 
@@ -35,17 +38,20 @@ export async function POST(req: Request) {
     const { productId, selectedSize, selectedColor } = await req.json();
 
     if (!productId) {
-      return NextResponse.json({ error: "Product ID required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Product ID required" },
+        { status: 400 }
+      );
     }
 
     // Upsert: Update if exists, Insert if not
     const item = await Wishlist.findOneAndUpdate(
       { user: session.user.id, product: productId },
-      { 
-        user: session.user.id, 
+      {
+        user: session.user.id,
         product: productId,
         selectedSize,
-        selectedColor
+        selectedColor,
       },
       { upsert: true, new: true }
     );
@@ -53,7 +59,10 @@ export async function POST(req: Request) {
     return NextResponse.json(item);
   } catch (error) {
     console.error("Wishlist add error:", error);
-    return NextResponse.json({ error: "Failed to add to wishlist" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to add to wishlist" },
+      { status: 500 }
+    );
   }
 }
 
@@ -68,15 +77,24 @@ export async function DELETE(req: Request) {
     const productId = searchParams.get("productId");
 
     if (!productId) {
-      return NextResponse.json({ error: "Product ID required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Product ID required" },
+        { status: 400 }
+      );
     }
 
     await dbConnect();
-    await Wishlist.findOneAndDelete({ user: session.user.id, product: productId });
+    await Wishlist.findOneAndDelete({
+      user: session.user.id,
+      product: productId,
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Wishlist delete error:", error);
-    return NextResponse.json({ error: "Failed to remove from wishlist" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to remove from wishlist" },
+      { status: 500 }
+    );
   }
 }

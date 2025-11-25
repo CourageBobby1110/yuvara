@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import dbConnect from "@/lib/db";
 import Subscriber from "@/models/Subscriber";
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     const session = await auth();
     if (!session || session.user.role !== "admin") {

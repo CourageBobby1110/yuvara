@@ -1,9 +1,11 @@
+/* Container */
 .container {
   max-width: 1152px;
   margin: 0 auto;
   padding: 0 0.5rem;
 }
 
+/* Header */
 .header {
   display: flex;
   flex-direction: column;
@@ -18,6 +20,7 @@
   font-weight: 700;
   color: #111827;
   margin: 0;
+  line-height: 1.4;
 }
 
 .headerControls {
@@ -34,14 +37,19 @@
   border-radius: 0.25rem;
   font-size: 0.75rem;
   background-color: white;
+  color: #111827;
   cursor: pointer;
   transition: all 0.2s;
+  outline: none;
 }
 
 .select:focus {
-  outline: none;
   border-color: #000;
   box-shadow: 0 0 0 1px #000;
+}
+
+.select:hover {
+  border-color: #d1d5db;
 }
 
 .seedButton {
@@ -54,14 +62,20 @@
   font-size: 0.688rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, transform 0.2s;
   white-space: nowrap;
+  outline: none;
 }
 
 .seedButton:hover {
   background-color: #d1d5db;
 }
 
+.seedButton:active {
+  transform: scale(0.98);
+}
+
+/* Form Card */
 .formCard {
   background-color: white;
   padding: 0.75rem;
@@ -76,6 +90,7 @@
   font-weight: 600;
   margin: 0 0 0.625rem 0;
   color: #111827;
+  line-height: 1.4;
 }
 
 .form {
@@ -87,7 +102,8 @@
 }
 
 .inputGroup {
-  flex: 1 1 140px; /* Allow growing and shrinking, min-width 140px */
+  flex: 1 1 140px;
+  min-width: 120px;
 }
 
 .label {
@@ -96,6 +112,7 @@
   font-weight: 500;
   color: #374151;
   margin-bottom: 0.25rem;
+  line-height: 1.4;
 }
 
 .input {
@@ -104,13 +121,23 @@
   border: 1px solid #e5e7eb;
   border-radius: 0.25rem;
   font-size: 0.75rem;
+  color: #111827;
+  background-color: white;
   transition: all 0.2s;
+  outline: none;
 }
 
 .input:focus {
-  outline: none;
   border-color: #000;
   box-shadow: 0 0 0 1px #000;
+}
+
+.input:hover {
+  border-color: #d1d5db;
+}
+
+.input::placeholder {
+  color: #9ca3af;
 }
 
 .submitButton {
@@ -124,13 +151,25 @@
   font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, transform 0.2s;
+  outline: none;
+  white-space: nowrap;
 }
 
 .submitButton:hover {
   background-color: #1f2937;
 }
 
+.submitButton:active {
+  transform: scale(0.98);
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Table Card */
 .tableCard {
   background-color: white;
   border-radius: 0.375rem;
@@ -144,6 +183,7 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  padding: 0;
 }
 
 .shippingCard {
@@ -155,6 +195,11 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.shippingCard:active {
+  transform: scale(0.99);
 }
 
 .cardHeader {
@@ -163,18 +208,23 @@
   align-items: center;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid #f3f4f6;
+  gap: 0.5rem;
 }
 
 .cardState {
   font-weight: 600;
   color: #111827;
   font-size: 0.875rem;
+  line-height: 1.4;
+  margin: 0;
 }
 
 .cardFee {
   font-weight: 600;
   color: #111827;
   font-size: 0.875rem;
+  line-height: 1.4;
+  margin: 0;
 }
 
 .cardActions {
@@ -182,9 +232,10 @@
   justify-content: flex-end;
   gap: 0.5rem;
   padding-top: 0.5rem;
+  flex-wrap: wrap;
 }
 
-/* Desktop Table Wrapper - Hidden on Mobile by default, shown on desktop via media query */
+/* Desktop Table Wrapper */
 .desktopTableWrapper {
   display: none;
 }
@@ -213,6 +264,8 @@
   color: #111827;
   text-transform: uppercase;
   letter-spacing: 0.025em;
+  white-space: nowrap;
+  line-height: 1.4;
 }
 
 .tableHeadCellRight {
@@ -240,6 +293,8 @@
   padding: 0.625rem;
   font-size: 0.75rem;
   color: #111827;
+  vertical-align: middle;
+  line-height: 1.4;
 }
 
 .tableCellSecondary {
@@ -256,12 +311,19 @@
   border: 1px solid #e5e7eb;
   border-radius: 0.25rem;
   font-size: 0.688rem;
+  color: #111827;
+  background-color: white;
+  transition: all 0.2s;
+  outline: none;
 }
 
 .editInput:focus {
-  outline: none;
   border-color: #000;
   box-shadow: 0 0 0 1px #000;
+}
+
+.editInput:hover {
+  border-color: #d1d5db;
 }
 
 .actionButtons {
@@ -279,10 +341,16 @@
   cursor: pointer;
   padding: 0.25rem 0.375rem;
   transition: opacity 0.2s;
+  outline: none;
+  white-space: nowrap;
 }
 
 .actionButton:hover {
   opacity: 0.7;
+}
+
+.actionButton:active {
+  transform: scale(0.95);
 }
 
 .saveButton {
@@ -302,9 +370,38 @@
   text-align: center;
   color: #9ca3af;
   font-size: 0.75rem;
+  line-height: 1.6;
 }
 
-/* Tablet and up - 640px */
+/* Mobile Extra Small - max-width 480px */
+@media (max-width: 480px) {
+  .form {
+    gap: 0.5rem;
+  }
+
+  .inputGroup {
+    flex: 1 1 45%;
+    min-width: 100px;
+  }
+
+  .input {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.688rem;
+  }
+
+  .label {
+    font-size: 0.625rem;
+    margin-bottom: 0.125rem;
+  }
+
+  .submitButton {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.688rem;
+    min-width: 80px;
+  }
+}
+
+/* Tablet - 640px */
 @media (min-width: 640px) {
   .container {
     padding: 0 1rem;
@@ -354,6 +451,10 @@
     gap: 1rem;
   }
 
+  .inputGroup {
+    flex: 1 1 160px;
+  }
+
   .label {
     font-size: 0.813rem;
   }
@@ -376,7 +477,7 @@
 
   .tableCard {
     border-radius: 0.75rem;
-    background: transparent; /* Remove background from card container on desktop if wrapper handles it */
+    background: transparent;
     box-shadow: none;
     border: none;
   }
@@ -416,6 +517,7 @@
 
   .actionButton {
     font-size: 0.813rem;
+    padding: 0.25rem 0.5rem;
   }
 
   .emptyState {
@@ -452,45 +554,47 @@
     font-size: 1.125rem;
   }
 
-  .tableHeadCell,
+  .tableHeadCell {
+    padding: 1rem 1.5rem;
+    font-size: 0.875rem;
+  }
+
   .tableCell {
     padding: 1rem 1.5rem;
+    font-size: 0.875rem;
   }
 
   .editInput {
     width: 8rem;
-    padding: 0.25rem 0.75rem;
+    padding: 0.375rem 0.75rem;
     font-size: 0.875rem;
   }
 
   .actionButton {
     font-size: 0.875rem;
+    padding: 0.25rem 0.625rem;
+  }
+
+  .emptyState {
+    padding: 3rem 1.5rem;
   }
 }
 
-/* Mobile - max-width 480px */
-@media (max-width: 480px) {
-  .form {
-    gap: 0.5rem;
+/* Large Desktop - 1024px */
+@media (min-width: 1024px) {
+  .title {
+    font-size: 2rem;
   }
 
-  .inputGroup {
-    flex: 1 1 45%; /* Force side-by-side on small screens */
-    min-width: 120px;
+  .formTitle {
+    font-size: 1.25rem;
   }
 
-  .input {
-    padding: 0.25rem 0.5rem; /* Compact padding */
-    font-size: 0.75rem;
+  .tableHeadCell {
+    padding: 1.125rem 1.5rem;
   }
 
-  .label {
-    font-size: 0.625rem;
-    margin-bottom: 0.125rem;
-  }
-
-  .submitButton {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.75rem;
+  .tableCell {
+    padding: 1.125rem 1.5rem;
   }
 }

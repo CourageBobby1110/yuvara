@@ -3,7 +3,7 @@ import dbConnect from "@/lib/db";
 import ReferralBatch from "@/models/ReferralBatch";
 import { auth } from "@/auth";
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     const session = await auth();
     if (!session || session.user?.role !== "admin") {
@@ -14,7 +14,10 @@ export async function GET(req: Request) {
     const batches = await ReferralBatch.find().sort({ createdAt: -1 });
     return NextResponse.json(batches);
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch batches" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch batches" },
+      { status: 500 }
+    );
   }
 }
 
@@ -37,6 +40,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json(batch, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to create batch" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create batch" },
+      { status: 500 }
+    );
   }
 }

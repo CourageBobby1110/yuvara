@@ -3,7 +3,7 @@ import dbConnect from "@/lib/db";
 import Coupon from "@/models/Coupon";
 import { auth } from "@/auth";
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     const session = await auth();
     if (!session || !session.user || (session.user as any).role !== "admin") {

@@ -26,7 +26,7 @@ const COUNTRIES = [
 export default function CheckoutPage() {
   const router = useRouter();
   const { data: session, status, update } = useSession();
-  const { items, totalPrice } = useCartStore();
+  const { items, totalPrice, freeShippingThreshold } = useCartStore();
   const { formatPrice, exchangeRates } = useCurrency();
   const [loading, setLoading] = useState(false);
 
@@ -221,7 +221,8 @@ export default function CheckoutPage() {
   const calculateTotal = () => {
     const subtotal = totalPrice();
     const rateNGN = exchangeRates["NGN"] || 1500;
-    const shippingInUSD = selectedStateFee / rateNGN;
+    const isFreeShipping = subtotal >= freeShippingThreshold;
+    const shippingInUSD = isFreeShipping ? 0 : selectedStateFee / rateNGN;
 
     let total = subtotal + shippingInUSD;
 
@@ -269,7 +270,11 @@ export default function CheckoutPage() {
 
       // Final calculation in NGN
       let amountInNGN = totalUSD * rateNGN;
-      amountInNGN += selectedStateFee;
+
+      const isFreeShipping = totalUSD >= freeShippingThreshold;
+      if (!isFreeShipping) {
+        amountInNGN += selectedStateFee;
+      }
 
       if (appliedCoupon) {
         amountInNGN -= appliedCoupon.discountAmount;
@@ -286,7 +291,7 @@ export default function CheckoutPage() {
         cartItems: items,
         shippingAddress: formData,
         total: amountInNGN, // Store final NGN total to pay
-        shippingFee: selectedStateFee,
+        shippingFee: isFreeShipping ? 0 : selectedStateFee,
         couponCode: appliedCoupon?.code,
         discountAmount: appliedCoupon?.discountAmount,
         giftCardCode: appliedGiftCard?.code,
@@ -381,7 +386,8 @@ export default function CheckoutPage() {
   }
 
   const rateNGN = exchangeRates["NGN"] || 1500;
-  const shippingInUSD = selectedStateFee / rateNGN;
+  const isFreeShipping = totalPrice() >= freeShippingThreshold;
+  const shippingInUSD = isFreeShipping ? 0 : selectedStateFee / rateNGN;
   const discountInUSD = appliedCoupon
     ? appliedCoupon.discountAmount / rateNGN
     : 0;
@@ -526,7 +532,9 @@ export default function CheckoutPage() {
                   <span>Shipping ({formData.state || "Select State"})</span>
                   <span>
                     {selectedStateFee > 0
-                      ? formatPrice(shippingInUSD)
+                      ? isFreeShipping
+                        ? "Free"
+                        : formatPrice(shippingInUSD)
                       : "Calculated at next step"}
                   </span>
                 </div>

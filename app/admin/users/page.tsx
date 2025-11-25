@@ -212,70 +212,68 @@ export default function AdminUsersPage() {
             )}
           </tbody>
         </table>
+      </div>
 
-        {/* Pagination Controls */}
-        <div className={styles.pagination}>
-          <div className={styles.paginationInfo}>
-            Showing{" "}
-            {filteredUsers.length > 0
-              ? (currentPage - 1) * itemsPerPage + 1
-              : 0}{" "}
-            to {Math.min(currentPage * itemsPerPage, filteredUsers.length)} of{" "}
-            {filteredUsers.length} users
-          </div>
+      {/* Pagination Controls */}
+      <div className={styles.pagination}>
+        <div className={styles.paginationInfo}>
+          Showing{" "}
+          {filteredUsers.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0}{" "}
+          to {Math.min(currentPage * itemsPerPage, filteredUsers.length)} of{" "}
+          {filteredUsers.length} users
+        </div>
 
-          <div className={styles.paginationControls}>
-            <select
-              className={styles.itemsPerPage}
-              value={itemsPerPage}
-              onChange={(e) => setItemsPerPage(Number(e.target.value))}
+        <div className={styles.paginationControls}>
+          <select
+            className={styles.itemsPerPage}
+            value={itemsPerPage}
+            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+          >
+            <option value={10}>10 per page</option>
+            <option value={25}>25 per page</option>
+            <option value={50}>50 per page</option>
+            <option value={100}>100 per page</option>
+          </select>
+
+          <div className={styles.paginationButtons}>
+            <button
+              className={styles.pageButton}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
             >
-              <option value={10}>10 per page</option>
-              <option value={25}>25 per page</option>
-              <option value={50}>50 per page</option>
-              <option value={100}>100 per page</option>
-            </select>
+              <ChevronLeft size={16} />
+            </button>
 
-            <div className={styles.paginationButtons}>
-              <button
-                className={styles.pageButton}
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft size={16} />
-              </button>
+            {/* Simple page numbers */}
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum = i + 1;
+              if (totalPages > 5 && currentPage > 3) {
+                pageNum = currentPage - 2 + i;
+                if (pageNum > totalPages) pageNum = totalPages - (4 - i);
+              }
 
-              {/* Simple page numbers */}
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                let pageNum = i + 1;
-                if (totalPages > 5 && currentPage > 3) {
-                  pageNum = currentPage - 2 + i;
-                  if (pageNum > totalPages) pageNum = totalPages - (4 - i);
-                }
+              return (
+                <button
+                  key={pageNum}
+                  className={`${styles.pageButton} ${
+                    currentPage === pageNum ? styles.activePage : ""
+                  }`}
+                  onClick={() => setCurrentPage(pageNum)}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
 
-                return (
-                  <button
-                    key={pageNum}
-                    className={`${styles.pageButton} ${
-                      currentPage === pageNum ? styles.activePage : ""
-                    }`}
-                    onClick={() => setCurrentPage(pageNum)}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
-
-              <button
-                className={styles.pageButton}
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                disabled={currentPage === totalPages || totalPages === 0}
-              >
-                <ChevronRight size={16} />
-              </button>
-            </div>
+            <button
+              className={styles.pageButton}
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages || totalPages === 0}
+            >
+              <ChevronRight size={16} />
+            </button>
           </div>
         </div>
       </div>

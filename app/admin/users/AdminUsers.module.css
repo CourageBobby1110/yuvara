@@ -1,15 +1,11 @@
+/* Container */
 .container {
   padding: 0;
   max-width: 1600px;
   margin: 0 auto;
 }
 
-@media (min-width: 1024px) {
-  .container {
-    padding: 2rem;
-  }
-}
-
+/* Header */
 .header {
   padding: 1.5rem;
   background: #fff;
@@ -17,35 +13,21 @@
   margin-bottom: 2rem;
 }
 
-@media (min-width: 1024px) {
-  .header {
-    background: transparent;
-    border-bottom: none;
-    padding: 0;
-    margin-bottom: 3rem;
-  }
-}
-
 .title {
   font-size: 1.75rem;
   font-weight: 800;
   color: #111;
   letter-spacing: -0.02em;
+  margin: 0;
 }
 
-/* Search Bar */
+/* Search */
 .searchContainer {
-  display: none;
-}
-
-@media (min-width: 1024px) {
-  .searchContainer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    gap: 1rem;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 0 1rem;
 }
 
 .searchWrapper {
@@ -62,11 +44,16 @@
   font-size: 0.875rem;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: #fff;
 }
 
 .searchInput:focus {
   border-color: #000;
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+.searchInput::placeholder {
+  color: #9ca3af;
 }
 
 .searchIcon {
@@ -76,6 +63,8 @@
   transform: translateY(-50%);
   color: #9ca3af;
   pointer-events: none;
+  width: 1rem;
+  height: 1rem;
 }
 
 /* Mobile User Cards */
@@ -86,12 +75,6 @@
   gap: 1rem;
 }
 
-@media (min-width: 1024px) {
-  .mobileList {
-    display: none;
-  }
-}
-
 .userCard {
   background-color: #fff;
   padding: 1rem;
@@ -100,6 +83,11 @@
   display: flex;
   gap: 1rem;
   align-items: center;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.userCard:active {
+  transform: scale(0.98);
 }
 
 .userCardImageWrapper {
@@ -113,7 +101,10 @@
 }
 
 .userImage {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .userCardContent {
@@ -125,43 +116,36 @@
   font-weight: 600;
   color: #111;
   font-size: 1rem;
-  margin-bottom: 0.125rem;
+  margin: 0 0 0.125rem 0;
+  line-height: 1.4;
 }
 
 .userCardEmail {
   font-size: 0.875rem;
   color: #666;
-  margin-bottom: 0.5rem;
+  margin: 0 0 0.5rem 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.4;
 }
 
 .userCardFooter {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.5rem;
 }
 
 .userCardDate {
   font-size: 0.75rem;
   color: #9ca3af;
+  font-family: monospace;
 }
 
 /* Desktop Table */
 .desktopTableWrapper {
   display: none;
-}
-
-@media (min-width: 1024px) {
-  .desktopTableWrapper {
-    display: block;
-    background-color: #fff;
-    border-radius: 16px;
-    border: 1px solid #f3f4f6;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-    overflow: hidden;
-  }
 }
 
 .table {
@@ -179,6 +163,7 @@
   background-color: #f9fafb;
   letter-spacing: 0.05em;
   border-bottom: 1px solid #f3f4f6;
+  white-space: nowrap;
 }
 
 .tr {
@@ -220,15 +205,20 @@
 .userName {
   font-weight: 500;
   color: #111;
+  margin: 0;
+  line-height: 1.4;
 }
 
 .userEmail {
   color: #666;
+  margin: 0;
+  line-height: 1.4;
 }
 
 .date {
   color: #666;
   font-family: monospace;
+  white-space: nowrap;
 }
 
 .roleBadge {
@@ -242,6 +232,7 @@
   letter-spacing: 0.05em;
   background-color: #f3f4f6;
   color: #4b5563;
+  white-space: nowrap;
 }
 
 .roleSelect {
@@ -255,24 +246,31 @@
   cursor: pointer;
   outline: none;
   text-transform: uppercase;
+  transition: border-color 0.2s;
 }
 
 .roleSelect:focus {
   border-color: #000;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+.roleSelect:hover {
+  border-color: #d1d5db;
 }
 
 .emptyState {
-  padding: 3rem;
+  padding: 3rem 1rem;
   text-align: center;
   color: #666;
+  font-size: 0.875rem;
 }
 
 /* Pagination */
 .pagination {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1.5rem;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
   border-top: 1px solid #f3f4f6;
   background-color: #fff;
 }
@@ -280,16 +278,18 @@
 .paginationInfo {
   font-size: 0.875rem;
   color: #666;
+  text-align: center;
 }
 
 .paginationControls {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 1rem;
 }
 
 .itemsPerPage {
-  padding: 0.375rem 2rem 0.375rem 0.75rem;
+  padding: 0.5rem 2.5rem 0.5rem 0.75rem;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   font-size: 0.875rem;
@@ -297,15 +297,31 @@
   background-color: #fff;
   cursor: pointer;
   outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  transition: border-color 0.2s;
+}
+
+.itemsPerPage:focus {
+  border-color: #000;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+.itemsPerPage:hover {
+  border-color: #d1d5db;
 }
 
 .paginationButtons {
   display: flex;
   gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .pageButton {
-  padding: 0.375rem 0.75rem;
+  padding: 0.5rem 0.875rem;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   background-color: #fff;
@@ -314,6 +330,8 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  min-width: 36px;
+  text-align: center;
 }
 
 .pageButton:hover:not(:disabled) {
@@ -327,6 +345,10 @@
   background-color: #f3f4f6;
 }
 
+.pageButton:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
 .activePage {
   background-color: #000;
   color: #fff;
@@ -336,4 +358,84 @@
 .activePage:hover:not(:disabled) {
   background-color: #171717;
   border-color: #171717;
+}
+
+/* Tablet Breakpoint (768px) */
+@media (min-width: 768px) {
+  .searchContainer {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1.5rem;
+  }
+
+  .pagination {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+  }
+
+  .paginationInfo {
+    text-align: left;
+  }
+
+  .paginationControls {
+    flex-direction: row;
+  }
+
+  .paginationButtons {
+    flex-wrap: nowrap;
+  }
+}
+
+/* Desktop Breakpoint (1024px) */
+@media (min-width: 1024px) {
+  .container {
+    padding: 2rem;
+  }
+
+  .header {
+    background: transparent;
+    border-bottom: none;
+    padding: 0;
+    margin-bottom: 3rem;
+  }
+
+  .searchContainer {
+    margin-bottom: 2rem;
+    padding: 0;
+  }
+
+  .mobileList {
+    display: none;
+  }
+
+  .desktopTableWrapper {
+    display: block;
+    background-color: #fff;
+    border-radius: 16px;
+    border: 1px solid #f3f4f6;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+    overflow: hidden;
+  }
+
+  .emptyState {
+    padding: 4rem 1rem;
+  }
+}
+
+/* Large Desktop Breakpoint (1280px) */
+@media (min-width: 1280px) {
+  .title {
+    font-size: 2rem;
+  }
+
+  .th {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .td {
+    padding: 1.25rem 1.5rem;
+  }
 }

@@ -9,6 +9,27 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+export async function sendMail({
+  to,
+  subject,
+  html,
+  text,
+}: {
+  to: string;
+  subject: string;
+  html: string;
+  text?: string;
+}) {
+  const mailOptions = {
+    from: `Yuvara <${process.env.EMAIL_FROM}>`,
+    to,
+    subject,
+    html,
+    text,
+  };
+  await transporter.sendMail(mailOptions);
+}
+
 export async function sendAdminNewOrderNotification(order: any) {
   const adminEmail = process.env.EMAIL_FROM;
 
@@ -168,6 +189,7 @@ export async function sendTargetedProductNotification(
 export const sendNewsletter = async (
   subject: string,
   htmlContent: string,
+  textContent: string,
   recipients: string[]
 ) => {
   // Send individually to avoid exposing all emails in TO/CC field
@@ -192,7 +214,9 @@ export const sendNewsletter = async (
             <p>You are receiving this email because you subscribed to our newsletter.</p>
           </div>
         </div>
+        </div>
       `,
+      text: textContent,
     })
   );
 

@@ -61,7 +61,7 @@ export default function Footer() {
               </Link>
             </li>
             <li className={styles.linkItem}>
-              <Link href="/about" className={styles.link}>
+              <Link href="/size-guide" className={styles.link}>
                 Size Guide
               </Link>
             </li>
@@ -87,7 +87,7 @@ export default function Footer() {
               </Link>
             </li>
             <li className={styles.linkItem}>
-              <Link href="/about" className={styles.link}>
+              <Link href="/accessibility" className={styles.link}>
                 Accessibility
               </Link>
             </li>

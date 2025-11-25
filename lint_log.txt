@@ -1,0 +1,430 @@
+
+> yuvara@0.1.0 lint
+> eslint
+
+
+C:\Projects\yuvara\app\(legal)\terms\page.tsx
+  23:56  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  35:19  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  42:57  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  42:64  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  49:34  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  49:64  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  49:70  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  62:38  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Projects\yuvara\app\(support)\contact\page.tsx
+   37:14  warning  'err' is defined but never used                                  @typescript-eslint/no-unused-vars
+   52:51  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  134:45  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Projects\yuvara\app\(support)\faq\page.tsx
+  48:14  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  48:30  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Projects\yuvara\app\admin\dashboard\page.tsx
+   35:6   warning  React Hook useEffect has a missing dependency: 'fetchDashboardData'. Either include it or remove the dependency array                                                                                                                                                                    react-hooks/exhaustive-deps
+   65:16  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  118:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Projects\yuvara\app\admin\gift-cards\page.tsx
+   4:8  warning  'Link' is defined but never used                                                                                   @typescript-eslint/no-unused-vars
+  52:6  warning  React Hook useEffect has a missing dependency: 'fetchGiftCards'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projects\yuvara\app\admin\homepage\page.tsx
+  11:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  98:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\app\admin\messages\page.tsx
+  52:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\app\admin\orders\[id]\page.tsx
+  51:6  warning  React Hook useEffect has a missing dependency: 'fetchOrder'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projects\yuvara\app\admin\products\[id]\page.tsx
+   53:6   warning  React Hook useEffect has a missing dependency: 'fetchProduct'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  118:25  error    Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+  172:60  error    Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\app\admin\products\page.tsx
+  110:60  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\app\admin\referrals\page.tsx
+  4:8  warning  'Link' is defined but never used    @typescript-eslint/no-unused-vars
+  5:8  warning  'styles' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\app\admin\shipping\page.tsx
+  24:17  warning  'session' is assigned a value but never used                                                                   @typescript-eslint/no-unused-vars
+  35:6   warning  React Hook useEffect has a missing dependency: 'fetchRates'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projects\yuvara\app\api\admin\coupons\route.ts
+    6:27  warning  'req' is defined but never used           @typescript-eslint/no-unused-vars
+    9:55  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   28:55  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   45:19  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   63:55  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   88:19  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  106:55  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\app\api\admin\favorites\route.ts
+  6:27  warning  'req' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\app\api\admin\gift-cards\route.ts
+   15:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   32:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   95:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  165:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  181:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  215:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\app\api\admin\messages\route.ts
+   7:27  warning  'req' is defined but never used           @typescript-eslint/no-unused-vars
+  11:38  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  34:38  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  74:38  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\app\api\admin\newsletter\subscribers\route.ts
+  6:27  warning  'req' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\app\api\admin\orders\[id]\route.ts
+  27:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\app\api\admin\orders\route.ts
+  6:27  warning  'req' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\app\api\admin\referrals\route.ts
+   6:27  warning  'req' is defined but never used    @typescript-eslint/no-unused-vars
+  16:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  39:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\app\api\admin\seed-shipping\route.ts
+  45:27  warning  'req' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\app\api\admin\settings\homepage\route.ts
+  36:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\app\api\coupons\verify\route.ts
+  5:7  warning  'MAX_COUPON_ORDER_AMOUNT' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\app\api\gift-cards\initiate\route.ts
+  42:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\app\api\orders\route.ts
+  10:27  warning  'req' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\app\api\payment\verify\route.ts
+   40:7   warning  'isFullDiscount' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  105:35  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\app\api\reviews\route.ts
+  4:8  warning  'Product' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\app\api\seed-products\route.ts
+    5:27  warning  'request' is defined but never used       @typescript-eslint/no-unused-vars
+  130:19  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\app\api\settings\hero\route.ts
+  8:9  error  'settings' is never reassigned. Use 'const' instead  prefer-const
+
+C:\Projects\yuvara\app\api\shipping\route.ts
+  28:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\app\api\upload\route.ts
+  21:14  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\app\api\uploadthing\core.ts
+  11:26  warning  'req' is defined but never used  @typescript-eslint/no-unused-vars
+  31:26  warning  'req' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\app\api\user\gift-cards\route.ts
+   7:27  warning  'req' is defined but never used           @typescript-eslint/no-unused-vars
+  19:37  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\app\api\user\referrals\route.ts
+   7:27  warning  'req' is defined but never used    @typescript-eslint/no-unused-vars
+  30:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\app\api\wishlist\route.ts
+  4:8   warning  'Product' is defined but never used  @typescript-eslint/no-unused-vars
+  7:27  warning  'req' is defined but never used      @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\app\auth\forgot-password\page.tsx
+  34:14  warning  'err' is defined but never used                                  @typescript-eslint/no-unused-vars
+  54:46  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Projects\yuvara\app\auth\reset-password\page.tsx
+  73:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\app\auth\signup\page.tsx
+  49:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\app\checkout\page.tsx
+    8:8   warning  'Link' is defined but never used                                                                                       @typescript-eslint/no-unused-vars
+   68:6   warning  React Hook useEffect has a missing dependency: 'update'. Either include it or remove the dependency array              react-hooks/exhaustive-deps
+   73:6   warning  React Hook useEffect has a missing dependency: 'fetchShippingRates'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  107:6   warning  React Hook useEffect has a missing dependency: 'formData.email'. Either include it or remove the dependency array      react-hooks/exhaustive-deps
+  168:14  warning  'err' is defined but never used                                                                                        @typescript-eslint/no-unused-vars
+  216:14  warning  'err' is defined but never used                                                                                        @typescript-eslint/no-unused-vars
+  342:21  error    Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+  370:33  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                        react/no-unescaped-entities
+
+C:\Projects\yuvara\app\collections\page.tsx
+  141:74  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Projects\yuvara\app\dashboard\gift-cards\page.tsx
+  23:17  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\app\dashboard\referrals\page.tsx
+   10:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   11:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  183:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  213:54  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\app\gift-cards\verify\page.tsx
+  15:44  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-explicit-any
+  19:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Projects\yuvara\app\gift-cards\verify\page.tsx:19:7
+  17 |   useEffect(() => {
+  18 |     if (!reference) {
+> 19 |       setStatus("error");
+     |       ^^^^^^^^^ Avoid calling setState() directly within an effect
+  20 |       setMessage("No payment reference found.");
+  21 |       return;
+  22 |     }  react-hooks/set-state-in-effect
+
+C:\Projects\yuvara\app\orders\page.tsx
+  158:24  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Projects\yuvara\app\page.tsx
+  12:9  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\app\products\[slug]\page.tsx
+  295:19  error  Do not use an `<a>` element to navigate to `/api/auth/signin/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+
+C:\Projects\yuvara\app\wishlist\page.tsx
+  2:10  warning  'redirect' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\auth.ts
+  12:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  60:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  67:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  68:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\check_imports.js
+   2:3  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+   9:3  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  16:3  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  23:3  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+C:\Projects\yuvara\components\CartDrawer.tsx
+  27:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Projects\yuvara\components\CartDrawer.tsx:27:5
+  25 |   useEffect(() => {
+  26 |     useCartStore.persist.rehydrate();
+> 27 |     setMounted(true);
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  28 |   }, []);
+  29 |
+  30 |   if (!mounted) return null;  react-hooks/set-state-in-effect
+
+C:\Projects\yuvara\components\FeaturedCollection.tsx
+  3:20  warning  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\components\HeroNavbar.tsx
+  12:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\components\LanguageSwitcher.tsx
+  12:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\components\LayoutWrapper.tsx
+  12:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\components\MessageNotification.tsx
+  11:5   error  Error: Cannot access variable before it is declared
+
+`fetchUnreadCount` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Projects\yuvara\components\MessageNotification.tsx:11:5
+   9 |
+  10 |   useEffect(() => {
+> 11 |     fetchUnreadCount();
+     |     ^^^^^^^^^^^^^^^^ `fetchUnreadCount` accessed before it is declared
+  12 |     // Poll for updates every 30 seconds
+  13 |     const interval = setInterval(fetchUnreadCount, 30000);
+  14 |     return () => clearInterval(interval);
+
+C:\Projects\yuvara\components\MessageNotification.tsx:17:3
+  15 |   }, []);
+  16 |
+> 17 |   const fetchUnreadCount = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 18 |     try {
+     | ^^^^^^^^^
+> 19 |       const res = await fetch("/api/admin/messages");
+     …
+     | ^^^^^^^^^
+> 29 |     }
+     | ^^^^^^^^^
+> 30 |   };
+     | ^^^^^ `fetchUnreadCount` is declared here
+  31 |
+  32 |   return (
+  33 |     <Link href="/admin/messages" className={styles.bellIcon}>  react-hooks/immutability
+  23:17  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\components\Navbar.tsx
+   13:12  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   97:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  229:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Projects\yuvara\components\QuickAddModal.tsx
+  24:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Projects\yuvara\components\QuickAddModal.tsx:24:7
+  22 |   useEffect(() => {
+  23 |     if (isOpen) {
+> 24 |       setIsVisible(true);
+     |       ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  25 |     } else {
+  26 |       const timer = setTimeout(() => setIsVisible(false), 300);
+  27 |       return () => clearTimeout(timer);  react-hooks/set-state-in-effect
+  34:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Projects\yuvara\components\QuickAddModal.tsx:34:7
+  32 |   useEffect(() => {
+  33 |     if (product) {
+> 34 |       setSelectedSize("");
+     |       ^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  35 |       setSelectedColor("");
+  36 |     }
+  37 |   }, [product]);                                                               react-hooks/set-state-in-effect
+
+C:\Projects\yuvara\context\CurrencyContext.tsx
+  27:7   warning  'CURRENCY_SYMBOLS' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  36:25  warning  'setExchangeRates' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  38:10  warning  'isLoaded' is assigned a value but never used          @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\context\LanguageContext.tsx
+  33:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Projects\yuvara\context\LanguageContext.tsx:33:7
+  31 |     const savedLang = localStorage.getItem("language") as Language;
+  32 |     if (savedLang && dictionaries[savedLang]) {
+> 33 |       setLanguage(savedLang);
+     |       ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  34 |     }
+  35 |   }, []);
+  36 |  react-hooks/set-state-in-effect
+  44:16  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\lib\db.ts
+  17:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  20:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\lib\mail.ts
+   30:60  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   35:14  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   76:59  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   76:71  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  130:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  131:10  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  225:60  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  255:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  292:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  469:51  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\lib\mongodb.ts
+  17:7  error  'globalWithMongo' is never reassigned. Use 'const' instead  prefer-const
+
+C:\Projects\yuvara\lib\paystack.ts
+  5:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\lib\products.ts
+  18:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  41:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  52:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  83:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  84:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  85:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\models\ContactMessage.ts
+  1:8  warning  'mongoose' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\models\Coupon.ts
+  1:8  warning  'mongoose' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\models\Order.ts
+  1:8  warning  'mongoose' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\models\Product.ts
+  1:8  warning  'mongoose' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\models\ReferralBatch.ts
+  1:8  warning  'mongoose' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\models\Review.ts
+  1:8  warning  'mongoose' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\models\ShippingRate.ts
+  1:8  warning  'mongoose' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\models\SiteSettings.ts
+  1:8  warning  'mongoose' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\models\Subscriber.ts
+  1:8  warning  'mongoose' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\models\User.ts
+  1:8  warning  'mongoose' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\models\Wishlist.ts
+  1:8  warning  'mongoose' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Projects\yuvara\proxy.ts
+  26:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\scripts\seed-products.js
+  1:18  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  2:1   error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+C:\Projects\yuvara\store\wishlist.ts
+  24:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Projects\yuvara\types\next-auth.d.ts
+  1:8  warning  'NextAuth' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 160 problems (96 errors, 64 warnings)
+  2 errors and 0 warnings potentially fixable with the `--fix` option.
+

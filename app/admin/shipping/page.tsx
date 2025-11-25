@@ -196,16 +196,43 @@ export default function AdminShippingPage() {
                 <div className={styles.cardHeader}>
                   <div className={styles.cardState}>{rate.state}</div>
                   <div className={styles.cardFee}>
-                    ₦{rate.fee.toLocaleString()}
+                    {editingId === rate._id ? (
+                      <input
+                        type="number"
+                        value={editFee}
+                        onChange={(e) => setEditFee(Number(e.target.value))}
+                        className={styles.editInput}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    ) : (
+                      `₦${rate.fee.toLocaleString()}`
+                    )}
                   </div>
                 </div>
                 <div className={styles.cardActions}>
-                  <button
-                    onClick={() => handleEdit(rate)}
-                    className={`${styles.actionButton} ${styles.editButton}`}
-                  >
-                    Edit
-                  </button>
+                  {editingId === rate._id ? (
+                    <>
+                      <button
+                        onClick={() => handleSave(rate)}
+                        className={`${styles.actionButton} ${styles.saveButton}`}
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setEditingId(null)}
+                        className={`${styles.actionButton} ${styles.cancelButton}`}
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => handleEdit(rate)}
+                      className={`${styles.actionButton} ${styles.editButton}`}
+                    >
+                      Edit
+                    </button>
+                  )}
                 </div>
               </div>
             ))
