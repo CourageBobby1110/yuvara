@@ -2,21 +2,29 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "./CategoryGrid.module.css";
 
-export default function CategoryGrid() {
+interface CategoryGridProps {
+  images?: {
+    men: string;
+    women: string;
+    accessories: string;
+  };
+}
+
+export default function CategoryGrid({ images }: CategoryGridProps) {
   const categories = [
     {
       title: "Men",
-      image: "/men-category.jpg", // We'll need to ensure these images exist or use placeholders
+      image: images?.men || "/men-category.jpg",
       link: "/collections?category=Men",
     },
     {
       title: "Women",
-      image: "/women-category.jpg",
+      image: images?.women || "/women-category.jpg",
       link: "/collections?category=Women",
     },
     {
       title: "Accessories",
-      image: "/accessories-category.jpg",
+      image: images?.accessories || "/accessories-category.jpg",
       link: "/collections?category=Accessories",
     },
   ];
@@ -35,8 +43,15 @@ export default function CategoryGrid() {
           <div className={styles.overlay}>
             <h3 className={styles.title}>{category.title}</h3>
             <span className={styles.link}>
-              Shop Now 
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              Shop Now
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </span>
