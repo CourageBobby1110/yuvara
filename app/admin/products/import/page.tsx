@@ -91,6 +91,22 @@ export default function ImportProductPage() {
     }
   };
 
+  const [selectedCurrency, setSelectedCurrency] = useState("USD");
+
+  // Helper to convert USD to selected currency
+  const toDisplay = (usdAmount: number) => {
+    if (selectedCurrency === "USD") return usdAmount;
+    const rate = rates[selectedCurrency as keyof typeof rates] || 1;
+    return usdAmount * rate;
+  };
+
+  // Helper to convert selected currency back to USD
+  const toUSD = (displayAmount: number) => {
+    if (selectedCurrency === "USD") return displayAmount;
+    const rate = rates[selectedCurrency as keyof typeof rates] || 1;
+    return displayAmount / rate;
+  };
+
   // Recalculate Final Price whenever cost factors change
   useEffect(() => {
     if (step === "preview") {
@@ -115,11 +131,6 @@ export default function ImportProductPage() {
     setLoading(true);
 
     try {
-      // 1. Upload images to our server (optional, but good practice to own them)
-      // For now, we will just use the external URLs.
-      // If we wanted to re-upload, we'd need a backend endpoint to download and upload to UploadThing.
-      // We'll proceed with external URLs for now as it's faster.
-
       const res = await fetch("/api/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -127,7 +138,6 @@ export default function ImportProductPage() {
           ...formData,
           price: parseFloat(formData.price),
           stock: parseInt(formData.stock),
-          // Default variants for imported product (can be edited later)
           variants: [],
           colors: [],
         }),
@@ -181,33 +191,68 @@ export default function ImportProductPage() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Review & Import</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className={styles.title}>Review & Import</h1>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-gray-600">Currency:</span>
+          <select
+            value={selectedCurrency}
+            onChange={(e) => setSelectedCurrency(e.target.value)}
+            className="p-2 border rounded bg-white text-sm"
+          >
+            <option value="USD">USD ($)</option>
+            <option value="NGN">NGN (₦)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="GBP">GBP (£)</option>
+          </select>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         {/* Cost Calculator Card */}
         <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <h2 className="text-lg font-bold mb-4">Price Calculator</h2>
+          <h2 className="text-lg font-bold mb-4">
+            Price Calculator ({selectedCurrency})
+          </h2>
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Product Cost:</span>
               <span className="font-mono">
-                ${costData.originalPrice.toFixed(2)}
+                {selectedCurrency === "NGN"
+                  ? "₦"
+                  : selectedCurrency === "EUR"
+                  ? "€"
+                  : selectedCurrency === "GBP"
+                  ? "£"
+                  : "$"}
+                {toDisplay(costData.originalPrice).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </span>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Shipping Fee ($)
+                Shipping Fee (
+                {selectedCurrency === "NGN"
+                  ? "₦"
+                  : selectedCurrency === "EUR"
+                  ? "€"
+                  : selectedCurrency === "GBP"
+                  ? "£"
+                  : "$"}
+                )
               </label>
               <input
                 type="number"
                 min="0"
                 step="0.01"
-                value={costData.shippingFee}
+                value={toDisplay(costData.shippingFee).toFixed(2)}
                 onChange={(e) =>
                   setCostData({
                     ...costData,
-                    shippingFee: parseFloat(e.target.value) || 0,
+                    shippingFee: toUSD(parseFloat(e.target.value) || 0),
                   })
                 }
                 className="w-full p-2 border rounded"
@@ -230,16 +275,25 @@ export default function ImportProductPage() {
                   className="p-2 border rounded bg-gray-50"
                 >
                   <option value="percent">% Percentage</option>
-                  <option value="fixed">$ Fixed Amount</option>
+                  <option value="fixed">
+                    {selectedCurrency === "NGN" ? "₦" : "$"} Fixed Amount
+                  </option>
                 </select>
                 <input
                   type="number"
                   min="0"
-                  value={costData.markupValue}
+                  value={
+                    costData.markupType === "fixed"
+                      ? toDisplay(costData.markupValue).toFixed(2)
+                      : costData.markupValue
+                  }
                   onChange={(e) =>
                     setCostData({
                       ...costData,
-                      markupValue: parseFloat(e.target.value) || 0,
+                      markupValue:
+                        costData.markupType === "fixed"
+                          ? toUSD(parseFloat(e.target.value) || 0)
+                          : parseFloat(e.target.value) || 0,
                     })
                   }
                   className="flex-1 p-2 border rounded"
@@ -249,7 +303,19 @@ export default function ImportProductPage() {
 
             <div className="pt-4 border-t flex justify-between items-center text-lg font-bold text-green-600">
               <span>Final Selling Price:</span>
-              <span>${formData.price}</span>
+              <span>
+                {selectedCurrency === "NGN"
+                  ? "₦"
+                  : selectedCurrency === "EUR"
+                  ? "€"
+                  : selectedCurrency === "GBP"
+                  ? "£"
+                  : "$"}
+                {toDisplay(parseFloat(formData.price)).toLocaleString(
+                  undefined,
+                  { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+                )}
+              </span>
             </div>
           </div>
         </div>

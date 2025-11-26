@@ -3,6 +3,18 @@ import * as cheerio from "cheerio";
 import axios from "axios";
 import { auth } from "@/auth";
 
+// Helper function to detect e-commerce platform
+function detectPlatform(url: string): string {
+  const urlLower = url.toLowerCase();
+  if (urlLower.includes("aliexpress")) return "AliExpress";
+  if (urlLower.includes("amazon")) return "Amazon";
+  if (urlLower.includes("jumia")) return "Jumia";
+  if (urlLower.includes("ebay")) return "eBay";
+  if (urlLower.includes("shopify") || urlLower.includes("myshopify"))
+    return "Shopify";
+  return "Unknown";
+}
+
 export async function POST(req: Request) {
   try {
     const session = await auth();
@@ -12,22 +24,59 @@ export async function POST(req: Request) {
 
     const { url } = await req.json();
 
-    if (!url || !url.includes("aliexpress")) {
+    if (!url || !url.startsWith("http")) {
       return NextResponse.json(
-        { error: "Invalid AliExpress URL" },
+        { error: "Invalid URL. Please provide a valid product URL." },
         { status: 400 }
       );
     }
 
-    // Headers to mimic a real browser
-    const headers = {
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-      "Accept-Language": "en-US,en;q=0.9",
-      Referer: "https://www.aliexpress.com/",
-    };
+    // Detect platform
+    const platform = detectPlatform(url);
+    console.log(`🔍 Detected platform: ${platform}`);
 
-    const response = await axios.get(url, { headers });
+    // ScraperAPI integration with optimized parameters
+    const scraperApiKey = process.env.SCRAPER_API_KEY;
+
+    let fetchUrl: string;
+    let headers: any;
+
+    if (scraperApiKey) {
+      // Use ScraperAPI with optimized settings
+      const scraperParams = new URLSearchParams({
+        api_key: scraperApiKey,
+        url: url,
+        render: "true",
+        country_code: "us",
+      });
+
+      fetchUrl = `http://api.scraperapi.com?${scraperParams.toString()}`;
+      headers = {
+        Accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+      };
+      console.log("✓ Using ScraperAPI for:", url);
+    } else {
+      fetchUrl = url;
+      headers = {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        Accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        Referer: url,
+      };
+      console.warn("⚠ SCRAPER_API_KEY not found. Using direct scraping.");
+    }
+
+    console.log("⏳ Fetching product data...");
+    const response = await axios.get(fetchUrl, {
+      headers,
+      timeout: 60000,
+      maxRedirects: 5,
+    });
+    console.log("✓ Product data fetched");
+
     const html = response.data;
     const $ = cheerio.load(html);
 
@@ -36,165 +85,164 @@ export async function POST(req: Request) {
     let price = 0;
     let images: string[] = [];
     let shippingFee = 0;
-
-    // --- STRATEGY 1: Meta Tags (Most reliable for Title/Image) ---
-    title =
-      $("meta[property='og:title']").attr("content") || $("title").text() || "";
-    const ogImage = $("meta[property='og:image']").attr("content");
-    if (ogImage) images.push(ogImage);
-
-    // --- STRATEGY 2: JSON Data Extraction (The Gold Mine) ---
-    // AliExpress stores data in scripts like window.runParams = { ... }
-    const scripts = $("script").toArray();
-    let runParams: any = null;
-
-    for (const script of scripts) {
-      const content = $(script).html() || "";
-
-      // Look for window.runParams or window._init_data_
-      if (
-        content.includes("window.runParams") ||
-        content.includes("window._init_data_")
-      ) {
-        try {
-          // Extract the JSON object
-          const match =
-            content.match(/window\.runParams\s*=\s*(\{.*?\});/s) ||
-            content.match(/window\._init_data_\s*=\s*(\{.*?\});/s) ||
-            content.match(/data:\s*(\{.*?\})/s);
-
-          if (match && match[1]) {
-            const jsonStr = match[1];
-            runParams = JSON.parse(jsonStr);
-            // If we found valid data with imageModule, stop searching
-            if (
-              runParams.data?.imageModule ||
-              runParams.imageModule ||
-              runParams.data?.skuModule ||
-              runParams.skuModule
-            ) {
-              break;
-            }
-          }
-        } catch (e) {
-          console.log("Failed to parse runParams script", e);
-        }
-      }
-    }
-
-    let variants: any[] = [];
     let options: any[] = [];
 
-    if (runParams) {
-      const data = runParams.data || runParams;
+    // Universal extraction from meta tags
+    title =
+      $("meta[property='og:title']").attr("content") ||
+      $("title").text().trim();
+    const ogImage = $("meta[property='og:image']").attr("content");
+    if (ogImage)
+      images.push(ogImage.startsWith("//") ? `https:${ogImage}` : ogImage);
 
-      // 1. Images
-      if (data.imageModule && data.imageModule.imagePathList) {
-        data.imageModule.imagePathList.forEach((img: string) => {
-          if (!images.includes(img)) images.push(img);
-        });
+    // Platform-specific extraction
+    if (platform === "Amazon") {
+      if (!title) title = $("#productTitle").text().trim();
+      if (price === 0) {
+        const priceWhole = $(".a-price-whole")
+          .first()
+          .text()
+          .replace(/[^0-9]/g, "");
+        const priceFraction = $(".a-price-fraction").first().text();
+        if (priceWhole)
+          price = parseFloat(priceWhole + "." + (priceFraction || "00"));
       }
+      $("#altImages img, #imageBlock img").each((_, el) => {
+        const src = $(el)
+          .attr("src")
+          ?.replace(/_.*\.jpg/, ".jpg");
+        if (src && src.startsWith("http")) images.push(src);
+      });
+    } else if (platform === "Jumia") {
+      if (!title) title = $("h1.-fs20, h1.title").text().trim();
+      if (price === 0) {
+        const priceText = $(".-b.-ltr.-tal.-fs24, .price").text().trim();
+        const match = priceText.match(/[\d,]+/);
+        if (match) price = parseFloat(match[0].replace(/,/g, ""));
+      }
+      $(".itm img, .sldr img").each((_, el) => {
+        const src = $(el).attr("data-src") || $(el).attr("src");
+        if (src && src.startsWith("http")) images.push(src);
+      });
+    } else if (platform === "AliExpress") {
+      // Try to extract from embedded JSON
+      const scripts = $("script").toArray();
+      for (const script of scripts) {
+        const content = $(script).html() || "";
+        if (
+          content.includes("window.runParams") ||
+          content.includes("window._init_data_")
+        ) {
+          try {
+            const match =
+              content.match(/window\.runParams\s*=\s*({.+?});/s) ||
+              content.match(/window\._init_data_\s*=\s*({.+?});/s);
+            if (match && match[1]) {
+              const data = JSON.parse(match[1]);
+              const productData = data.data || data;
 
-      // 2. Price
-      if (data.priceModule) {
-        const priceInfo =
-          data.priceModule.formatedActivityPrice ||
-          data.priceModule.formatedPrice ||
-          data.priceModule.minActivityAmount?.value ||
-          data.priceModule.minAmount?.value;
-
-        if (priceInfo) {
-          if (typeof priceInfo === "string") {
-            const match = priceInfo.match(/[\d\.]+/);
-            if (match) price = parseFloat(match[0]);
-          } else if (typeof priceInfo === "number") {
-            price = priceInfo;
+              if (productData.titleModule?.subject)
+                title = productData.titleModule.subject;
+              if (productData.imageModule?.imagePathList) {
+                images = productData.imageModule.imagePathList.map(
+                  (img: string) => (img.startsWith("//") ? `https:${img}` : img)
+                );
+              }
+              if (productData.priceModule) {
+                const priceValue =
+                  productData.priceModule.minActivityAmount?.value ||
+                  productData.priceModule.minAmount?.value;
+                if (priceValue) price = parseFloat(priceValue);
+              }
+              break;
+            }
+          } catch (e) {
+            continue;
           }
         }
-      }
-
-      // 3. Shipping
-      if (data.shippingModule && data.shippingModule.generalFreightInfo) {
-        const freight =
-          data.shippingModule.generalFreightInfo.originalLayoutResultList?.[0]
-            ?.bizData?.displayAmount;
-        if (freight) {
-          if (freight.toLowerCase().includes("free")) {
-            shippingFee = 0;
-          } else {
-            const match = freight.match(/[\d\.]+/);
-            if (match) shippingFee = parseFloat(match[0]);
-          }
-        }
-      }
-
-      // 4. Title Fallback
-      if (!title && data.titleModule) {
-        title = data.titleModule.subject;
-      }
-
-      // 5. Variants (SKU Module)
-      if (data.skuModule) {
-        // Extract Options (e.g. Color, Size)
-        if (data.skuModule.productSKUPropertyList) {
-          options = data.skuModule.productSKUPropertyList.map((prop: any) => ({
-            name: prop.skuPropertyName,
-            values: prop.skuPropertyValues.map(
-              (val: any) =>
-                val.propertyValueDisplayName || val.propertyValueName
-            ),
-          }));
-        }
-
-        // Extract Variants (Combinations)
-        // We'll simplify this to just get a list of available options for now
-        // A full variant mapping requires matching skuPropIds, which is complex.
-        // For importing, just knowing the available options is a good start.
       }
     }
 
-    // --- STRATEGY 3: DOM Fallbacks (If JSON failed) ---
+    // Generic fallbacks for all platforms
+    if (!title) {
+      title = $("h1").first().text().trim() || $("title").text().trim();
+    }
 
-    // Price Fallback
     if (price === 0) {
-      const priceText =
-        $(".product-price-current").text().trim() ||
-        $(".uniform-banner-box-price").text().trim() ||
-        $(".price--current--I3Yb7_i").text().trim(); // New class
-      if (priceText) {
-        const match = priceText.match(/[\d\.]+/);
-        if (match) price = parseFloat(match[0]);
+      const priceSelectors = [".price", "[class*='price']", "[data-price]"];
+      for (const selector of priceSelectors) {
+        const priceText = $(selector).first().text().trim();
+        const match = priceText.match(/[\d,.]+/);
+        if (match) {
+          price = parseFloat(match[0].replace(/,/g, ""));
+          if (price > 0) break;
+        }
       }
     }
 
-    // Image Fallback
-    if (images.length <= 1) {
-      $(".img-thumb-item img").each((_, el) => {
-        let src = $(el).attr("src");
-        if (src) {
-          src = src
-            .replace(/_50x50\.jpg.*$/, "")
-            .replace(/_640x640\.jpg.*$/, "");
-          if (!images.includes(src)) images.push(src);
+    if (images.length === 0) {
+      $("img").each((_, el) => {
+        const src = $(el).attr("src") || $(el).attr("data-src");
+        if (
+          src &&
+          src.includes("http") &&
+          !src.includes("icon") &&
+          !src.includes("logo")
+        ) {
+          const fullSrc = src.startsWith("//") ? `https:${src}` : src;
+          images.push(fullSrc);
         }
       });
     }
 
-    description = title; // Default description
+    if (!description) description = title;
+
+    // Validation
+    if (!title || title.length < 3) {
+      return NextResponse.json(
+        {
+          error: `Could not extract product data from ${platform}. Try using ScraperAPI for better results.`,
+        },
+        { status: 500 }
+      );
+    }
+
+    images = Array.from(new Set(images))
+      .filter(
+        (img) => img && img.startsWith("http") && !img.includes("placeholder")
+      )
+      .slice(0, 10);
+
+    console.log(`✓ Imported from ${platform}:`, title);
 
     return NextResponse.json({
-      title,
-      description,
-      price,
+      title: title.trim(),
+      description: description.trim(),
+      price: Math.max(0, price),
       images,
-      shippingFee,
+      shippingFee: Math.max(0, shippingFee),
       options,
       originalUrl: url,
+      platform,
     });
   } catch (error: any) {
-    console.error("Scraping error:", error);
+    console.error("❌ Scraping error:", error.message);
+
+    if (error.code === "ECONNABORTED" || error.message.includes("timeout")) {
+      return NextResponse.json(
+        {
+          error:
+            "Request timed out. Please try again or add SCRAPER_API_KEY to your .env file.",
+        },
+        { status: 504 }
+      );
+    }
+
     return NextResponse.json(
-      { error: "Failed to fetch product details. Please check the URL." },
+      {
+        error: "Failed to fetch product. Please check the URL and try again.",
+        details: error.message,
+      },
       { status: 500 }
     );
   }

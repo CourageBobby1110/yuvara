@@ -20,6 +20,38 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "**.alicdn.com",
       },
+      {
+        protocol: "https",
+        hostname: "**.media-amazon.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.ssl-images-amazon.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.jumia.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.jumia.com.ng",
+      },
+      {
+        protocol: "https",
+        hostname: "**.jumia.is",
+      },
+      {
+        protocol: "https",
+        hostname: "**.ebayimg.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.shopify.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.shopifycdn.com",
+      },
     ],
   },
   async headers() {
