@@ -2,39 +2,37 @@ export const dynamic = "force-dynamic";
 import { auth } from "@/auth";
 import Hero from "@/components/Hero";
 import FeaturedCollection from "@/components/FeaturedCollection";
-import BrandStory from "@/components/BrandStory";
 import TrendingMarquee from "@/components/TrendingMarquee";
-import CategoryGrid from "@/components/CategoryGrid";
 import Newsletter from "@/components/Newsletter";
 import { getProducts } from "@/lib/products";
 
 export default async function Home() {
   const session = await auth();
-  const featuredProducts = await getProducts({ limit: 8 });
 
-  // Fetch site settings
-  const SiteSettings = (await import("@/models/SiteSettings")).default;
-  await (await import("@/lib/db")).default();
-
-  let settings = await SiteSettings.findOne();
-  if (!settings) {
-    settings = {
-      categoryImages: {
-        men: "/men-category.jpg",
-        women: "/women-category.jpg",
-        accessories: "/accessories-category.jpg",
-      },
-      brandStoryImage: "/brand-story.png",
-    };
-  }
+  // Fetch different product sets for the marketplace feel
+  const newArrivals = await getProducts({ limit: 8, sort: "newest" });
+  const bestSellers = await getProducts({ limit: 8, sort: "price_desc" }); // Proxy for best sellers
+  const featured = await getProducts({ limit: 4, isFeatured: true });
 
   return (
-    <main>
+    <main
+      style={{
+        backgroundColor: "var(--color-bg-secondary)",
+        minHeight: "100vh",
+        paddingBottom: "2rem",
+      }}
+    >
       <Hero />
       <TrendingMarquee />
-      <CategoryGrid images={settings.categoryImages} />
-      <FeaturedCollection products={featuredProducts} title="New Arrivals" />
-      <BrandStory image={settings.brandStoryImage} />
+
+      <div
+        style={{ maxWidth: "1400px", margin: "0 auto", padding: "0 1.5rem" }}
+      >
+        <FeaturedCollection products={newArrivals} title="New Arrivals" />
+        <FeaturedCollection products={bestSellers} title="Best Sellers" />
+        <FeaturedCollection products={featured} title="Featured Products" />
+      </div>
+
       <Newsletter />
     </main>
   );

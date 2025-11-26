@@ -1,5 +1,5 @@
 import dbConnect from "@/lib/db";
-import Product from "@/models/Product";
+import Product, { Product as ProductType } from "@/models/Product";
 
 export interface ProductFilter {
   search?: string;
@@ -54,6 +54,10 @@ export async function getProducts(filter: ProductFilter = {}) {
       _id: product._id.toString(),
       createdAt: product.createdAt?.toISOString(),
       updatedAt: product.updatedAt?.toISOString(),
+      variants: product.variants?.map((variant: any) => ({
+        ...variant,
+        _id: variant._id ? variant._id.toString() : undefined,
+      })),
     }));
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -72,17 +76,23 @@ export async function getCategories() {
   }
 }
 
-export async function getProductBySlug(slug: string) {
+export async function getProductBySlug(
+  slug: string
+): Promise<ProductType | null> {
   try {
     await dbConnect();
     const product = await Product.findOne({ slug }).lean();
     if (!product) return null;
-    
+
     return {
-      ...product,
+      ...(product as unknown as ProductType),
       _id: (product as any)._id.toString(),
       createdAt: (product as any).createdAt?.toISOString(),
       updatedAt: (product as any).updatedAt?.toISOString(),
+      variants: (product as any).variants?.map((variant: any) => ({
+        ...variant,
+        _id: variant._id ? variant._id.toString() : undefined,
+      })),
     };
   } catch (error) {
     console.error("Error fetching product by slug:", error);

@@ -3,6 +3,8 @@ import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import ReferralBatch from "@/models/ReferralBatch";
 import Coupon from "@/models/Coupon";
+import Token from "@/models/Token";
+import { sendVerificationEmail } from "@/lib/mail";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
@@ -94,6 +96,21 @@ export async function POST(req: NextRequest) {
       referralCode: newReferralCode,
       referredBy: referredBy,
     });
+
+    // Generate Verification Token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    await Token.create({
+      userId: user._id,
+      token: verificationToken,
+    });
+
+    // Send Verification Email
+    try {
+      await sendVerificationEmail(user.email, verificationToken);
+    } catch (emailError) {
+      console.error("Failed to send verification email:", emailError);
+      // We don't fail the signup if email fails, but we should log it
+    }
 
     // Create JWT token
     const token = jwt.sign(

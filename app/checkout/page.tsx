@@ -63,6 +63,7 @@ export default function CheckoutPage() {
 
   // Force session update on mount
   useEffect(() => {
+    useCartStore.persist.rehydrate();
     update();
     fetchUserProfile();
   }, []);
@@ -74,7 +75,6 @@ export default function CheckoutPage() {
 
   // Redirect if empty cart
   useEffect(() => {
-    useCartStore.persist.rehydrate();
     if (items.length === 0) {
       // router.push("/");
     }

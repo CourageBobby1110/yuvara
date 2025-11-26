@@ -56,6 +56,21 @@ const ProductSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    variants: {
+      type: [
+        {
+          color: { type: String, required: true },
+          image: { type: String, required: true },
+          price: { type: Number, required: true },
+          stock: { type: Number, default: 0 },
+        },
+      ],
+      default: [],
+    },
+    productUrl: {
+      type: String,
+      trim: true,
+    },
   },
   { timestamps: true }
 );
@@ -76,6 +91,13 @@ export type Product = {
   isFeatured: boolean;
   sizes?: string[];
   colors?: string[];
+  variants?: {
+    color: string;
+    image: string;
+    price: number;
+    stock: number;
+  }[];
+  productUrl?: string;
   createdAt?: Date;
   updatedAt?: Date;
 };

@@ -64,6 +64,15 @@ export default function AdminSidebar() {
             Products
           </Link>
           <Link
+            href="/admin/products/import"
+            className={`${styles.link} ${
+              isActive("/admin/products/import") ? styles.active : ""
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Import Product
+          </Link>
+          <Link
             href="/admin/orders"
             className={`${styles.link} ${
               isActive("/admin/orders") ? styles.active : ""

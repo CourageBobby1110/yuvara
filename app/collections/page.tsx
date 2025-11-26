@@ -6,7 +6,15 @@ import ProductSort from "@/components/ProductSort";
 import { Suspense } from "react";
 import styles from "./Collections.module.css";
 
+import { Metadata } from "next";
+
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Collections | Yuvara",
+  description:
+    "Browse our extensive collection of fashion, electronics, and home goods.",
+};
 
 export default async function CollectionsPage({
   searchParams,

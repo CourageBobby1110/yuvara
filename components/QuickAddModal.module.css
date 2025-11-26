@@ -152,3 +152,37 @@
   cursor: not-allowed;
   transform: none;
 }
+
+.variantGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.variantButton {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  overflow: hidden;
+  cursor: pointer;
+  padding: 0;
+  background: #f3f4f6;
+  transition: all 0.2s;
+}
+
+.variantButton:hover {
+  border-color: #e5e7eb;
+}
+
+.activeVariant {
+  border-color: #000;
+  box-shadow: 0 0 0 1px #000;
+}
+
+.variantImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

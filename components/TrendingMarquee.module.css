@@ -1,29 +1,70 @@
 .marqueeContainer {
-  background-color: var(--color-primary);
-  color: #ffffff;
-  padding: 0.75rem 0;
+  width: 100%;
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--color-border-light);
   overflow: hidden;
-  white-space: nowrap;
   position: relative;
   display: flex;
-  align-items: center;
+  padding: 0.85rem 0;
+  user-select: none;
 }
 
-.marqueeContent {
+/* Fade mask for smooth edges */
+.marqueeContainer::before,
+.marqueeContainer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 100px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.marqueeContainer::before {
+  left: 0;
+  background: linear-gradient(to right, #ffffff, transparent);
+}
+
+.marqueeContainer::after {
+  right: 0;
+  background: linear-gradient(to left, #ffffff, transparent);
+}
+
+.scrollTrack {
   display: flex;
-  animation: scroll 20s linear infinite;
+  align-items: center;
+  animation: scroll 40s linear infinite;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 4rem;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  color: var(--color-primary);
+  margin-right: 0.75rem;
 }
 
 .text {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  color: var(--color-text-primary);
   text-transform: uppercase;
-  margin-right: 4rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 4rem;
-  color: #ffffff;
+  letter-spacing: 0.05em;
+}
+
+.separator {
+  margin-left: 4rem;
+  color: var(--color-border-medium);
+  font-size: 1.2rem;
+  line-height: 0;
 }
 
 @keyframes scroll {
@@ -31,11 +72,29 @@
     transform: translateX(0);
   }
   100% {
-    transform: translateX(-50%);
+    transform: translateX(-100%);
   }
 }
 
-.separator {
-  color: var(--color-text-muted);
-  opacity: 0.5;
+/* Pause on hover for better UX */
+.marqueeContainer:hover .scrollTrack {
+  animation-play-state: paused;
+}
+
+@media (max-width: 768px) {
+  .marqueeContainer {
+    padding: 0.75rem 0;
+  }
+
+  .item {
+    margin-right: 2rem;
+  }
+
+  .separator {
+    margin-left: 2rem;
+  }
+
+  .text {
+    font-size: 0.75rem;
+  }
 }

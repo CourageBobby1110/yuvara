@@ -1,0 +1,144 @@
+.section {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #333;
+}
+
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.timeBox {
+  background-color: #333;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.viewAll {
+  margin-left: auto;
+  color: #555;
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.viewAll:hover {
+  color: #ff4747;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #eee;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.imageWrapper {
+  position: relative;
+  aspect-ratio: 1;
+  background-color: #f9f9f9;
+}
+
+.image {
+  object-fit: cover;
+}
+
+.discount {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: #ff4747;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.details {
+  padding: 0.75rem;
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.price {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #ff4747;
+}
+
+.original {
+  font-size: 0.875rem;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.soldBar {
+  height: 6px;
+  background-color: #eee;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 0.25rem;
+}
+
+.soldFill {
+  height: 100%;
+  background-color: #ff4747;
+}
+
+.soldText {
+  font-size: 0.75rem;
+  color: #777;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .title {
+    width: 100%;
+  }
+  .viewAll {
+    order: 1;
+  }
+}

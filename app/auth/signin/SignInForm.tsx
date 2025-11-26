@@ -8,24 +8,37 @@ import styles from "./SignInForm.module.css";
 export default function SignInForm({ callbackUrl }: { callbackUrl: string }) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   return (
     <form
       action={async (formData) => {
         setLoading(true);
-        // Append callbackUrl to formData if needed by the auth provider,
-        // or just rely on the server action to handle it if we passed it differently.
-        // For next-auth credentials, we usually pass redirectTo in the signIn options.
-        // Since handleSignIn wraps signIn, we might need to update handleSignIn to accept redirectTo.
-        // But for now, let's assume the server action handles the basic credential flow.
-        // Actually, to be safe and support callbackUrl, let's pass it as a hidden field
+        setError("");
         formData.append("redirectTo", callbackUrl);
-        await handleSignIn(formData);
-        // We don't set loading false because we expect a redirect
+        try {
+          const res = await handleSignIn(formData);
+          if (res?.error) {
+            setError(res.error);
+            setLoading(false);
+          }
+        } catch (e) {
+          // If it's a redirect, it will be handled by Next.js
+          console.error(e);
+          setLoading(false);
+        }
       }}
       className={styles.form}
     >
       <div className={styles.inputGroup}>
+        {error && (
+          <div
+            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+            role="alert"
+          >
+            <span className="block sm:inline">{error}</span>
+          </div>
+        )}
         <label className={styles.label}>Email Address</label>
         <div className={styles.inputWrapper}>
           <input
