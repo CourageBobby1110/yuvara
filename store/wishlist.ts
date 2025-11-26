@@ -4,6 +4,7 @@ import { toast } from "sonner";
 interface WishlistState {
   items: Set<string>; // Set of product IDs
   isLoading: boolean;
+  version: number; // For triggering re-fetches
   fetchWishlist: () => Promise<void>;
   toggleWishlist: (productId: string) => Promise<void>;
   isInWishlist: (productId: string) => boolean;
@@ -12,15 +13,14 @@ interface WishlistState {
 export const useWishlistStore = create<WishlistState>((set, get) => ({
   items: new Set(),
   isLoading: false,
+  version: 0, // Add version for reactivity
 
   fetchWishlist: async () => {
     set({ isLoading: true });
     try {
-      const res = await fetch("/api/wishlist");
+      const res = await fetch("/api/wishlist", { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
-        // Assuming API returns array of objects with product._id or just product objects
-        // Based on previous code: data.map((item: any) => item.product._id)
         const ids = new Set<string>(data.map((item: any) => item.product._id));
         set({ items: ids });
       }
@@ -43,7 +43,7 @@ export const useWishlistStore = create<WishlistState>((set, get) => ({
       } else {
         newItems.delete(productId);
       }
-      return { items: newItems };
+      return { items: newItems, version: state.version + 1 };
     });
 
     // Show toast immediately
@@ -65,6 +65,10 @@ export const useWishlistStore = create<WishlistState>((set, get) => ({
           method: "DELETE",
         });
       }
+
+      // Trigger another update to ensure we have the server-confirmed state
+      // This fixes race conditions where the fetch happened before the write completed
+      set((state) => ({ version: state.version + 1 }));
     } catch (error) {
       console.error("Failed to toggle wishlist", error);
       toast.error("Failed to update wishlist");
@@ -77,7 +81,7 @@ export const useWishlistStore = create<WishlistState>((set, get) => ({
         } else {
           newItems.add(productId);
         }
-        return { items: newItems };
+        return { items: newItems, version: state.version + 1 };
       });
     }
   },

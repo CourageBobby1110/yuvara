@@ -215,6 +215,93 @@ export async function POST(req: Request) {
 
     console.log(`✓ Imported from ${platform}:`, title);
 
+    // ===== VARIANT EXTRACTION =====
+    let sizes: string[] = [];
+    let colors: string[] = [];
+    let variants: any[] = [];
+
+    // Map from existing 'options' (AliExpress & Generic)
+    if (options.length > 0) {
+      options.forEach((opt) => {
+        const name = opt.name.toLowerCase();
+        if (name.includes("size") || name.includes("dimension")) {
+          sizes.push(...opt.values);
+        } else if (
+          name.includes("color") ||
+          name.includes("colour") ||
+          name.includes("style")
+        ) {
+          colors.push(...opt.values);
+        }
+      });
+    }
+
+    // Amazon Variants
+    if (platform === "Amazon") {
+      // Extract sizes
+      $("#variation_size_name li, #variation_size_name option").each(
+        (_, el) => {
+          const val =
+            $(el).text().trim() ||
+            $(el).attr("title") ||
+            $(el).attr("data-default-header");
+          if (val && !val.includes("Select")) sizes.push(val);
+        }
+      );
+
+      // Extract colors
+      $("#variation_color_name li img").each((_, el) => {
+        const alt = $(el).attr("alt");
+        if (alt) colors.push(alt);
+      });
+    }
+
+    // Jumia Variants
+    if (platform === "Jumia") {
+      // Try to find size selection
+      $(".-pvxs").each((_, el) => {
+        const label = $(el).find(".-m.-pbs").text().toLowerCase();
+        if (label.includes("size")) {
+          $(el)
+            .find("input[type='radio'] + label")
+            .each((_, opt) => {
+              sizes.push($(opt).text().trim());
+            });
+          // Also check dropdowns
+          $(el)
+            .find("option")
+            .each((_, opt) => {
+              const val = $(opt).text().trim();
+              if (val && !val.includes("Select")) sizes.push(val);
+            });
+        }
+      });
+    }
+
+    // Generic / Schema.org Fallback
+    if (sizes.length === 0) {
+      // Try to find "Size" dropdowns
+      $("select").each((_, el) => {
+        const label =
+          $(el).attr("aria-label") ||
+          $(el).attr("name") ||
+          $(el).prev("label").text() ||
+          "";
+        if (label.toLowerCase().includes("size")) {
+          $(el)
+            .find("option")
+            .each((_, opt) => {
+              const val = $(opt).text().trim();
+              if (val && !val.includes("Select")) sizes.push(val);
+            });
+        }
+      });
+    }
+
+    // Clean up
+    sizes = Array.from(new Set(sizes)).filter((s) => s.length < 20);
+    colors = Array.from(new Set(colors)).filter((c) => c.length < 30);
+
     return NextResponse.json({
       title: title.trim(),
       description: description.trim(),
@@ -222,6 +309,9 @@ export async function POST(req: Request) {
       images,
       shippingFee: Math.max(0, shippingFee),
       options,
+      sizes,
+      colors,
+      variants,
       originalUrl: url,
       platform,
     });

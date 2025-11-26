@@ -52,6 +52,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "**.shopifycdn.com",
       },
+      {
+        protocol: "https",
+        hostname: "**.cloudfront.net",
+      },
     ],
   },
   async headers() {

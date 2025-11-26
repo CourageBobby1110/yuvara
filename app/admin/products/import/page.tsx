@@ -29,7 +29,8 @@ export default function ImportProductPage() {
     category: "",
     stock: "100",
     slug: "",
-    sizes: "",
+    sizes: [] as string[],
+    colors: [] as string[],
     productUrl: "",
     images: [] as string[],
     variants: [] as any[],
@@ -73,7 +74,9 @@ export default function ImportProductPage() {
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/(^-|-$)+/g, "")
           .slice(0, 50), // Limit slug length
-        variants: [], // Placeholder for now
+        variants: data.variants || [],
+        sizes: data.sizes || [],
+        colors: data.colors || [],
         options: data.options || [],
       });
 
@@ -138,8 +141,9 @@ export default function ImportProductPage() {
           ...formData,
           price: parseFloat(formData.price),
           stock: parseInt(formData.stock),
-          variants: [],
-          colors: [],
+          variants: formData.variants,
+          colors: formData.colors,
+          sizes: formData.sizes,
         }),
       });
 
@@ -415,6 +419,39 @@ export default function ImportProductPage() {
             rows={5}
             className={styles.textarea}
           />
+        </div>
+
+        <div className={styles.grid3}>
+          <div>
+            <label className={styles.label}>Sizes (comma separated)</label>
+            <input
+              type="text"
+              value={formData.sizes.join(", ")}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  sizes: e.target.value.split(",").map((s) => s.trim()),
+                })
+              }
+              className={styles.input}
+              placeholder="S, M, L, XL"
+            />
+          </div>
+          <div>
+            <label className={styles.label}>Colors (comma separated)</label>
+            <input
+              type="text"
+              value={formData.colors.join(", ")}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  colors: e.target.value.split(",").map((s) => s.trim()),
+                })
+              }
+              className={styles.input}
+              placeholder="Red, Blue, Green"
+            />
+          </div>
         </div>
 
         <div className={styles.grid3}>

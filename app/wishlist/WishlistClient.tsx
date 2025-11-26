@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCartStore } from "@/store/cart";
+import { useWishlistStore } from "@/store/wishlist";
 import { useCurrency } from "@/context/CurrencyContext";
 import styles from "./Wishlist.module.css";
 
@@ -26,16 +27,18 @@ interface WishlistItem {
 export default function WishlistClient() {
   const { addItem } = useCartStore();
   const { formatPrice } = useCurrency();
+  const { version } = useWishlistStore(); // Subscribe to version changes
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchWishlist();
-  }, []);
+  }, [version]); // Re-fetch when version changes
 
   const fetchWishlist = async () => {
     try {
-      const res = await fetch("/api/wishlist");
+      // Add cache: no-store to ensure fresh data
+      const res = await fetch("/api/wishlist", { cache: "no-store" });
       const data = await res.json();
       // Filter out items where product might be null (deleted)
       const validItems = data.filter((item: WishlistItem) => item.product);
@@ -61,11 +64,20 @@ export default function WishlistClient() {
   };
 
   const handleAddToCart = (item: WishlistItem) => {
-    if (!item.selectedSize && item.product.sizes.length > 0) {
+    // Filter out empty strings or whitespace-only strings
+    const validSizes = item.product.sizes.filter(
+      (s) => s && s.trim().length > 0
+    );
+    const validColors = item.product.colors.filter(
+      (c) => c && c.trim().length > 0
+    );
+
+    // Only require selection if valid options are available
+    if (validSizes.length > 0 && !item.selectedSize) {
       alert("Please select a size");
       return;
     }
-    if (!item.selectedColor && item.product.colors.length > 0) {
+    if (validColors.length > 0 && !item.selectedColor) {
       alert("Please select a color");
       return;
     }
