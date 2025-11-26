@@ -202,7 +202,12 @@ export default function QuickAddModal({
 
         <button
           onClick={handleAddToCart}
-          className={styles.addToCartBtn}
+          className={`${styles.addToCartBtn} ${
+            (selectedVariant && selectedVariant.stock <= 0) ||
+            (!selectedVariant && product.stock <= 0)
+              ? styles.disabled
+              : ""
+          }`}
           disabled={
             (availableSizes.length > 0 && !selectedSize) ||
             (product.variants &&
@@ -211,10 +216,15 @@ export default function QuickAddModal({
             ((!product.variants || product.variants.length === 0) &&
               product.colors &&
               product.colors.length > 0 &&
-              !selectedColor)
+              !selectedColor) ||
+            (selectedVariant && selectedVariant.stock <= 0) ||
+            (!selectedVariant && !product.variants && product.stock <= 0)
           }
         >
-          Add to Cart - {formatPrice(currentPrice)}
+          {(selectedVariant && selectedVariant.stock <= 0) ||
+          (!selectedVariant && !product.variants && product.stock <= 0)
+            ? "Out of Stock"
+            : `Add to Cart - ${formatPrice(currentPrice)}`}
         </button>
       </div>
     </div>

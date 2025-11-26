@@ -74,6 +74,42 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
   const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
+    // Klaviyo "Viewed Product" tracking
+    const klaviyo = (window as any).klaviyo || [];
+    if (klaviyo) {
+      klaviyo.push([
+        "track",
+        "Viewed Product",
+        {
+          Title: product.name,
+          ItemId: product._id,
+          Categories: product.category,
+          ImageUrl: product.images[0],
+          Url: window.location.href,
+          Metadata: {
+            Price: product.price,
+          },
+        },
+      ]);
+
+      // Also track for "Recently Viewed" item
+      klaviyo.push([
+        "trackViewedItem",
+        {
+          Title: product.name,
+          ItemId: product._id,
+          Categories: product.category,
+          ImageUrl: product.images[0],
+          Url: window.location.href,
+          Metadata: {
+            Price: product.price,
+          },
+        },
+      ]);
+    }
+  }, [product]);
+
+  useEffect(() => {
     const fetchReviews = async () => {
       try {
         // Fetch Reviews if enabled

@@ -28,6 +28,10 @@ export default function AddToCart({
   const availableSizes =
     product.sizes?.filter((s) => s && s.trim() !== "") || [];
 
+  const isOutOfStock = selectedVariant
+    ? selectedVariant.stock <= 0
+    : product.stock <= 0;
+
   const handleAddToCart = () => {
     // Size validation
     if (availableSizes.length > 0 && !selectedSize) {
@@ -62,6 +66,27 @@ export default function AddToCart({
       selectedSize,
       selectedColor: colorToUse,
     });
+
+    // Klaviyo "Added to Cart" tracking
+    const klaviyo = (window as any).klaviyo || [];
+    if (klaviyo) {
+      klaviyo.push([
+        "track",
+        "Added to Cart",
+        {
+          Title: product.name,
+          ItemId: product._id,
+          Categories: product.category,
+          ImageUrl: imageToUse,
+          Url: window.location.href,
+          Metadata: {
+            Price: priceToUse,
+            Variant: selectedVariant ? selectedVariant.color : selectedColor,
+            Size: selectedSize,
+          },
+        },
+      ]);
+    }
 
     // Open the cart drawer to show the added item
     openCart();
@@ -116,10 +141,18 @@ export default function AddToCart({
 
       <button
         onClick={handleAddToCart}
-        className="w-full bg-black text-white py-3 px-6 rounded-md font-semibold hover:bg-gray-800 transition-colors mt-4"
+        disabled={isOutOfStock}
+        className={`w-full py-3 px-6 rounded-md font-semibold transition-colors mt-4 ${
+          isOutOfStock
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-black text-white hover:bg-gray-800"
+        }`}
       >
-        Add to Cart -{" "}
-        {formatPrice(selectedVariant ? selectedVariant.price : product.price)}
+        {isOutOfStock
+          ? "Out of Stock"
+          : `Add to Cart - ${formatPrice(
+              selectedVariant ? selectedVariant.price : product.price
+            )}`}
       </button>
     </div>
   );

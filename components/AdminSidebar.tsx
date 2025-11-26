@@ -55,6 +55,15 @@ export default function AdminSidebar() {
             Overview
           </Link>
           <Link
+            href="/admin/analytics"
+            className={`${styles.link} ${
+              isActive("/admin/analytics") ? styles.active : ""
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Analytics
+          </Link>
+          <Link
             href="/admin/products"
             className={`${styles.link} ${
               isActive("/admin/products") ? styles.active : ""
@@ -179,6 +188,15 @@ export default function AdminSidebar() {
             onClick={() => setIsOpen(false)}
           >
             Homepage
+          </Link>
+          <Link
+            href="/admin/settings"
+            className={`${styles.link} ${
+              isActive("/admin/settings") ? styles.active : ""
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Settings
           </Link>
         </nav>
 

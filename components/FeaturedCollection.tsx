@@ -92,11 +92,23 @@ export default function FeaturedCollection({
                 <button
                   onClick={(e) => {
                     e.preventDefault();
-                    handleQuickAdd(product);
+                    if (
+                      product.stock > 0 ||
+                      (product.variants && product.variants.length > 0)
+                    ) {
+                      handleQuickAdd(product);
+                    }
                   }}
-                  className="absolute bottom-4 left-4 right-4 bg-white text-black py-2 md:py-3 px-4 md:px-6 font-semibold text-sm md:text-base opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 hover:bg-black hover:text-white shadow-lg"
+                  disabled={!product.variants?.length && product.stock <= 0}
+                  className={`absolute bottom-4 left-4 right-4 py-2 md:py-3 px-4 md:px-6 font-semibold text-sm md:text-base opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 shadow-lg ${
+                    !product.variants?.length && product.stock <= 0
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-white text-black hover:bg-black hover:text-white"
+                  }`}
                 >
-                  Quick Add
+                  {!product.variants?.length && product.stock <= 0
+                    ? "Out of Stock"
+                    : "Quick Add"}
                 </button>
               </Link>
 

@@ -234,7 +234,15 @@ export default function WishlistClient() {
 
                   <button
                     onClick={() => handleAddToCart(item)}
-                    className={styles.addToCartButton}
+                    disabled={item.product.stock <= 0}
+                    className={`${styles.addToCartButton} ${
+                      item.product.stock <= 0 ? styles.disabled : ""
+                    }`}
+                    style={
+                      item.product.stock <= 0
+                        ? { opacity: 0.5, cursor: "not-allowed" }
+                        : {}
+                    }
                   >
                     <svg
                       className={styles.cartIcon}
@@ -249,7 +257,7 @@ export default function WishlistClient() {
                         d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
                       />
                     </svg>
-                    Add to Cart
+                    {item.product.stock <= 0 ? "Out of Stock" : "Add to Cart"}
                   </button>
                 </div>
               </div>

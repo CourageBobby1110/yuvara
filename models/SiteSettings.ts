@@ -15,6 +15,10 @@ const SiteSettingsSchema = new Schema(
       type: String,
       default: "/brand-story.png",
     },
+    googleTagManagerId: { type: String, default: "" },
+    googleAnalyticsId: { type: String, default: "" },
+    klaviyoPublicKey: { type: String, default: "" },
+    tiktokPixelId: { type: String, default: "" },
   },
   { timestamps: true }
 );
