@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-type Currency = "USD" | "NGN" | "EUR" | "GBP";
+import { Currency, DEFAULT_RATES, CURRENCY_SYMBOLS } from "@/lib/currency";
 
 interface CurrencyContextType {
   currency: Currency;
@@ -15,21 +15,6 @@ interface CurrencyContextType {
 const CurrencyContext = createContext<CurrencyContextType | undefined>(
   undefined
 );
-
-// Exchange rates with USD as base
-const DEFAULT_RATES: Record<Currency, number> = {
-  USD: 1,
-  NGN: 1500, // 1 USD = 1500 NGN
-  EUR: 0.92,
-  GBP: 0.79,
-};
-
-const CURRENCY_SYMBOLS: Record<Currency, string> = {
-  USD: "$",
-  NGN: "₦",
-  EUR: "€",
-  GBP: "£",
-};
 
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   const [currency, setCurrency] = useState<Currency>("USD");

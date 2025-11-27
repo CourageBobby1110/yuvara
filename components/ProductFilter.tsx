@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useCurrency } from "@/context/CurrencyContext";
+import { CURRENCY_SYMBOLS } from "@/lib/currency";
+import { useEffect } from "react";
 import styles from "./ProductFilter.module.css";
 
 export default function ProductFilter({
@@ -23,18 +25,30 @@ export default function ProductFilter({
     } else {
       params.delete(key);
     }
+
+    // Always append current currency when filtering
+    if (key === "minPrice" || key === "maxPrice") {
+      params.set("currency", currency);
+    }
+
     replace(`${pathname}?${params.toString()}`);
   };
 
+  // Clear filters if currency changes
+  useEffect(() => {
+    const urlCurrency = searchParams.get("currency");
+    if (urlCurrency && urlCurrency !== currency) {
+      const params = new URLSearchParams(searchParams);
+      params.delete("minPrice");
+      params.delete("maxPrice");
+      params.delete("currency");
+      replace(`${pathname}?${params.toString()}`);
+    }
+  }, [currency, searchParams, replace, pathname]);
+
   // Get currency symbol
   const getCurrencySymbol = () => {
-    const symbols: Record<string, string> = {
-      USD: "$",
-      NGN: "₦",
-      EUR: "€",
-      GBP: "£",
-    };
-    return symbols[currency] || "$";
+    return CURRENCY_SYMBOLS[currency] || "$";
   };
 
   return (

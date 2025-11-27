@@ -5,6 +5,7 @@ import ProductFilter from "@/components/ProductFilter";
 import ProductSort from "@/components/ProductSort";
 import { Suspense } from "react";
 import styles from "./Collections.module.css";
+import { DEFAULT_RATES, Currency } from "@/lib/currency";
 
 import { Metadata } from "next";
 
@@ -42,12 +43,30 @@ export default async function CollectionsPage({
     typeof resolvedSearchParams.sort === "string"
       ? resolvedSearchParams.sort
       : undefined;
+  const currency =
+    typeof resolvedSearchParams.currency === "string"
+      ? (resolvedSearchParams.currency as Currency)
+      : undefined;
+
+  // Convert prices to USD if currency is provided and not USD
+  let convertedMinPrice = minPrice;
+  let convertedMaxPrice = maxPrice;
+
+  if (currency && currency !== "USD" && DEFAULT_RATES[currency]) {
+    const rate = DEFAULT_RATES[currency];
+    if (minPrice !== undefined) {
+      convertedMinPrice = minPrice / rate;
+    }
+    if (maxPrice !== undefined) {
+      convertedMaxPrice = maxPrice / rate;
+    }
+  }
 
   const products = await getProducts({
     search,
     category,
-    minPrice,
-    maxPrice,
+    minPrice: convertedMinPrice,
+    maxPrice: convertedMaxPrice,
     sort,
   });
 

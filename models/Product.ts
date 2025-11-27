@@ -98,6 +98,8 @@ export type Product = {
     stock: number;
   }[];
   productUrl?: string;
+  averageRating?: number;
+  reviewCount?: number;
   createdAt?: Date;
   updatedAt?: Date;
 };

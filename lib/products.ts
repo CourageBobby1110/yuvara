@@ -15,38 +15,81 @@ export async function getProducts(filter: ProductFilter = {}) {
   try {
     await dbConnect();
 
-    const query: any = {};
+    const pipeline: any[] = [];
+
+    // 1. Match stage
+    const matchStage: any = {};
 
     if (filter.search) {
-      query.$or = [
+      matchStage.$or = [
         { name: { $regex: filter.search, $options: "i" } },
         { description: { $regex: filter.search, $options: "i" } },
       ];
     }
 
     if (filter.category && filter.category !== "all") {
-      query.category = filter.category;
+      matchStage.category = filter.category;
     }
 
     if (filter.minPrice !== undefined || filter.maxPrice !== undefined) {
-      query.price = {};
-      if (filter.minPrice !== undefined) query.price.$gte = filter.minPrice;
-      if (filter.maxPrice !== undefined) query.price.$lte = filter.maxPrice;
+      matchStage.price = {};
+      if (filter.minPrice !== undefined)
+        matchStage.price.$gte = filter.minPrice;
+      if (filter.maxPrice !== undefined)
+        matchStage.price.$lte = filter.maxPrice;
     }
 
     if (filter.isFeatured !== undefined) {
-      query.isFeatured = filter.isFeatured;
+      matchStage.isFeatured = filter.isFeatured;
     }
 
-    let sortOptions: any = { createdAt: -1 };
-    if (filter.sort === "price_asc") sortOptions = { price: 1 };
-    if (filter.sort === "price_desc") sortOptions = { price: -1 };
-    if (filter.sort === "newest") sortOptions = { createdAt: -1 };
+    pipeline.push({ $match: matchStage });
 
-    const products = await Product.find(query)
-      .sort(sortOptions)
-      .limit(filter.limit || 0)
-      .lean();
+    // 2. Lookup Reviews
+    pipeline.push({
+      $lookup: {
+        from: "reviews",
+        localField: "_id",
+        foreignField: "product",
+        as: "reviews",
+      },
+    });
+
+    // 3. Add computed fields
+    pipeline.push({
+      $addFields: {
+        reviewCount: { $size: "$reviews" },
+        averageRating: {
+          $cond: {
+            if: { $eq: [{ $size: "$reviews" }, 0] },
+            then: 0,
+            else: { $avg: "$reviews.rating" },
+          },
+        },
+      },
+    });
+
+    // 4. Remove reviews array to keep payload light
+    pipeline.push({
+      $project: {
+        reviews: 0,
+      },
+    });
+
+    // 5. Sort
+    let sortStage: any = { createdAt: -1 };
+    if (filter.sort === "price_asc") sortStage = { price: 1 };
+    if (filter.sort === "price_desc") sortStage = { price: -1 };
+    if (filter.sort === "newest") sortStage = { createdAt: -1 };
+
+    pipeline.push({ $sort: sortStage });
+
+    // 6. Limit
+    if (filter.limit) {
+      pipeline.push({ $limit: filter.limit });
+    }
+
+    const products = await Product.aggregate(pipeline);
 
     // Convert _id and dates to string/ISO string for serialization
     return products.map((product: any) => ({

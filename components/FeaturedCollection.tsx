@@ -8,6 +8,7 @@ import { useCartStore } from "@/store/cart";
 import QuickAddModal from "./QuickAddModal";
 import { useCurrency } from "@/context/CurrencyContext";
 import WishlistButton from "./WishlistButton";
+import ProductCard from "./ProductCard";
 
 interface FeaturedCollectionProps {
   products: Product[];
@@ -52,7 +53,7 @@ export default function FeaturedCollection({
   };
 
   return (
-    <section className="py-12 md:py-20 bg-white">
+    <section className="py-12 md:py-20 bg-gray-50">
       <div className="container mx-auto px-3 sm:px-4">
         <div className="text-center mb-8 md:mb-16">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">
@@ -65,69 +66,11 @@ export default function FeaturedCollection({
 
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
           {products.map((product) => (
-            <div key={product._id} className="group relative">
-              <Link
-                href={`/products/${product.slug}`}
-                className="block relative aspect-[3/4] overflow-hidden bg-gray-100 mb-3 md:mb-4 rounded-lg"
-              >
-                <Image
-                  src={product.images[0] || "/placeholder.png"}
-                  alt={product.name}
-                  fill
-                  className="object-cover object-center group-hover:scale-110 transition-transform duration-500"
-                  sizes="(max-width: 640px) 50vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                />
-                {product.isFeatured && (
-                  <span className="absolute top-2 left-2 md:top-4 md:left-4 bg-black text-white text-xs px-2 py-1 md:px-3 md:py-1 font-medium">
-                    Featured
-                  </span>
-                )}
-
-                {/* Wishlist Button */}
-                <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10">
-                  <WishlistButton productId={product._id} />
-                </div>
-
-                {/* Quick Add Button - always visible on mobile, hover on desktop */}
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (
-                      product.stock > 0 ||
-                      (product.variants && product.variants.length > 0)
-                    ) {
-                      handleQuickAdd(product);
-                    }
-                  }}
-                  disabled={!product.variants?.length && product.stock <= 0}
-                  className={`absolute bottom-4 left-4 right-4 py-2 md:py-3 px-4 md:px-6 font-semibold text-sm md:text-base opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 shadow-lg ${
-                    !product.variants?.length && product.stock <= 0
-                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "bg-white text-black hover:bg-gray-100 hover:text-black"
-                  }`}
-                >
-                  {!product.variants?.length && product.stock <= 0
-                    ? "Out of Stock"
-                    : "Quick Add"}
-                </button>
-              </Link>
-
-              <div className="flex justify-between items-start gap-2">
-                <div className="flex-1 min-w-0">
-                  <Link href={`/products/${product.slug}`}>
-                    <h3 className="font-semibold text-sm md:text-base text-gray-900 hover:text-black hover:underline transition-colors mb-1 truncate">
-                      {product.name}
-                    </h3>
-                  </Link>
-                  <p className="text-xs md:text-sm text-gray-500 truncate">
-                    {product.category}
-                  </p>
-                </div>
-                <p className="font-bold text-sm md:text-base text-gray-900 flex-shrink-0">
-                  {formatPrice(product.price)}
-                </p>
-              </div>
-            </div>
+            <ProductCard
+              key={product._id}
+              product={product}
+              onQuickAdd={handleQuickAdd}
+            />
           ))}
         </div>
 

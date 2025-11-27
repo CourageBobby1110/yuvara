@@ -1,12 +1,7 @@
 /* Collections Page Styles */
 .pageContainer {
   min-height: 100vh;
-  background: linear-gradient(
-    to bottom,
-    var(--color-bg-primary),
-    var(--color-bg-tertiary),
-    var(--color-bg-primary)
-  );
+  background-color: #f9fafb;
 }
 
 .hero {
