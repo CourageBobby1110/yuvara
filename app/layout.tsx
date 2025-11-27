@@ -12,12 +12,45 @@ import dbConnect from "@/lib/db";
 import SiteSettings from "@/models/SiteSettings";
 
 export const metadata: Metadata = {
-  title: "Yuvara - Global Online Shopping for Fashion, Electronics & More",
+  metadataBase: new URL(
+    process.env.NEXTAUTH_URL || process.env.URL || "https://yuvara.netlify.app"
+  ),
+  title: {
+    default: "Yuvara - Global Online Shopping",
+    template: "%s | Yuvara",
+  },
   description:
-    "Online shopping for the latest electronics, fashion, phone accessories, computer electronics, toys, home & garden, home appliances, tools, home improvement and more on Yuvara.",
+    "Shop the latest trends in fashion, electronics, and more at Yuvara. Global shipping, premium quality, and unbeatable prices.",
+  keywords: [
+    "Yuvara",
+    "Online Shopping",
+    "Fashion",
+    "Electronics",
+    "Global Shipping",
+    "Deals",
+  ],
+  authors: [{ name: "Yuvara" }],
+  creator: "Yuvara",
+  publisher: "Yuvara",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "/",
+    title: "Yuvara - Global Online Shopping",
+    description:
+      "Shop the latest trends in fashion, electronics, and more at Yuvara.",
+    siteName: "Yuvara",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Yuvara - Global Online Shopping",
+    description:
+      "Shop the latest trends in fashion, electronics, and more at Yuvara.",
+    creator: "@yuvara",
+  },
   icons: {
-    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
-    apple: [{ url: "/apple-touch-icon.svg", type: "image/svg+xml" }],
+    icon: "/favicon.svg",
+    apple: "/apple-touch-icon.svg",
   },
 };
 
@@ -25,6 +58,7 @@ import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
 import FacebookPixel from "@/components/FacebookPixel";
 import KlaviyoScript from "@/components/KlaviyoScript";
 import TikTokPixel from "@/components/TikTokPixel";
+import ReferralHandler from "@/components/ReferralHandler";
 
 export default async function RootLayout({
   children,
@@ -60,6 +94,7 @@ export default async function RootLayout({
         <FacebookPixel />
         <KlaviyoScript id={klaviyoId} />
         <TikTokPixel id={tiktokId} />
+        <ReferralHandler />
       </body>
     </html>
   );

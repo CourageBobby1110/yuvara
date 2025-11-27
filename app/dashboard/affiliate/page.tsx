@@ -16,7 +16,7 @@ interface AffiliateData {
 }
 
 export default function AffiliateDashboard() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const { formatPrice } = useCurrency();
   const [data, setData] = useState<AffiliateData | null>(null);
@@ -24,10 +24,17 @@ export default function AffiliateDashboard() {
   const [activating, setActivating] = useState(false);
 
   useEffect(() => {
-    if (session) {
+    if (status === "loading") return;
+
+    if (status === "unauthenticated") {
+      router.push("/auth/signin?callbackUrl=/dashboard/affiliate");
+      return;
+    }
+
+    if (status === "authenticated" && session) {
       fetchData();
     }
-  }, [session]);
+  }, [session, status, router]);
 
   const fetchData = async () => {
     try {

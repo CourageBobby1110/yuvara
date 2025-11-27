@@ -363,3 +363,121 @@
     display: none;
   }
 }
+
+/* Search Bar */
+.searchForm {
+  display: flex;
+  align-items: center;
+  background-color: #f3f4f6;
+  border-radius: 9999px;
+  padding: 0.25rem 0.5rem 0.25rem 1rem;
+  width: 200px;
+  transition: width 0.3s ease, background-color 0.2s ease;
+}
+
+.searchForm:focus-within {
+  width: 300px;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 2px #e5e7eb;
+}
+
+.searchInput {
+  border: none;
+  background: none;
+  flex: 1;
+  font-size: 0.875rem;
+  color: #111827;
+  outline: none;
+  padding: 0.25rem 0;
+}
+
+.searchInput::placeholder {
+  color: #9ca3af;
+}
+
+.searchButton {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.searchButton:hover {
+  color: #111827;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Mobile Search */
+.mobileSearchBtn {
+  background: none;
+  border: none;
+  color: #000000;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobileSearchBar {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: #ffffff;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  z-index: 45;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.mobileSearchForm {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #f3f4f6;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+}
+
+.mobileSearchInput {
+  flex: 1;
+  border: none;
+  background: none;
+  font-size: 1rem;
+  color: #111827;
+  outline: none;
+}
+
+.mobileSearchSubmit {
+  background-color: #111827;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Update desktop menu gap to accommodate search */
+.desktopMenu {
+  gap: 1.5rem;
+}

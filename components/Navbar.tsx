@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useCartStore } from "@/store/cart";
 import CurrencySelector from "@/components/CurrencySelector";
@@ -19,6 +20,9 @@ export default function Navbar({ session }: NavbarProps) {
   const { openCart, totalItems } = useCartStore();
   const [itemCount, setItemCount] = useState(0);
   const { t } = useLanguage();
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
   // Hydration fix for cart count
   useEffect(() => {
@@ -39,6 +43,14 @@ export default function Navbar({ session }: NavbarProps) {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/collections?search=${encodeURIComponent(searchQuery)}`);
+      setIsMobileSearchOpen(false);
+    }
   };
 
   return (
@@ -64,6 +76,33 @@ export default function Navbar({ session }: NavbarProps) {
             <Link href="/about" className={styles.navLink}>
               {t("nav.about")}
             </Link>
+
+            {/* Desktop Search */}
+            <form onSubmit={handleSearch} className={styles.searchForm}>
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className={styles.searchInput}
+              />
+              <button type="submit" className={styles.searchButton}>
+                <svg
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </button>
+            </form>
 
             {session?.user ? (
               <div className={styles.userActions}>
@@ -145,6 +184,27 @@ export default function Navbar({ session }: NavbarProps) {
 
           {/* Mobile Controls */}
           <div className={styles.mobileControls}>
+            {/* Mobile Search Toggle */}
+            <button
+              onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+              className={styles.mobileSearchBtn}
+            >
+              <svg
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </button>
+
             <button onClick={openCart} className={styles.mobileCartBtn}>
               <svg
                 width="24"
@@ -195,6 +255,25 @@ export default function Navbar({ session }: NavbarProps) {
             </button>
           </div>
         </div>
+
+        {/* Mobile Search Bar (Expandable) */}
+        {isMobileSearchOpen && (
+          <div className={styles.mobileSearchBar}>
+            <form onSubmit={handleSearch} className={styles.mobileSearchForm}>
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className={styles.mobileSearchInput}
+                autoFocus
+              />
+              <button type="submit" className={styles.mobileSearchSubmit}>
+                Go
+              </button>
+            </form>
+          </div>
+        )}
       </div>
 
       {/* Mobile Menu Overlay */}
