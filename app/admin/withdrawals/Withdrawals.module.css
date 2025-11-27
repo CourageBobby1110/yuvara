@@ -1,180 +1,255 @@
+/* ===== Container & Layout ===== */
 .container {
-  padding: 2rem;
+  width: 100%;
   max-width: 1400px;
   margin: 0 auto;
+  padding: 1.5rem;
+  min-height: 100vh;
+  background-color: #fafafa;
 }
 
+/* ===== Header ===== */
 .header {
+  margin-bottom: 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  gap: 1.5rem;
   flex-wrap: wrap;
-  gap: 1rem;
 }
 
 .title {
   font-size: 1.875rem;
   font-weight: 700;
-  color: #111827;
+  color: #1f2937;
+  margin: 0;
 }
 
+/* ===== Filters ===== */
 .filters {
   display: flex;
   gap: 0.5rem;
-  background: #f3f4f6;
-  padding: 0.25rem;
-  border-radius: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .filterButton {
   padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
+  border: 1px solid #e5e7eb;
+  background-color: white;
+  color: #6b7280;
+  border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #6b7280;
-  background: transparent;
-  border: none;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
 .filterButton:hover {
-  color: #111827;
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+  color: #374151;
 }
 
 .activeFilter {
-  background: white;
-  color: #111827;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  background-color: #1f2937;
+  color: white;
+  border-color: #1f2937;
 }
 
-.tableCard {
-  background: white;
-  border-radius: 1rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
-  overflow: hidden;
+.activeFilter:hover {
+  background-color: #374151;
+  border-color: #374151;
 }
 
+/* ===== Table Wrapper & Container ===== */
 .tableWrapper {
-  overflow-x: auto;
+  display: block;
 }
 
+.tableContainer {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+/* ===== Table Styles ===== */
 .table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.875rem;
+  table-layout: fixed;
 }
 
-.table th,
-.table td {
-  padding: 1rem 1.5rem;
-  text-align: left;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.table th {
-  font-weight: 600;
-  color: #6b7280;
+.table thead {
   background-color: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.th {
+  padding: 0.75rem 0.625rem;
+  text-align: left;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   white-space: nowrap;
 }
 
-.table tr:last-child td {
+.th:first-child {
+  width: 20%;
+}
+
+.th:nth-child(2) {
+  width: 13%;
+}
+
+.th:nth-child(3) {
+  width: 22%;
+}
+
+.th:nth-child(4) {
+  width: 12%;
+}
+
+.th:nth-child(5) {
+  width: 11%;
+}
+
+.th:nth-child(6) {
+  width: 22%;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.15s ease;
+}
+
+.table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.table tbody tr:last-child {
   border-bottom: none;
 }
 
+.td {
+  padding: 0.75rem 0.625rem;
+  font-size: 0.8125rem;
+  color: #1f2937;
+  vertical-align: middle;
+}
+
+/* ===== User Cell ===== */
 .userCell {
   display: flex;
   flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
 }
 
 .userName {
   font-weight: 600;
-  color: #111827;
+  color: #1f2937;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .userEmail {
-  color: #6b7280;
   font-size: 0.75rem;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* ===== Amount ===== */
 .amount {
   font-weight: 600;
-  color: #111827;
-  font-family: monospace;
-  font-size: 1rem;
+  font-size: 0.875rem;
+  color: #059669;
 }
 
-.bankDetails {
-  font-size: 0.875rem;
+/* ===== Date ===== */
+.date {
+  font-size: 0.8125rem;
   color: #374151;
+}
+
+/* ===== Bank Details ===== */
+.bankDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1875rem;
+}
+
+.bankName {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+.accountNumber {
+  color: #374151;
+  font-size: 0.75rem;
+  font-family: "Monaco", "Menlo", "Courier New", monospace;
+  margin: 0;
 }
 
 .accountName {
   color: #6b7280;
   font-size: 0.75rem;
+  margin: 0;
 }
 
+/* ===== Status Badge ===== */
 .statusBadge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
+  display: inline-block;
+  padding: 0.3125rem 0.625rem;
+  border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: capitalize;
 }
 
-.pending {
+.statusBadge.pending {
   background-color: #fef3c7;
   color: #92400e;
+  border: 1px solid #fde68a;
 }
 
-.approved {
+.statusBadge.approved {
   background-color: #d1fae5;
   color: #065f46;
+  border: 1px solid #a7f3d0;
 }
 
-.rejected {
+.statusBadge.rejected {
   background-color: #fee2e2;
   color: #991b1b;
+  border: 1px solid #fecaca;
 }
 
+/* ===== Actions ===== */
 .actions {
   display: flex;
   gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .actionButton {
-  padding: 0.375rem 0.75rem;
-  border-radius: 0.375rem;
+  padding: 0.4375rem 0.875rem;
+  border: none;
+  border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 600;
-  border: 1px solid transparent;
   cursor: pointer;
-  transition: all 0.2s;
-}
-
-.approve {
-  background-color: #d1fae5;
-  color: #065f46;
-  border-color: #a7f3d0;
-}
-
-.approve:hover:not(:disabled) {
-  background-color: #a7f3d0;
-}
-
-.reject {
-  background-color: #fee2e2;
-  color: #991b1b;
-  border-color: #fecaca;
-}
-
-.reject:hover:not(:disabled) {
-  background-color: #fecaca;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .actionButton:disabled {
@@ -182,51 +257,293 @@
   cursor: not-allowed;
 }
 
-.emptyState {
-  text-align: center;
-  padding: 3rem;
-  color: #6b7280;
+.approve {
+  background-color: #059669;
+  color: white;
 }
 
-/* Responsive Design */
+.approve:hover:not(:disabled) {
+  background-color: #047857;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(5, 150, 105, 0.2);
+}
+
+.approve:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
+}
+
+.reject {
+  background-color: #dc2626;
+  color: white;
+}
+
+.reject:hover:not(:disabled) {
+  background-color: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(220, 38, 38, 0.2);
+}
+
+.reject:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+}
+
+/* ===== Empty State ===== */
+.emptyState {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: #9ca3af;
+  font-size: 0.9375rem;
+  background-color: white;
+}
+
+/* ===== Mobile Card View (Hidden by Default) ===== */
+.mobileView {
+  display: none;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.cardHeader {
+  padding: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.cardBody {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.cardRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.label {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.value {
+  font-size: 0.875rem;
+  color: #1f2937;
+  font-weight: 600;
+  text-align: right;
+}
+
+.cardFooter {
+  padding: 1rem;
+  border-top: 1px solid #f3f4f6;
+  background-color: #fafafa;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.cardFooter .actionButton {
+  flex: 1;
+}
+
+/* ===== Tablet Responsive (768px - 1024px) ===== */
 @media (max-width: 1024px) {
   .container {
-    padding: 1rem;
+    padding: 1.25rem;
   }
 
   .title {
     font-size: 1.5rem;
   }
 
-  .table th,
-  .table td {
-    padding: 0.75rem 1rem;
+  .header {
+    gap: 1rem;
+  }
+
+  .th,
+  .td {
+    padding: 0.625rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .bankName,
+  .accountNumber,
+  .accountName {
+    font-size: 0.6875rem;
+  }
+
+  .actionButton {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.6875rem;
+  }
+
+  .filterButton {
+    padding: 0.4375rem 0.875rem;
+    font-size: 0.8125rem;
   }
 }
 
+/* ===== Mobile Responsive (below 768px) ===== */
 @media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
   .header {
     flex-direction: column;
     align-items: flex-start;
+    margin-bottom: 1.5rem;
+  }
+
+  .title {
+    font-size: 1.375rem;
   }
 
   .filters {
     width: 100%;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
   }
 
   .filterButton {
-    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+    text-align: center;
   }
 
-  .table th,
-  .table td {
+  /* Hide table, show cards */
+  .tableWrapper {
+    display: none;
+  }
+
+  .mobileView {
+    display: block;
+  }
+
+  .card .userCell {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cardRow .amount {
+    text-align: right;
+  }
+}
+
+/* ===== Small Mobile (below 480px) ===== */
+@media (max-width: 480px) {
+  .container {
     padding: 0.75rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .filters {
+    gap: 0.375rem;
+  }
+
+  .filterButton {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+  }
+
+  .card {
+    border-radius: 8px;
+  }
+
+  .cardHeader {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .cardFooter {
+    flex-direction: column;
+  }
+
+  .cardFooter .actionButton {
+    width: 100%;
+  }
+
+  .cardRow {
+    gap: 0.75rem;
+  }
+
+  .label {
+    font-size: 0.75rem;
+  }
+
+  .value {
     font-size: 0.8125rem;
   }
+}
 
-  .amount {
-    font-size: 0.875rem;
+/* ===== Print Styles ===== */
+@media print {
+  .container {
+    background-color: white;
+  }
+
+  .filters,
+  .actionButton {
+    display: none;
+  }
+
+  .table {
+    box-shadow: none;
+  }
+
+  .table tbody tr:hover {
+    background-color: transparent;
+  }
+}
+
+/* ===== Accessibility Improvements ===== */
+@media (prefers-reduced-motion: reduce) {
+  .container,
+  .table,
+  .actionButton,
+  .filterButton,
+  .card {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus states for accessibility */
+.actionButton:focus-visible,
+.filterButton:focus-visible {
+  outline: 2px solid #1f2937;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .table {
+    border: 2px solid #000;
+  }
+
+  .th,
+  .td {
+    border: 1px solid #000;
+  }
+
+  .statusBadge {
+    border: 2px solid #000;
   }
 }

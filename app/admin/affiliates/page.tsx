@@ -19,6 +19,7 @@ interface AffiliateUser {
     accountNumber: string;
     accountName: string;
   };
+  hasPendingWithdrawal?: boolean;
 }
 
 export default function AdminAffiliatesPage() {
@@ -132,15 +133,20 @@ export default function AdminAffiliatesPage() {
                       </span>
                     </td>
                     <td className={styles.td} data-label="Unpaid Balance">
-                      <span
-                        className={`${styles.amount} ${
-                          user.affiliateBalance > 0
-                            ? styles.balanceDue
-                            : styles.balancePaid
-                        }`}
-                      >
-                        {formatAmount(user.affiliateBalance)}
-                      </span>
+                      <div className={styles.balanceWrapper}>
+                        <span
+                          className={`${styles.amount} ${
+                            user.affiliateBalance > 0
+                              ? styles.balanceDue
+                              : styles.balancePaid
+                          }`}
+                        >
+                          {formatAmount(user.affiliateBalance)}
+                        </span>
+                        {user.hasPendingWithdrawal && (
+                          <span className={styles.pendingBadge}>Pending</span>
+                        )}
+                      </div>
                     </td>
                     <td className={styles.td} data-label="Bank Details">
                       {user.affiliateBankDetails?.accountNumber ? (
@@ -212,15 +218,20 @@ export default function AdminAffiliatesPage() {
                 </div>
                 <div className={styles.cardRow}>
                   <span className={styles.label}>Unpaid Balance</span>
-                  <span
-                    className={`${styles.value} ${
-                      user.affiliateBalance > 0
-                        ? styles.balanceDue
-                        : styles.balancePaid
-                    }`}
-                  >
-                    {formatAmount(user.affiliateBalance)}
-                  </span>
+                  <div className={styles.balanceWrapper}>
+                    <span
+                      className={`${styles.value} ${
+                        user.affiliateBalance > 0
+                          ? styles.balanceDue
+                          : styles.balancePaid
+                      }`}
+                    >
+                      {formatAmount(user.affiliateBalance)}
+                    </span>
+                    {user.hasPendingWithdrawal && (
+                      <span className={styles.pendingBadge}>Pending</span>
+                    )}
+                  </div>
                 </div>
 
                 {user.affiliateBankDetails?.accountNumber && (

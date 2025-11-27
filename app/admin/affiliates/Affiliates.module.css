@@ -191,6 +191,25 @@
   color: #059669;
 }
 
+.balanceWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-start;
+}
+
+.pendingBadge {
+  font-size: 0.625rem;
+  background-color: #fef3c7;
+  color: #92400e;
+  padding: 0.125rem 0.375rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid #fcd34d;
+}
+
 /* ===== Bank Details ===== */
 .bankDetails {
   display: flex;
@@ -297,20 +316,6 @@
 
 .label {
   font-size: 0.8125rem;
-  color: #6b7280;
-  font-weight: 500;
-  flex-shrink: 0;
-}
-
-.value {
-  font-size: 0.875rem;
-  color: #1f2937;
-  font-weight: 600;
-  text-align: right;
-}
-
-.cardFooter {
-  padding: 1rem;
   border-top: 1px solid #f3f4f6;
   background-color: #fafafa;
 }

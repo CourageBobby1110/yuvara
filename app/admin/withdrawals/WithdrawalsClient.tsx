@@ -76,47 +76,60 @@ export default function WithdrawalsClient({
         </div>
       </div>
 
-      <div className={styles.tableCard}>
-        <div className={styles.tableWrapper}>
+      {/* Desktop Table View */}
+      <div className={styles.tableWrapper}>
+        <div className={styles.tableContainer}>
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>Affiliate</th>
-                <th>Amount</th>
-                <th>Bank Details</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th className={styles.th}>Affiliate</th>
+                <th className={styles.th}>Amount</th>
+                <th className={styles.th}>Bank Details</th>
+                <th className={styles.th}>Date</th>
+                <th className={styles.th}>Status</th>
+                <th className={styles.th}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredWithdrawals.map((w) => (
                 <tr key={w._id}>
-                  <td>
+                  <td className={styles.td} data-label="Affiliate">
                     <div className={styles.userCell}>
                       <span className={styles.userName}>{w.user?.name}</span>
                       <span className={styles.userEmail}>{w.user?.email}</span>
                     </div>
                   </td>
-                  <td className={styles.amount}>{formatAmount(w.amount)}</td>
-                  <td>
+                  <td className={styles.td} data-label="Amount">
+                    <span className={styles.amount}>
+                      {formatAmount(w.amount)}
+                    </span>
+                  </td>
+                  <td className={styles.td} data-label="Bank Details">
                     <div className={styles.bankDetails}>
-                      <div>{w.bankDetails?.bankName}</div>
-                      <div>{w.bankDetails?.accountNumber}</div>
-                      <div className={styles.accountName}>
+                      <p className={styles.bankName}>
+                        {w.bankDetails?.bankName}
+                      </p>
+                      <p className={styles.accountNumber}>
+                        {w.bankDetails?.accountNumber}
+                      </p>
+                      <p className={styles.accountName}>
                         {w.bankDetails?.accountName}
-                      </div>
+                      </p>
                     </div>
                   </td>
-                  <td>{new Date(w.createdAt).toLocaleDateString()}</td>
-                  <td>
+                  <td className={styles.td} data-label="Date">
+                    <span className={styles.date}>
+                      {new Date(w.createdAt).toLocaleDateString()}
+                    </span>
+                  </td>
+                  <td className={styles.td} data-label="Status">
                     <span
                       className={`${styles.statusBadge} ${styles[w.status]}`}
                     >
                       {w.status}
                     </span>
                   </td>
-                  <td>
+                  <td className={styles.td} data-label="Actions">
                     {w.status === "pending" && (
                       <div className={styles.actions}>
                         <button
@@ -148,6 +161,75 @@ export default function WithdrawalsClient({
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className={styles.mobileView}>
+        {filteredWithdrawals.length > 0 ? (
+          filteredWithdrawals.map((w) => (
+            <div key={w._id} className={styles.card}>
+              <div className={styles.cardHeader}>
+                <div className={styles.userCell}>
+                  <span className={styles.userName}>{w.user?.name}</span>
+                  <span className={styles.userEmail}>{w.user?.email}</span>
+                </div>
+                <span className={`${styles.statusBadge} ${styles[w.status]}`}>
+                  {w.status}
+                </span>
+              </div>
+
+              <div className={styles.cardBody}>
+                <div className={styles.cardRow}>
+                  <span className={styles.label}>Amount</span>
+                  <span className={styles.amount}>
+                    {formatAmount(w.amount)}
+                  </span>
+                </div>
+
+                <div className={styles.cardRow}>
+                  <span className={styles.label}>Date</span>
+                  <span className={styles.value}>
+                    {new Date(w.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+
+                <div className={styles.cardRow}>
+                  <span className={styles.label}>Bank Details</span>
+                  <div className={styles.bankDetails}>
+                    <p className={styles.bankName}>{w.bankDetails?.bankName}</p>
+                    <p className={styles.accountNumber}>
+                      {w.bankDetails?.accountNumber}
+                    </p>
+                    <p className={styles.accountName}>
+                      {w.bankDetails?.accountName}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {w.status === "pending" && (
+                <div className={styles.cardFooter}>
+                  <button
+                    onClick={() => handleAction(w._id, "approved")}
+                    disabled={processingId === w._id}
+                    className={`${styles.actionButton} ${styles.approve}`}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => handleAction(w._id, "rejected")}
+                    disabled={processingId === w._id}
+                    className={`${styles.actionButton} ${styles.reject}`}
+                  >
+                    Reject
+                  </button>
+                </div>
+              )}
+            </div>
+          ))
+        ) : (
+          <div className={styles.emptyState}>No withdrawal requests found</div>
+        )}
       </div>
     </div>
   );
