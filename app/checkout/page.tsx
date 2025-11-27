@@ -243,7 +243,7 @@ export default function CheckoutPage() {
     e.preventDefault();
 
     if (status === "unauthenticated") {
-      router.push("/auth/signin?callbackUrl=/checkout");
+      router.push("/auth/signup?callbackUrl=/checkout");
       return;
     }
 

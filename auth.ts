@@ -7,7 +7,10 @@ import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
 
+import { authConfig } from "./auth.config";
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: MongoDBAdapter(clientPromise) as any,
   providers: [
     NodemailerProvider({
@@ -62,6 +65,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
+    ...authConfig.callbacks,
     async signIn({ user, account }) {
       // After email verification, redirect to homepage
       if (account?.provider === "nodemailer") {
@@ -70,10 +74,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return true;
     },
     async jwt({ token, user, trigger }) {
-      if (user) {
-        token.role = (user as any).role;
-        token.id = user.id;
-        token.emailVerified = (user as any).emailVerified;
+      // Run the edge-safe jwt callback first
+      if (authConfig.callbacks?.jwt) {
+        token = await authConfig.callbacks.jwt({ token, user, trigger } as any);
       }
 
       // Refresh emailVerified status on session update
@@ -88,19 +91,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        (session.user as any).role = token.role;
-        (session.user as any).id = token.id;
-        (session.user as any).emailVerified = token.emailVerified;
+      if (authConfig.callbacks?.session) {
+        session = await authConfig.callbacks.session({ session, token } as any);
       }
       return session;
     },
-  },
-  session: {
-    strategy: "jwt",
-  },
-  secret: process.env.NEXTAUTH_SECRET,
-  pages: {
-    signIn: "/auth/signin",
   },
 });
