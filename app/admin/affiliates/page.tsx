@@ -22,9 +22,21 @@ interface AffiliateUser {
 }
 
 export default function AdminAffiliatesPage() {
-  const { formatPrice } = useCurrency();
+  const { currency, exchangeRates } = useCurrency();
   const [affiliates, setAffiliates] = useState<AffiliateUser[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const formatAmount = (amountInNaira: number) => {
+    // Convert Naira to USD (Base)
+    const amountInUSD = amountInNaira / (exchangeRates["NGN"] || 1500);
+    // Convert USD to selected currency
+    const converted = amountInUSD * (exchangeRates[currency] || 1);
+
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
+    }).format(converted);
+  };
 
   useEffect(() => {
     fetchAffiliates();
@@ -78,90 +90,172 @@ export default function AdminAffiliatesPage() {
         <p className={styles.subtitle}>Track and manage affiliate partners.</p>
       </div>
 
-      <div className={styles.tableContainer}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th className={styles.th}>Affiliate</th>
-              <th className={styles.th}>Code</th>
-              <th className={styles.th}>Referrals</th>
-              <th className={styles.th}>Total Earnings</th>
-              <th className={styles.th}>Unpaid Balance</th>
-              <th className={styles.th}>Bank Details</th>
-              <th className={styles.th}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {affiliates.length > 0 ? (
-              affiliates.map((user) => (
-                <tr key={user._id}>
-                  <td className={styles.td}>
-                    <div className={styles.userCell}>
-                      <div className={styles.avatar}>
-                        {user.name?.[0] || "U"}
+      {/* Desktop Table View */}
+      <div className={styles.tableWrapper}>
+        <div className={styles.tableContainer}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th className={styles.th}>Affiliate</th>
+                <th className={styles.th}>Code</th>
+                <th className={styles.th}>Referrals</th>
+                <th className={styles.th}>Total Earnings</th>
+                <th className={styles.th}>Unpaid Balance</th>
+                <th className={styles.th}>Bank Details</th>
+                <th className={styles.th}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {affiliates.length > 0 ? (
+                affiliates.map((user) => (
+                  <tr key={user._id}>
+                    <td className={styles.td} data-label="Affiliate">
+                      <div className={styles.userCell}>
+                        <div className={styles.avatar}>
+                          {user.name?.[0] || "U"}
+                        </div>
+                        <div className={styles.userInfo}>
+                          <span className={styles.userName}>{user.name}</span>
+                          <span className={styles.userEmail}>{user.email}</span>
+                        </div>
                       </div>
-                      <div className={styles.userInfo}>
-                        <span className={styles.userName}>{user.name}</span>
-                        <span className={styles.userEmail}>{user.email}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td className={styles.td}>
-                    <span className={styles.code}>{user.referralCode}</span>
-                  </td>
-                  <td className={styles.td}>{user.referralCount}</td>
-                  <td className={styles.td}>
-                    <span className={styles.amount}>
-                      {formatPrice(user.totalEarnings)}
-                    </span>
-                  </td>
-                  <td className={styles.td}>
-                    <span
-                      className={styles.amount}
-                      style={{
-                        color:
-                          user.affiliateBalance > 0 ? "#ef4444" : "#10b981",
-                      }}
-                    >
-                      {formatPrice(user.affiliateBalance)}
-                    </span>
-                  </td>
-                  <td className={styles.td}>
-                    {user.affiliateBankDetails?.accountNumber ? (
-                      <div className="text-sm">
-                        <p className="font-medium">
-                          {user.affiliateBankDetails.bankName}
-                        </p>
-                        <p>{user.affiliateBankDetails.accountNumber}</p>
-                        <p className="text-gray-500">
-                          {user.affiliateBankDetails.accountName}
-                        </p>
-                      </div>
-                    ) : (
-                      <span className="text-gray-400 italic">Not set</span>
-                    )}
-                  </td>
-                  <td className={styles.td}>
-                    {user.affiliateBalance > 0 && (
-                      <button
-                        onClick={() => handleMarkPaid(user._id)}
-                        className={styles.payButton}
+                    </td>
+                    <td className={styles.td} data-label="Code">
+                      <span className={styles.code}>{user.referralCode}</span>
+                    </td>
+                    <td className={styles.td} data-label="Referrals">
+                      <span className={styles.stat}>{user.referralCount}</span>
+                    </td>
+                    <td className={styles.td} data-label="Total Earnings">
+                      <span className={styles.amount}>
+                        {formatAmount(user.totalEarnings)}
+                      </span>
+                    </td>
+                    <td className={styles.td} data-label="Unpaid Balance">
+                      <span
+                        className={`${styles.amount} ${
+                          user.affiliateBalance > 0
+                            ? styles.balanceDue
+                            : styles.balancePaid
+                        }`}
                       >
-                        Mark Paid
-                      </button>
-                    )}
+                        {formatAmount(user.affiliateBalance)}
+                      </span>
+                    </td>
+                    <td className={styles.td} data-label="Bank Details">
+                      {user.affiliateBankDetails?.accountNumber ? (
+                        <div className={styles.bankDetails}>
+                          <p className={styles.bankName}>
+                            {user.affiliateBankDetails.bankName}
+                          </p>
+                          <p className={styles.accountNumber}>
+                            {user.affiliateBankDetails.accountNumber}
+                          </p>
+                          <p className={styles.accountName}>
+                            {user.affiliateBankDetails.accountName}
+                          </p>
+                        </div>
+                      ) : (
+                        <span className={styles.notSet}>Not set</span>
+                      )}
+                    </td>
+                    <td className={styles.td} data-label="Actions">
+                      {user.affiliateBalance > 0 && (
+                        <button
+                          onClick={() => handleMarkPaid(user._id)}
+                          className={styles.payButton}
+                        >
+                          Mark Paid
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={7} className={styles.emptyState}>
+                    No affiliates found.
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={7} className={styles.emptyState}>
-                  No affiliates found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className={styles.mobileView}>
+        {affiliates.length > 0 ? (
+          affiliates.map((user) => (
+            <div key={user._id} className={styles.card}>
+              <div className={styles.cardHeader}>
+                <div className={styles.userCell}>
+                  <div className={styles.avatar}>{user.name?.[0] || "U"}</div>
+                  <div className={styles.userInfo}>
+                    <span className={styles.userName}>{user.name}</span>
+                    <span className={styles.userEmail}>{user.email}</span>
+                  </div>
+                </div>
+                <span className={styles.code}>{user.referralCode}</span>
+              </div>
+
+              <div className={styles.cardBody}>
+                <div className={styles.cardRow}>
+                  <span className={styles.label}>Referrals</span>
+                  <span className={styles.value}>{user.referralCount}</span>
+                </div>
+                <div className={styles.cardRow}>
+                  <span className={styles.label}>Total Earnings</span>
+                  <span className={styles.value}>
+                    {formatAmount(user.totalEarnings)}
+                  </span>
+                </div>
+                <div className={styles.cardRow}>
+                  <span className={styles.label}>Unpaid Balance</span>
+                  <span
+                    className={`${styles.value} ${
+                      user.affiliateBalance > 0
+                        ? styles.balanceDue
+                        : styles.balancePaid
+                    }`}
+                  >
+                    {formatAmount(user.affiliateBalance)}
+                  </span>
+                </div>
+
+                {user.affiliateBankDetails?.accountNumber && (
+                  <div className={styles.cardRow}>
+                    <span className={styles.label}>Bank Details</span>
+                    <div className={styles.bankDetails}>
+                      <p className={styles.bankName}>
+                        {user.affiliateBankDetails.bankName}
+                      </p>
+                      <p className={styles.accountNumber}>
+                        {user.affiliateBankDetails.accountNumber}
+                      </p>
+                      <p className={styles.accountName}>
+                        {user.affiliateBankDetails.accountName}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {user.affiliateBalance > 0 && (
+                <div className={styles.cardFooter}>
+                  <button
+                    onClick={() => handleMarkPaid(user._id)}
+                    className={styles.payButton}
+                  >
+                    Mark Paid
+                  </button>
+                </div>
+              )}
+            </div>
+          ))
+        ) : (
+          <div className={styles.emptyState}>No affiliates found.</div>
+        )}
       </div>
     </div>
   );

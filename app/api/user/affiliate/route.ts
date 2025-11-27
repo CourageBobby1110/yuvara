@@ -33,9 +33,22 @@ export async function POST(req: Request) {
     }
 
     await dbConnect();
-
-    // Check if already affiliate
     const user = await User.findById(session.user.id);
+
+    // Parse body to check if it's an activation or update
+    const body = await req.json().catch(() => ({}));
+
+    if (body.bankDetails) {
+      // Update bank details
+      user.affiliateBankDetails = body.bankDetails;
+      await user.save();
+      return NextResponse.json({
+        message: "Bank details updated",
+        bankDetails: user.affiliateBankDetails,
+      });
+    }
+
+    // Activation logic
     if (user.isAffiliate) {
       return NextResponse.json({ message: "Already an affiliate" });
     }
@@ -44,7 +57,6 @@ export async function POST(req: Request) {
     let referralCode = user.referralCode;
     if (!referralCode) {
       referralCode = crypto.randomBytes(4).toString("hex").toUpperCase();
-      // Ensure uniqueness (simplified for now, ideally check DB)
     }
 
     user.isAffiliate = true;
@@ -57,8 +69,9 @@ export async function POST(req: Request) {
       referralCode,
     });
   } catch (error) {
+    console.error("Affiliate API Error:", error);
     return NextResponse.json(
-      { error: "Failed to activate affiliate account" },
+      { error: "Failed to process request" },
       { status: 500 }
     );
   }

@@ -152,6 +152,15 @@ export default function AdminSidebar() {
             Affiliates
           </Link>
           <Link
+            href="/admin/withdrawals"
+            className={`${styles.link} ${
+              isActive("/admin/withdrawals") ? styles.active : ""
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Withdrawals
+          </Link>
+          <Link
             href="/admin/referrals"
             className={`${styles.link} ${
               isActive("/admin/referrals") ? styles.active : ""
