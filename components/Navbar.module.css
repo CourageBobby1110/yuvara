@@ -47,7 +47,7 @@
 }
 
 .navLink:hover {
-  color: #000000;
+  color: var(--color-luxury-gold);
 }
 
 .userActions {
@@ -64,7 +64,7 @@
 }
 
 .iconLink:hover {
-  color: #000000;
+  color: var(--color-luxury-gold);
 }
 
 .profileImageContainer {
@@ -82,7 +82,7 @@
 }
 
 .profileImageContainer:hover {
-  border-color: #000000;
+  border-color: var(--color-luxury-gold);
 }
 
 .profileImage {
@@ -108,7 +108,7 @@
 }
 
 .signOutBtn:hover {
-  color: #000000;
+  color: var(--color-luxury-gold);
 }
 
 .utilityBar {
@@ -132,7 +132,7 @@
 }
 
 .cartButton:hover {
-  color: #000000;
+  color: var(--color-luxury-gold);
 }
 
 .cartLabel {
@@ -144,7 +144,7 @@
   position: absolute;
   top: -0.5rem;
   right: -0.75rem;
-  background-color: #000000;
+  background-color: var(--color-luxury-gold);
   color: #ffffff;
   font-size: 0.625rem;
   font-weight: 700;

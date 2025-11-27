@@ -30,10 +30,22 @@
   --color-warning: #f59e0b;
   --color-info: #3b82f6;
 
+  /* Luxury Accents */
+  --color-luxury-gold: #d4af37;
+  --color-luxury-gold-dark: #b5952f;
+  --color-luxury-gold-light: #f3e5ab;
+
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-gold: 0 4px 14px 0 rgba(212, 175, 55, 0.39);
+}
+
+/* Luxury Selection Style */
+::selection {
+  background-color: var(--color-luxury-gold);
+  color: #ffffff;
 }
 
 /* Force Light Mode - Disable Dark Mode */
@@ -89,7 +101,7 @@ a {
 }
 
 a:hover {
-  color: var(--color-text-secondary);
+  color: var(--color-luxury-gold);
 }
 
 /* Utility Classes */
@@ -169,9 +181,9 @@ a:hover {
   }
 
   .input-field:focus {
-    border-color: var(--color-primary);
+    border-color: var(--color-luxury-gold);
     background-color: var(--color-bg-primary);
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
   }
 
   .input-field::placeholder {
@@ -214,6 +226,24 @@ a:hover {
 
   .bg-tertiary {
     background-color: var(--color-bg-tertiary);
+  }
+
+  /* Luxury Utilities */
+  .text-gold {
+    color: var(--color-luxury-gold);
+  }
+
+  .border-gold {
+    border-color: var(--color-luxury-gold);
+  }
+
+  .bg-gold {
+    background-color: var(--color-luxury-gold);
+  }
+
+  .hover-text-gold:hover {
+    color: var(--color-luxury-gold);
+    transition: color 0.2s ease;
   }
 }
 

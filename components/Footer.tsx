@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import styles from "./Footer.module.css";
 
 export default function Footer() {
@@ -7,7 +8,15 @@ export default function Footer() {
       <div className={styles.container}>
         <div className={styles.topSection}>
           <div className={styles.brandColumn}>
-            <h2 className={styles.logo}>Yuvara</h2>
+            <div className={styles.logo}>
+              <Image
+                src="/logo.png"
+                alt="Yuvara"
+                width={120}
+                height={40}
+                style={{ objectFit: "contain" }}
+              />
+            </div>
             <p className={styles.tagline}>
               Redefining the modern shopping experience with quality, style, and
               innovation.

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { handleSignOut } from "@/app/actions/auth";
 import { useCartStore } from "@/store/cart";
 import CurrencySelector from "@/components/CurrencySelector";
@@ -46,7 +47,13 @@ export default function Navbar({ session }: NavbarProps) {
         <div className={styles.navContent}>
           {/* Logo */}
           <Link href="/" className={styles.logo}>
-            Yuvara
+            <Image
+              src="/logo.png"
+              alt="Yuvara"
+              width={90}
+              height={30}
+              style={{ objectFit: "contain" }}
+            />
           </Link>
 
           {/* Desktop Menu */}

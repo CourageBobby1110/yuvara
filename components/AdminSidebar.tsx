@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import styles from "./AdminSidebar.module.css";
 import { handleSignOut } from "@/app/actions/auth";
@@ -35,7 +36,13 @@ export default function AdminSidebar() {
             className={styles.logo}
             onClick={() => setIsOpen(false)}
           >
-            Yuvara Admin
+            <Image
+              src="/logo.png"
+              alt="Yuvara Admin"
+              width={150}
+              height={50}
+              style={{ objectFit: "contain" }}
+            />
           </Link>
           <MessageNotification />
         </div>

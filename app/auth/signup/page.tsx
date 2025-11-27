@@ -73,7 +73,15 @@ export default function SignUpPage() {
           <div className={styles.cardHighlight} />
 
           <div className={styles.header}>
-            <h1 className={styles.title}>YUVARA</h1>
+            <div className={styles.title}>
+              <Image
+                src="/logo.png"
+                alt="Yuvara"
+                width={180}
+                height={60}
+                style={{ objectFit: "contain" }}
+              />
+            </div>
             <p className={styles.subtitle}>Create Account</p>
           </div>
 

@@ -78,7 +78,7 @@ export default function FeaturedCollection({
                   sizes="(max-width: 640px) 50vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                 />
                 {product.isFeatured && (
-                  <span className="absolute top-2 left-2 md:top-4 md:left-4 bg-black text-white text-xs px-2 py-1 md:px-3 md:py-1 font-medium">
+                  <span className="absolute top-2 left-2 md:top-4 md:left-4 bg-[var(--color-luxury-gold)] text-white text-xs px-2 py-1 md:px-3 md:py-1 font-medium">
                     Featured
                   </span>
                 )}
@@ -103,7 +103,7 @@ export default function FeaturedCollection({
                   className={`absolute bottom-4 left-4 right-4 py-2 md:py-3 px-4 md:px-6 font-semibold text-sm md:text-base opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 shadow-lg ${
                     !product.variants?.length && product.stock <= 0
                       ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "bg-white text-black hover:bg-black hover:text-white"
+                      : "bg-white text-black hover:bg-[var(--color-luxury-gold)] hover:text-white"
                   }`}
                 >
                   {!product.variants?.length && product.stock <= 0
@@ -115,7 +115,7 @@ export default function FeaturedCollection({
               <div className="flex justify-between items-start gap-2">
                 <div className="flex-1 min-w-0">
                   <Link href={`/products/${product.slug}`}>
-                    <h3 className="font-semibold text-sm md:text-base text-gray-900 hover:underline mb-1 truncate">
+                    <h3 className="font-semibold text-sm md:text-base text-gray-900 hover:text-[var(--color-luxury-gold)] transition-colors mb-1 truncate">
                       {product.name}
                     </h3>
                   </Link>
@@ -135,7 +135,7 @@ export default function FeaturedCollection({
           <div className="text-center mt-12 md:mt-16">
             <Link
               href="/collections"
-              className="inline-block bg-black text-white px-8 md:px-10 py-3 md:py-4 text-base md:text-lg font-semibold hover:bg-gray-800 transition-colors duration-300"
+              className="inline-block bg-black text-white px-8 md:px-10 py-3 md:py-4 text-base md:text-lg font-semibold hover:bg-[var(--color-luxury-gold)] transition-colors duration-300"
             >
               View All Products
             </Link>

@@ -49,7 +49,13 @@ export default function HeroNavbar({ session }: HeroNavbarProps) {
 
       <nav className={`${styles.nav} ${scrolled ? styles.scrolled : ""}`}>
         <Link href="/" className={styles.logo}>
-          Yuvara
+          <Image
+            src="/logo.png"
+            alt="Yuvara"
+            width={90}
+            height={30}
+            style={{ objectFit: "contain" }}
+          />
         </Link>
 
         <button
