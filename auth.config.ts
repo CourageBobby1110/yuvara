@@ -13,6 +13,7 @@ export const authConfig = {
         token.role = (user as any).role;
         token.id = user.id;
         token.emailVerified = (user as any).emailVerified;
+        token.referralCode = (user as any).referralCode;
       }
       return token;
     },
@@ -21,6 +22,7 @@ export const authConfig = {
         (session.user as any).role = token.role;
         (session.user as any).id = token.id;
         (session.user as any).emailVerified = token.emailVerified;
+        (session.user as any).referralCode = token.referralCode;
       }
       return session;
     },

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { handleSignOut } from "@/app/actions/auth";
+import { signOut } from "next-auth/react";
 import { useCartStore } from "@/store/cart";
 import CurrencySelector from "@/components/CurrencySelector";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -65,7 +65,7 @@ export default function Navbar({ session }: NavbarProps) {
               {t("nav.about")}
             </Link>
 
-            {session ? (
+            {session?.user ? (
               <div className={styles.userActions}>
                 {session.user?.role === "admin" && (
                   <Link href="/admin/dashboard" className={styles.navLink}>
@@ -118,7 +118,7 @@ export default function Navbar({ session }: NavbarProps) {
                   Referrals
                 </Link>
                 <button
-                  onClick={() => handleSignOut()}
+                  onClick={() => signOut({ callbackUrl: "/" })}
                   className={styles.signOutBtn}
                 >
                   Sign Out
@@ -221,7 +221,7 @@ export default function Navbar({ session }: NavbarProps) {
 
           <div className={styles.divider}></div>
 
-          {session ? (
+          {session?.user ? (
             <>
               <Link
                 href="/profile"
@@ -288,7 +288,7 @@ export default function Navbar({ session }: NavbarProps) {
               </Link>
               <button
                 onClick={() => {
-                  handleSignOut();
+                  signOut({ callbackUrl: "/" });
                   setIsMenuOpen(false);
                 }}
                 className={styles.mobileSignOut}

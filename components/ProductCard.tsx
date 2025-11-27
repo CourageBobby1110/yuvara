@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { Product } from "@/models/Product";
 import { useCurrency } from "@/context/CurrencyContext";
 import WishlistButton from "./WishlistButton";
@@ -14,12 +15,19 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, onQuickAdd }: ProductCardProps) {
+  const { data: session } = useSession();
   const { formatPrice } = useCurrency();
 
   const handleShare = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const url = `${window.location.origin}/products/${product.slug}`;
+
+    let url = `${window.location.origin}/products/${product.slug}`;
+
+    // Append referral code if user is logged in and has one
+    if (session?.user?.referralCode) {
+      url += `?ref=${session.user.referralCode}`;
+    }
 
     if (navigator.share) {
       navigator

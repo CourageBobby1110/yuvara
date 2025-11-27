@@ -60,6 +60,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           name: user.name,
           role: user.role,
           image: user.image,
+          referralCode: user.referralCode,
         };
       },
     }),
@@ -85,6 +86,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const dbUser = await User.findById(token.id);
         if (dbUser) {
           token.emailVerified = dbUser.emailVerified;
+          token.referralCode = dbUser.referralCode;
         }
       }
 

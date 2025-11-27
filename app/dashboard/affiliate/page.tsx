@@ -71,6 +71,13 @@ export default function AffiliateDashboard() {
     }
   };
 
+  const formatNaira = (amount: number) => {
+    return new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: "NGN",
+    }).format(amount);
+  };
+
   if (loading)
     return <div className={styles.loading}>Loading dashboard...</div>;
 
@@ -108,7 +115,7 @@ export default function AffiliateDashboard() {
         <div className={styles.card}>
           <h2 className={styles.cardTitle}>Available Balance</h2>
           <div className={styles.statValue}>
-            {formatPrice(data.affiliateBalance)}
+            {formatNaira(data.affiliateBalance)}
           </div>
           <p className={styles.statLabel}>Ready for payout</p>
         </div>
@@ -117,7 +124,7 @@ export default function AffiliateDashboard() {
         <div className={styles.card}>
           <h2 className={styles.cardTitle}>Total Earnings</h2>
           <div className={styles.statValue}>
-            {formatPrice(data.totalEarnings)}
+            {formatNaira(data.totalEarnings)}
           </div>
           <p className={styles.statLabel}>Lifetime earnings</p>
         </div>
