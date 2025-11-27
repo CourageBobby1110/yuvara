@@ -50,9 +50,9 @@ export default function Navbar({ session }: NavbarProps) {
             <Image
               src="/logo.png"
               alt="Yuvara"
-              width={90}
-              height={30}
-              style={{ objectFit: "contain" }}
+              width={40}
+              height={40}
+              style={{ objectFit: "cover", borderRadius: "50%" }}
             />
           </Link>
 

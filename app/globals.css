@@ -30,16 +30,16 @@
   --color-warning: #f59e0b;
   --color-info: #3b82f6;
 
-  /* Luxury Accents */
-  --color-luxury-gold: #d4af37;
-  --color-luxury-gold-dark: #b5952f;
-  --color-luxury-gold-light: #f3e5ab;
+  /* Luxury Accents - Deep & Glowy */
+  --color-luxury-gold: #996515; /* Deep Golden Brown */
+  --color-luxury-gold-dark: #724b0f;
+  --color-luxury-gold-light: #b8860b;
 
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --shadow-gold: 0 4px 14px 0 rgba(212, 175, 55, 0.39);
+  --shadow-gold: 0 4px 20px 0 rgba(153, 101, 21, 0.25); /* Subtle glow */
 }
 
 /* Luxury Selection Style */

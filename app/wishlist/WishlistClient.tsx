@@ -27,7 +27,7 @@ interface WishlistItem {
 export default function WishlistClient() {
   const { addItem } = useCartStore();
   const { formatPrice } = useCurrency();
-  const { version } = useWishlistStore(); // Subscribe to version changes
+  const { version, toggleWishlist } = useWishlistStore(); // Subscribe to version changes
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -51,16 +51,12 @@ export default function WishlistClient() {
   };
 
   const handleRemove = async (productId: string) => {
-    try {
-      const res = await fetch(`/api/wishlist?productId=${productId}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        setItems(items.filter((item) => item.product._id !== productId));
-      }
-    } catch (error) {
-      console.error("Failed to remove item", error);
-    }
+    await toggleWishlist(productId);
+    // Local state update will happen via useEffect on version change,
+    // but for immediate UI feedback we can filter locally too if needed.
+    // However, since toggleWishlist updates 'version', the useEffect will trigger a refetch.
+    // To make it instant, we can optimistically filter.
+    setItems((prev) => prev.filter((item) => item.product._id !== productId));
   };
 
   const handleAddToCart = (item: WishlistItem) => {

@@ -14,6 +14,18 @@ interface Order {
   items: { name: string; image: string; quantity: number; price: number }[];
 }
 
+const ORDER_STEPS = ["placed", "processing", "shipped", "delivered"];
+
+const getStepStatus = (orderStatus: string, step: string) => {
+  const statusIndex = ORDER_STEPS.indexOf(orderStatus.toLowerCase());
+  const stepIndex = ORDER_STEPS.indexOf(step);
+
+  if (statusIndex === -1) return "pending"; // Handle cancelled or unknown
+  if (stepIndex < statusIndex) return "completed";
+  if (stepIndex === statusIndex) return "current";
+  return "pending";
+};
+
 export default function UserOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -216,6 +228,63 @@ export default function UserOrdersPage() {
                       )}
                     </div>
                   </div>
+
+                  {/* Order Status Stepper */}
+                  {order.status !== "cancelled" && (
+                    <div className={styles.stepperContainer}>
+                      <div className={styles.stepper}>
+                        {/* Progress Line Fill */}
+                        <div
+                          className={styles.progressLine}
+                          style={{
+                            width: `${
+                              (ORDER_STEPS.indexOf(order.status.toLowerCase()) /
+                                (ORDER_STEPS.length - 1)) *
+                              100
+                            }%`,
+                          }}
+                        />
+
+                        {ORDER_STEPS.map((step, index) => {
+                          const status = getStepStatus(order.status, step);
+                          return (
+                            <div
+                              key={step}
+                              className={`${styles.step} ${
+                                status === "completed"
+                                  ? styles.stepCompleted
+                                  : status === "current"
+                                  ? styles.stepCurrent
+                                  : ""
+                              }`}
+                            >
+                              <div className={styles.stepIcon}>
+                                {status === "completed" ? (
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="3"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  >
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                  </svg>
+                                ) : (
+                                  <span>{index + 1}</span>
+                                )}
+                              </div>
+                              <div className={styles.stepLabel}>{step}</div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
                   <div className={styles.orderItems}>
                     {order.items.map((item, idx) => (
                       <div key={idx} className={styles.itemRow}>

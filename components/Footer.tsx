@@ -56,8 +56,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/gift-cards" className={styles.link}>
-                  Gift Cards
+                <Link href="/dashboard/gift-cards" className={styles.link}>
+                  My Gift Cards
                 </Link>
               </li>
             </ul>
@@ -82,7 +82,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/track-order" className={styles.link}>
+                <Link href="/orders" className={styles.link}>
                   Track Order
                 </Link>
               </li>

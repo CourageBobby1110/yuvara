@@ -2,6 +2,9 @@
 
 import { useWishlistStore } from "@/store/wishlist";
 import { cn } from "@/lib/utils";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface WishlistButtonProps {
   productId: string;
@@ -12,20 +15,33 @@ export default function WishlistButton({
   productId,
   className,
 }: WishlistButtonProps) {
+  const { data: session } = useSession();
+  const router = useRouter();
   const { isInWishlist, toggleWishlist } = useWishlistStore();
   const isAdded = isInWishlist(productId);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    toggleWishlist(productId);
+
+    if (!session) {
+      router.push("/auth/signin");
+      return;
+    }
+
+    setIsLoading(true);
+    await toggleWishlist(productId);
+    setIsLoading(false);
   };
 
   return (
     <button
       onClick={handleClick}
+      disabled={isLoading}
       className={cn(
         "p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-all duration-300 z-10 shadow-sm",
+        isLoading && "opacity-70 cursor-not-allowed",
         className
       )}
       aria-label={isAdded ? "Remove from wishlist" : "Add to wishlist"}
@@ -35,7 +51,8 @@ export default function WishlistButton({
           "w-5 h-5 transition-colors duration-300",
           isAdded
             ? "fill-red-500 text-red-500"
-            : "fill-none text-gray-600 hover:text-red-500"
+            : "fill-none text-gray-600 hover:text-red-500",
+          isLoading && "animate-pulse"
         )}
         viewBox="0 0 24 24"
         stroke="currentColor"
