@@ -10,6 +10,7 @@ import bcrypt from "bcryptjs";
 import { authConfig } from "./auth.config";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   ...authConfig,
   adapter: MongoDBAdapter(clientPromise) as any,
   providers: [
