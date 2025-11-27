@@ -49,7 +49,7 @@ export const useWishlistStore = create<WishlistState>()(
           } else {
             newItems.delete(productId);
           }
-          return { items: newItems, version: state.version + 1 };
+          return { items: newItems };
         });
 
         // Show toast immediately
