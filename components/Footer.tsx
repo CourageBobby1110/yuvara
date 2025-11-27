@@ -56,6 +56,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/gift-cards" className={styles.link}>
+                  Buy Gift Cards
+                </Link>
+              </li>
+              <li>
                 <Link href="/dashboard/gift-cards" className={styles.link}>
                   My Gift Cards
                 </Link>

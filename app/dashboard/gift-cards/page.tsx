@@ -28,7 +28,7 @@ export default function UserGiftCardsPage() {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/login");
+      router.push("/auth/signin?callbackUrl=/dashboard/gift-cards");
     } else if (status === "authenticated") {
       fetchGiftCards();
     }

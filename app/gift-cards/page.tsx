@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import styles from "./GiftCard.module.css";
@@ -15,6 +15,29 @@ export default function GiftCardPage() {
   const [recipientName, setRecipientName] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Restore state from sessionStorage if available
+    const savedState = sessionStorage.getItem("giftCardPurchaseState");
+    if (savedState) {
+      try {
+        const parsedState = JSON.parse(savedState);
+        if (parsedState.selectedAmount)
+          setSelectedAmount(parsedState.selectedAmount);
+        if (parsedState.customAmount) setCustomAmount(parsedState.customAmount);
+        if (parsedState.recipientEmail)
+          setRecipientEmail(parsedState.recipientEmail);
+        if (parsedState.recipientName)
+          setRecipientName(parsedState.recipientName);
+        if (parsedState.message) setMessage(parsedState.message);
+
+        // Clear storage after restoring
+        sessionStorage.removeItem("giftCardPurchaseState");
+      } catch (e) {
+        console.error("Failed to restore gift card state", e);
+      }
+    }
+  }, []);
 
   const handlePresetClick = (amount: number) => {
     setSelectedAmount(amount);
@@ -49,6 +72,18 @@ export default function GiftCardPage() {
     }
 
     if (!session?.user?.email) {
+      // Save state before redirecting
+      sessionStorage.setItem(
+        "giftCardPurchaseState",
+        JSON.stringify({
+          selectedAmount,
+          customAmount,
+          recipientEmail,
+          recipientName,
+          message,
+        })
+      );
+
       alert("Please log in to purchase a gift card.");
       router.push("/auth/signin?callbackUrl=/gift-cards");
       return;
