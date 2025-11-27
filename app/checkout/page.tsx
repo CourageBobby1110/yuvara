@@ -296,6 +296,7 @@ export default function CheckoutPage() {
         discountAmount: appliedCoupon?.discountAmount,
         giftCardCode: appliedGiftCard?.code,
         giftCardAmountUsed: appliedGiftCard?.amountToUse,
+        affiliateCode: localStorage.getItem("affiliate_ref"),
       };
 
       if (amountInNGN <= 0) {
@@ -320,12 +321,15 @@ export default function CheckoutPage() {
         }
       } else {
         // 1. Initialize Payment
+        const affiliateCode = localStorage.getItem("affiliate_ref");
+
         const res = await fetch("/api/payment/initialize", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             amount: amountInNGN,
             email: session?.user?.email,
+            affiliateCode, // Send affiliate code
           }),
         });
 

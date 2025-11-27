@@ -68,6 +68,14 @@ const OrderSchema = new Schema(
       enum: ["pending", "paid", "failed"],
       default: "pending",
     },
+    affiliate: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    commissionAmount: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

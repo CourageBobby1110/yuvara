@@ -4,7 +4,7 @@ import { useWishlistStore } from "@/store/wishlist";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface WishlistButtonProps {
   productId: string;
@@ -18,8 +18,14 @@ export default function WishlistButton({
   const { data: session } = useSession();
   const router = useRouter();
   const { isInWishlist, toggleWishlist } = useWishlistStore();
-  const isAdded = isInWishlist(productId);
+  const [mounted, setMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isAdded = mounted ? isInWishlist(productId) : false;
 
   const handleClick = async (e: React.MouseEvent) => {
     e.preventDefault();

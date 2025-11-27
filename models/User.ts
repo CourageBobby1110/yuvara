@@ -45,6 +45,23 @@ const UserSchema = new Schema(
       type: Number,
       default: 0,
     },
+    isAffiliate: {
+      type: Boolean,
+      default: false,
+    },
+    affiliateBalance: {
+      type: Number,
+      default: 0,
+    },
+    totalEarnings: {
+      type: Number,
+      default: 0,
+    },
+    affiliateBankDetails: {
+      bankName: String,
+      accountNumber: String,
+      accountName: String,
+    },
     resetPasswordToken: {
       type: String,
       select: false,

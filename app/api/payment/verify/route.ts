@@ -36,6 +36,8 @@ export async function POST(req: Request) {
 
     // Verify transaction with Paystack
     let isFullDiscount = false;
+    let verifyData: any = null;
+
     if (reference.startsWith("FULL_DISCOUNT_")) {
       isFullDiscount = true;
       // Ensure total is 0 or close to 0 (floating point safety)
@@ -55,7 +57,7 @@ export async function POST(req: Request) {
         }
       );
 
-      const verifyData = await verifyResponse.json();
+      verifyData = await verifyResponse.json();
 
       if (!verifyData.status || verifyData.data.status !== "success") {
         return NextResponse.json(
@@ -100,6 +102,40 @@ export async function POST(req: Request) {
       }
     }
 
+    // Handle Affiliate Commission
+    let affiliateId = null;
+    let commissionAmount = 0;
+    // Get affiliate code from Paystack metadata OR from request body (for full discount)
+    const affiliateCode =
+      verifyData?.data?.metadata?.affiliateCode || body.affiliateCode;
+
+    if (affiliateCode) {
+      try {
+        const User = (await import("@/models/User")).default;
+        const affiliateUser = await User.findOne({
+          referralCode: affiliateCode,
+        });
+
+        if (
+          affiliateUser &&
+          affiliateUser._id.toString() !== userId?.toString()
+        ) {
+          affiliateId = affiliateUser._id;
+          commissionAmount = total * 0.1; // 10% commission
+
+          await User.findByIdAndUpdate(affiliateId, {
+            $inc: {
+              affiliateBalance: commissionAmount,
+              totalEarnings: commissionAmount,
+              referralCount: 1,
+            },
+          });
+        }
+      } catch (err) {
+        console.error("Failed to process affiliate commission", err);
+      }
+    }
+
     const order = await Order.create({
       user: userId,
       items: cartItems.map((item: any) => ({
@@ -119,6 +155,8 @@ export async function POST(req: Request) {
       discountAmount: discountAmount || 0,
       giftCardCode: giftCardCode || null,
       giftCardAmountUsed: giftCardAmountUsed || 0,
+      affiliate: affiliateId,
+      commissionAmount: commissionAmount,
     });
 
     // Redeem Gift Card

@@ -98,8 +98,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/careers" className={styles.link}>
-                  Careers
+                <Link href="/affiliate-program" className={styles.link}>
+                  Affiliate Program
                 </Link>
               </li>
               <li>

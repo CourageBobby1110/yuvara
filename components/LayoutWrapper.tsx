@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { SessionProvider, useSession } from "next-auth/react";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import Navbar from "./Navbar";
@@ -28,6 +28,21 @@ function WishlistInitializer() {
   return null;
 }
 
+function ReferralTracker() {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (ref) {
+      localStorage.setItem("affiliate_ref", ref);
+      // Optional: Set a cookie too if needed for server-side
+      document.cookie = `affiliate_ref=${ref}; path=/; max-age=2592000`; // 30 days
+    }
+  }, [searchParams]);
+
+  return null;
+}
+
 export default function LayoutWrapper({
   session,
   children,
@@ -44,6 +59,7 @@ export default function LayoutWrapper({
     <SessionProvider session={session}>
       <CurrencyProvider>
         <WishlistInitializer />
+        <ReferralTracker />
         <CartDrawer />
         {shouldShowLayout ? (
           <>

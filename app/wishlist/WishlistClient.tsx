@@ -43,6 +43,12 @@ export default function WishlistClient() {
       // Filter out items where product might be null (deleted)
       const validItems = data.filter((item: WishlistItem) => item.product);
       setItems(validItems);
+
+      // Sync with global store
+      const ids = new Set<string>(
+        validItems.map((item: WishlistItem) => item.product._id)
+      );
+      useWishlistStore.setState({ items: ids });
     } catch (error) {
       console.error("Failed to fetch wishlist", error);
     } finally {
