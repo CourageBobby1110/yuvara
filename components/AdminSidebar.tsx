@@ -89,6 +89,15 @@ export default function AdminSidebar() {
             Import Product
           </Link>
           <Link
+            href="/admin/products/bulk-import"
+            className={`${styles.link} ${
+              isActive("/admin/products/bulk-import") ? styles.active : ""
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Bulk Import
+          </Link>
+          <Link
             href="/admin/orders"
             className={`${styles.link} ${
               isActive("/admin/orders") ? styles.active : ""

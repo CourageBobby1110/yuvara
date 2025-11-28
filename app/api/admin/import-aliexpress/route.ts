@@ -207,6 +207,25 @@ export async function POST(req: Request) {
       );
     }
 
+    // ===== CURRENCY CONVERSION & PRICING =====
+    if (platform === "Jumia" && price > 0) {
+      console.log(`💰 Jumia Price (NGN): ₦${price}`);
+
+      const EXCHANGE_RATE = 1650; // 1 USD = 1650 NGN
+      const PROFIT_MARGIN = 0.3; // 30% profit
+
+      // Convert to USD
+      const priceInUSD = price / EXCHANGE_RATE;
+
+      // Add 30% Profit
+      const priceWithProfit = priceInUSD * (1 + PROFIT_MARGIN);
+
+      console.log(`💱 Converted to USD: $${priceInUSD.toFixed(2)}`);
+      console.log(`📈 Price with 30% Profit: $${priceWithProfit.toFixed(2)}`);
+
+      price = parseFloat(priceWithProfit.toFixed(2));
+    }
+
     images = Array.from(new Set(images))
       .filter(
         (img) => img && img.startsWith("http") && !img.includes("placeholder")
@@ -215,92 +234,151 @@ export async function POST(req: Request) {
 
     console.log(`✓ Imported from ${platform}:`, title);
 
-    // ===== VARIANT EXTRACTION =====
+    // ===== SMART VARIANT EXTRACTION =====
     let sizes: string[] = [];
-    let colors: string[] = [];
+    let colors: string[] = []; // Colors disabled as per request
     let variants: any[] = [];
 
-    // Map from existing 'options' (AliExpress & Generic)
-    if (options.length > 0) {
-      options.forEach((opt) => {
-        const name = opt.name.toLowerCase();
-        if (name.includes("size") || name.includes("dimension")) {
-          sizes.push(...opt.values);
-        } else if (
-          name.includes("color") ||
-          name.includes("colour") ||
-          name.includes("style")
-        ) {
-          colors.push(...opt.values);
-        }
-      });
-    }
+    // Helper to clean variant values
+    const cleanVariant = (val: string) =>
+      val
+        .replace(/[\n\t]/g, "")
+        .trim()
+        .replace(/^[:\-\s]+/, "");
 
-    // Amazon Variants
-    if (platform === "Amazon") {
-      // Extract sizes
-      $("#variation_size_name li, #variation_size_name option").each(
-        (_, el) => {
-          const val =
-            $(el).text().trim() ||
-            $(el).attr("title") ||
-            $(el).attr("data-default-header");
-          if (val && !val.includes("Select")) sizes.push(val);
-        }
-      );
-
-      // Extract colors
-      $("#variation_color_name li img").each((_, el) => {
-        const alt = $(el).attr("alt");
-        if (alt) colors.push(alt);
-      });
-    }
-
-    // Jumia Variants
+    // 1. Jumia Smart Extraction
     if (platform === "Jumia") {
-      // Try to find size selection
-      $(".-pvxs").each((_, el) => {
-        const label = $(el).find(".-m.-pbs").text().toLowerCase();
-        if (label.includes("size")) {
+      // Method A: DOM Scraping for Size labels
+      $(".-pvxs, ._pvxs").each((_, el) => {
+        const label = $(el).find(".-m.-pbs, ._m._pbs").text().toLowerCase();
+
+        if (
+          label.includes("size") ||
+          label.includes("dimension") ||
+          label.includes("capacity")
+        ) {
+          // Radio buttons
           $(el)
             .find("input[type='radio'] + label")
             .each((_, opt) => {
-              sizes.push($(opt).text().trim());
+              sizes.push(cleanVariant($(opt).text()));
             });
-          // Also check dropdowns
+          // Dropdowns
           $(el)
-            .find("option")
+            .find("select option")
             .each((_, opt) => {
               const val = $(opt).text().trim();
-              if (val && !val.includes("Select")) sizes.push(val);
+              if (val && !val.includes("Select")) sizes.push(cleanVariant(val));
             });
+          // List items
+          $(el)
+            .find("ul li, .list li")
+            .each((_, opt) => {
+              sizes.push(cleanVariant($(opt).text()));
+            });
+        }
+      });
+
+      // Method B: Script Data Extraction (Jumia often has JSON in scripts)
+      $("script").each((_, el) => {
+        const content = $(el).html() || "";
+        if (content.includes('"sizes":') || content.includes('"variations":')) {
+          try {
+            // Attempt to find JSON-like structures
+            const matches = content.match(
+              /"name":"(Size|Color)","values":\[(.*?)\]/g
+            );
+            if (matches) {
+              matches.forEach((m) => {
+                if (m.includes("Size")) {
+                  const vals = m.match(/"value":"(.*?)"/g);
+                  vals?.forEach((v) =>
+                    sizes.push(v.replace(/"value":"|"/g, ""))
+                  );
+                }
+              });
+            }
+          } catch (e) {
+            /* Ignore parsing errors */
+          }
         }
       });
     }
 
-    // Generic / Schema.org Fallback
+    // 2. Amazon Smart Extraction
+    if (platform === "Amazon") {
+      // Standard Twister
+      $(
+        "#variation_size_name li, #variation_size_name option, #native_dropdown_selected_size_name option"
+      ).each((_, el) => {
+        const val =
+          $(el).text().trim() ||
+          $(el).attr("title") ||
+          $(el).attr("data-default-header");
+        if (val && !val.includes("Select")) sizes.push(cleanVariant(val));
+      });
+
+      // Text-based fallback for Amazon
+      if (sizes.length === 0) {
+        const sizeText = $("#variation_size_name .selection").text().trim();
+        if (sizeText) sizes.push(sizeText);
+      }
+    }
+
+    // 3. AliExpress Smart Extraction (Enhanced)
+    if (platform === "AliExpress") {
+      // Already handled via JSON parsing above, but let's ensure we map to sizes
+      if (options.length > 0) {
+        options.forEach((opt) => {
+          const name = opt.name.toLowerCase();
+          if (
+            name.includes("size") ||
+            name.includes("height") ||
+            name.includes("width")
+          ) {
+            sizes.push(...opt.values);
+          }
+        });
+      }
+    }
+
+    // 4. Universal "Smart" Fallback (Heuristic Analysis)
     if (sizes.length === 0) {
-      // Try to find "Size" dropdowns
-      $("select").each((_, el) => {
-        const label =
-          $(el).attr("aria-label") ||
-          $(el).attr("name") ||
-          $(el).prev("label").text() ||
-          "";
-        if (label.toLowerCase().includes("size")) {
-          $(el)
-            .find("option")
-            .each((_, opt) => {
-              const val = $(opt).text().trim();
-              if (val && !val.includes("Select")) sizes.push(val);
-            });
+      // Look for common labels associated with variants
+      $("div, section, fieldset").each((_, container) => {
+        const text = $(container).text().toLowerCase();
+        // Check if this container looks like a variant selector
+        if (text.length < 500 && text.includes("size")) {
+          // Check for Size
+          if (text.includes("size")) {
+            $(container)
+              .find("button, a, input[type='radio'] + label, option")
+              .each((_, item) => {
+                const val = $(item).text().trim();
+                // Filter out noise (numbers 1-2 chars might be sizes, words < 15 chars)
+                if (
+                  val.length > 0 &&
+                  val.length < 15 &&
+                  !val.includes("Select") &&
+                  !val.includes("Size")
+                ) {
+                  sizes.push(cleanVariant(val));
+                }
+              });
+          }
         }
       });
     }
 
-    // Clean up
-    sizes = Array.from(new Set(sizes)).filter((s) => s.length < 20);
-    colors = Array.from(new Set(colors)).filter((c) => c.length < 30);
+    // Clean up and Deduplicate
+    sizes = Array.from(new Set(sizes)).filter(
+      (s) =>
+        s &&
+        s.length > 0 &&
+        s.length < 20 &&
+        !s.toLowerCase().includes("select")
+    );
+    colors = []; // Explicitly empty as requested
 
     return NextResponse.json({
       title: title.trim(),
