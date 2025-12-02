@@ -9,18 +9,12 @@ import Link from "next/link";
 import { useCurrency } from "@/context/CurrencyContext";
 import styles from "./Checkout.module.css";
 
-interface ShippingRate {
-  state: string;
-  fee: number;
-  country: string;
-}
-
 const COUNTRIES = [
-  "Nigeria",
-  "United States",
-  "United Kingdom",
-  "Canada",
-  "Ghana",
+  { name: "Nigeria", code: "NG" },
+  { name: "United States", code: "US" },
+  { name: "United Kingdom", code: "GB" },
+  { name: "Canada", code: "CA" },
+  { name: "Australia", code: "AU" },
 ];
 
 export default function CheckoutPage() {
@@ -47,7 +41,6 @@ export default function CheckoutPage() {
     amountToUse: number;
   } | null>(null);
 
-  const [shippingRates, setShippingRates] = useState<ShippingRate[]>([]);
   const [selectedStateFee, setSelectedStateFee] = useState(0);
   const [saveAddress, setSaveAddress] = useState(false);
 
@@ -58,7 +51,7 @@ export default function CheckoutPage() {
     city: "",
     state: "",
     zip: "",
-    country: "Nigeria",
+    country: "NG",
   });
 
   // Force session update on mount
@@ -67,11 +60,6 @@ export default function CheckoutPage() {
     update();
     fetchUserProfile();
   }, []);
-
-  // Fetch rates when country changes
-  useEffect(() => {
-    fetchShippingRates(formData.country);
-  }, [formData.country]);
 
   // Redirect if empty cart
   useEffect(() => {
@@ -90,7 +78,7 @@ export default function CheckoutPage() {
             ...prev,
             ...data.address,
             // Ensure country defaults to Nigeria if missing, or use saved
-            country: data.address.country || "Nigeria",
+            country: data.address.country || "NG",
           }));
         }
       }
@@ -106,40 +94,54 @@ export default function CheckoutPage() {
     }
   }, [session]);
 
-  const fetchShippingRates = async (country: string) => {
-    try {
-      const res = await fetch(`/api/shipping?country=${country}`);
-      if (res.ok) {
-        const data = await res.json();
-        setShippingRates(data);
-        // Reset state selection if country changes
-        if (formData.state) {
-          // Check if current state exists in new rates, if not reset
-          const exists = data.find(
-            (r: ShippingRate) => r.state === formData.state
-          );
-          if (!exists) {
-            setSelectedStateFee(0);
+  // Calculate shipping fee based on country and cart items
+  const calculateShippingFee = (country: string) => {
+    if (!items || items.length === 0) return 0;
+
+    // Country is now the code (e.g., "NG")
+    const code = country;
+
+    if (!code) return 0;
+
+    let totalShipping = 0;
+
+    for (const item of items) {
+      if (item.shippingRates) {
+        const rate = item.shippingRates.find((r) => r.countryCode === code);
+        if (rate) {
+          totalShipping += rate.price * item.quantity;
+        } else {
+          // Fallback: try to find US rate as a global fallback
+          const usRate = item.shippingRates.find((r) => r.countryCode === "US");
+          if (usRate) {
+            totalShipping += usRate.price * item.quantity;
           } else {
-            setSelectedStateFee(exists.fee);
+            // Fallback if no rate found at all
+            totalShipping += 5 * item.quantity;
           }
         }
+      } else {
+        // Fallback for old items without shippingRates
+        totalShipping += 5 * item.quantity;
       }
-    } catch (error) {
-      console.error("Failed to fetch shipping rates", error);
     }
+
+    return totalShipping;
   };
+
+  // Update shipping fee when country or items change
+  useEffect(() => {
+    const fee = calculateShippingFee(formData.country);
+    // Convert to NGN for selectedStateFee state
+    const rateNGN = exchangeRates["NGN"] || 1500;
+    setSelectedStateFee(fee * rateNGN);
+  }, [formData.country, items, exchangeRates]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-
-    if (name === "state") {
-      const rate = shippingRates.find((r) => r.state === value);
-      setSelectedStateFee(rate ? rate.fee : 0);
-    }
   };
 
   const handleApplyCoupon = async () => {
@@ -244,12 +246,6 @@ export default function CheckoutPage() {
 
     if (status === "unauthenticated") {
       router.push("/auth/signup?callbackUrl=/checkout");
-      return;
-    }
-
-    // Validate state selection if rates exist for the country
-    if (shippingRates.length > 0 && !formData.state) {
-      alert("Please select a state/region");
       return;
     }
 
@@ -533,7 +529,12 @@ export default function CheckoutPage() {
                   <span>{formatPrice(totalPrice())}</span>
                 </div>
                 <div className={styles.totalRow}>
-                  <span>Shipping ({formData.state || "Select State"})</span>
+                  <span>
+                    Shipping (
+                    {COUNTRIES.find((c) => c.code === formData.country)?.name ||
+                      formData.country}
+                    )
+                  </span>
                   <span>
                     {selectedStateFee > 0
                       ? isFreeShipping
@@ -605,8 +606,8 @@ export default function CheckoutPage() {
                       className={styles.select}
                     >
                       {COUNTRIES.map((c) => (
-                        <option key={c} value={c}>
-                          {c}
+                        <option key={c.code} value={c.code}>
+                          {c.name}
                         </option>
                       ))}
                     </select>
@@ -614,32 +615,15 @@ export default function CheckoutPage() {
 
                   <div>
                     <label className={styles.label}>State / Province</label>
-                    {shippingRates.length > 0 ? (
-                      <select
-                        name="state"
-                        required
-                        value={formData.state}
-                        onChange={handleChange}
-                        className={styles.select}
-                      >
-                        <option value="">Select State</option>
-                        {shippingRates.map((rate) => (
-                          <option key={rate.state} value={rate.state}>
-                            {rate.state}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <input
-                        type="text"
-                        name="state"
-                        required
-                        value={formData.state}
-                        onChange={handleChange}
-                        className={styles.input}
-                        placeholder="State"
-                      />
-                    )}
+                    <input
+                      type="text"
+                      name="state"
+                      required
+                      value={formData.state}
+                      onChange={handleChange}
+                      className={styles.input}
+                      placeholder="State"
+                    />
                   </div>
 
                   <div>

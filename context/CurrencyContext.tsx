@@ -26,7 +26,9 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     // Auto-detect currency based on IP
     const detectCurrency = async () => {
       try {
+        // Try primary service
         const res = await fetch("https://ipapi.co/json/");
+        if (!res.ok) throw new Error("Primary IP service failed");
         const data = await res.json();
 
         if (
@@ -38,7 +40,16 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
           setCurrency("NGN");
         }
       } catch (error) {
-        console.error("Failed to detect currency:", error);
+        // Fallback service (ipwho.is - free, no key, reliable)
+        try {
+          const res = await fetch("https://ipwho.is/");
+          const data = await res.json();
+          if (data.success && data.country_code === "NG") {
+            setCurrency("NGN");
+          }
+        } catch (e) {
+          console.error("Failed to detect currency:", e);
+        }
       } finally {
         setIsLoaded(true);
       }

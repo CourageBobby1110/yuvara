@@ -21,6 +21,7 @@ export default function NewProductPage() {
     price: "",
     category: "",
     stock: "",
+    shippingFee: "0",
     slug: "",
     sizes: "",
     productUrl: "",
@@ -31,6 +32,15 @@ export default function NewProductPage() {
       image: string;
       price: string;
       stock: string;
+    }[]
+  >([]);
+  const [shippingRates, setShippingRates] = useState<
+    {
+      countryCode: string;
+      countryName: string;
+      price: string;
+      method: string;
+      deliveryTime: string;
     }[]
   >([]);
 
@@ -67,6 +77,7 @@ export default function NewProductPage() {
           ...formData,
           price: parseFloat(formData.price),
           stock: parseInt(formData.stock),
+          shippingFee: parseFloat(formData.shippingFee),
           images,
           videos,
           variants: variants.map((v) => ({
@@ -77,6 +88,10 @@ export default function NewProductPage() {
           colors: Array.from(new Set(variants.map((v) => v.color))).filter(
             Boolean
           ),
+          shippingRates: shippingRates.map((r) => ({
+            ...r,
+            price: parseFloat(r.price),
+          })),
         }),
       });
 
@@ -171,16 +186,36 @@ export default function NewProductPage() {
         <div className={styles.grid3}>
           <div>
             <label className={styles.label}>Price ($)</label>
-            <input
-              type="number"
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              required
-              min="0"
-              step="0.01"
-              className={styles.input}
-            />
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                name="price"
+                value={formData.price}
+                onChange={handleChange}
+                required
+                min="0"
+                step="0.01"
+                className={styles.input}
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  const currentPrice = parseFloat(formData.price) || 0;
+                  const newPrice = (currentPrice + 3).toFixed(2);
+                  setFormData((prev) => ({ ...prev, price: newPrice }));
+
+                  // Update all variants
+                  const newVariants = variants.map((v) => ({
+                    ...v,
+                    price: (parseFloat(v.price || "0") + 3).toFixed(2),
+                  }));
+                  setVariants(newVariants);
+                }}
+                className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm whitespace-nowrap"
+              >
+                +$3 Markup
+              </button>
+            </div>
             {renderCurrencyPreviews(formData.price)}
           </div>
           <div>
@@ -197,21 +232,170 @@ export default function NewProductPage() {
           </div>
           <div>
             <label className={styles.label}>Category</label>
-            <select
+            <input
+              type="text"
               name="category"
               value={formData.category}
               onChange={handleChange}
               required
-              className={styles.select}
-            >
-              <option value="">Select Category</option>
+              list="category-list"
+              className={styles.input}
+              placeholder="Select or type a category"
+            />
+            <datalist id="category-list">
               {PRODUCT_CATEGORIES.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
+                <option key={cat} value={cat} />
               ))}
-            </select>
+            </datalist>
           </div>
+        </div>
+
+        <div className={styles.variantsSection}>
+          <div className="flex justify-between items-center mb-4">
+            <label className={styles.label}>
+              Shipping Rates (Multi-Country)
+            </label>
+            <button
+              type="button"
+              onClick={() =>
+                setShippingRates([
+                  ...shippingRates,
+                  {
+                    countryCode: "",
+                    countryName: "",
+                    price: "0",
+                    method: "",
+                    deliveryTime: "",
+                  },
+                ])
+              }
+              className={styles.addVariantButton}
+              style={{
+                padding: "0.5rem 1rem",
+                backgroundColor: "#f3f4f6",
+                borderRadius: "0.375rem",
+                fontSize: "0.875rem",
+                fontWeight: 500,
+              }}
+            >
+              + Add Rate
+            </button>
+          </div>
+
+          {shippingRates.map((rate, index) => (
+            <div
+              key={index}
+              className={styles.variantCard}
+              style={{
+                border: "1px solid #e5e7eb",
+                padding: "1rem",
+                borderRadius: "0.5rem",
+                marginBottom: "1rem",
+                backgroundColor: "#f9fafb",
+              }}
+            >
+              <div className="flex justify-between mb-2">
+                <h4 className="font-medium">Rate {index + 1}</h4>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShippingRates(
+                      shippingRates.filter((_, i) => i !== index)
+                    )
+                  }
+                  className="text-red-500 text-sm"
+                >
+                  Remove
+                </button>
+              </div>
+
+              <div className={styles.grid2}>
+                <div>
+                  <label className="text-xs text-gray-500 mb-1 block">
+                    Country Code (e.g. NG, US)
+                  </label>
+                  <input
+                    type="text"
+                    value={rate.countryCode}
+                    onChange={(e) => {
+                      const newRates = [...shippingRates];
+                      newRates[index].countryCode =
+                        e.target.value.toUpperCase();
+                      setShippingRates(newRates);
+                    }}
+                    placeholder="NG"
+                    className={styles.input}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500 mb-1 block">
+                    Country Name
+                  </label>
+                  <input
+                    type="text"
+                    value={rate.countryName}
+                    onChange={(e) => {
+                      const newRates = [...shippingRates];
+                      newRates[index].countryName = e.target.value;
+                      setShippingRates(newRates);
+                    }}
+                    placeholder="Nigeria"
+                    className={styles.input}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500 mb-1 block">
+                    Price ($)
+                  </label>
+                  <input
+                    type="number"
+                    value={rate.price}
+                    onChange={(e) => {
+                      const newRates = [...shippingRates];
+                      newRates[index].price = e.target.value;
+                      setShippingRates(newRates);
+                    }}
+                    className={styles.input}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500 mb-1 block">
+                    Method (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={rate.method}
+                    onChange={(e) => {
+                      const newRates = [...shippingRates];
+                      newRates[index].method = e.target.value;
+                      setShippingRates(newRates);
+                    }}
+                    placeholder="DHL"
+                    className={styles.input}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500 mb-1 block">
+                    Delivery Time (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={rate.deliveryTime}
+                    onChange={(e) => {
+                      const newRates = [...shippingRates];
+                      newRates[index].deliveryTime = e.target.value;
+                      setShippingRates(newRates);
+                    }}
+                    placeholder="10-20 days"
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
         <div>

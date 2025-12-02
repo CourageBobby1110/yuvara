@@ -29,9 +29,17 @@ export interface ProductType {
     image: string;
     price: number;
     stock: number;
+    size?: string;
   }[];
   createdAt?: Date;
   updatedAt?: Date;
+  shippingRates?: {
+    countryCode: string;
+    countryName: string;
+    price: number;
+    method?: string;
+    deliveryTime?: string;
+  }[];
 }
 
 interface Review {
@@ -66,7 +74,12 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
     image: string;
     price: number;
     stock: number;
-  } | null>(null);
+    size?: string;
+  } | null>(
+    initialProduct.variants && initialProduct.variants.length > 0
+      ? initialProduct.variants[0]
+      : null
+  );
 
   // Review Form State
   const [rating, setRating] = useState(5);
@@ -324,42 +337,98 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
 
           {product.variants && product.variants.length > 0 && (
             <div className={styles.variants}>
+              {/* Color Selection */}
               <p className={styles.variantLabel}>
                 Color: {selectedVariant?.color || "Select"}
               </p>
               <div className={styles.variantGrid}>
-                {product.variants.map((variant, index) => (
-                  <button
-                    key={index}
-                    onClick={() => {
-                      setSelectedVariant(variant);
-                      setActiveMedia({ type: "image", url: variant.image });
-                    }}
-                    className={`${styles.variantButton} ${
-                      selectedVariant === variant ? styles.activeVariant : ""
-                    }`}
-                    title={variant.color}
-                  >
-                    <Image
-                      src={variant.image}
-                      alt={variant.color}
-                      width={48}
-                      height={48}
-                      className={styles.variantImage}
-                    />
-                  </button>
-                ))}
+                {/* Deduplicate colors */}
+                {Array.from(new Set(product.variants.map((v) => v.color))).map(
+                  (color, index) => {
+                    // Find first variant with this color to get the image
+                    const variant = product.variants!.find(
+                      (v) => v.color === color
+                    )!;
+                    const isSelected = selectedVariant?.color === color;
+
+                    return (
+                      <button
+                        key={`color-${index}`}
+                        onClick={() => {
+                          // When switching color, try to keep same size if possible, otherwise pick first available size
+                          const sameSizeVariant = product.variants!.find(
+                            (v) =>
+                              v.color === color &&
+                              v.size === selectedVariant?.size
+                          );
+                          const firstVariantOfColor = product.variants!.find(
+                            (v) => v.color === color
+                          );
+
+                          const nextVariant =
+                            sameSizeVariant || firstVariantOfColor || variant;
+
+                          setSelectedVariant(nextVariant);
+                          setActiveMedia({
+                            type: "image",
+                            url: nextVariant.image,
+                          });
+                        }}
+                        className={`${styles.variantButton} ${
+                          isSelected ? styles.activeVariant : ""
+                        }`}
+                        title={color}
+                      >
+                        <Image
+                          src={variant.image}
+                          alt={color}
+                          width={48}
+                          height={48}
+                          className={styles.variantImage}
+                        />
+                      </button>
+                    );
+                  }
+                )}
               </div>
+
+              {/* Size Selection (only if sizes exist) */}
+              {product.variants.some((v) => v.size) && (
+                <div className="mt-4">
+                  <p className={styles.variantLabel}>
+                    Size: {selectedVariant?.size || "Select"}
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {/* Show sizes available for the selected color */}
+                    {product.variants
+                      .filter((v) => v.color === selectedVariant?.color)
+                      .map((variant, index) => (
+                        <button
+                          key={`size-${index}`}
+                          onClick={() => setSelectedVariant(variant)}
+                          className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors ${
+                            selectedVariant === variant
+                              ? "bg-black text-white border-black"
+                              : "bg-white text-gray-900 border-gray-200 hover:border-gray-900"
+                          }`}
+                        >
+                          {variant.size}
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
-
-          <div className={styles.description}>
-            <p>{product.description}</p>
-          </div>
 
           <div className={styles.addToCartWrapper}>
             <AddToCart product={product} selectedVariant={selectedVariant} />
           </div>
+
+          <div
+            className={styles.description}
+            dangerouslySetInnerHTML={{ __html: product.description }}
+          />
         </div>
       </div>
 

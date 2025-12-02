@@ -1,0 +1,21 @@
+{
+  "code": 200,
+  "result": true,
+  "message": "Success",
+  "data": {
+    "pageSize": 24,
+    "pageNumber": 1,
+    "totalRecords": 0,
+    "totalPages": 0,
+    "content": [
+      {
+        "productList": [],
+        "relatedCategoryList": [],
+        "keyWord": "cjns2273124",
+        "keyWordOld": "CJNS2273124"
+      }
+    ]
+  },
+  "requestId": "6f0758707fbd42c8b55fe72aae305f7f",
+  "success": true
+}

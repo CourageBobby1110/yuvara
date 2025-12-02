@@ -129,6 +129,65 @@ export default function SettingsPage() {
           </div>
         </div>
 
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <h2 className="text-lg font-semibold mb-4">
+            Dropshipping Integrations
+          </h2>
+          <div className="grid gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                CJ Dropshipping Configuration
+              </label>
+              <div className="p-4 bg-gray-50 rounded-md border border-gray-200">
+                <p className="text-sm text-gray-600 mb-3">
+                  CJ Dropshipping settings have moved to a dedicated page to
+                  support secure authentication.
+                </p>
+                <a
+                  href="/admin/dropshipping/settings"
+                  className="text-sm text-blue-600 hover:text-blue-800 font-medium hover:underline"
+                >
+                  Go to CJ Dropshipping Settings &rarr;
+                </a>
+              </div>
+            </div>
+
+            <div className="border-t pt-6 mt-2">
+              <h3 className="font-medium text-gray-900 mb-4">
+                Doba Integration
+              </h3>
+              <div className="grid gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Doba App Key
+                  </label>
+                  <input
+                    type="text"
+                    name="dobaAppKey"
+                    value={(settings as any).dobaAppKey || ""}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded-md focus:ring-2 focus:ring-black focus:outline-none"
+                    placeholder="Enter your Doba App Key"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Doba App Secret
+                  </label>
+                  <input
+                    type="password"
+                    name="dobaAppSecret"
+                    value={(settings as any).dobaAppSecret || ""}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded-md focus:ring-2 focus:ring-black focus:outline-none"
+                    placeholder="Enter your Doba App Secret"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="flex justify-end">
           <button
             type="submit"

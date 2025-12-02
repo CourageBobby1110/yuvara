@@ -48,6 +48,17 @@ export default function ProductCard({ product, onQuickAdd }: ProductCardProps) {
   const handleQuickAddClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // If product has variants, redirect to product page to select options
+    if (
+      (product.variants && product.variants.length > 0) ||
+      (product.colors && product.colors.length > 0) ||
+      (product.sizes && product.sizes.length > 0)
+    ) {
+      window.location.href = `/products/${product.slug}`;
+      return;
+    }
+
     if (onQuickAdd) {
       onQuickAdd(product);
     }
@@ -60,8 +71,8 @@ export default function ProductCard({ product, onQuickAdd }: ProductCardProps) {
       {/* Image Container */}
       <Link href={`/products/${product.slug}`} className={styles.imageLink}>
         <Image
-          src={product.images[0] || "/placeholder.png"}
-          alt={product.name}
+          src={product.images?.[0] || "/placeholder.png"}
+          alt={product.name || "Product"}
           fill
           className={styles.productImage}
           sizes="(max-width: 640px) 50vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"

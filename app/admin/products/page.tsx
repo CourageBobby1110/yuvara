@@ -6,7 +6,8 @@ import Image from "next/image";
 import AdminLoader from "@/components/AdminLoader";
 import { useCurrency } from "@/context/CurrencyContext";
 import styles from "./AdminProducts.module.css";
-import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
 
 interface Product {
   _id: string;
@@ -15,17 +16,22 @@ interface Product {
   category: string;
   stock: number;
   images: string[];
+  cjPid?: string;
 }
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState<string | null>(null);
   const { currency, setCurrency, formatPrice } = useCurrency();
 
   // Search & Pagination State
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+  const [isSyncingAll, setIsSyncingAll] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -43,6 +49,85 @@ export default function AdminProductsPage() {
     }
   };
 
+  const handleSync = async (productId: string) => {
+    setSyncing(productId);
+    try {
+      const res = await fetch("/api/admin/dropshipping/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Product synced with CJ successfully");
+        setProducts((prev) =>
+          prev.map((p) => (p._id === productId ? { ...p, ...data.product } : p))
+        );
+      } else {
+        toast.error(data.error || "Failed to sync product");
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setSyncing(null);
+    }
+  };
+
+  const handleSyncAll = async () => {
+    const cjProducts = products.filter((p) => p.cjPid);
+    if (cjProducts.length === 0) {
+      toast.info("No CJ Dropshipping products to sync.");
+      return;
+    }
+
+    if (
+      !confirm(
+        `Are you sure you want to sync all ${cjProducts.length} CJ products? This may take a while.`
+      )
+    )
+      return;
+
+    setIsSyncingAll(true);
+    let successCount = 0;
+    let failCount = 0;
+
+    // Process in batches of 3
+    const batchSize = 3;
+    for (let i = 0; i < cjProducts.length; i += batchSize) {
+      const batch = cjProducts.slice(i, i + batchSize);
+      await Promise.all(
+        batch.map(async (product) => {
+          try {
+            const res = await fetch("/api/admin/dropshipping/sync", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ productId: product._id }),
+            });
+            if (res.ok) {
+              const data = await res.json();
+              setProducts((prev) =>
+                prev.map((p) =>
+                  p._id === product._id ? { ...p, ...data.product } : p
+                )
+              );
+              successCount++;
+            } else {
+              failCount++;
+            }
+          } catch (e) {
+            failCount++;
+          }
+        })
+      );
+      // Optional: Update progress toast here if we had a progress bar
+    }
+
+    setIsSyncingAll(false);
+    toast.success(
+      `Sync Complete. Success: ${successCount}, Failed: ${failCount}`
+    );
+  };
+
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this product?")) return;
 
@@ -53,12 +138,58 @@ export default function AdminProductsPage() {
 
       if (res.ok) {
         setProducts(products.filter((p) => p._id !== id));
+        setSelectedProducts((prev) => prev.filter((pid) => pid !== id));
       } else {
         alert("Failed to delete product");
       }
     } catch (error) {
       console.error("Error deleting product", error);
     }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedProducts.length === 0) return;
+    if (
+      !confirm(
+        `Are you sure you want to delete ${selectedProducts.length} products?`
+      )
+    )
+      return;
+
+    try {
+      const res = await fetch("/api/products/bulk-delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: selectedProducts }),
+      });
+
+      if (res.ok) {
+        toast.success("Products deleted successfully");
+        setProducts(products.filter((p) => !selectedProducts.includes(p._id)));
+        setSelectedProducts([]);
+      } else {
+        toast.error("Failed to delete products");
+      }
+    } catch (error) {
+      console.error("Error bulk deleting", error);
+      toast.error("Something went wrong");
+    }
+  };
+
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      // Select all visible products (paginated or filtered? usually filtered)
+      // Let's select all filtered products for better UX
+      setSelectedProducts(filteredProducts.map((p) => p._id));
+    } else {
+      setSelectedProducts([]);
+    }
+  };
+
+  const handleSelectProduct = (id: string) => {
+    setSelectedProducts((prev) =>
+      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
+    );
   };
 
   // Filter products based on search query
@@ -105,6 +236,21 @@ export default function AdminProductsPage() {
         </div>
 
         <div className={styles.actionsWrapper}>
+          {selectedProducts.length > 0 && (
+            <button
+              onClick={handleBulkDelete}
+              className={`${styles.actionButton} ${styles.deleteAction} mr-2`}
+            >
+              Delete Selected ({selectedProducts.length})
+            </button>
+          )}
+          <button
+            onClick={handleSyncAll}
+            disabled={isSyncingAll}
+            className={`${styles.actionButton} bg-blue-600 text-white hover:bg-blue-700 mr-2`}
+          >
+            {isSyncingAll ? "Syncing All..." : "Sync All CJ Products"}
+          </button>
           <select
             value={currency}
             onChange={(e) => setCurrency(e.target.value as any)}
@@ -125,6 +271,14 @@ export default function AdminProductsPage() {
       <div className={styles.mobileList}>
         {paginatedProducts.map((product) => (
           <div key={product._id} className={styles.productCard}>
+            <div className="p-2">
+              <input
+                type="checkbox"
+                checked={selectedProducts.includes(product._id)}
+                onChange={() => handleSelectProduct(product._id)}
+                className="w-5 h-5"
+              />
+            </div>
             <div className={styles.productCardImageWrapper}>
               <Image
                 src={product.images[0] || "/placeholder.png"}
@@ -147,6 +301,16 @@ export default function AdminProductsPage() {
                 </div>
               </div>
               <div className={styles.productCardActions}>
+                {product.cjPid && (
+                  <button
+                    onClick={() => handleSync(product._id)}
+                    disabled={syncing === product._id}
+                    className={`${styles.actionButton} bg-blue-50 text-blue-600 hover:bg-blue-100`}
+                    title="Sync with CJ"
+                  >
+                    {syncing === product._id ? "Syncing..." : "Sync"}
+                  </button>
+                )}
                 <Link
                   href={`/admin/products/${product._id}`}
                   className={`${styles.actionButton} ${styles.editAction}`}
@@ -173,6 +337,19 @@ export default function AdminProductsPage() {
         <table className={styles.table}>
           <thead>
             <tr>
+              <th className={styles.th}>
+                <input
+                  type="checkbox"
+                  onChange={handleSelectAll}
+                  checked={
+                    filteredProducts.length > 0 &&
+                    filteredProducts.every((p) =>
+                      selectedProducts.includes(p._id)
+                    )
+                  }
+                  className="w-4 h-4"
+                />
+              </th>
               <th className={styles.th}>Image</th>
               <th className={styles.th}>Name</th>
               <th className={styles.th}>Category</th>
@@ -184,6 +361,14 @@ export default function AdminProductsPage() {
           <tbody>
             {paginatedProducts.map((product) => (
               <tr key={product._id} className={styles.tr}>
+                <td className={styles.td}>
+                  <input
+                    type="checkbox"
+                    checked={selectedProducts.includes(product._id)}
+                    onChange={() => handleSelectProduct(product._id)}
+                    className="w-4 h-4"
+                  />
+                </td>
                 <td className={styles.td}>
                   <div className={styles.imageWrapper}>
                     <Image
@@ -208,6 +393,20 @@ export default function AdminProductsPage() {
                 </td>
                 <td className={`${styles.td} ${styles.tdRight}`}>
                   <div className={styles.actions}>
+                    {product.cjPid && (
+                      <button
+                        onClick={() => handleSync(product._id)}
+                        disabled={syncing === product._id}
+                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                        title="Sync with CJ"
+                      >
+                        {syncing === product._id ? (
+                          <span className="text-xs">...</span>
+                        ) : (
+                          <RefreshCw size={16} />
+                        )}
+                      </button>
+                    )}
                     <Link
                       href={`/admin/products/${product._id}`}
                       className={styles.editLink}
@@ -226,7 +425,7 @@ export default function AdminProductsPage() {
             ))}
             {paginatedProducts.length === 0 && (
               <tr>
-                <td colSpan={6} className={styles.emptyState}>
+                <td colSpan={7} className={styles.emptyState}>
                   No products found.
                 </td>
               </tr>
@@ -267,14 +466,20 @@ export default function AdminProductsPage() {
               </button>
 
               {/* Simple page numbers */}
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                let pageNum = i + 1;
-                if (totalPages > 5 && currentPage > 3) {
-                  pageNum = currentPage - 2 + i;
-                  if (pageNum > totalPages) pageNum = totalPages - (4 - i);
+              {(() => {
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(totalPages, startPage + 4);
+
+                if (endPage - startPage < 4) {
+                  startPage = Math.max(1, endPage - 4);
                 }
 
-                return (
+                const pageNumbers = [];
+                for (let i = startPage; i <= endPage; i++) {
+                  pageNumbers.push(i);
+                }
+
+                return pageNumbers.map((pageNum) => (
                   <button
                     key={pageNum}
                     className={`${styles.pageButton} ${
@@ -284,8 +489,8 @@ export default function AdminProductsPage() {
                   >
                     {pageNum}
                   </button>
-                );
-              })}
+                ));
+              })()}
 
               <button
                 className={styles.pageButton}

@@ -56,6 +56,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "**.cloudfront.net",
       },
+      {
+        protocol: "https",
+        hostname: "**.cjdropshipping.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.aliyuncs.com",
+      },
     ],
   },
   async headers() {

@@ -22,6 +22,7 @@ const OrderSchema = new Schema(
           min: 1,
         },
         image: String,
+        cjVid: String,
       },
     ],
     total: {

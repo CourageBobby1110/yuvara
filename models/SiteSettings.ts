@@ -19,6 +19,13 @@ const SiteSettingsSchema = new Schema(
     googleAnalyticsId: { type: String, default: "" },
     klaviyoPublicKey: { type: String, default: "" },
     tiktokPixelId: { type: String, default: "" },
+    cjDropshippingApiKey: { type: String, default: "" },
+    cjDropshippingUserId: { type: String, default: "" },
+    cjAccessToken: { type: String, default: "" },
+    cjRefreshToken: { type: String, default: "" },
+    cjTokenExpiry: { type: Date },
+    dobaAppKey: { type: String, default: "" },
+    dobaAppSecret: { type: String, default: "" },
   },
   { timestamps: true }
 );

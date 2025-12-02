@@ -85,7 +85,10 @@ export async function POST(req: Request) {
       // Create Order
       const order = await Order.create({
         user: session.user.id,
-        items,
+        items: items.map((item: any) => ({
+          ...item,
+          cjVid: item.cjVid,
+        })),
         total, // This is 0 effectively for the user, but we record the value? Or 0?
         // Usually we record the value but paymentStatus is paid.
         // However, if we want to be strict, the "total to pay" is 0.

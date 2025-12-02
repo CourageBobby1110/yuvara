@@ -13,6 +13,8 @@ interface AddToCartProps {
     image: string;
     price: number;
     stock: number;
+    size?: string;
+    cjVid?: string;
   } | null;
 }
 
@@ -33,8 +35,8 @@ export default function AddToCart({
     : product.stock <= 0;
 
   const handleAddToCart = () => {
-    // Size validation
-    if (availableSizes.length > 0 && !selectedSize) {
+    // Size validation (Legacy) - Only check if NO variant is selected
+    if (!selectedVariant && availableSizes.length > 0 && !selectedSize) {
       alert("Please select a size");
       return;
     }
@@ -44,6 +46,12 @@ export default function AddToCart({
       if (!selectedVariant) {
         alert("Please select a variant");
         return;
+      }
+      // Check if variant has size but none selected (though UI enforces this usually)
+      if (selectedVariant.size && !selectedVariant.size) {
+        // This case is handled by the selection logic in parent,
+        // but we can double check if needed.
+        // Actually, selectedVariant IS the specific combination now.
       }
     } else if (product.colors && product.colors.length > 0 && !selectedColor) {
       alert("Please select a color");
@@ -55,6 +63,7 @@ export default function AddToCart({
       ? selectedVariant.image
       : product.images[0] || "/placeholder.png";
     const colorToUse = selectedVariant ? selectedVariant.color : selectedColor;
+    const sizeToUse = selectedVariant ? selectedVariant.size : selectedSize;
 
     // Map Product to CartItem format
     addItem({
@@ -63,8 +72,10 @@ export default function AddToCart({
       price: priceToUse,
       image: imageToUse,
       slug: product.slug,
-      selectedSize,
+      selectedSize: sizeToUse,
       selectedColor: colorToUse,
+      cjVid: selectedVariant?.cjVid,
+      shippingRates: product.shippingRates,
     });
 
     // Klaviyo "Added to Cart" tracking
@@ -81,8 +92,8 @@ export default function AddToCart({
           Url: window.location.href,
           Metadata: {
             Price: priceToUse,
-            Variant: selectedVariant ? selectedVariant.color : selectedColor,
-            Size: selectedSize,
+            Variant: colorToUse,
+            Size: sizeToUse,
           },
         },
       ]);
@@ -94,26 +105,27 @@ export default function AddToCart({
 
   return (
     <div className="flex flex-col gap-4">
-      {availableSizes.length > 0 && (
-        <div>
-          <label className="block text-sm font-medium mb-2">Size</label>
-          <div className="flex gap-2 flex-wrap">
-            {availableSizes.map((size) => (
-              <button
-                key={size}
-                onClick={() => setSelectedSize(size)}
-                className={`px-4 py-2 border rounded-md ${
-                  selectedSize === size
-                    ? "bg-black text-white border-black"
-                    : "bg-white text-black border-gray-300 hover:border-black"
-                }`}
-              >
-                {size}
-              </button>
-            ))}
+      {availableSizes.length > 0 &&
+        (!product.variants || product.variants.length === 0) && (
+          <div>
+            <label className="block text-sm font-medium mb-2">Size</label>
+            <div className="flex gap-2 flex-wrap">
+              {availableSizes.map((size) => (
+                <button
+                  key={size}
+                  onClick={() => setSelectedSize(size)}
+                  className={`px-4 py-2 border rounded-md ${
+                    selectedSize === size
+                      ? "bg-black text-white border-black"
+                      : "bg-white text-black border-gray-300 hover:border-black"
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Only show color selector if NO variants exist (legacy support) */}
       {(!product.variants || product.variants.length === 0) &&

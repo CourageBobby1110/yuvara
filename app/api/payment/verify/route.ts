@@ -144,6 +144,7 @@ export async function POST(req: Request) {
         price: item.price,
         quantity: item.quantity,
         image: item.image,
+        cjVid: item.cjVid,
       })),
       total: total,
       status: "processing",

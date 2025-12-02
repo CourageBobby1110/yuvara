@@ -36,6 +36,22 @@ const ProductSchema = new Schema(
       default: 0,
       min: 0,
     },
+    shippingFee: {
+      type: Number,
+      default: 0,
+    },
+    shippingRates: {
+      type: [
+        {
+          countryCode: { type: String, required: true },
+          countryName: { type: String, required: true },
+          price: { type: Number, required: true },
+          method: { type: String },
+          deliveryTime: { type: String },
+        },
+      ],
+      default: [],
+    },
     isFeatured: {
       type: Boolean,
       default: false,
@@ -63,6 +79,10 @@ const ProductSchema = new Schema(
           image: { type: String, required: true },
           price: { type: Number, required: true },
           stock: { type: Number, default: 0 },
+          size: { type: String }, // Variant Size
+          cjVid: { type: String }, // CJ Variant ID
+          cjSku: { type: String }, // CJ SKU
+          dobaSku: { type: String }, // Doba SKU
         },
       ],
       default: [],
@@ -70,6 +90,16 @@ const ProductSchema = new Schema(
     productUrl: {
       type: String,
       trim: true,
+    },
+    cjPid: {
+      type: String,
+      trim: true,
+      index: true,
+    },
+    dobaId: {
+      type: String,
+      trim: true,
+      index: true,
     },
   },
   { timestamps: true }
@@ -88,6 +118,14 @@ export type Product = {
   reviewsEnabled?: boolean;
   category: string;
   stock: number;
+  shippingFee?: number;
+  shippingRates?: {
+    countryCode: string;
+    countryName: string;
+    price: number;
+    method?: string;
+    deliveryTime?: string;
+  }[];
   isFeatured: boolean;
   sizes?: string[];
   colors?: string[];

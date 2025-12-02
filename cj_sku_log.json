@@ -1,0 +1,18 @@
+{
+  "code": 200,
+  "result": true,
+  "message": "Success",
+  "data": [
+    {
+      "areaEn": "China Warehouse",
+      "areaId": 1,
+      "countryCode": "CN",
+      "totalInventoryNum": 6823,
+      "cjInventoryNum": 0,
+      "factoryInventoryNum": 6823,
+      "countryNameEn": "China"
+    }
+  ],
+  "requestId": "aa4bf946ef0b4a57bed63c33e0c5b80f",
+  "success": true
+}

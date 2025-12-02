@@ -101,6 +101,10 @@ export async function getProducts(filter: ProductFilter = {}) {
         ...variant,
         _id: variant._id ? variant._id.toString() : undefined,
       })),
+      shippingRates: product.shippingRates?.map((rate: any) => ({
+        ...rate,
+        _id: rate._id ? rate._id.toString() : undefined,
+      })),
     }));
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -135,6 +139,10 @@ export async function getProductBySlug(
       variants: (product as any).variants?.map((variant: any) => ({
         ...variant,
         _id: variant._id ? variant._id.toString() : undefined,
+      })),
+      shippingRates: (product as any).shippingRates?.map((rate: any) => ({
+        ...rate,
+        _id: rate._id ? rate._id.toString() : undefined,
       })),
     };
   } catch (error) {

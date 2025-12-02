@@ -41,7 +41,7 @@ export default function FeaturedCollection({
         id: product._id,
         name: product.name,
         price: product.price,
-        image: product.images[0] || "/placeholder.png",
+        image: product.images?.[0] || "/placeholder.png",
         slug: product.slug,
       });
       openCart();

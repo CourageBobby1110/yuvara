@@ -79,7 +79,7 @@ export default function QuickAddModal({
     const priceToUse = selectedVariant ? selectedVariant.price : product.price;
     const imageToUse = selectedVariant
       ? selectedVariant.image
-      : product.images[0] || "/placeholder.png";
+      : product.images?.[0] || "/placeholder.png";
     const colorToUse = selectedVariant ? selectedVariant.color : selectedColor;
 
     addItem({
@@ -99,7 +99,7 @@ export default function QuickAddModal({
   const currentPrice = selectedVariant ? selectedVariant.price : product.price;
   const currentImage = selectedVariant
     ? selectedVariant.image
-    : product.images[0] || "/placeholder.png";
+    : product.images?.[0] || "/placeholder.png";
 
   return (
     <div

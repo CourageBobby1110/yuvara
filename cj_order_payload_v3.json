@@ -1,0 +1,20 @@
+{
+  "orderNumber": "692f1e6f15ccbc31fac28e54",
+  "shippingZip": "112105",
+  "shippingCountryCode": "NG",
+  "shippingCountry": "Nigeria",
+  "shippingProvince": "Lagos",
+  "shippingCity": "Lagos",
+  "shippingAddress": "1B olawore anifowoshe close hotel bustop igando",
+  "shippingCustomerName": "Couragechidi800",
+  "shippingPhone": "+2349138644971",
+  "remark": "Dropshipping Order from Yuvara",
+  "fromCountryCode": "CN",
+  "logisticName": "CJPacket Liquid Line",
+  "products": [
+    {
+      "vid": "1563103309295267840",
+      "quantity": 1
+    }
+  ]
+}

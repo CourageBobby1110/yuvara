@@ -98,6 +98,24 @@ export default function AdminSidebar() {
             Bulk Import
           </Link>
           <Link
+            href="/admin/dropshipping"
+            className={`${styles.link} ${
+              isActive("/admin/dropshipping") ? styles.active : ""
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            CJ Dropshipping
+          </Link>
+          <Link
+            href="/admin/doba/search"
+            className={`${styles.link} ${
+              isActive("/admin/doba") ? styles.active : ""
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Doba Dropshipping
+          </Link>
+          <Link
             href="/admin/orders"
             className={`${styles.link} ${
               isActive("/admin/orders") ? styles.active : ""
