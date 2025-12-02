@@ -609,3 +609,160 @@ export async function sendVerificationEmail(email: string, token: string) {
     throw error;
   }
 }
+
+export async function sendInvestmentWelcomeEmail(
+  email: string,
+  name: string,
+  accessPin: string,
+  initialAmount: number
+) {
+  const loginUrl = `${process.env.NEXTAUTH_URL}/invest`;
+
+  const mailOptions = {
+    from: `Yuvara Investments <${process.env.EMAIL_FROM}>`,
+    to: email,
+    subject: "Welcome to Yuvara Investments - Your Account Details",
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="text-align: center; padding: 20px 0; border-bottom: 1px solid #eee;">
+          <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 2px; color: #000;">YUVARA</h1>
+        </div>
+        
+        <div style="padding: 20px 0;">
+          <h2 style="color: #333; margin-top: 0;">Investment Account Created</h2>
+          <p style="color: #666; line-height: 1.6;">
+            Dear ${name},<br>
+            Your investment account has been successfully created. Here are your access details:
+          </p>
+          
+          <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <p><strong>Initial Investment:</strong> $${initialAmount.toLocaleString()}</p>
+            <p><strong>Access Pin (Serial Number):</strong> <span style="font-family: monospace; font-size: 16px; background: #eee; padding: 2px 6px; rounded: 4px;">${accessPin}</span></p>
+            <p><strong>Login URL:</strong> <a href="${loginUrl}">${loginUrl}</a></p>
+          </div>
+
+          <p style="color: #666; line-height: 1.6;">
+            Please keep your Access Pin safe. You will need it along with your password to access your dashboard.
+          </p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${loginUrl}" 
+               style="background: #000; color: #fff; padding: 14px 40px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">
+              Access Dashboard
+            </a>
+          </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px;">
+          <p>&copy; ${new Date().getFullYear()} Yuvara. All rights reserved.</p>
+        </div>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Investment welcome email sent to ${email}`);
+  } catch (error) {
+    console.error("Failed to send investment welcome email", error);
+  }
+}
+
+export async function sendWithdrawalRequestEmail(
+  investorName: string,
+  investorEmail: string,
+  amount: number,
+  bankDetails: any
+) {
+  const adminEmail = process.env.EMAIL_FROM;
+
+  // Email to Admin
+  const adminMailOptions = {
+    from: `Yuvara Investments <${process.env.EMAIL_FROM}>`,
+    to: adminEmail,
+    subject: `Withdrawal Request: ${investorName}`,
+    html: `
+      <h1>Withdrawal Request</h1>
+      <p><strong>Investor:</strong> ${investorName} (${investorEmail})</p>
+      <p><strong>Amount to Withdraw:</strong> $${amount.toLocaleString()}</p>
+      
+      <h3>Bank Details:</h3>
+      <pre>${JSON.stringify(bankDetails, null, 2)}</pre>
+      
+      <p><a href="${
+        process.env.NEXTAUTH_URL
+      }/admin/investors">Manage Investors</a></p>
+    `,
+  };
+
+  // Email to Investor
+  const userMailOptions = {
+    from: `Yuvara Investments <${process.env.EMAIL_FROM}>`,
+    to: investorEmail,
+    subject: "Withdrawal Request Received",
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="text-align: center; padding: 20px 0; border-bottom: 1px solid #eee;">
+          <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 2px; color: #000;">YUVARA</h1>
+        </div>
+        
+        <div style="padding: 20px 0;">
+          <h2 style="color: #333; margin-top: 0;">Withdrawal Request Received</h2>
+          <p style="color: #666; line-height: 1.6;">
+            Dear ${investorName},<br>
+            We have received your request to withdraw <strong>$${amount.toLocaleString()}</strong>.
+          </p>
+          <p style="color: #666; line-height: 1.6;">
+            Our team will process your request shortly. You will be notified once the transfer is complete.
+          </p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px;">
+          <p>&copy; ${new Date().getFullYear()} Yuvara. All rights reserved.</p>
+        </div>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(adminMailOptions);
+    await transporter.sendMail(userMailOptions);
+    console.log(`Withdrawal emails sent for ${investorName}`);
+  } catch (error) {
+    console.error("Failed to send withdrawal emails", error);
+  }
+}
+
+export async function sendIssueReportEmail(
+  investorName: string,
+  investorEmail: string,
+  subject: string,
+  message: string
+) {
+  const adminEmail = process.env.EMAIL_FROM;
+
+  const mailOptions = {
+    from: `Yuvara Investments <${process.env.EMAIL_FROM}>`,
+    to: adminEmail,
+    subject: `Issue Reported by ${investorName}: ${subject}`,
+    html: `
+      <h1>Issue Reported</h1>
+      <p><strong>Investor:</strong> ${investorName} (${investorEmail})</p>
+      <p><strong>Subject:</strong> ${subject}</p>
+      
+      <h3>Message:</h3>
+      <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d9534f;">
+        <p style="white-space: pre-wrap;">${message}</p>
+      </div>
+      
+      <p><a href="${process.env.NEXTAUTH_URL}/admin/investors">Manage Investors</a></p>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Issue report email sent from ${investorName}`);
+  } catch (error) {
+    console.error("Failed to send issue report email", error);
+  }
+}

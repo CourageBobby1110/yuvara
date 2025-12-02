@@ -1,0 +1,245 @@
+.container {
+  padding: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.addButton {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.addButton:hover {
+  background-color: var(--color-secondary);
+}
+
+.tableContainer {
+  background-color: var(--color-bg-primary);
+  box-shadow: var(--shadow-sm);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid var(--color-border-light);
+}
+
+.table {
+  min-width: 100%;
+  border-collapse: collapse;
+}
+
+.thead {
+  background-color: var(--color-bg-secondary);
+}
+
+.th {
+  padding: 0.75rem 1.5rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tbody {
+  background-color: var(--color-bg-primary);
+}
+
+.tr {
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.td {
+  padding: 1rem 1.5rem;
+  white-space: nowrap;
+}
+
+.investorName {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.investorEmail {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.statusBadge {
+  display: inline-flex;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  text-transform: capitalize;
+}
+
+.statusActive {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.statusWithdrawalRequested {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.statusCompleted {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.statusDefault {
+  background-color: #f3f4f6;
+  color: #1f2937;
+}
+
+.actionButton {
+  margin-right: 1rem;
+  color: var(--color-info);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.actionButton:hover {
+  text-decoration: underline;
+}
+
+.deleteButton {
+  color: var(--color-error);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.deleteButton:hover {
+  text-decoration: underline;
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 50;
+}
+
+.modalContent {
+  background-color: var(--color-bg-primary);
+  border-radius: 0.5rem;
+  max-width: 28rem;
+  width: 100%;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.modalTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--color-text-primary);
+}
+
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.input {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--color-border-medium);
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.col {
+  flex: 1;
+}
+
+.generateLink {
+  font-size: 0.875rem;
+  color: var(--color-info);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.generateLink:hover {
+  text-decoration: underline;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.cancelButton {
+  padding: 0.5rem 1rem;
+  color: var(--color-text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.cancelButton:hover {
+  color: var(--color-text-primary);
+}
+
+.saveButton {
+  padding: 0.5rem 1rem;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border-radius: 0.25rem;
+  border: none;
+  cursor: pointer;
+}
+
+.saveButton:hover {
+  background-color: var(--color-secondary);
+}

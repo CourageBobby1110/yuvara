@@ -117,6 +117,11 @@ export default function Footer() {
                   Terms of Service
                 </Link>
               </li>
+              <li>
+                <Link href="/invest" className={styles.link}>
+                  Investment Portal
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

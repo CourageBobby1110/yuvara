@@ -14,7 +14,7 @@ export async function GET() {
     await dbConnect();
     // Populate product details
     const wishlist = await Wishlist.find({ user: session.user.id })
-      .populate("product")
+      .populate({ path: "product", model: Product })
       .sort({ createdAt: -1 });
 
     return NextResponse.json(wishlist);
