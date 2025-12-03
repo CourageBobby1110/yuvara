@@ -3,7 +3,15 @@
 import { signOut, signIn } from "@/auth";
 
 export async function handleSignOut() {
-  await signOut({ redirectTo: "/" });
+  try {
+    await signOut({ redirectTo: "/auth/signin" });
+  } catch (error) {
+    if ((error as Error).message.includes("NEXT_REDIRECT")) {
+      throw error;
+    }
+    console.error("Sign out error:", error);
+    throw error;
+  }
 }
 
 import { AuthError } from "next-auth";

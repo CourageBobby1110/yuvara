@@ -367,7 +367,7 @@ export default function Navbar({ session }: NavbarProps) {
               </Link>
               <button
                 onClick={() => {
-                  signOut({ callbackUrl: "/" });
+                  signOut({ callbackUrl: "/auth/signin" });
                   setIsMenuOpen(false);
                 }}
                 className={styles.mobileSignOut}

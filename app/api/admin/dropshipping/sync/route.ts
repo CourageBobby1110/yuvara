@@ -65,7 +65,7 @@ function parseCJVariant(v: any, defaultImage: string, basePrice: number) {
 
   return {
     color: color && color !== "Default" ? color : v.variantKey || "Default",
-    image: v.productImage || defaultImage,
+    image: v.variantImage || v.productImage || defaultImage,
     price: variantCost * 1.5,
     stock: v.realStock !== undefined ? v.realStock : v.productNumber || 0,
     size: size,

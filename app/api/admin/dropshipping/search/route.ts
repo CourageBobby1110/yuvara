@@ -74,32 +74,69 @@ export async function GET(req: Request) {
       });
     }
 
-    // 1. Search CJ Products
+    // 1. Check if query is a URL or PID
+    let pid = "";
+    const urlMatch = query.match(/p-(\d+)\.html/);
+    if (urlMatch && urlMatch[1]) {
+      pid = urlMatch[1];
+    } else if (/^\d+$/.test(query) && query.length > 10) {
+      // Assume it's a direct PID if it's a long number
+      pid = query;
+    }
+
+    // 2. Search CJ Products
     try {
-      const response = await axios.get(
-        `https://developers.cjdropshipping.com/api2.0/v1/product/list?pageNum=${page}&pageSize=50&productName=${encodeURIComponent(
-          query
-        )}`,
-        { headers: { "CJ-Access-Token": accessToken } }
-      );
+      let products = [];
+      let total = 0;
 
-      if (response.data?.result && response.data?.data?.list) {
-        const products = response.data.data.list.map((p: any) => ({
-          pid: p.pid,
-          productName: p.productNameEn || p.productName,
-          productImage: parseProductImage(p.productImage),
-          sellPrice: p.sellPrice,
-          productSku: p.productSku,
-          categoryName: p.categoryName,
-        }));
+      if (pid) {
+        // Fetch Single Product
+        const response = await axios.get(
+          `https://developers.cjdropshipping.com/api2.0/v1/product/query?pid=${pid}`,
+          { headers: { "CJ-Access-Token": accessToken } }
+        );
 
-        return NextResponse.json({
-          products,
-          total: response.data.data.total || 0,
-        });
+        if (response.data?.result && response.data?.data) {
+          const p = response.data.data;
+          products = [
+            {
+              pid: p.pid,
+              productName: p.productNameEn || p.productName,
+              productImage: parseProductImage(p.productImage),
+              sellPrice: p.sellPrice,
+              productSku: p.productSku,
+              categoryName: p.categoryName,
+              shippingInfo: [], // query endpoint might not return shipping info directly in list format, but that's ok
+            },
+          ];
+          total = 1;
+        }
       } else {
-        return NextResponse.json({ products: [], total: 0 });
+        // Keyword Search
+        const response = await axios.get(
+          `https://developers.cjdropshipping.com/api2.0/v1/product/list?pageNum=${page}&pageSize=50&productName=${encodeURIComponent(
+            query
+          )}`,
+          { headers: { "CJ-Access-Token": accessToken } }
+        );
+
+        if (response.data?.result && response.data?.data?.list) {
+          products = response.data.data.list.map((p: any) => ({
+            pid: p.pid,
+            productName: p.productNameEn || p.productName,
+            productImage: parseProductImage(p.productImage),
+            sellPrice: p.sellPrice,
+            productSku: p.productSku,
+            categoryName: p.categoryName,
+          }));
+          total = response.data.data.total || 0;
+        }
       }
+
+      return NextResponse.json({
+        products,
+        total,
+      });
     } catch (apiError: any) {
       console.error("CJ Search API Error:", apiError);
       return NextResponse.json(

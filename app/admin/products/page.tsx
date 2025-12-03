@@ -73,6 +73,8 @@ export default function AdminProductsPage() {
     }
   };
 
+  const [syncProgress, setSyncProgress] = useState({ current: 0, total: 0 });
+
   const handleSyncAll = async () => {
     const cjProducts = products.filter((p) => p.cjPid);
     if (cjProducts.length === 0) {
@@ -88,11 +90,12 @@ export default function AdminProductsPage() {
       return;
 
     setIsSyncingAll(true);
+    setSyncProgress({ current: 0, total: cjProducts.length });
     let successCount = 0;
     let failCount = 0;
 
-    // Process in batches of 3
-    const batchSize = 3;
+    // Process one by one (Sequential)
+    const batchSize = 1;
     for (let i = 0; i < cjProducts.length; i += batchSize) {
       const batch = cjProducts.slice(i, i + batchSize);
       await Promise.all(
@@ -119,10 +122,14 @@ export default function AdminProductsPage() {
           }
         })
       );
-      // Optional: Update progress toast here if we had a progress bar
+      setSyncProgress({
+        current: Math.min(i + batchSize, cjProducts.length),
+        total: cjProducts.length,
+      });
     }
 
     setIsSyncingAll(false);
+    setSyncProgress({ current: 0, total: 0 });
     toast.success(
       `Sync Complete. Success: ${successCount}, Failed: ${failCount}`
     );
@@ -249,7 +256,38 @@ export default function AdminProductsPage() {
             disabled={isSyncingAll}
             className={`${styles.actionButton} bg-blue-600 text-white hover:bg-blue-700 mr-2`}
           >
-            {isSyncingAll ? "Syncing All..." : "Sync All CJ Products"}
+            {isSyncingAll
+              ? `Syncing... ${syncProgress.current}/${syncProgress.total}`
+              : "Sync All CJ Products"}
+          </button>
+          <button
+            onClick={async () => {
+              if (
+                confirm(
+                  "Are you sure you want to add +$3 to the price of ALL products? This cannot be easily undone."
+                )
+              ) {
+                try {
+                  const res = await fetch("/api/admin/products/markup", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ amount: 3 }),
+                  });
+                  const data = await res.json();
+                  if (res.ok) {
+                    toast.success(data.message);
+                    fetchProducts(); // Refresh list
+                  } else {
+                    toast.error(data.error);
+                  }
+                } catch (e) {
+                  toast.error("Failed to update prices");
+                }
+              }
+            }}
+            className={`${styles.actionButton} bg-green-600 text-white hover:bg-green-700 mr-2`}
+          >
+            Add +$3 Markup
           </button>
           <select
             value={currency}

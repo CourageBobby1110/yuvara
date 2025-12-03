@@ -65,10 +65,6 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
   const [product, setProduct] = useState<ProductType>(initialProduct);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(false);
-  const [activeMedia, setActiveMedia] = useState<{
-    type: "image" | "video";
-    url: string;
-  } | null>({ type: "image", url: initialProduct.images[0] });
   const [selectedVariant, setSelectedVariant] = useState<{
     color: string;
     image: string;
@@ -80,6 +76,17 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
       ? initialProduct.variants[0]
       : null
   );
+
+  const [activeMedia, setActiveMedia] = useState<{
+    type: "image" | "video";
+    url: string;
+  } | null>({
+    type: "image",
+    url:
+      initialProduct.variants && initialProduct.variants.length > 0
+        ? initialProduct.variants[0].image
+        : initialProduct.images[0],
+  });
 
   // Review Form State
   const [rating, setRating] = useState(5);
@@ -232,7 +239,18 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
             {product.images.map((image, index) => (
               <button
                 key={`img-${index}`}
-                onClick={() => setActiveMedia({ type: "image", url: image })}
+                onClick={() => {
+                  setActiveMedia({ type: "image", url: image });
+                  // Auto-select variant if image matches
+                  if (product.variants) {
+                    const matchingVariant = product.variants.find(
+                      (v) => v.image === image
+                    );
+                    if (matchingVariant) {
+                      setSelectedVariant(matchingVariant);
+                    }
+                  }
+                }}
                 className={`${styles.thumbnailButton} ${
                   activeMedia?.url === image ? styles.thumbnailButtonActive : ""
                 }`}

@@ -54,12 +54,46 @@ export default function CheckoutPage() {
     country: "NG",
   });
 
+  const [availableCountries, setAvailableCountries] = useState(COUNTRIES);
+
   // Force session update on mount
   useEffect(() => {
     useCartStore.persist.rehydrate();
     update();
     fetchUserProfile();
   }, []);
+
+  // Calculate available countries based on cart items
+  useEffect(() => {
+    if (items.length === 0) {
+      setAvailableCountries(COUNTRIES);
+      return;
+    }
+
+    // Start with all countries
+    let allowedCodes = COUNTRIES.map((c) => c.code);
+
+    for (const item of items) {
+      if (item.shippingRates && item.shippingRates.length > 0) {
+        const itemCodes = item.shippingRates.map((r) => r.countryCode);
+        // Intersection: Keep only codes that are present in both
+        allowedCodes = allowedCodes.filter((code) => itemCodes.includes(code));
+      }
+    }
+
+    const filteredCountries = COUNTRIES.filter((c) =>
+      allowedCodes.includes(c.code)
+    );
+    setAvailableCountries(filteredCountries);
+
+    // If current selected country is not in available list, reset it
+    if (
+      filteredCountries.length > 0 &&
+      !allowedCodes.includes(formData.country)
+    ) {
+      setFormData((prev) => ({ ...prev, country: filteredCountries[0].code }));
+    }
+  }, [items]);
 
   // Redirect if empty cart
   useEffect(() => {
@@ -604,13 +638,23 @@ export default function CheckoutPage() {
                       value={formData.country}
                       onChange={handleChange}
                       className={styles.select}
+                      disabled={availableCountries.length === 0}
                     >
-                      {COUNTRIES.map((c) => (
+                      {availableCountries.map((c) => (
                         <option key={c.code} value={c.code}>
                           {c.name}
                         </option>
                       ))}
                     </select>
+                    {availableCountries.length < COUNTRIES.length && (
+                      <p className="text-xs text-amber-600 mt-1">
+                        {availableCountries.length === 0
+                          ? "No common shipping country found for these items."
+                          : `Only shipping to ${availableCountries
+                              .map((c) => c.name)
+                              .join(", ")} is available.`}
+                      </p>
+                    )}
                   </div>
 
                   <div>
