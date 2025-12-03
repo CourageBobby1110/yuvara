@@ -37,9 +37,6 @@ export const authConfig = {
       }
 
       if (isAuthPage) {
-        if (isLoggedIn) {
-          return Response.redirect(new URL("/", nextUrl.nextUrl));
-        }
         return true;
       }
 

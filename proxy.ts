@@ -15,9 +15,6 @@ export const proxy = auth((req) => {
   }
 
   if (isAuthPage) {
-    if (isLoggedIn) {
-      return NextResponse.redirect(new URL("/", req.nextUrl));
-    }
     return null;
   }
 
