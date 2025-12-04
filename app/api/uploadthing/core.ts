@@ -11,10 +11,17 @@ export const ourFileRouter = {
     .middleware(async ({ req }) => {
       // This code runs on your server before upload
       const session = await auth();
+      console.log(
+        "UploadThing Middleware - Session:",
+        session?.user?.email,
+        session?.user?.role
+      );
 
       // If you throw, the user will not be able to upload
-      if (!session || session.user?.role !== "admin")
+      if (!session || session.user?.role !== "admin") {
+        console.error("UploadThing Middleware - Unauthorized");
         throw new Error("Unauthorized");
+      }
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return { userId: session.user.email };

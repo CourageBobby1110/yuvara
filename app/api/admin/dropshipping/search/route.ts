@@ -76,13 +76,33 @@ export async function GET(req: Request) {
 
     // 1. Check if query is a URL or PID
     let pid = "";
-    const urlMatch = query.match(/p-(\d+)\.html/);
-    if (urlMatch && urlMatch[1]) {
-      pid = urlMatch[1];
-    } else if (/^\d+$/.test(query) && query.length > 10) {
-      // Assume it's a direct PID if it's a long number
-      pid = query;
-    }
+
+    // Helper to extract PID from string
+    const extractPid = (str: string) => {
+      // Try standard URL pattern: ...-p-{PID}.html
+      const urlMatch = str.match(/-p-([a-zA-Z0-9]+)\.html/);
+      if (urlMatch && urlMatch[1]) return urlMatch[1];
+
+      // Try query param pattern: ?pid={PID} or &pid={PID}
+      try {
+        const urlObj = new URL(str);
+        const pidParam = urlObj.searchParams.get("pid");
+        if (pidParam) return pidParam;
+      } catch (e) {
+        // Not a valid URL object, continue
+      }
+
+      // Try direct PID (long alphanumeric, usually starts with numbers but can contain letters)
+      // CJ PIDs are typically long UUID-like or numeric strings.
+      // If it's just a number and long enough, assume PID.
+      if (/^[a-zA-Z0-9-]{10,}$/.test(str)) {
+        return str;
+      }
+
+      return "";
+    };
+
+    pid = extractPid(query);
 
     // 2. Search CJ Products
     try {

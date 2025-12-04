@@ -19,6 +19,15 @@ export default function Hero() {
         if (dataSettings.heroImageUrl) {
           setHeroImage(dataSettings.heroImageUrl);
         }
+
+        // Fetch Categories
+        const resCats = await fetch("/api/categories");
+        if (resCats.ok) {
+          const dataCats = await resCats.json();
+          if (Array.isArray(dataCats) && dataCats.length > 0) {
+            setCategories(dataCats);
+          }
+        }
       } catch (error) {
         console.error("Failed to fetch data:", error);
       }

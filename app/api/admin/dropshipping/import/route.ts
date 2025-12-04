@@ -5,6 +5,7 @@ import Product from "@/models/Product";
 import axios from "axios";
 import mongoose from "mongoose";
 import { getValidCJAccessToken } from "@/lib/cj-auth";
+import { parseCJVariant, fetchVariantStock } from "@/lib/cj-utils";
 
 // --- Helper Functions ---
 
@@ -19,73 +20,6 @@ function slugify(text: string) {
     .replace(/-+$/, "");
 
   return slug || "";
-}
-
-function parseCJVariant(v: any, defaultImage: string, basePrice: number) {
-  let variantCost = parseFloat(v.productPrice);
-  if (isNaN(variantCost) || variantCost === 0) {
-    variantCost = basePrice;
-  }
-
-  let color = v.productColor;
-  let size = v.productSize;
-
-  // Helper to clean size
-  const cleanSize = (s: string) => {
-    if (!s) return "";
-    const lower = s.toLowerCase().trim();
-    if (
-      lower === "default" ||
-      lower === "standard" ||
-      lower === "one size" ||
-      lower === "specification" ||
-      lower === "model"
-    ) {
-      return ""; // Treat generic terms as empty/default
-    }
-    return s.trim();
-  };
-
-  size = cleanSize(size);
-
-  // Fallback: Parse variantKey if color/size are missing or Default
-  // variantKey format example: "color:Red;size:XL" or "Red-XL"
-  if ((!color || color === "Default" || !size) && v.variantKey) {
-    const parts = v.variantKey.split(";");
-    for (const part of parts) {
-      const [key, val] = part.split(":");
-      if (key && val) {
-        const k = key.toLowerCase().trim();
-        const v = val.trim();
-        if (k === "color" || k === "colour") {
-          if (!color || color === "Default") color = v;
-        } else if (k === "size" || k === "specification" || k === "standard") {
-          if (!size) size = cleanSize(v);
-        }
-      }
-    }
-  }
-
-  // If still Default, try to use the first part of variantKey if it looks like a color
-  if (
-    (!color || color === "Default") &&
-    v.variantKey &&
-    !v.variantKey.includes(":")
-  ) {
-    const parts = v.variantKey.split("-");
-    if (parts.length > 0) color = parts[0];
-    if (parts.length > 1 && !size) size = cleanSize(parts[1]);
-  }
-
-  return {
-    color: color && color !== "Default" ? color : v.variantKey || "Default",
-    image: v.variantImage || v.productImage || defaultImage,
-    price: variantCost * 1.5, // Markup
-    stock: v.realStock !== undefined ? v.realStock : v.productNumber || 0,
-    size: size,
-    cjVid: v.vid,
-    cjSku: v.productSku,
-  };
 }
 
 const TARGET_COUNTRIES = [
@@ -233,9 +167,21 @@ export async function POST(req: Request) {
     const shippingFee = nigeriaRate ? nigeriaRate.price : 0;
 
     // Variants
-    const variants = (productData.variants || []).map((v: any) =>
-      parseCJVariant(v, images[0] || "", cost)
-    );
+    const variants = [];
+    for (const v of productData.variants || []) {
+      // Fetch real-time stock
+      const fetchedStock = await fetchVariantStock(
+        accessToken,
+        v.vid,
+        v.variantSku || v.productSku
+      );
+      // Inject realStock into the raw variant data so parseCJVariant picks it up
+      const variantWithStock = {
+        ...v,
+        realStock: fetchedStock !== null ? fetchedStock : v.productNumber || 0,
+      };
+      variants.push(parseCJVariant(variantWithStock, images[0] || "", cost));
+    }
 
     // Extract sizes and colors
     const sizes = [
