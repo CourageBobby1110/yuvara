@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-// import { Geist, Geist_Mono } from "next/font/google";
+import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import "@uploadthing/react/styles.css";
 import { SessionProvider as AuthProvider } from "next-auth/react";
@@ -10,6 +10,12 @@ import { CurrencyProvider } from "@/context/CurrencyContext";
 import { Toaster } from "sonner";
 import dbConnect from "@/lib/db";
 import SiteSettings from "@/models/SiteSettings";
+
+const openSans = Open_Sans({
+  subsets: ["latin"],
+  variable: "--font-open-sans",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -80,7 +86,10 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`antialiased`} suppressHydrationWarning>
+      <body
+        className={`${openSans.variable} antialiased font-sans`}
+        suppressHydrationWarning
+      >
         <LanguageProvider>
           <CurrencyProvider>
             <AuthProvider session={session}>

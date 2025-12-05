@@ -242,9 +242,20 @@ export default function AdminSidebar() {
             Homepage
           </Link>
           <Link
+            href="/admin/settings/hero"
+            className={`${styles.link} ${
+              isActive("/admin/settings/hero") ? styles.active : ""
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Hero Settings
+          </Link>
+          <Link
             href="/admin/settings"
             className={`${styles.link} ${
-              isActive("/admin/settings") ? styles.active : ""
+              isActive("/admin/settings") && !isActive("/admin/settings/hero")
+                ? styles.active
+                : ""
             }`}
             onClick={() => setIsOpen(false)}
           >

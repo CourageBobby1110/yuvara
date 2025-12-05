@@ -6,6 +6,19 @@ const SiteSettingsSchema = new Schema(
       type: String,
       default: "/hero-shoe-minimalist.png",
     },
+    heroSlides: {
+      type: [
+        {
+          image: { type: String, required: true },
+          title: { type: String, default: "" },
+          subtitle: { type: String, default: "" },
+          ctaText: { type: String, default: "Shop Now" },
+          ctaLink: { type: String, default: "/collections" },
+          color: { type: String, default: "#f3f4f6" },
+        },
+      ],
+      default: [],
+    },
     categoryImages: {
       men: { type: String, default: "/men-category.jpg" },
       women: { type: String, default: "/women-category.jpg" },
