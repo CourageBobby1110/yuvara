@@ -5,7 +5,12 @@ export function parseCJVariant(
   defaultImage: string,
   basePrice: number,
   shippingFee: number = 0,
-  shippingFees: { countryCode: string; fee: number }[] = []
+  shippingFees: {
+    countryCode: string;
+    fee: number;
+    method?: string;
+    deliveryTime?: string;
+  }[] = []
 ) {
   let variantCost = parseFloat(v.variantSellPrice);
   if (isNaN(variantCost) || variantCost === 0) {
@@ -160,7 +165,10 @@ export async function fetchVariantShipping(
   vid: string,
   countryCode: string = "NG"
 ) {
-  if (!vid) return 0;
+  if (!vid)
+    return {
+      price: 0,
+    };
 
   const wait = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms));
@@ -194,7 +202,11 @@ export async function fetchVariantShipping(
             parseFloat(a.logisticPrice) - parseFloat(b.logisticPrice)
         );
         const cheapest = options[0];
-        return parseFloat(cheapest.logisticPrice);
+        return {
+          price: parseFloat(cheapest.logisticPrice),
+          method: cheapest.logisticName,
+          deliveryTime: cheapest.logisticAging,
+        };
       }
       // If result is true but no data (e.g. valid request but no shipping found), verify data structure
       if (
@@ -204,7 +216,7 @@ export async function fetchVariantShipping(
         console.warn(
           `No shipping options found for VID ${vid} to ${countryCode}`
         );
-        return 0;
+        return { price: 0 };
       }
 
       // If we get here, it might be an API error disguised as 200 or something else.
@@ -215,7 +227,7 @@ export async function fetchVariantShipping(
         );
       }
 
-      return 0; // Success but no value, or explicit failure
+      return { price: 0 }; // Success but no value, or explicit failure
     } catch (e: any) {
       if (e.response?.status === 429 || e.code === "ECONNRESET") {
         console.warn(`Rate limit/Network error for VID ${vid}. Retrying...`);
@@ -227,5 +239,5 @@ export async function fetchVariantShipping(
       }
     }
   }
-  return 0;
+  return { price: 0 };
 }

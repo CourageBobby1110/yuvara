@@ -100,6 +100,10 @@ export async function getProducts(filter: ProductFilter = {}) {
       variants: product.variants?.map((variant: any) => ({
         ...variant,
         _id: variant._id ? variant._id.toString() : undefined,
+        shippingFees: variant.shippingFees?.map((fee: any) => ({
+          ...fee,
+          _id: fee._id ? fee._id.toString() : undefined,
+        })),
       })),
       shippingRates: product.shippingRates?.map((rate: any) => ({
         ...rate,
@@ -139,6 +143,10 @@ export async function getProductBySlug(
       variants: (product as any).variants?.map((variant: any) => ({
         ...variant,
         _id: variant._id ? variant._id.toString() : undefined,
+        shippingFees: variant.shippingFees?.map((fee: any) => ({
+          ...fee,
+          _id: fee._id ? fee._id.toString() : undefined,
+        })),
       })),
       shippingRates: (product as any).shippingRates?.map((rate: any) => ({
         ...rate,

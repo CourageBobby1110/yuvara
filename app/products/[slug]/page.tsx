@@ -45,5 +45,5 @@ export default async function ProductPage({ params }: PageProps) {
     notFound();
   }
 
-  return <ProductClient initialProduct={product as any} />;
+  return <ProductClient key={product._id} initialProduct={product as any} />;
 }

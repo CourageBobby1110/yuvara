@@ -89,6 +89,8 @@ const ProductSchema = new Schema(
               {
                 countryCode: { type: String, required: true },
                 fee: { type: Number, required: true },
+                method: { type: String },
+                deliveryTime: { type: String },
               },
             ],
             default: [],
@@ -144,6 +146,17 @@ export type Product = {
     image: string;
     price: number;
     stock: number;
+    size?: string;
+    cjVid?: string;
+    cjSku?: string;
+    dobaSku?: string;
+    shippingFee?: number;
+    shippingFees?: {
+      countryCode: string;
+      fee: number;
+      method?: string;
+      deliveryTime?: string;
+    }[];
   }[];
   productUrl?: string;
   averageRating?: number;

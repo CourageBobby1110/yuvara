@@ -178,11 +178,20 @@ export async function POST(req: Request) {
       let variantShippingNG = 0;
 
       for (const country of targetCountries) {
-        const fee = await fetchVariantShipping(accessToken, v.vid, country);
-        if (fee > 0) {
-          shippingFees.push({ countryCode: country, fee });
+        const shippingInfo = await fetchVariantShipping(
+          accessToken,
+          v.vid,
+          country
+        );
+        if (shippingInfo.price > 0) {
+          shippingFees.push({
+            countryCode: country,
+            fee: shippingInfo.price,
+            method: shippingInfo.method,
+            deliveryTime: shippingInfo.deliveryTime,
+          });
         }
-        if (country === "NG") variantShippingNG = fee;
+        if (country === "NG") variantShippingNG = shippingInfo.price;
         // Small delay if needed...
       }
 
