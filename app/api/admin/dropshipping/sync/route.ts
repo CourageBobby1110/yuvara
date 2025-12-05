@@ -5,7 +5,11 @@ import Product from "@/models/Product";
 import axios from "axios";
 import mongoose from "mongoose";
 import { getValidCJAccessToken } from "@/lib/cj-auth";
-import { parseCJVariant, fetchVariantStock } from "@/lib/cj-utils";
+import {
+  parseCJVariant,
+  fetchVariantStock,
+  fetchVariantShipping,
+} from "@/lib/cj-utils";
 
 // --- Helper Functions ---
 
@@ -148,7 +152,14 @@ export async function POST(req: Request) {
       // Try to calculate from variants
       if (productData.variants && productData.variants.length > 0) {
         const prices = productData.variants
-          .map((v: any) => parseFloat(v.productPrice))
+          .map((v: any) =>
+            parseFloat(
+              v.variantSellPrice ||
+                v.productPrice ||
+                v.sellPrice ||
+                v.variantPrice
+            )
+          )
           .filter((p: number) => !isNaN(p) && p > 0);
         if (prices.length > 0) {
           cost =
@@ -159,9 +170,40 @@ export async function POST(req: Request) {
     const newPrice = cost * 1.5;
 
     // Update Variants
-    const newVariants = (productData.variants || []).map((v: any) =>
-      parseCJVariant(v, product.images[0], cost)
-    );
+    const newVariants = [];
+    for (const v of productData.variants || []) {
+      // Fetch multi-country shipping
+      const targetCountries = ["NG", "US", "GB", "CA", "AU"];
+      const shippingFees = [];
+      let variantShippingNG = 0;
+
+      for (const country of targetCountries) {
+        const fee = await fetchVariantShipping(accessToken, v.vid, country);
+        if (fee > 0) {
+          shippingFees.push({ countryCode: country, fee });
+        }
+        if (country === "NG") variantShippingNG = fee;
+        // Small delay if needed...
+      }
+
+      if (variantShippingNG === 0) {
+        console.warn(`Sync: NG Shipping fee is 0 for variant VID: ${v.vid}`);
+      } else {
+        console.log(
+          `Sync: NG Shipping fee for VID ${v.vid}: ${variantShippingNG}`
+        );
+      }
+
+      newVariants.push(
+        parseCJVariant(
+          v,
+          product.images[0],
+          cost,
+          variantShippingNG,
+          shippingFees
+        )
+      );
+    }
 
     // Update top-level sizes/colors
     const sizes = [

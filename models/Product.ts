@@ -83,6 +83,16 @@ const ProductSchema = new Schema(
           cjVid: { type: String }, // CJ Variant ID
           cjSku: { type: String }, // CJ SKU
           dobaSku: { type: String }, // Doba SKU
+          shippingFee: { type: Number, default: 0 },
+          shippingFees: {
+            type: [
+              {
+                countryCode: { type: String, required: true },
+                fee: { type: Number, required: true },
+              },
+            ],
+            default: [],
+          },
         },
       ],
       default: [],

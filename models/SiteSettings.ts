@@ -39,6 +39,11 @@ const SiteSettingsSchema = new Schema(
     cjTokenExpiry: { type: Date },
     dobaAppKey: { type: String, default: "" },
     dobaAppSecret: { type: String, default: "" },
+    affiliateProgramStatus: {
+      type: String,
+      enum: ["open", "closed", "postponed"],
+      default: "open",
+    },
   },
   { timestamps: true }
 );

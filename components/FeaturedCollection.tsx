@@ -54,7 +54,7 @@ export default function FeaturedCollection({
 
   return (
     <section className="py-12 md:py-20 bg-gray-50">
-      <div className="container mx-auto px-3 sm:px-4">
+      <div className="container mx-auto px-2 sm:px-4">
         <div className="text-center mb-8 md:mb-16">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">
             {title}
@@ -64,7 +64,7 @@ export default function FeaturedCollection({
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6 lg:gap-8">
           {products.map((product) => (
             <ProductCard
               key={product._id}

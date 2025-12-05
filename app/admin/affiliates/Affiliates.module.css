@@ -5,24 +5,6 @@
   margin: 0 auto;
   padding: 1.5rem;
   min-height: 100vh;
-  background-color: #fafafa;
-}
-
-/* ===== Header ===== */
-.header {
-  margin-bottom: 2rem;
-}
-
-.title {
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0 0 0.5rem 0;
-}
-
-.subtitle {
-  font-size: 0.95rem;
-  color: #6b7280;
   margin: 0;
 }
 

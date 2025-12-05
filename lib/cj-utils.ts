@@ -3,9 +3,20 @@ import axios from "axios";
 export function parseCJVariant(
   v: any,
   defaultImage: string,
-  basePrice: number
+  basePrice: number,
+  shippingFee: number = 0,
+  shippingFees: { countryCode: string; fee: number }[] = []
 ) {
-  let variantCost = parseFloat(v.productPrice);
+  let variantCost = parseFloat(v.variantSellPrice);
+  if (isNaN(variantCost) || variantCost === 0) {
+    variantCost = parseFloat(v.productPrice);
+  }
+  if (isNaN(variantCost) || variantCost === 0) {
+    variantCost = parseFloat(v.sellPrice);
+  }
+  if (isNaN(variantCost) || variantCost === 0) {
+    variantCost = parseFloat(v.variantPrice);
+  }
   if (isNaN(variantCost) || variantCost === 0) {
     variantCost = basePrice;
   }
@@ -68,6 +79,8 @@ export function parseCJVariant(
     size: size,
     cjVid: v.vid,
     cjSku: v.productSku,
+    shippingFee: shippingFee,
+    shippingFees: shippingFees,
   };
 }
 
@@ -140,4 +153,79 @@ export async function fetchVariantStock(
   }
 
   return null;
+}
+
+export async function fetchVariantShipping(
+  accessToken: string,
+  vid: string,
+  countryCode: string = "NG"
+) {
+  if (!vid) return 0;
+
+  const wait = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
+  let retries = 3;
+
+  while (retries > 0) {
+    try {
+      // Small delay to be nice to the API
+      await wait(500);
+
+      const res = await axios.post(
+        `https://developers.cjdropshipping.com/api2.0/v1/logistic/freightCalculate`,
+        {
+          startCountryCode: "CN",
+          endCountryCode: countryCode,
+          products: [
+            {
+              quantity: 1,
+              vid: vid,
+            },
+          ],
+        },
+        { headers: { "CJ-Access-Token": accessToken } }
+      );
+
+      if (res.data?.result && res.data?.data?.length > 0) {
+        const options = res.data.data;
+        // Sort by price (cheapest first)
+        options.sort(
+          (a: any, b: any) =>
+            parseFloat(a.logisticPrice) - parseFloat(b.logisticPrice)
+        );
+        const cheapest = options[0];
+        return parseFloat(cheapest.logisticPrice);
+      }
+      // If result is true but no data (e.g. valid request but no shipping found), verify data structure
+      if (
+        res.data?.result &&
+        (!res.data?.data || res.data?.data.length === 0)
+      ) {
+        console.warn(
+          `No shipping options found for VID ${vid} to ${countryCode}`
+        );
+        return 0;
+      }
+
+      // If we get here, it might be an API error disguised as 200 or something else.
+      // check success flag
+      if (!res.data?.result) {
+        console.warn(
+          `CJ API returned false for VID ${vid}: ${res.data?.message}`
+        );
+      }
+
+      return 0; // Success but no value, or explicit failure
+    } catch (e: any) {
+      if (e.response?.status === 429 || e.code === "ECONNRESET") {
+        console.warn(`Rate limit/Network error for VID ${vid}. Retrying...`);
+        retries--;
+        await wait(2000);
+      } else {
+        console.error(`Shipping calculation failed for VID ${vid}:`, e.message);
+        break; // Non-retryable error
+      }
+    }
+  }
+  return 0;
 }

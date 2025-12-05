@@ -4,10 +4,18 @@ import Hero from "@/components/Hero";
 import FeaturedCollection from "@/components/FeaturedCollection";
 import TrendingMarquee from "@/components/TrendingMarquee";
 import Newsletter from "@/components/Newsletter";
-import { getProducts } from "@/lib/products";
+import { getProducts, getCategories } from "@/lib/products";
+import SiteSettings from "@/models/SiteSettings";
+import dbConnect from "@/lib/db";
 
 export default async function Home() {
   const session = await auth();
+  await dbConnect();
+
+  // Fetch data
+  const categories = await getCategories();
+  const settings = await SiteSettings.findOne().lean();
+  const heroImage = settings?.heroImageUrl || "/hero-shoe-minimalist.png";
 
   // Fetch different product sets for the marketplace feel
   const newArrivals = await getProducts({ limit: 8, sort: "newest" });
@@ -22,7 +30,7 @@ export default async function Home() {
         paddingBottom: "2rem",
       }}
     >
-      <Hero />
+      <Hero categories={categories.slice(0, 15)} heroImage={heroImage} />
       <TrendingMarquee />
 
       <div

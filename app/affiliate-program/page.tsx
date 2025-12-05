@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { auth } from "@/auth";
+import SiteSettings from "@/models/SiteSettings";
+import dbConnect from "@/lib/db";
 
 export const metadata = {
   title: "Affiliate Program | Yuvara",
@@ -8,8 +10,57 @@ export const metadata = {
     "Join the Yuvara Affiliate Program and earn commissions by referring friends and followers.",
 };
 
+async function getAffiliateStatus() {
+  await dbConnect();
+  const settings = await SiteSettings.findOne().lean();
+  return settings?.affiliateProgramStatus || "open";
+}
+
 export default async function AffiliateProgramPage() {
   const session = await auth();
+  const status = await getAffiliateStatus();
+
+  if (status === "postponed") {
+    return (
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center text-center px-4">
+        <div className="max-w-2xl">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">Coming Soon</h1>
+          <p className="text-xl md:text-2xl text-gray-600 mb-8">
+            Our affiliate program is currently being updated to bring you better
+            rewards and a smoother experience. Stay tuned!
+          </p>
+          <Link
+            href="/"
+            className="inline-block bg-black text-white px-8 py-4 text-lg font-bold rounded-full hover:bg-gray-800 transition-colors"
+          >
+            Return Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === "closed") {
+    return (
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center text-center px-4">
+        <div className="max-w-2xl">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            Program Closed
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-600 mb-8">
+            The Yuvara Affiliate Program is currently closed for new
+            registrations. Please check back later.
+          </p>
+          <Link
+            href="/"
+            className="inline-block bg-black text-white px-8 py-4 text-lg font-bold rounded-full hover:bg-gray-800 transition-colors"
+          >
+            Return Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">

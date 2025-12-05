@@ -15,6 +15,8 @@ interface AddToCartProps {
     stock: number;
     size?: string;
     cjVid?: string;
+    shippingFee?: number;
+    shippingFees?: { countryCode: string; fee: number }[];
   } | null;
 }
 
@@ -76,6 +78,12 @@ export default function AddToCart({
       selectedColor: colorToUse,
       cjVid: selectedVariant?.cjVid,
       shippingRates: product.shippingRates,
+      variant: selectedVariant
+        ? {
+            shippingFee: selectedVariant.shippingFee,
+            shippingFees: selectedVariant.shippingFees,
+          }
+        : undefined,
     });
 
     // Klaviyo "Added to Cart" tracking

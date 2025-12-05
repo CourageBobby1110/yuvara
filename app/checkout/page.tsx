@@ -140,6 +140,29 @@ export default function CheckoutPage() {
     let totalShipping = 0;
 
     for (const item of items) {
+      // Check for variant-specific shipping fee first
+      if (item.variant) {
+        // Multi-country fee lookup
+        if (item.variant.shippingFees && item.variant.shippingFees.length > 0) {
+          const countryRate = item.variant.shippingFees.find(
+            (sf) => sf.countryCode === code
+          );
+          if (countryRate) {
+            totalShipping += Number(countryRate.fee) * item.quantity;
+            continue;
+          }
+        }
+
+        // Fallback to legacy shippingFee if exists
+        if (
+          item.variant.shippingFee !== undefined &&
+          item.variant.shippingFee > 0
+        ) {
+          totalShipping += item.variant.shippingFee * item.quantity;
+          continue;
+        }
+      }
+
       if (item.shippingRates) {
         const rate = item.shippingRates.find((r) => r.countryCode === code);
         if (rate) {

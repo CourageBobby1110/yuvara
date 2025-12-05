@@ -5,7 +5,11 @@ import Product from "@/models/Product";
 import axios from "axios";
 import mongoose from "mongoose";
 import { getValidCJAccessToken } from "@/lib/cj-auth";
-import { parseCJVariant, fetchVariantStock } from "@/lib/cj-utils";
+import {
+  parseCJVariant,
+  fetchVariantStock,
+  fetchVariantShipping,
+} from "@/lib/cj-utils";
 
 // --- Helper Functions ---
 
@@ -138,7 +142,26 @@ export async function POST(req: Request) {
     }
 
     // Extract Data
-    const cost = parseFloat(productData.sellPrice);
+    let cost = parseFloat(productData.sellPrice);
+    if (isNaN(cost) || cost <= 0) {
+      // Try to calculate from variants
+      if (productData.variants && productData.variants.length > 0) {
+        const prices = productData.variants
+          .map((v: any) =>
+            parseFloat(
+              v.variantSellPrice ||
+                v.productPrice ||
+                v.sellPrice ||
+                v.variantPrice
+            )
+          )
+          .filter((p: number) => !isNaN(p) && p > 0);
+        if (prices.length > 0) {
+          // Use average for base cost, or min? Let's use min to be safe for "starting at"
+          cost = Math.min(...prices);
+        }
+      }
+    }
     const price = cost * 1.5; // Default markup
 
     // Parse Images
@@ -175,12 +198,33 @@ export async function POST(req: Request) {
         v.vid,
         v.variantSku || v.productSku
       );
+      // Fetch multi-country shipping
+      const targetCountries = ["NG", "US", "GB", "CA", "AU"];
+      const shippingFees = [];
+      let variantShippingNG = 0;
+
+      for (const country of targetCountries) {
+        const fee = await fetchVariantShipping(accessToken, v.vid, country);
+        if (fee > 0) {
+          shippingFees.push({ countryCode: country, fee });
+        }
+        if (country === "NG") variantShippingNG = fee;
+      }
+
       // Inject realStock into the raw variant data so parseCJVariant picks it up
       const variantWithStock = {
         ...v,
         realStock: fetchedStock !== null ? fetchedStock : v.productNumber || 0,
       };
-      variants.push(parseCJVariant(variantWithStock, images[0] || "", cost));
+      variants.push(
+        parseCJVariant(
+          variantWithStock,
+          images[0] || "",
+          cost,
+          variantShippingNG,
+          shippingFees
+        )
+      );
     }
 
     // Extract sizes and colors

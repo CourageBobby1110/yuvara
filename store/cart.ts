@@ -18,6 +18,11 @@ export interface CartItem {
     method?: string;
     deliveryTime?: string;
   }[];
+  variant?: {
+    shippingFee?: number;
+    shippingFees?: { countryCode: string; fee: number }[];
+    [key: string]: any;
+  };
 }
 
 interface CartStore {

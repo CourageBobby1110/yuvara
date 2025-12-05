@@ -28,6 +28,8 @@ interface Product {
     price: number;
     stock: number;
     size?: string;
+    shippingFee?: number;
+    shippingFees?: { countryCode: string; fee: number }[];
   }[];
   productUrl?: string;
   shippingFee?: number;
@@ -58,6 +60,8 @@ export default function EditProductPage({
       price: string;
       stock: string;
       size?: string;
+      shippingFee?: string;
+      shippingFees?: { countryCode: string; fee: string }[];
     }[]
   >([]);
   const [shippingRates, setShippingRates] = useState<
@@ -114,6 +118,11 @@ export default function EditProductPage({
             price: v.price.toString(),
             stock: v.stock.toString(),
             size: v.size || "",
+            shippingFee: (v.shippingFee || 0).toString(),
+            shippingFees: (v.shippingFees || []).map((sf) => ({
+              countryCode: sf.countryCode,
+              fee: sf.fee.toString(),
+            })),
           })) || []
         );
         setShippingRates(
@@ -181,6 +190,11 @@ export default function EditProductPage({
           ...v,
           price: parseFloat(v.price),
           stock: parseInt(v.stock),
+          shippingFee: parseFloat(v.shippingFee || "0"),
+          shippingFees: (v.shippingFees || []).map((sf) => ({
+            countryCode: sf.countryCode,
+            fee: parseFloat(sf.fee),
+          })),
         })),
         colors: Array.from(new Set(variants.map((v) => v.color))).filter(
           Boolean
@@ -797,6 +811,59 @@ export default function EditProductPage({
                     className={styles.input}
                     required
                   />
+                </div>
+                <div style={{ gridColumn: "1 / -1" }}>
+                  <label className="text-xs text-gray-500 mb-1 block">
+                    Shipping Fees (Multi-Country)
+                  </label>
+                  <div className="grid grid-cols-2 gap-2 p-2 bg-gray-50 rounded">
+                    {[
+                      { code: "NG", name: "Nigeria" },
+                      { code: "US", name: "USA" },
+                      { code: "GB", name: "UK" },
+                      { code: "CA", name: "Canada" },
+                      { code: "AU", name: "Australia" },
+                    ].map((country) => {
+                      const currentFee =
+                        variant.shippingFees?.find(
+                          (sf) => sf.countryCode === country.code
+                        )?.fee || "0";
+
+                      return (
+                        <div key={country.code}>
+                          <label className="text-xs text-gray-400 block">
+                            {country.name} ($)
+                          </label>
+                          <input
+                            type="number"
+                            value={currentFee}
+                            onChange={(e) => {
+                              const newVariants = [...variants];
+                              const fees = [
+                                ...(newVariants[index].shippingFees || []),
+                              ];
+                              const existingIdx = fees.findIndex(
+                                (f) => f.countryCode === country.code
+                              );
+                              if (existingIdx >= 0) {
+                                fees[existingIdx].fee = e.target.value;
+                              } else {
+                                fees.push({
+                                  countryCode: country.code,
+                                  fee: e.target.value,
+                                });
+                              }
+                              newVariants[index].shippingFees = fees;
+                              setVariants(newVariants);
+                            }}
+                            className={styles.input}
+                            min="0"
+                            step="0.01"
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
                 <div>
                   <label className="text-xs text-gray-500 mb-1 block">

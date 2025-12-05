@@ -30,6 +30,8 @@ export interface ProductType {
     price: number;
     stock: number;
     size?: string;
+    shippingFee?: number;
+    shippingFees?: { countryCode: string; fee: number }[];
   }[];
   createdAt?: Date;
   updatedAt?: Date;
@@ -71,6 +73,8 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
     price: number;
     stock: number;
     size?: string;
+    shippingFee?: number;
+    shippingFees?: { countryCode: string; fee: number }[];
   } | null>(
     initialProduct.variants && initialProduct.variants.length > 0
       ? initialProduct.variants[0]

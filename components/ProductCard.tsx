@@ -49,18 +49,11 @@ export default function ProductCard({ product, onQuickAdd }: ProductCardProps) {
     e.preventDefault();
     e.stopPropagation();
 
-    // If product has variants, redirect to product page to select options
-    if (
-      (product.variants && product.variants.length > 0) ||
-      (product.colors && product.colors.length > 0) ||
-      (product.sizes && product.sizes.length > 0)
-    ) {
-      window.location.href = `/products/${product.slug}`;
-      return;
-    }
-
     if (onQuickAdd) {
       onQuickAdd(product);
+    } else {
+      // Fallback if no handler provided (shouldn't happen in FeaturedCollection)
+      window.location.href = `/products/${product.slug}`;
     }
   };
 

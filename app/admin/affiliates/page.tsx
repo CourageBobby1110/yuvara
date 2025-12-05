@@ -26,6 +26,8 @@ export default function AdminAffiliatesPage() {
   const { currency, exchangeRates } = useCurrency();
   const [affiliates, setAffiliates] = useState<AffiliateUser[]>([]);
   const [loading, setLoading] = useState(true);
+  const [programStatus, setProgramStatus] = useState("open");
+  const [updatingStatus, setUpdatingStatus] = useState(false);
 
   const formatAmount = (amountInNaira: number) => {
     // Convert Naira to USD (Base)
@@ -41,7 +43,44 @@ export default function AdminAffiliatesPage() {
 
   useEffect(() => {
     fetchAffiliates();
+    fetchSettings();
   }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const res = await fetch("/api/settings/affiliate");
+      if (res.ok) {
+        const data = await res.json();
+        setProgramStatus(data.affiliateProgramStatus);
+      }
+    } catch (error) {
+      console.error("Failed to fetch settings", error);
+    }
+  };
+
+  const handleStatusChange = async (newStatus: string) => {
+    setUpdatingStatus(true);
+    try {
+      const res = await fetch("/api/settings/affiliate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ affiliateProgramStatus: newStatus }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setProgramStatus(data.affiliateProgramStatus);
+        toast.success(`Program status updated to ${newStatus}`);
+      } else {
+        toast.error("Failed to update status");
+      }
+    } catch (error) {
+      console.error("Failed to update status", error);
+      toast.error("Error updating status");
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
 
   const fetchAffiliates = async () => {
     try {
@@ -87,8 +126,25 @@ export default function AdminAffiliatesPage() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Affiliate Management</h1>
-        <p className={styles.subtitle}>Track and manage affiliate partners.</p>
+        <div>
+          <h1 className={styles.title}>Affiliate Management</h1>
+          <p className={styles.subtitle}>
+            Track and manage affiliate partners.
+          </p>
+        </div>
+        <div className={styles.statusControl}>
+          <label className={styles.statusLabel}>Program Status:</label>
+          <select
+            value={programStatus}
+            onChange={(e) => handleStatusChange(e.target.value)}
+            disabled={updatingStatus}
+            className={styles.statusSelect}
+          >
+            <option value="open">Open</option>
+            <option value="postponed">Postponed</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
       </div>
 
       {/* Desktop Table View */}
