@@ -9,6 +9,9 @@ export async function getValidCJAccessToken(): Promise<string | null> {
   }
 
   // Check if token is expired or about to expire (within 5 minutes)
+  if (!settings.cjTokenExpiry) {
+    return null;
+  }
   const now = new Date();
   const expiry = new Date(settings.cjTokenExpiry);
   const fiveMinutes = 5 * 60 * 1000;

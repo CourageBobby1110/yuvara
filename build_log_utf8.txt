@@ -1,0 +1,118 @@
+﻿
+> yuvara@0.1.0 build
+> next build
+
+node.exe : [baseline
+-browser-mapping] 
+The data in this 
+module is over two 
+months old.  To 
+ensure accurate 
+Baseline data, 
+please update: `npm 
+i baseline-browser-m
+apping@latest -D`
+At C:\Program Files\
+nodejs\npm.ps1:29 
+char:3
++   & $NODE_EXE 
+$NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+    + CategoryInfo  
+            : NotS  
+  pecified: ([bas   
+ eline-brows...p    
+ing@latest -D`:    
+String) [], Rem    
+oteException
+    + FullyQualifie 
+   dErrorId : Nati  
+  veCommandError
+ 
+   Γû▓ Next.js 16.0.3 (Turbopack)
+   - Environments: .env
+
+   Creating an optimized production build ...
+[baseline-browser-ma
+pping] The data in 
+this module is over 
+two months old.  To 
+ensure accurate 
+Baseline data, 
+please update: `npm 
+i baseline-browser-m
+apping@latest -D`
+[baseline-browser-ma
+pping] The data in 
+this module is over 
+two months old.  To 
+ensure accurate 
+Baseline data, 
+please update: `npm 
+i baseline-browser-m
+apping@latest -D`
+ Γ£ô Compiled successfully in 41s
+   Running TypeScript ...
+Failed to compile.
+
+./app/affiliate-prog
+ram/page.tsx:16:20
+Type error: 
+Property 'affiliateP
+rogramStatus' does 
+not exist on type 
+'(FlattenMaps<any> 
+& Required<{ _id: 
+unknown; }> & { 
+__v: number; })[] | 
+(FlattenMaps<any> & 
+Required<{ _id: 
+unknown; }> & { 
+__v: number; })'.
+  Property 'affiliat
+eProgramStatus' 
+does not exist on 
+type 
+'(FlattenMaps<any> 
+& Required<{ _id: 
+unknown; }> & { 
+__v: number; })[]'.
+
+[0m [90m 14 
+|[39m   
+[36mawait[39m dbCo
+nnect()[33m;[39m
+ [90m 15 |[39m   
+[36mconst[39m 
+settings 
+[33m=[39m 
+[36mawait[39m [33
+mSiteSettings[39m[
+33m.[39mfindOne()[
+33m.[39mlean()[33m
+;[39m
+[31m[1m>[22m[39m
+[90m 16 |[39m   
+[36mreturn[39m set
+tings[33m?[39m[33
+m.[39maffiliateProg
+ramStatus 
+[33m||[39m [32m"o
+pen"[39m[33m;[39m
+ [90m    |[39m    
+                
+[31m[1m^[22m[39m
+ [90m 17 |[39m }
+ [90m 18 |[39m
+ [90m 19 |[39m 
+[36mexport[39m 
+[36mdefault[39m 
+[36masync[39m 
+[36mfunction[39m 
+[33mAffiliateProgram
+Page[39m() {[0m
+Next.js build 
+worker exited with 
+code: 1 and signal: 
+null

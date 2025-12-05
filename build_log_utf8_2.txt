@@ -1,0 +1,142 @@
+﻿
+> yuvara@0.1.0 build
+> next build
+
+node.exe : [baseline
+-browser-mapping] 
+The data in this 
+module is over two 
+months old.  To 
+ensure accurate 
+Baseline data, 
+please update: `npm 
+i baseline-browser-m
+apping@latest -D`
+At C:\Program Files\
+nodejs\npm.ps1:29 
+char:3
++   & $NODE_EXE 
+$NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+    + CategoryInfo  
+            : NotS  
+  pecified: ([bas   
+ eline-brows...p    
+ing@latest -D`:    
+String) [], Rem    
+oteException
+    + FullyQualifie 
+   dErrorId : Nati  
+  veCommandError
+ 
+   Γû▓ Next.js 16.0.3 (Turbopack)
+   - Environments: .env
+
+   Creating an optimized production build ...
+[baseline-browser-ma
+pping] The data in 
+this module is over 
+two months old.  To 
+ensure accurate 
+Baseline data, 
+please update: `npm 
+i baseline-browser-m
+apping@latest -D`
+[baseline-browser-ma
+pping] The data in 
+this module is over 
+two months old.  To 
+ensure accurate 
+Baseline data, 
+please update: `npm 
+i baseline-browser-m
+apping@latest -D`
+ Γ£ô Compiled successfully in 41s
+   Running TypeScript ...
+Failed to compile.
+
+./lib/cj-auth.ts:13:
+27
+Type error: No 
+overload matches 
+this call.
+  Overload 1 of 4, 
+'(value: string | 
+number | Date): 
+Date', gave the 
+following error.
+    Argument of 
+type 'Date | 
+undefined' is not 
+assignable to 
+parameter of type 
+'string | number | 
+Date'.
+      Type 
+'undefined' is not 
+assignable to type 
+'string | number | 
+Date'.
+  Overload 2 of 4, 
+'(value: string | 
+number): Date', 
+gave the following 
+error.
+    Argument of 
+type 'Date | 
+undefined' is not 
+assignable to 
+parameter of type 
+'string | number'.
+      Type 
+'undefined' is not 
+assignable to type 
+'string | number'.
+
+[0m [90m 11 
+|[39m   [90m// 
+Check if token is 
+expired or about to 
+expire (within 5 
+minutes)[39m
+ [90m 12 |[39m   
+[36mconst[39m now 
+[33m=[39m 
+[36mnew[39m [33mD
+ate[39m()[33m;[39
+m
+[31m[1m>[22m[39m
+[90m 13 |[39m   
+[36mconst[39m 
+expiry [33m=[39m 
+[36mnew[39m [33mD
+ate[39m(settings[3
+3m.[39mcjTokenExpir
+y)[33m;[39m
+ [90m    |[39m    
+                    
+   
+[31m[1m^[22m[39m
+ [90m 14 |[39m   
+[36mconst[39m 
+fiveMinutes 
+[33m=[39m 
+[35m5[39m 
+[33m*[39m 
+[35m60[39m 
+[33m*[39m [35m100
+0[39m[33m;[39m
+ [90m 15 |[39m
+ [90m 16 |[39m   
+[36mif[39m (now[3
+3m.[39mgetTime() 
+[33m+[39m 
+fiveMinutes 
+[33m>=[39m expiry
+[33m.[39mgetTime())
+ {[0m
+Next.js build 
+worker exited with 
+code: 1 and signal: 
+null

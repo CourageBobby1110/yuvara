@@ -48,7 +48,40 @@ const SiteSettingsSchema = new Schema(
   { timestamps: true }
 );
 
+export interface ISiteSettings {
+  heroImageUrl: string;
+  heroSlides: {
+    image: string;
+    title: string;
+    subtitle: string;
+    ctaText: string;
+    ctaLink: string;
+    color: string;
+  }[];
+  categoryImages: {
+    men: string;
+    women: string;
+    accessories: string;
+  };
+  brandStoryImage: string;
+  googleTagManagerId: string;
+  googleAnalyticsId: string;
+  klaviyoPublicKey: string;
+  tiktokPixelId: string;
+  cjDropshippingApiKey: string;
+  cjDropshippingUserId: string;
+  cjAccessToken: string;
+  cjRefreshToken: string;
+  cjTokenExpiry?: Date;
+  dobaAppKey: string;
+  dobaAppSecret: string;
+  affiliateProgramStatus: "open" | "closed" | "postponed";
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 const SiteSettings =
-  models.SiteSettings || model("SiteSettings", SiteSettingsSchema);
+  (models.SiteSettings as mongoose.Model<ISiteSettings>) ||
+  model<ISiteSettings>("SiteSettings", SiteSettingsSchema);
 
 export default SiteSettings;
