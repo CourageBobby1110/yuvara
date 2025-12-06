@@ -1,0 +1,26 @@
+
+> yuvara@0.1.0 build
+> next build
+
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+   ▲ Next.js 16.0.3 (Turbopack)
+   - Environments: .env
+
+   Creating an optimized production build ...
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+ ✓ Compiled successfully in 35.2s
+   Running TypeScript ...
+Failed to compile.
+
+./lib/db.ts:28:7
+Type error: 'cached' is possibly 'undefined'.
+
+[0m [90m 26 |[39m
+ [90m 27 |[39m [36masync[39m [36mfunction[39m dbConnect() {
+[31m[1m>[22m[39m[90m 28 |[39m   [36mif[39m (cached[33m.[39mconn) {
+ [90m    |[39m       [31m[1m^[22m[39m
+ [90m 29 |[39m     [36mreturn[39m cached[33m.[39mconn[33m;[39m
+ [90m 30 |[39m   }
+ [90m 31 |[39m[0m
+Next.js build worker exited with code: 1 and signal: null

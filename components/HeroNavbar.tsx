@@ -8,8 +8,10 @@ import { handleSignOut } from "@/app/actions/auth";
 import { useCartStore } from "@/store/cart";
 import CurrencySelector from "./CurrencySelector";
 
+import { Session } from "next-auth";
+
 interface HeroNavbarProps {
-  session: any;
+  session: Session | null;
 }
 
 export default function HeroNavbar({ session }: HeroNavbarProps) {
@@ -110,7 +112,10 @@ export default function HeroNavbar({ session }: HeroNavbarProps) {
               >
                 Orders
               </Link>
-              <div className={styles.userAvatar} title={session.user?.email}>
+              <div
+                className={styles.userAvatar}
+                title={session.user?.email || ""}
+              >
                 {session.user?.name?.[0] || session.user?.email?.[0] || "U"}
               </div>
               <Link

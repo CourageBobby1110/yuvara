@@ -3,7 +3,7 @@ import dbConnect from "@/lib/db";
 import Order from "@/models/Order";
 import { auth } from "@/auth";
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     const session = await auth();
     if (

@@ -1,5 +1,6 @@
 import dbConnect from "@/lib/db";
 import Product, { Product as ProductType } from "@/models/Product";
+import { PipelineStage } from "mongoose";
 
 export interface ProductFilter {
   search?: string;
@@ -15,10 +16,10 @@ export async function getProducts(filter: ProductFilter = {}) {
   try {
     await dbConnect();
 
-    const pipeline: any[] = [];
+    const pipeline: PipelineStage[] = [];
 
     // 1. Match stage
-    const matchStage: any = {};
+    const matchStage: Record<string, any> = {};
 
     if (filter.search) {
       matchStage.$or = [
@@ -77,7 +78,7 @@ export async function getProducts(filter: ProductFilter = {}) {
     });
 
     // 5. Sort
-    let sortStage: any = { createdAt: -1 };
+    let sortStage: Record<string, 1 | -1> = { createdAt: -1 };
     if (filter.sort === "price_asc") sortStage = { price: 1 };
     if (filter.sort === "price_desc") sortStage = { price: -1 };
     if (filter.sort === "newest") sortStage = { createdAt: -1 };
@@ -92,24 +93,29 @@ export async function getProducts(filter: ProductFilter = {}) {
     const products = await Product.aggregate(pipeline);
 
     // Convert _id and dates to string/ISO string for serialization
-    return products.map((product: any) => ({
-      ...product,
-      _id: product._id.toString(),
-      createdAt: product.createdAt?.toISOString(),
-      updatedAt: product.updatedAt?.toISOString(),
-      variants: product.variants?.map((variant: any) => ({
-        ...variant,
-        _id: variant._id ? variant._id.toString() : undefined,
-        shippingFees: variant.shippingFees?.map((fee: any) => ({
-          ...fee,
-          _id: fee._id ? fee._id.toString() : undefined,
+    return products.map((product: any) => {
+      // Use type assertion or validation here if possible, keeping any for now but localized
+      // or change to Record<string, unknown> and cast strictly
+      const p = product;
+      return {
+        ...p,
+        _id: p._id.toString(),
+        createdAt: p.createdAt?.toISOString(),
+        updatedAt: p.updatedAt?.toISOString(),
+        variants: p.variants?.map((variant: any) => ({
+          ...variant,
+          _id: variant._id ? variant._id.toString() : undefined,
+          shippingFees: variant.shippingFees?.map((fee: any) => ({
+            ...fee,
+            _id: fee._id ? fee._id.toString() : undefined,
+          })),
         })),
-      })),
-      shippingRates: product.shippingRates?.map((rate: any) => ({
-        ...rate,
-        _id: rate._id ? rate._id.toString() : undefined,
-      })),
-    }));
+        shippingRates: p.shippingRates?.map((rate: any) => ({
+          ...rate,
+          _id: rate._id ? rate._id.toString() : undefined,
+        })),
+      };
+    });
   } catch (error) {
     console.error("Error fetching products:", error);
     return [];
