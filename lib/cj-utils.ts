@@ -213,18 +213,18 @@ export async function fetchVariantShipping(
         res.data?.result &&
         (!res.data?.data || res.data?.data.length === 0)
       ) {
-        console.warn(
-          `No shipping options found for VID ${vid} to ${countryCode}`
-        );
+        // console.warn(
+        //   `No shipping options found for VID ${vid} to ${countryCode}`
+        // );
         return { price: 0 };
       }
 
       // If we get here, it might be an API error disguised as 200 or something else.
       // check success flag
       if (!res.data?.result) {
-        console.warn(
-          `CJ API returned false for VID ${vid}: ${res.data?.message}`
-        );
+        // console.warn(
+        //   `CJ API returned false for VID ${vid}: ${res.data?.message}`
+        // );
       }
 
       return { price: 0 }; // Success but no value, or explicit failure

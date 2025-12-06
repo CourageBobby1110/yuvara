@@ -189,7 +189,7 @@ export async function POST(req: Request) {
     const nigeriaRate = shippingRates.find((r) => r.countryCode === "NG");
     const shippingFee = nigeriaRate ? nigeriaRate.price : 0;
 
-    // Variants
+    // Variants (Sequential Processing)
     const variants = [];
     for (const v of productData.variants || []) {
       // Fetch real-time stock
@@ -198,6 +198,7 @@ export async function POST(req: Request) {
         v.vid,
         v.variantSku || v.productSku
       );
+
       // Fetch multi-country shipping
       const targetCountries = ["NG", "US", "GB", "CA", "AU"];
       const shippingFees = [];
@@ -225,6 +226,7 @@ export async function POST(req: Request) {
         ...v,
         realStock: fetchedStock !== null ? fetchedStock : v.productNumber || 0,
       };
+
       variants.push(
         parseCJVariant(
           variantWithStock,

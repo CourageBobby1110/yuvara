@@ -115,12 +115,12 @@ export async function POST(req: Request) {
       if (response.data && response.data.result && response.data.data) {
         productData = response.data.data;
         try {
-          const fs = require("fs");
-          const path = require("path");
-          fs.writeFileSync(
-            path.join(process.cwd(), "cj_debug_log.json"),
-            JSON.stringify(productData, null, 2)
-          );
+          // const fs = require("fs");
+          // const path = require("path");
+          // fs.writeFileSync(
+          //   path.join(process.cwd(), "cj_debug_log.json"),
+          //   JSON.stringify(productData, null, 2)
+          // );
         } catch (e) {
           console.error("Failed to write debug log", e);
         }
@@ -169,7 +169,7 @@ export async function POST(req: Request) {
     }
     const newPrice = cost * 1.5;
 
-    // Update Variants
+    // Phase 2: Variant Processing (Shipping)
     const newVariants = [];
     for (const v of productData.variants || []) {
       // Fetch multi-country shipping
@@ -196,11 +196,11 @@ export async function POST(req: Request) {
       }
 
       if (variantShippingNG === 0) {
-        console.warn(`Sync: NG Shipping fee is 0 for variant VID: ${v.vid}`);
+        // console.warn(`Sync: NG Shipping fee is 0 for variant VID: ${v.vid}`);
       } else {
-        console.log(
-          `Sync: NG Shipping fee for VID ${v.vid}: ${variantShippingNG}`
-        );
+        // console.log(
+        //   `Sync: NG Shipping fee for VID ${v.vid}: ${variantShippingNG}`
+        // );
       }
 
       newVariants.push(
