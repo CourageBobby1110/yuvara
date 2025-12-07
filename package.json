@@ -28,7 +28,7 @@
     "marked": "^17.0.1",
     "mongodb": "^7.0.0",
     "mongoose": "^8.20.0",
-    "next": "16.0.3",
+    "next": "16.0.7",
     "next-auth": "^5.0.0-beta.30",
     "nodemailer": "^7.0.10",
     "postcss": "8.5.6",
