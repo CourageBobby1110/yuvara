@@ -52,7 +52,7 @@ export default function Hero({ categories, heroImage }: HeroProps) {
               transition={{ delay: 0.2 }}
               className={styles.title}
             >
-              Discover Your Style
+              Discover Your Style right now
             </motion.h1>
             <motion.p
               initial={{ y: 20, opacity: 0 }}
