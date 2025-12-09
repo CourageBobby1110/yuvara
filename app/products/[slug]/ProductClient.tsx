@@ -31,7 +31,13 @@ export interface ProductType {
     stock: number;
     size?: string;
     shippingFee?: number;
-    shippingFees?: { countryCode: string; fee: number }[];
+    shippingRates?: {
+      countryCode: string;
+      countryName: string;
+      price: number;
+      method?: string;
+      deliveryTime?: string;
+    }[];
   }[];
   createdAt?: Date;
   updatedAt?: Date;
@@ -74,7 +80,13 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
     stock: number;
     size?: string;
     shippingFee?: number;
-    shippingFees?: { countryCode: string; fee: number }[];
+    shippingRates?: {
+      countryCode: string;
+      countryName: string;
+      price: number;
+      method?: string;
+      deliveryTime?: string;
+    }[];
   } | null>(
     initialProduct.variants && initialProduct.variants.length > 0
       ? initialProduct.variants[0]

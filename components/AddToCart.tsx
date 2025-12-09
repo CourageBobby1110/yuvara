@@ -16,7 +16,13 @@ interface AddToCartProps {
     size?: string;
     cjVid?: string;
     shippingFee?: number;
-    shippingFees?: { countryCode: string; fee: number }[];
+    shippingRates?: {
+      countryCode: string;
+      countryName: string;
+      price: number;
+      method?: string;
+      deliveryTime?: string;
+    }[];
   } | null;
 }
 
@@ -81,7 +87,7 @@ export default function AddToCart({
       variant: selectedVariant
         ? {
             shippingFee: selectedVariant.shippingFee,
-            shippingFees: selectedVariant.shippingFees,
+            shippingRates: selectedVariant.shippingRates,
           }
         : undefined,
     });

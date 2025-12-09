@@ -143,12 +143,15 @@ export default function CheckoutPage() {
       // Check for variant-specific shipping fee first
       if (item.variant) {
         // Multi-country fee lookup
-        if (item.variant.shippingFees && item.variant.shippingFees.length > 0) {
-          const countryRate = item.variant.shippingFees.find(
-            (sf) => sf.countryCode === code
+        if (
+          item.variant.shippingRates &&
+          item.variant.shippingRates.length > 0
+        ) {
+          const countryRate = item.variant.shippingRates.find(
+            (sr) => sr.countryCode === code
           );
           if (countryRate) {
-            totalShipping += Number(countryRate.fee) * item.quantity;
+            totalShipping += Number(countryRate.price) * item.quantity;
             continue;
           }
         }

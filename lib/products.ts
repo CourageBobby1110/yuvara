@@ -92,29 +92,43 @@ export async function getProducts(filter: ProductFilter = {}) {
 
     const products = await Product.aggregate(pipeline);
 
-    // Convert _id and dates to string/ISO string for serialization
     return products.map((product: any) => {
-      // Use type assertion or validation here if possible, keeping any for now but localized
-      // or change to Record<string, unknown> and cast strictly
-      const p = product;
-      return {
-        ...p,
-        _id: p._id.toString(),
-        createdAt: p.createdAt?.toISOString(),
-        updatedAt: p.updatedAt?.toISOString(),
-        variants: p.variants?.map((variant: any) => ({
-          ...variant,
-          _id: variant._id ? variant._id.toString() : undefined,
-          shippingFees: variant.shippingFees?.map((fee: any) => ({
-            ...fee,
-            _id: fee._id ? fee._id.toString() : undefined,
-          })),
-        })),
-        shippingRates: p.shippingRates?.map((rate: any) => ({
+      const p = { ...product };
+
+      // Ensure _id is string
+      if (p._id) p._id = p._id.toString();
+      if (p.createdAt) p.createdAt = p.createdAt.toISOString();
+      if (p.updatedAt) p.updatedAt = p.updatedAt.toISOString();
+
+      // Clean legacy shippingFees to avoid serialization errors if they exist in DB
+      delete p.shippingFees;
+
+      if (p.variants) {
+        p.variants = p.variants.map((variant: any) => {
+          const v = { ...variant };
+          if (v._id) v._id = v._id.toString();
+
+          // Clean legacy variant shippingFees
+          delete v.shippingFees;
+
+          if (v.shippingRates) {
+            v.shippingRates = v.shippingRates.map((rate: any) => ({
+              ...rate,
+              _id: rate._id ? rate._id.toString() : undefined,
+            }));
+          }
+          return v;
+        });
+      }
+
+      if (p.shippingRates) {
+        p.shippingRates = p.shippingRates.map((rate: any) => ({
           ...rate,
           _id: rate._id ? rate._id.toString() : undefined,
-        })),
-      };
+        }));
+      }
+
+      return p;
     });
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -141,24 +155,39 @@ export async function getProductBySlug(
     const product = await Product.findOne({ slug }).lean();
     if (!product) return null;
 
-    return {
-      ...(product as unknown as ProductType),
-      _id: (product as any)._id.toString(),
-      createdAt: (product as any).createdAt?.toISOString(),
-      updatedAt: (product as any).updatedAt?.toISOString(),
-      variants: (product as any).variants?.map((variant: any) => ({
-        ...variant,
-        _id: variant._id ? variant._id.toString() : undefined,
-        shippingFees: variant.shippingFees?.map((fee: any) => ({
-          ...fee,
-          _id: fee._id ? fee._id.toString() : undefined,
-        })),
-      })),
-      shippingRates: (product as any).shippingRates?.map((rate: any) => ({
+    // Sanitize product object
+    const p = { ...product } as any;
+    if (p._id) p._id = p._id.toString();
+    if (p.createdAt) p.createdAt = p.createdAt.toISOString();
+    if (p.updatedAt) p.updatedAt = p.updatedAt.toISOString();
+
+    // Legacy cleanup
+    delete p.shippingFees;
+
+    if (p.variants) {
+      p.variants = p.variants.map((variant: any) => {
+        const v = { ...variant };
+        if (v._id) v._id = v._id.toString();
+        delete v.shippingFees;
+
+        if (v.shippingRates) {
+          v.shippingRates = v.shippingRates.map((rate: any) => ({
+            ...rate,
+            _id: rate._id ? rate._id.toString() : undefined,
+          }));
+        }
+        return v;
+      });
+    }
+
+    if (p.shippingRates) {
+      p.shippingRates = p.shippingRates.map((rate: any) => ({
         ...rate,
         _id: rate._id ? rate._id.toString() : undefined,
-      })),
-    };
+      }));
+    }
+
+    return p;
   } catch (error) {
     console.error("Error fetching product by slug:", error);
     return null;

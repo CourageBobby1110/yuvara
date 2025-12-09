@@ -6,7 +6,7 @@ import Image from "next/image";
 import AdminLoader from "@/components/AdminLoader";
 import { useCurrency } from "@/context/CurrencyContext";
 import styles from "./AdminProducts.module.css";
-import { Search, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 
 interface Product {
@@ -22,7 +22,7 @@ interface Product {
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [syncing, setSyncing] = useState<string | null>(null);
+
   const { currency, setCurrency, formatPrice } = useCurrency();
 
   // Search & Pagination State
@@ -31,7 +31,6 @@ export default function AdminProductsPage() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
-  const [isSyncingAll, setIsSyncingAll] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -47,92 +46,6 @@ export default function AdminProductsPage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleSync = async (productId: string) => {
-    setSyncing(productId);
-    try {
-      const res = await fetch("/api/admin/dropshipping/sync", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        toast.success("Product synced with CJ successfully");
-        setProducts((prev) =>
-          prev.map((p) => (p._id === productId ? { ...p, ...data.product } : p))
-        );
-      } else {
-        toast.error(data.error || "Failed to sync product");
-      }
-    } catch (error) {
-      toast.error("Something went wrong");
-    } finally {
-      setSyncing(null);
-    }
-  };
-
-  const [syncProgress, setSyncProgress] = useState({ current: 0, total: 0 });
-
-  const handleSyncAll = async () => {
-    const cjProducts = products.filter((p) => p.cjPid);
-    if (cjProducts.length === 0) {
-      toast.info("No CJ Dropshipping products to sync.");
-      return;
-    }
-
-    if (
-      !confirm(
-        `Are you sure you want to sync all ${cjProducts.length} CJ products? This may take a while.`
-      )
-    )
-      return;
-
-    setIsSyncingAll(true);
-    setSyncProgress({ current: 0, total: cjProducts.length });
-    let successCount = 0;
-    let failCount = 0;
-
-    // Process one by one (Sequential)
-    const batchSize = 1;
-    for (let i = 0; i < cjProducts.length; i += batchSize) {
-      const batch = cjProducts.slice(i, i + batchSize);
-      await Promise.all(
-        batch.map(async (product) => {
-          try {
-            const res = await fetch("/api/admin/dropshipping/sync", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ productId: product._id }),
-            });
-            if (res.ok) {
-              const data = await res.json();
-              setProducts((prev) =>
-                prev.map((p) =>
-                  p._id === product._id ? { ...p, ...data.product } : p
-                )
-              );
-              successCount++;
-            } else {
-              failCount++;
-            }
-          } catch (e) {
-            failCount++;
-          }
-        })
-      );
-      setSyncProgress({
-        current: Math.min(i + batchSize, cjProducts.length),
-        total: cjProducts.length,
-      });
-    }
-
-    setIsSyncingAll(false);
-    setSyncProgress({ current: 0, total: 0 });
-    toast.success(
-      `Sync Complete. Success: ${successCount}, Failed: ${failCount}`
-    );
   };
 
   const handleDelete = async (id: string) => {
@@ -251,44 +164,7 @@ export default function AdminProductsPage() {
               Delete Selected ({selectedProducts.length})
             </button>
           )}
-          <button
-            onClick={handleSyncAll}
-            disabled={isSyncingAll}
-            className={`${styles.actionButton} bg-blue-600 text-white hover:bg-blue-700 mr-2`}
-          >
-            {isSyncingAll
-              ? `Syncing... ${syncProgress.current}/${syncProgress.total}`
-              : "Sync All CJ Products"}
-          </button>
-          <button
-            onClick={async () => {
-              if (
-                confirm(
-                  "Are you sure you want to add +$3 to the price of ALL products? This cannot be easily undone."
-                )
-              ) {
-                try {
-                  const res = await fetch("/api/admin/products/markup", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ amount: 3 }),
-                  });
-                  const data = await res.json();
-                  if (res.ok) {
-                    toast.success(data.message);
-                    fetchProducts(); // Refresh list
-                  } else {
-                    toast.error(data.error);
-                  }
-                } catch (e) {
-                  toast.error("Failed to update prices");
-                }
-              }
-            }}
-            className={`${styles.actionButton} bg-green-600 text-white hover:bg-green-700 mr-2`}
-          >
-            Add +$3 Markup
-          </button>
+
           <select
             value={currency}
             onChange={(e) => setCurrency(e.target.value as any)}
@@ -339,16 +215,6 @@ export default function AdminProductsPage() {
                 </div>
               </div>
               <div className={styles.productCardActions}>
-                {product.cjPid && (
-                  <button
-                    onClick={() => handleSync(product._id)}
-                    disabled={syncing === product._id}
-                    className={`${styles.actionButton} bg-blue-50 text-blue-600 hover:bg-blue-100`}
-                    title="Sync with CJ"
-                  >
-                    {syncing === product._id ? "Syncing..." : "Sync"}
-                  </button>
-                )}
                 <Link
                   href={`/admin/products/${product._id}`}
                   className={`${styles.actionButton} ${styles.editAction}`}
@@ -431,20 +297,6 @@ export default function AdminProductsPage() {
                 </td>
                 <td className={`${styles.td} ${styles.tdRight}`}>
                   <div className={styles.actions}>
-                    {product.cjPid && (
-                      <button
-                        onClick={() => handleSync(product._id)}
-                        disabled={syncing === product._id}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-                        title="Sync with CJ"
-                      >
-                        {syncing === product._id ? (
-                          <span className="text-xs">...</span>
-                        ) : (
-                          <RefreshCw size={16} />
-                        )}
-                      </button>
-                    )}
                     <Link
                       href={`/admin/products/${product._id}`}
                       className={styles.editLink}

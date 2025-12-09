@@ -20,7 +20,13 @@ export interface CartItem {
   }[];
   variant?: {
     shippingFee?: number;
-    shippingFees?: { countryCode: string; fee: number }[];
+    shippingRates?: {
+      countryCode: string;
+      countryName: string;
+      price: number;
+      method?: string;
+      deliveryTime?: string;
+    }[];
     [key: string]: any;
   };
 }

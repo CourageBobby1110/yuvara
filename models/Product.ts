@@ -84,11 +84,12 @@ const ProductSchema = new Schema(
           cjSku: { type: String }, // CJ SKU
           dobaSku: { type: String }, // Doba SKU
           shippingFee: { type: Number, default: 0 },
-          shippingFees: {
+          shippingRates: {
             type: [
               {
                 countryCode: { type: String, required: true },
-                fee: { type: Number, required: true },
+                countryName: { type: String, required: true },
+                price: { type: Number, required: true },
                 method: { type: String },
                 deliveryTime: { type: String },
               },
@@ -113,6 +114,9 @@ const ProductSchema = new Schema(
       trim: true,
       index: true,
     },
+    lastSyncedPrice: { type: Date },
+    lastSyncedStock: { type: Date },
+    lastSyncedShipping: { type: Date },
   },
   { timestamps: true }
 );
@@ -151,9 +155,10 @@ export type Product = {
     cjSku?: string;
     dobaSku?: string;
     shippingFee?: number;
-    shippingFees?: {
+    shippingRates?: {
       countryCode: string;
-      fee: number;
+      countryName: string;
+      price: number;
       method?: string;
       deliveryTime?: string;
     }[];
@@ -163,6 +168,9 @@ export type Product = {
   reviewCount?: number;
   createdAt?: Date;
   updatedAt?: Date;
+  lastSyncedPrice?: Date;
+  lastSyncedStock?: Date;
+  lastSyncedShipping?: Date;
 };
 
 export default Product;

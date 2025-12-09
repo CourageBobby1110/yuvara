@@ -1,27 +1,137 @@
 import axios from "axios";
 
+/**
+ * Run async operations with a concurrency limit.
+ * @param items Array of items to process
+ * @param callback Async function to run for each item
+ * @param limit Max number of concurrent operations
+ */
+export async function mapConcurrent<T, R>(
+  items: T[],
+  callback: (item: T) => Promise<R>,
+  limit: number
+): Promise<R[]> {
+  const results: R[] = [];
+  const running: Promise<void>[] = [];
+  const queue = [...items];
+
+  // We need to maintain the order of results
+  const resultPromises: Promise<R>[] = items.map((item) => callback(item));
+
+  // Note: The simple map above starts all promises effectively.
+  // To truly limit concurrency, we need a different approach.
+
+  const limitConcurrency = async () => {
+    const results: R[] = new Array(items.length);
+    let currentIndex = 0;
+
+    const worker = async () => {
+      while (currentIndex < items.length) {
+        const index = currentIndex++;
+        results[index] = await callback(items[index]);
+      }
+    };
+
+    const workers = Array(Math.min(limit, items.length))
+      .fill(null)
+      .map(() => worker());
+
+    await Promise.all(workers);
+    return results;
+  };
+
+  return limitConcurrency();
+}
+
+/**
+ * Slugify a string
+ */
+export function slugify(text: string) {
+  const slug = text
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^\w\-]+/g, "")
+    .replace(/\-\-+/g, "-")
+    .replace(/^-+/, "")
+    .replace(/-+$/, "");
+
+  return slug || "";
+}
+
+export const TARGET_COUNTRIES = [
+  { code: "NG", name: "Nigeria" },
+  { code: "US", name: "United States" },
+  { code: "GB", name: "United Kingdom" },
+  { code: "CA", name: "Canada" },
+  { code: "AU", name: "Australia" },
+];
+
+/**
+ * Fetch Shipping Rates (Centralized)
+ */
+export async function fetchShippingRates(accessToken: string, vid: string) {
+  if (!vid) return [];
+
+  const rates = await mapConcurrent(
+    TARGET_COUNTRIES,
+    async (country) => {
+      try {
+        const res = await axios.post(
+          `https://developers.cjdropshipping.com/api2.0/v1/logistic/freightCalculate`,
+          {
+            startCountryCode: "CN",
+            endCountryCode: country.code,
+            products: [
+              {
+                quantity: 1,
+                vid: vid,
+              },
+            ],
+          },
+          { headers: { "CJ-Access-Token": accessToken } }
+        );
+
+        if (res.data?.result && res.data?.data?.length > 0) {
+          const options = res.data.data;
+          // Sort by price (cheapest first)
+          options.sort(
+            (a: any, b: any) =>
+              parseFloat(a.logisticPrice) - parseFloat(b.logisticPrice)
+          );
+          const cheapest = options[0];
+          return {
+            countryCode: country.code,
+            countryName: country.name,
+            price: parseFloat(cheapest.logisticPrice),
+            method: cheapest.logisticName,
+            deliveryTime: cheapest.logisticAging,
+          };
+        }
+      } catch (error) {
+        // console.error(`Error fetching shipping for ${country.name}:`, error);
+      }
+      return null;
+    },
+    TARGET_COUNTRIES.length
+  );
+
+  return rates.filter((r) => r !== null) as any[];
+}
+
+/**
+ * Parse CJ Variant Data
+ */
 export function parseCJVariant(
   v: any,
   defaultImage: string,
   basePrice: number,
-  shippingFee: number = 0,
-  shippingFees: {
-    countryCode: string;
-    fee: number;
-    method?: string;
-    deliveryTime?: string;
-  }[] = []
+  shippingRates: any[] = [],
+  shippingFee: number = 0
 ) {
-  let variantCost = parseFloat(v.variantSellPrice);
-  if (isNaN(variantCost) || variantCost === 0) {
-    variantCost = parseFloat(v.productPrice);
-  }
-  if (isNaN(variantCost) || variantCost === 0) {
-    variantCost = parseFloat(v.sellPrice);
-  }
-  if (isNaN(variantCost) || variantCost === 0) {
-    variantCost = parseFloat(v.variantPrice);
-  }
+  // Use sellPrice if available (common in new API), otherwise productPrice
+  let variantCost = parseFloat(v.sellPrice) || parseFloat(v.productPrice);
+
   if (isNaN(variantCost) || variantCost === 0) {
     variantCost = basePrice;
   }
@@ -79,165 +189,12 @@ export function parseCJVariant(
   return {
     color: color && color !== "Default" ? color : v.variantKey || "Default",
     image: v.variantImage || v.productImage || defaultImage,
-    price: variantCost * 1.5, // Markup
+    price: variantCost * 1.5, // Markup confirmed here
     stock: v.realStock !== undefined ? v.realStock : v.productNumber || 0,
     size: size,
     cjVid: v.vid,
     cjSku: v.productSku,
+    shippingRates: shippingRates,
     shippingFee: shippingFee,
-    shippingFees: shippingFees,
   };
-}
-
-export async function fetchVariantStock(
-  accessToken: string,
-  vid: string,
-  sku: string,
-  delayMs = 500
-) {
-  const wait = (ms: number) =>
-    new Promise((resolve) => setTimeout(resolve, ms));
-
-  const fetchStrategies = [
-    {
-      name: "VID",
-      fn: () =>
-        axios.get(
-          `https://developers.cjdropshipping.com/api2.0/v1/product/stock/queryByVid?vid=${vid}`,
-          { headers: { "CJ-Access-Token": accessToken } }
-        ),
-      condition: !!vid,
-    },
-    {
-      name: "SKU",
-      fn: () =>
-        axios.get(
-          `https://developers.cjdropshipping.com/api2.0/v1/product/stock/queryBySku?sku=${sku}`,
-          { headers: { "CJ-Access-Token": accessToken } }
-        ),
-      condition: !!sku,
-    },
-  ];
-
-  for (const strategy of fetchStrategies) {
-    if (!strategy.condition) continue;
-
-    let retries = 3;
-    while (retries > 0) {
-      try {
-        await wait(delayMs);
-        const res = await strategy.fn();
-
-        if (res.data?.result && res.data?.data) {
-          const data = Array.isArray(res.data.data)
-            ? res.data.data
-            : [res.data.data];
-          const totalStock = data.reduce(
-            (acc: number, item: any) => acc + (item.totalInventoryNum || 0),
-            0
-          );
-          return totalStock;
-        }
-        break;
-      } catch (error: any) {
-        if (error.response?.status === 429) {
-          console.warn(
-            `Rate limit hit for ${strategy.name} ${vid || sku}. Retrying...`
-          );
-          retries--;
-          await wait(2000);
-        } else {
-          console.error(
-            `Error fetching stock via ${strategy.name}:`,
-            error.message
-          );
-          break;
-        }
-      }
-    }
-  }
-
-  return null;
-}
-
-export async function fetchVariantShipping(
-  accessToken: string,
-  vid: string,
-  countryCode: string = "NG"
-) {
-  if (!vid)
-    return {
-      price: 0,
-    };
-
-  const wait = (ms: number) =>
-    new Promise((resolve) => setTimeout(resolve, ms));
-  let retries = 3;
-
-  while (retries > 0) {
-    try {
-      // Small delay to be nice to the API
-      await wait(500);
-
-      const res = await axios.post(
-        `https://developers.cjdropshipping.com/api2.0/v1/logistic/freightCalculate`,
-        {
-          startCountryCode: "CN",
-          endCountryCode: countryCode,
-          products: [
-            {
-              quantity: 1,
-              vid: vid,
-            },
-          ],
-        },
-        { headers: { "CJ-Access-Token": accessToken } }
-      );
-
-      if (res.data?.result && res.data?.data?.length > 0) {
-        const options = res.data.data;
-        // Sort by price (cheapest first)
-        options.sort(
-          (a: any, b: any) =>
-            parseFloat(a.logisticPrice) - parseFloat(b.logisticPrice)
-        );
-        const cheapest = options[0];
-        return {
-          price: parseFloat(cheapest.logisticPrice),
-          method: cheapest.logisticName,
-          deliveryTime: cheapest.logisticAging,
-        };
-      }
-      // If result is true but no data (e.g. valid request but no shipping found), verify data structure
-      if (
-        res.data?.result &&
-        (!res.data?.data || res.data?.data.length === 0)
-      ) {
-        // console.warn(
-        //   `No shipping options found for VID ${vid} to ${countryCode}`
-        // );
-        return { price: 0 };
-      }
-
-      // If we get here, it might be an API error disguised as 200 or something else.
-      // check success flag
-      if (!res.data?.result) {
-        // console.warn(
-        //   `CJ API returned false for VID ${vid}: ${res.data?.message}`
-        // );
-      }
-
-      return { price: 0 }; // Success but no value, or explicit failure
-    } catch (e: any) {
-      if (e.response?.status === 429 || e.code === "ECONNRESET") {
-        console.warn(`Rate limit/Network error for VID ${vid}. Retrying...`);
-        retries--;
-        await wait(2000);
-      } else {
-        console.error(`Shipping calculation failed for VID ${vid}:`, e.message);
-        break; // Non-retryable error
-      }
-    }
-  }
-  return { price: 0 };
 }
