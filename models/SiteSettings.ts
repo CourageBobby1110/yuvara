@@ -44,6 +44,7 @@ const SiteSettingsSchema = new Schema(
       enum: ["open", "closed", "postponed"],
       default: "open",
     },
+    isMarkupActive: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
@@ -76,6 +77,7 @@ export interface ISiteSettings {
   dobaAppKey: string;
   dobaAppSecret: string;
   affiliateProgramStatus: "open" | "closed" | "postponed";
+  isMarkupActive: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }

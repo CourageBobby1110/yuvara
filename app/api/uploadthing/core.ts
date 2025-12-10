@@ -34,11 +34,25 @@ export const ourFileRouter = {
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
       return { uploadedBy: metadata.userId };
     }),
-  videoUploader: f({ video: { maxFileSize: "64MB", maxFileCount: 1 } })
+  videoUploader: f({ video: { maxFileSize: "512MB", maxFileCount: 4 } })
     .middleware(async ({ req }) => {
+      console.log("[VideoUploader] Middleware started");
       const session = await auth();
-      if (!session || session.user?.role !== "admin")
-        throw new Error("Unauthorized");
+      console.log(
+        "[VideoUploader] Session:",
+        session?.user?.email,
+        session?.user?.role
+      );
+
+      if (!session) {
+        console.error("[VideoUploader] No session found");
+        throw new Error("Unauthorized: No session");
+      }
+      if (session.user?.role !== "admin") {
+        console.error("[VideoUploader] User is not admin:", session.user?.role);
+        throw new Error("Unauthorized: Not admin");
+      }
+
       return { userId: session.user.email };
     })
     .onUploadComplete(async ({ metadata, file }) => {

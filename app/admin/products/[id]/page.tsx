@@ -65,6 +65,12 @@ export default function EditProductPage({
   const [syncingShipping, setSyncingShipping] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [syncingVariantId, setSyncingVariantId] = useState<string | null>(null);
+  const [syncingStockVariantId, setSyncingStockVariantId] = useState<
+    string | null
+  >(null);
+  const [syncingPriceVariantId, setSyncingPriceVariantId] = useState<
+    string | null
+  >(null);
   const [images, setImages] = useState<string[]>([]);
   const [videos, setVideos] = useState<string[]>([]);
   const [variants, setVariants] = useState<
@@ -145,12 +151,37 @@ export default function EditProductPage({
             ? new Date(product.lastSyncedShipping).toISOString()
             : "",
         });
-        setImages(product.images || []);
+        const repairUrl = (url: any) => {
+          let str = String(url || "").trim();
+          if (!str) return "";
+
+          // Handle JSON stringified arrays or strings
+          if (str.startsWith("[") || str.startsWith('"')) {
+            // Try extracting URL with regex first
+            const urlMatch = str.match(/https?:\/\/[^"'\s\]]+/);
+            if (urlMatch) {
+              str = urlMatch[0];
+            } else {
+              // Fallback: manually strip brackets and quotes
+              str = str.replace(/[\[\]"']/g, "");
+            }
+          }
+
+          str = str.replace(/^["']|["']$/g, "");
+
+          if (str.startsWith("//")) return `https:${str}`;
+          if (!str.startsWith("/") && !str.startsWith("http")) {
+            return `https://${str}`;
+          }
+          return str;
+        };
+
+        setImages((product.images || []).map(repairUrl).filter(Boolean));
         setVideos(product.videos || []);
         setVariants(
           product.variants?.map((v) => ({
             color: v.color,
-            image: v.image,
+            image: repairUrl(v.image),
             price: v.price.toString(),
             stock: v.stock.toString(),
             size: v.size || "",
@@ -768,42 +799,118 @@ export default function EditProductPage({
                     step="0.01"
                   />
                   {variant.cjVid && (
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        setSyncingVariantId(variant.cjVid!);
-                        try {
-                          const res = await fetch(
-                            "/api/admin/dropshipping/sync-shipping",
-                            {
-                              method: "POST",
-                              headers: { "Content-Type": "application/json" },
-                              body: JSON.stringify({
-                                productId: id,
-                                targetVid: variant.cjVid,
-                              }),
+                    <div className="flex flex-col gap-1 mt-2">
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          setSyncingVariantId(variant.cjVid!);
+                          try {
+                            const res = await fetch(
+                              "/api/admin/dropshipping/sync-shipping",
+                              {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                  productId: id,
+                                  targetVid: variant.cjVid,
+                                }),
+                              }
+                            );
+                            if (res.ok) {
+                              alert("Shipping synced for this variant!");
+                              fetchProduct();
+                            } else {
+                              const d = await res.json();
+                              alert(
+                                d.error || "Failed to sync variant shipping"
+                              );
                             }
-                          );
-                          if (res.ok) {
-                            alert("Shipping synced for this variant!");
-                            fetchProduct();
-                          } else {
-                            const d = await res.json();
-                            alert(d.error || "Failed to sync variant shipping");
+                          } catch (e) {
+                            alert("Error syncing variant shipping");
+                          } finally {
+                            setSyncingVariantId(null);
                           }
-                        } catch (e) {
-                          alert("Error syncing variant shipping");
-                        } finally {
-                          setSyncingVariantId(null);
-                        }
-                      }}
-                      disabled={syncingVariantId === variant.cjVid}
-                      className="text-xs bg-blue-500 text-white px-2 py-1 rounded mt-2"
-                    >
-                      {syncingVariantId === variant.cjVid
-                        ? "Syncing..."
-                        : "Sync Shipping"}
-                    </button>
+                        }}
+                        disabled={syncingVariantId === variant.cjVid}
+                        className="text-xs bg-blue-500 text-white px-2 py-1 rounded"
+                      >
+                        {syncingVariantId === variant.cjVid
+                          ? "Syncing..."
+                          : "Sync Shipping"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          setSyncingStockVariantId(variant.cjVid!);
+                          try {
+                            const res = await fetch(
+                              "/api/admin/dropshipping/sync-stock",
+                              {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                  productId: id,
+                                  targetVid: variant.cjVid,
+                                }),
+                              }
+                            );
+                            if (res.ok) {
+                              alert("Stock synced for this variant!");
+                              fetchProduct();
+                            } else {
+                              const d = await res.json();
+                              alert(d.error || "Failed to sync variant stock");
+                            }
+                          } catch (e) {
+                            alert("Error syncing variant stock");
+                          } finally {
+                            setSyncingStockVariantId(null);
+                          }
+                        }}
+                        disabled={syncingStockVariantId === variant.cjVid}
+                        className="text-xs bg-green-600 text-white px-2 py-1 rounded"
+                      >
+                        {syncingStockVariantId === variant.cjVid
+                          ? "Syncing..."
+                          : "Sync Stock"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          setSyncingPriceVariantId(variant.cjVid!);
+                          try {
+                            const res = await fetch(
+                              "/api/admin/dropshipping/sync-price",
+                              {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                  productId: id,
+                                  targetVid: variant.cjVid,
+                                }),
+                              }
+                            );
+                            if (res.ok) {
+                              alert("Price synced for this variant!");
+                              fetchProduct();
+                            } else {
+                              const d = await res.json();
+                              alert(d.error || "Failed to sync variant price");
+                            }
+                          } catch (e) {
+                            alert("Error syncing variant price");
+                          } finally {
+                            setSyncingPriceVariantId(null);
+                          }
+                        }}
+                        disabled={syncingPriceVariantId === variant.cjVid}
+                        className="text-xs bg-yellow-600 text-white px-2 py-1 rounded"
+                      >
+                        {syncingPriceVariantId === variant.cjVid
+                          ? "Syncing..."
+                          : "Sync Price (CJ)"}
+                      </button>
+                    </div>
                   )}
                 </div>
                 <div>

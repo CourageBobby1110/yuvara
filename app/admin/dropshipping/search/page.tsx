@@ -41,7 +41,6 @@ export default function DropshippingSearch() {
     setSearched(true);
     setPage(pageNum);
 
-    // Only clear products if it's a new search, not pagination
     if (pageNum === 1) setProducts([]);
 
     try {
@@ -58,7 +57,6 @@ export default function DropshippingSearch() {
       }
     } catch (error: any) {
       if (error.response?.status === 401 || error.response?.status === 400) {
-        // Likely auth error
         setConnected(false);
       }
       toast.error(error.response?.data?.error || "Search failed");
@@ -70,7 +68,6 @@ export default function DropshippingSearch() {
   const handleImport = async (product: any) => {
     setImporting(product.pid);
     try {
-      // We send the PID to the backend to fetch full details and save
       await axios.post("/api/admin/dropshipping/import", { pid: product.pid });
       toast.success("Product imported successfully!");
     } catch (error: any) {
@@ -85,28 +82,27 @@ export default function DropshippingSearch() {
   if (checking) {
     return (
       <div className={styles.loadingContainer}>
-        <Loader2 className={styles.loadingSpinner} />
+        <Loader2 className={styles.loader} />
       </div>
     );
   }
 
   if (!connected) {
     return (
-      <div className={styles.container}>
-        <div className={styles.connectionState}>
-          <div className={styles.connectionIconWrapper}>
-            <Plug className={styles.connectionIcon} />
+      <div className={styles.emptyStateContainer}>
+        <div className={styles.emptyStateContent}>
+          <div className={styles.iconCircle}>
+            <Plug size={32} color="#9ca3af" />
           </div>
-          <h2 className={styles.connectionTitle}>Connect to CJ Dropshipping</h2>
-          <p className={styles.connectionText}>
-            To search and import products, you need to connect your CJ
-            Dropshipping account first. It only takes a minute.
+          <h2 className={styles.emptyTitle}>Connect to CJ</h2>
+          <p className={styles.emptyText}>
+            To search and import products, connect your CJ Dropshipping account.
           </p>
           <Link
             href="/admin/dropshipping/settings"
-            className={styles.connectionButton}
+            className={styles.primaryButton}
           >
-            Go to Settings & Connect
+            Connect Account
           </Link>
         </div>
       </div>
@@ -118,27 +114,21 @@ export default function DropshippingSearch() {
       <div className={styles.header}>
         <div className={styles.headerContent}>
           <h1 className={styles.title}>Find Products</h1>
-          <p className={styles.subtitle}>
-            Search the CJ Dropshipping catalog and import directly to your
-            store.
-          </p>
+          <p className={styles.subtitle}>Search CJ Dropshipping catalog.</p>
         </div>
-        <Link
-          href="/admin/dropshipping/settings"
-          className={styles.settingsLink}
-        >
-          Configure API Settings
+        <Link href="/admin/dropshipping/settings" className={styles.headerLink}>
+          API Settings
         </Link>
       </div>
 
       <form onSubmit={(e) => handleSearch(e, 1)} className={styles.searchForm}>
-        <div className={styles.searchWrapper}>
+        <div className={styles.inputWrapper}>
           <Search className={styles.searchIcon} />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by keyword or paste CJ Product URL..."
+            placeholder="Search keywords or paste URL..."
             className={styles.searchInput}
           />
         </div>
@@ -147,109 +137,85 @@ export default function DropshippingSearch() {
           disabled={loading}
           className={styles.searchButton}
         >
-          {loading ? <Loader2 className={styles.loadingSpinner} /> : "Search"}
+          {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Search"}
         </button>
       </form>
 
-      <div className={styles.infoBanner}>
-        <AlertCircle className={styles.infoBannerIcon} />
-        <div className={styles.infoBannerContent}>
-          <h4>Pro Tip: Paste a CJ Product URL</h4>
-          <p>
-            Found a product you like on cjdropshipping.com? Just copy and paste
-            the full URL here to find and import that exact product instantly.
-          </p>
+      {!searched && !loading && (
+        <div className={styles.alertBox}>
+          <AlertCircle className={styles.alertIcon} />
+          <div>
+            <h4 className={styles.alertTitle}>Pro Tip: Exact Import</h4>
+            <p className={styles.alertText}>
+              Paste a full CJ Dropshipping product URL to find that exact item.
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       {products.length > 0 ? (
         <>
-          <div className={styles.productsGrid}>
+          <div className={styles.grid}>
             {products.map((product) => (
               <div key={product.pid} className={styles.productCard}>
-                <div className={styles.productImageWrapper}>
+                <div className={styles.imageWrapper}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={product.productImage}
                     alt={product.productName}
                     className={styles.productImage}
+                    loading="lazy"
                   />
-                  <div className={styles.productBadge}>CJ</div>
                 </div>
-                <div className={styles.productContent}>
+                <div className={styles.details}>
                   <h3
                     className={styles.productName}
                     title={product.productName}
                   >
                     {product.productName}
                   </h3>
-                  <div className={styles.productPriceSection}>
-                    <div>
-                      <p className={styles.priceLabel}>Cost Price</p>
-                      <span className={styles.priceValue}>
-                        ${product.sellPrice}
+                  <div className={styles.priceRow}>
+                    <span className={styles.price}>${product.sellPrice}</span>
+                    {product.quantity && (
+                      <span className={styles.stockBadge}>
+                        Stock: {product.quantity}
                       </span>
-                    </div>
+                    )}
                   </div>
 
-                  {product.shippingInfo && product.shippingInfo.length > 0 && (
-                    <div className={styles.shippingInfo}>
-                      <p className={styles.shippingTitle}>Est. Shipping:</p>
-                      <div className={styles.shippingList}>
-                        {product.shippingInfo.map((info: any) => (
-                          <div
-                            key={info.country}
-                            className={styles.shippingItem}
-                          >
-                            <span className={styles.shippingCountry}>
-                              {info.country}:
-                            </span>
-                            <span className={styles.shippingPrice}>
-                              ${info.price.toFixed(2)}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                   <button
                     onClick={() => handleImport(product)}
                     disabled={importing === product.pid}
                     className={styles.importButton}
                   >
                     {importing === product.pid ? (
-                      <>
-                        <Loader2 className={styles.loadingSpinner} />
-                        Importing...
-                      </>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
                     ) : (
-                      <>
-                        <Download size={20} />
-                        Import Product
-                      </>
+                      <Download className="h-4 w-4 mr-2" />
                     )}
+                    {importing === product.pid ? "Importing" : "Import"}
                   </button>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className={styles.pagination}>
               <button
                 onClick={() => handleSearch(undefined, page - 1)}
                 disabled={page <= 1 || loading}
-                className={styles.paginationButton}
+                className={styles.pageButton}
               >
-                Previous
+                Prev
               </button>
-              <span className={styles.paginationText}>
+              <span className={styles.pageInfo}>
                 Page {page} of {totalPages}
               </span>
               <button
                 onClick={() => handleSearch(undefined, page + 1)}
                 disabled={page >= totalPages || loading}
-                className={styles.paginationButton}
+                className={styles.pageButton}
               >
                 Next
               </button>
@@ -259,27 +225,24 @@ export default function DropshippingSearch() {
       ) : (
         searched &&
         !loading && (
-          <div className={styles.emptyState}>
-            <Search className={styles.emptyStateIcon} />
-            <h3 className={styles.emptyStateTitle}>No products found</h3>
-            <p className={styles.emptyStateText}>
-              We couldn't find any products matching "{query}". If you pasted a
-              URL, make sure it's a valid CJ Dropshipping product link.
-              Otherwise, try different keywords.
+          <div className={styles.noResults}>
+            <Search className={styles.noResultsIcon} />
+            <h3 className={styles.noResultsTitle}>No products found</h3>
+            <p className={styles.noResultsText}>
+              Try different keywords or check your URL.
             </p>
           </div>
         )
       )}
 
       {!searched && !loading && (
-        <div className={styles.initialState}>
-          <div className={styles.initialStateIconWrapper}>
-            <Search className={styles.initialStateIcon} />
+        <div className={styles.defaultState}>
+          <div className={styles.defaultIconCircle}>
+            <Search size={32} color="#9ca3af" />
           </div>
-          <h2 className={styles.initialStateTitle}>Start your search</h2>
-          <p className={styles.initialStateText}>
-            Enter a keyword above to find winning products from CJ
-            Dropshipping's massive catalog.
+          <h2 className={styles.defaultTitle}>Start your search</h2>
+          <p className={styles.defaultText}>
+            Enter keywords to find products from CJ Dropshipping.
           </p>
         </div>
       )}

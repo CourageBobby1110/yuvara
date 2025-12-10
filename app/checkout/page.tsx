@@ -140,50 +140,49 @@ export default function CheckoutPage() {
     let totalShipping = 0;
 
     for (const item of items) {
-      // Check for variant-specific shipping fee first
-      if (item.variant) {
-        // Multi-country fee lookup
-        if (
-          item.variant.shippingRates &&
-          item.variant.shippingRates.length > 0
-        ) {
-          const countryRate = item.variant.shippingRates.find(
-            (sr) => sr.countryCode === code
-          );
-          if (countryRate) {
-            totalShipping += Number(countryRate.price) * item.quantity;
-            continue;
-          }
+      // 1. Check for variant-specific shipping rates
+      if (
+        item.variant &&
+        item.variant.shippingRates &&
+        item.variant.shippingRates.length > 0
+      ) {
+        const countryRate = item.variant.shippingRates.find(
+          (sr) => sr.countryCode === code
+        );
+        if (countryRate) {
+          totalShipping += Number(countryRate.price) * item.quantity;
+          continue;
         }
 
-        // Fallback to legacy shippingFee if exists
-        if (
-          item.variant.shippingFee !== undefined &&
-          item.variant.shippingFee > 0
-        ) {
-          totalShipping += item.variant.shippingFee * item.quantity;
+        // Fallback: Check for US rate in variant
+        const usVariantRate = item.variant.shippingRates.find(
+          (sr) => sr.countryCode === "US"
+        );
+        if (usVariantRate) {
+          totalShipping += Number(usVariantRate.price) * item.quantity;
           continue;
         }
       }
 
-      if (item.shippingRates) {
+      // 2. Check for product-level shipping rates
+      if (item.shippingRates && item.shippingRates.length > 0) {
         const rate = item.shippingRates.find((r) => r.countryCode === code);
         if (rate) {
-          totalShipping += rate.price * item.quantity;
-        } else {
-          // Fallback: try to find US rate as a global fallback
-          const usRate = item.shippingRates.find((r) => r.countryCode === "US");
-          if (usRate) {
-            totalShipping += usRate.price * item.quantity;
-          } else {
-            // Fallback if no rate found at all
-            totalShipping += 5 * item.quantity;
-          }
+          totalShipping += Number(rate.price) * item.quantity;
+          continue;
         }
-      } else {
-        // Fallback for old items without shippingRates
-        totalShipping += 5 * item.quantity;
+
+        // Fallback: try to find US rate as a global fallback
+        const usRate = item.shippingRates.find((r) => r.countryCode === "US");
+        if (usRate) {
+          totalShipping += Number(usRate.price) * item.quantity;
+          continue;
+        }
       }
+
+      // 3. Last resort fallback
+      // If we have absolutely no shipping info (old product or failed sync), default to $10
+      totalShipping += 10 * item.quantity;
     }
 
     return totalShipping;

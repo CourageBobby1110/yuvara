@@ -107,6 +107,15 @@ export default function AdminSidebar() {
             CJ Dropshipping
           </Link>
           <Link
+            href="/admin/cjdropshippingv2"
+            className={`${styles.link} ${
+              isActive("/admin/cjdropshippingv2") ? styles.active : ""
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            CJ Exact Search
+          </Link>
+          <Link
             href="/admin/doba/search"
             className={`${styles.link} ${
               isActive("/admin/doba") ? styles.active : ""

@@ -144,6 +144,9 @@ export async function POST(req: Request) {
       shippingFee: defaultShippingFee,
       shippingRates: defaultShippingRates,
       cjPid: cjProduct.pid,
+      productUrl: `https://cjdropshipping.com/product/${slugify(
+        cjProduct.productNameEn
+      )}-p-${cjProduct.pid}.html`,
       variants: variants,
       sizes: Array.from(new Set(variants.map((v: any) => v.size))).filter(
         (s) => s

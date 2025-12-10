@@ -79,11 +79,12 @@ export async function GET(req: Request) {
 
     // Helper to extract PID from string
     const extractPid = (str: string) => {
-      // Try standard URL pattern: ...-p-{PID}.html
-      const urlMatch = str.match(/-p-([a-zA-Z0-9]+)\.html/);
+      // 1. Try standard URL pattern: ...-p-{PID}.html (supports alphanumeric + hyphens)
+      // Matches both cjdropshipping.com and qksource.com style
+      const urlMatch = str.match(/-p-([a-zA-Z0-9-]+)\.html/);
       if (urlMatch && urlMatch[1]) return urlMatch[1];
 
-      // Try query param pattern: ?pid={PID} or &pid={PID}
+      // 2. Try query param pattern: ?pid={PID} or &pid={PID}
       try {
         const urlObj = new URL(str);
         const pidParam = urlObj.searchParams.get("pid");
@@ -92,9 +93,9 @@ export async function GET(req: Request) {
         // Not a valid URL object, continue
       }
 
-      // Try direct PID (long alphanumeric, usually starts with numbers but can contain letters)
-      // CJ PIDs are typically long UUID-like or numeric strings.
-      // If it's just a number and long enough, assume PID.
+      // 3. Try direct PID logic
+      // CJ PIDs are typically long. Use a looser check but ensure it's not a generic keyword.
+      // If it looks like a UUID or long alphanumeric string
       if (/^[a-zA-Z0-9-]{10,}$/.test(str)) {
         return str;
       }

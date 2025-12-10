@@ -20,8 +20,11 @@ interface Product {
 }
 
 export default function AdminProductsPage() {
+  // Products State
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [markupActive, setMarkupActive] = useState(false);
 
   const { currency, setCurrency, formatPrice } = useCurrency();
 
@@ -40,13 +43,119 @@ export default function AdminProductsPage() {
     try {
       const res = await fetch("/api/products");
       const data = await res.json();
-      setProducts(data);
+
+      // Sanitize data to ensure images are always an array of strings
+      const sanitizedData = Array.isArray(data)
+        ? data.map((p: any) => ({
+            ...p,
+            images: Array.isArray(p.images)
+              ? p.images
+                  .map((img: any) => {
+                    let str = String(img || "").trim();
+                    if (!str) return "";
+
+                    // Handle JSON stringified arrays or strings (e.g., '["url"]' or '"url"')
+                    if (str.startsWith("[") || str.startsWith('"')) {
+                      // Try extracting URL with regex first (most robust for malformed JSON)
+                      const urlMatch = str.match(/https?:\/\/[^"'\s\]]+/);
+                      if (urlMatch) {
+                        str = urlMatch[0];
+                      } else {
+                        // Fallback: manually strip brackets and quotes if no http detected
+                        str = str.replace(/[\[\]"']/g, "");
+                      }
+                    }
+
+                    // Clean quotes if they remain
+                    str = str.replace(/^["']|["']$/g, "");
+
+                    if (str.startsWith("//")) return `https:${str}`;
+                    if (!str.startsWith("/") && !str.startsWith("http")) {
+                      return `https://${str}`;
+                    }
+                    return str;
+                  })
+                  .filter((img: string) => img !== "")
+              : [],
+          }))
+        : [];
+
+      setProducts(sanitizedData);
     } catch (error) {
       console.error("Failed to fetch products", error);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleMarkupToggle = async () => {
+    const newActiveState = !markupActive;
+    const modifier = newActiveState ? 1.1 : 1 / 1.1;
+
+    // Use selected products if any, otherwise use ALL filtered products
+    const targetIds =
+      selectedProducts.length > 0
+        ? selectedProducts
+        : filteredProducts.map((p) => p._id);
+
+    if (targetIds.length === 0) {
+      toast.error("No products to update");
+      return;
+    }
+
+    const message = newActiveState
+      ? `Apply 10% price increase to ${targetIds.length} products?\n(Price * 1.1)`
+      : `Remove 10% price markup from ${targetIds.length} products?\n(Price / 1.1)`;
+
+    if (!confirm(message)) return;
+
+    setUpdating(true);
+    try {
+      // 1. Update prices via bulk-update
+      const res = await fetch("/api/products/bulk-update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: targetIds, modifier }),
+      });
+
+      if (res.ok) {
+        // 2. Save the new toggle state to settings
+        await fetch("/api/admin/settings", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ isMarkupActive: newActiveState }),
+        });
+
+        toast.success(newActiveState ? "Markup applied!" : "Markup removed!");
+        setMarkupActive(newActiveState);
+        await fetchProducts();
+      } else {
+        toast.error("Failed to update prices");
+      }
+    } catch (error) {
+      console.error("Error updating prices", error);
+      toast.error("Something went wrong");
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch("/api/admin/settings");
+        if (res.ok) {
+          const settings = await res.json();
+          if (typeof settings.isMarkupActive === "boolean") {
+            setMarkupActive(settings.isMarkupActive);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch settings", error);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this product?")) return;
@@ -156,6 +265,18 @@ export default function AdminProductsPage() {
         </div>
 
         <div className={styles.actionsWrapper}>
+          <div className={styles.toggleWrapper}>
+            <span className={styles.toggleLabel}>10%Markup</span>
+            <label className={styles.switch}>
+              <input
+                type="checkbox"
+                checked={markupActive}
+                onChange={handleMarkupToggle}
+                disabled={updating}
+              />
+              <span className={styles.slider}></span>
+            </label>
+          </div>
           {selectedProducts.length > 0 && (
             <button
               onClick={handleBulkDelete}
