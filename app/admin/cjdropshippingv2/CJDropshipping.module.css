@@ -1,0 +1,270 @@
+/* Container */
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  min-height: 80vh;
+}
+
+/* Header Section */
+.header {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Search Form */
+.searchForm {
+  margin-bottom: 4rem;
+  position: relative;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.searchWrapper {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  background: white;
+  padding: 0.5rem;
+  border: 1px solid var(--color-border-light);
+  border-radius: 9999px; /* Pill shape */
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.searchWrapper:focus-within {
+  border-color: var(--color-luxury-gold);
+  box-shadow: 0 4px 20px rgba(153, 101, 21, 0.15); /* Golden Glow */
+}
+
+.input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  width: 100%;
+}
+
+.input::placeholder {
+  color: var(--color-text-light);
+}
+
+.searchButton {
+  background: var(--color-primary); /* Black */
+  color: white;
+  border: none;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.searchButton:hover:not(:disabled) {
+  background: var(--color-luxury-gold);
+  transform: scale(1.05);
+}
+
+.searchButton:disabled {
+  background: var(--color-border-medium);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Product Card */
+.productCard {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  display: flex;
+  gap: 2.5rem;
+  align-items: flex-start;
+  transition: all 0.4s ease;
+  animation: fadeUp 0.5s ease-out forwards;
+}
+
+.productCard:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-medium);
+}
+
+.imageWrapper {
+  position: relative;
+  width: 280px;
+  aspect-ratio: 1;
+  background: var(--color-bg-secondary);
+  border-radius: 1rem;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid var(--color-border-light);
+}
+
+.productImage {
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.productCard:hover .productImage {
+  transform: scale(1.03);
+}
+
+.details {
+  flex: 1;
+  min-width: 0;
+}
+
+.productTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+
+.badges {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.badgePid {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-light);
+}
+
+.badgeSku {
+  background: rgba(153, 101, 21, 0.1); /* Gold tint */
+  color: var(--color-luxury-gold-dark);
+  border: 1px solid rgba(153, 101, 21, 0.2);
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(
+    --color-primary
+  ); /* Black price for minimalist look, or Gold? User asked for Gold accents */
+  /* Let's keep price black for readability, or maybe gold? */
+  color: var(--color-text-primary);
+}
+
+.priceLabel {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.actions {
+  display: flex;
+}
+
+.importButton {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 9999px; /* Pill button */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.importButton:hover:not(:disabled) {
+  background: var(--color-luxury-gold);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.importButton:disabled {
+  background: var(--color-border-medium);
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .productCard {
+    flex-direction: column;
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .imageWrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .searchWrapper {
+    padding: 0.35rem;
+  }
+
+  .input {
+    padding: 0.75rem 1rem;
+  }
+
+  .title {
+    font-size: 1.75rem;
+  }
+
+  .importButton {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Animations */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

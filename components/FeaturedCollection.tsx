@@ -9,6 +9,7 @@ import QuickAddModal from "./QuickAddModal";
 import { useCurrency } from "@/context/CurrencyContext";
 import WishlistButton from "./WishlistButton";
 import ProductCard from "./ProductCard";
+import { getProductMainImage } from "@/lib/utils";
 
 interface FeaturedCollectionProps {
   products: Product[];
@@ -41,7 +42,7 @@ export default function FeaturedCollection({
         id: product._id,
         name: product.name,
         price: product.price,
-        image: product.images?.[0] || "/placeholder.png",
+        image: getProductMainImage(product),
         slug: product.slug,
       });
       openCart();

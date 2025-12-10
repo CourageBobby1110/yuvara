@@ -60,6 +60,32 @@ export const ourFileRouter = {
       console.log("file url", file.url);
       return { uploadedBy: metadata.userId };
     }),
+
+  videoUploaderV2: f({ video: { maxFileSize: "512MB", maxFileCount: 4 } })
+    .middleware(async ({ req }) => {
+      console.log("[VideoUploaderV2] Middleware started");
+      const session = await auth();
+      console.log(
+        "[VideoUploaderV2] Session:",
+        session?.user?.email,
+        session?.user?.role
+      );
+
+      if (!session) {
+        console.error("[VideoUploaderV2] No session found");
+        throw new Error("Unauthorized: No session");
+      }
+      if (session.user?.role !== "admin") {
+        console.error("[VideoUploaderV2] User is not admin");
+        throw new Error("Unauthorized: Not admin");
+      }
+
+      return { userId: session.user.email };
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      console.log("Video V2 upload complete:", file.url);
+      return { uploadedBy: metadata.userId };
+    }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

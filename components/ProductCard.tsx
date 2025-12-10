@@ -8,6 +8,7 @@ import { useCurrency } from "@/context/CurrencyContext";
 import WishlistButton from "./WishlistButton";
 import { Share2, Star, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
+import { getProductMainImage } from "@/lib/utils";
 
 import styles from "./ProductCard.module.css";
 
@@ -64,7 +65,7 @@ export default function ProductCard({ product, onQuickAdd }: ProductCardProps) {
       {/* Image Container */}
       <Link href={`/products/${product.slug}`} className={styles.imageLink}>
         <Image
-          src={product.images?.[0] || "/placeholder.png"}
+          src={getProductMainImage(product)}
           alt={product.name || "Product"}
           fill
           className={styles.productImage}

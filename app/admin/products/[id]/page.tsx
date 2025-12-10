@@ -9,6 +9,7 @@ import AdminLoader from "@/components/AdminLoader";
 import { formatDistanceToNow } from "date-fns";
 import styles from "./EditProduct.module.css";
 import { useCurrency } from "@/context/CurrencyContext";
+import CloudinaryVideoUpload from "@/components/CloudinaryVideoUpload";
 
 interface Product {
   _id: string;
@@ -637,20 +638,11 @@ export default function EditProductPage({
 
         <div style={{ marginTop: "2rem" }}>
           <label className={styles.label}>Videos</label>
-          <div className={styles.uploadContainer}>
-            <UploadDropzone
-              endpoint="videoUploader"
-              onClientUploadComplete={(res) => {
-                if (res) {
-                  setVideos((prev) => [
-                    ...prev,
-                    ...res.map((file) => file.url),
-                  ]);
-                  alert("Video Upload Completed");
-                }
-              }}
-              onUploadError={(error: Error) => {
-                alert(`ERROR! ${error.message}`);
+          <div className="mb-4">
+            <CloudinaryVideoUpload
+              onUpload={(url) => {
+                setVideos((prev) => [...prev, url]);
+                alert("Video added!");
               }}
             />
           </div>

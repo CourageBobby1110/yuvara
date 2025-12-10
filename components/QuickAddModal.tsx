@@ -6,6 +6,7 @@ import { useCartStore } from "@/store/cart";
 import type { Product } from "@/models/Product";
 import { useCurrency } from "@/context/CurrencyContext";
 import styles from "./QuickAddModal.module.css";
+import { getValidUrl, getProductMainImage } from "@/lib/utils";
 
 interface QuickAddModalProps {
   product: Product | null;
@@ -78,8 +79,8 @@ export default function QuickAddModal({
 
     const priceToUse = selectedVariant ? selectedVariant.price : product.price;
     const imageToUse = selectedVariant
-      ? selectedVariant.image
-      : product.images?.[0] || "/placeholder.png";
+      ? getValidUrl(selectedVariant.image)
+      : getProductMainImage(product);
     const colorToUse = selectedVariant ? selectedVariant.color : selectedColor;
 
     addItem({
@@ -98,8 +99,8 @@ export default function QuickAddModal({
 
   const currentPrice = selectedVariant ? selectedVariant.price : product.price;
   const currentImage = selectedVariant
-    ? selectedVariant.image
-    : product.images?.[0] || "/placeholder.png";
+    ? getValidUrl(selectedVariant.image)
+    : getProductMainImage(product);
 
   return (
     <div
@@ -167,7 +168,7 @@ export default function QuickAddModal({
                   title={variant.color}
                 >
                   <Image
-                    src={variant.image}
+                    src={getValidUrl(variant.image)}
                     alt={variant.color}
                     width={40}
                     height={40}

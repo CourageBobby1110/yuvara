@@ -9,6 +9,7 @@ import { useCurrency } from "@/context/CurrencyContext";
 import { Star } from "lucide-react";
 import { useSession } from "next-auth/react";
 import styles from "./Product.module.css";
+import { getValidUrl } from "@/lib/utils";
 
 export interface ProductType {
   _id: string;
@@ -70,7 +71,23 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
   const slug = params.slug as string;
   const { formatPrice } = useCurrency();
   const { data: session } = useSession();
-  const [product, setProduct] = useState<ProductType>(initialProduct);
+
+  // Sanitize product images on load
+  const sanitizedProduct = {
+    ...initialProduct,
+    images: initialProduct.images
+      ? initialProduct.images.map(getValidUrl).filter((url) => url !== "")
+      : [],
+    variants: initialProduct.variants?.map((v) => ({
+      ...v,
+      image: getValidUrl(v.image),
+    })),
+    videos: initialProduct.videos
+      ? initialProduct.videos.map(getValidUrl).filter((url) => url !== "")
+      : [],
+  };
+
+  const [product, setProduct] = useState<ProductType>(sanitizedProduct);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<{
@@ -88,8 +105,8 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
       deliveryTime?: string;
     }[];
   } | null>(
-    initialProduct.variants && initialProduct.variants.length > 0
-      ? initialProduct.variants[0]
+    sanitizedProduct.variants && sanitizedProduct.variants.length > 0
+      ? sanitizedProduct.variants[0]
       : null
   );
 
@@ -99,9 +116,9 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
   } | null>({
     type: "image",
     url:
-      initialProduct.variants && initialProduct.variants.length > 0
-        ? initialProduct.variants[0].image
-        : initialProduct.images[0],
+      sanitizedProduct.variants && sanitizedProduct.variants.length > 0
+        ? sanitizedProduct.variants[0].image
+        : sanitizedProduct.images[0] || "/placeholder.png",
   });
 
   // Review Form State

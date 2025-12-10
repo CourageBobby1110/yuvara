@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProductClient from "./ProductClient";
 import { getProductBySlug } from "@/lib/products";
+import { getValidUrl } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -25,14 +26,14 @@ export async function generateMetadata({
     openGraph: {
       title: product.name,
       description: product.description.substring(0, 160),
-      images: product.images.length > 0 ? [product.images[0]] : [],
+      images: product.images.length > 0 ? [getValidUrl(product.images[0])] : [],
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
       title: product.name,
       description: product.description.substring(0, 160),
-      images: product.images.length > 0 ? [product.images[0]] : [],
+      images: product.images.length > 0 ? [getValidUrl(product.images[0])] : [],
     },
   };
 }
