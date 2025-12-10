@@ -5,6 +5,7 @@ import FeaturedCollection from "@/components/FeaturedCollection";
 import TrendingMarquee from "@/components/TrendingMarquee";
 import Newsletter from "@/components/Newsletter";
 import { getProducts, getCategories } from "@/lib/products";
+import { shuffleArray } from "@/lib/utils";
 import SiteSettings from "@/models/SiteSettings";
 import dbConnect from "@/lib/db";
 
@@ -17,10 +18,27 @@ export default async function Home() {
   const settings = await SiteSettings.findOne().lean();
   const heroImage = settings?.heroImageUrl || "/hero-shoe-minimalist.png";
 
-  // Fetch different product sets for the marketplace feel
-  const newArrivals = await getProducts({ limit: 8, sort: "newest" });
-  const bestSellers = await getProducts({ limit: 8, sort: "price_desc" }); // Proxy for best sellers
-  const featured = await getProducts({ limit: 4, isFeatured: true });
+  // Time-based seed (changes every 30 mins)
+  const currentWindowSeed = Math.floor(Date.now() / (30 * 60 * 1000));
+
+  // Fetch larger pools for shuffling
+  const newArrivalsPool = await getProducts({ limit: 48, sort: "newest" });
+  const bestSellersPool = await getProducts({ limit: 48, sort: "price_desc" }); // Proxy for best sellers
+  const featuredPool = await getProducts({ limit: 24, isFeatured: true });
+
+  // Shuffle and slice
+  const newArrivals = shuffleArray(newArrivalsPool, currentWindowSeed).slice(
+    0,
+    8
+  );
+  const bestSellers = shuffleArray(
+    bestSellersPool,
+    currentWindowSeed + 1
+  ).slice(0, 8);
+  const featured = shuffleArray(featuredPool, currentWindowSeed + 2).slice(
+    0,
+    4
+  );
 
   return (
     <main
