@@ -43,6 +43,30 @@ const InvestorSchema = new Schema(
       accountNumber: { type: String, default: "" },
       accountName: { type: String, default: "" },
     },
+    withdrawnProfit: {
+      type: Number,
+      default: 0,
+    },
+    cycleStartDate: {
+      type: Date,
+      default: Date.now,
+    },
+    activeCapital: {
+      type: Number,
+      default: 0, // Will default to initialAmount on creation if not set
+    },
+    rolloverHistory: [
+      {
+        date: Date,
+        amountAdded: Number,
+        newCapital: Number,
+        isTopUp: { type: Boolean, default: false },
+      },
+    ],
+    pendingTopUp: {
+      type: Number,
+      default: 0,
+    },
     messages: {
       type: [
         {
@@ -69,6 +93,57 @@ const InvestorSchema = new Schema(
   { timestamps: true }
 );
 
-const Investor = models.Investor || model("Investor", InvestorSchema);
+// Pre-save hook to ensure activeCapital is set
+InvestorSchema.pre("save", function (next) {
+  if (this.isNew || !this.activeCapital) {
+    if (!this.activeCapital) {
+      this.activeCapital = this.initialAmount;
+    }
+  }
+  if (this.isNew && !this.cycleStartDate) {
+    this.cycleStartDate = this.startDate;
+  }
+  next();
+});
+
+export interface IInvestor extends mongoose.Document {
+  name: string;
+  email: string;
+  password?: string;
+  accessPin: string;
+  initialAmount: number;
+  activeCapital: number;
+  startDate: Date;
+  cycleStartDate: Date;
+  status: "active" | "completed" | "withdrawn" | "withdrawal_requested";
+  bankDetails: {
+    bankName: string;
+    accountNumber: string;
+    accountName: string;
+  };
+  withdrawnProfit: number;
+  rolloverHistory: {
+    date: Date;
+    amountAdded: number;
+    newCapital: number;
+    isTopUp: boolean;
+  }[];
+  pendingTopUp: number;
+  messages: {
+    title: string;
+    content: string;
+    date: Date;
+    isRead: boolean;
+  }[];
+  reports: {
+    subject: string;
+    message: string;
+    date: Date;
+    status: string;
+  }[];
+}
+
+const Investor =
+  models.Investor || model<IInvestor>("Investor", InvestorSchema);
 
 export default Investor;

@@ -43,7 +43,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // Save Report to DB
+    // Save Report to DB (Investor History)
     investor.reports.push({
       subject,
       message,
@@ -51,6 +51,15 @@ export async function POST(req: Request) {
       status: "pending",
     });
     await investor.save();
+
+    // Create ContactMessage for Admin Dashboard
+    const ContactMessage = require("@/models/ContactMessage").default;
+    await ContactMessage.create({
+      name: `${investor.name} (Investor)`,
+      email: investor.email,
+      message: `[Subject: ${subject}]\n\n${message}`,
+      status: "unread",
+    });
 
     // Send Email to Admin
     await sendIssueReportEmail(investor.name, investor.email, subject, message);

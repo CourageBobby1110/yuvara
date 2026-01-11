@@ -614,7 +614,8 @@ export async function sendInvestmentWelcomeEmail(
   email: string,
   name: string,
   accessPin: string,
-  initialAmount: number
+  initialAmount: number,
+  password?: string
 ) {
   const loginUrl = `${process.env.NEXTAUTH_URL}/invest`;
 
@@ -636,8 +637,13 @@ export async function sendInvestmentWelcomeEmail(
           </p>
           
           <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p><strong>Initial Investment:</strong> $${initialAmount.toLocaleString()}</p>
+            <p><strong>Initial Investment:</strong> ₦${initialAmount.toLocaleString()}</p>
             <p><strong>Access Pin (Serial Number):</strong> <span style="font-family: monospace; font-size: 16px; background: #eee; padding: 2px 6px; rounded: 4px;">${accessPin}</span></p>
+            ${
+              password
+                ? `<p><strong>Password:</strong> <span style="font-family: monospace; font-size: 16px; background: #eee; padding: 2px 6px; rounded: 4px;">${password}</span></p>`
+                : ""
+            }
             <p><strong>Login URL:</strong> <a href="${loginUrl}">${loginUrl}</a></p>
           </div>
 
@@ -684,7 +690,7 @@ export async function sendWithdrawalRequestEmail(
     html: `
       <h1>Withdrawal Request</h1>
       <p><strong>Investor:</strong> ${investorName} (${investorEmail})</p>
-      <p><strong>Amount to Withdraw:</strong> $${amount.toLocaleString()}</p>
+      <p><strong>Amount to Withdraw:</strong> ₦${amount.toLocaleString()}</p>
       
       <h3>Bank Details:</h3>
       <pre>${JSON.stringify(bankDetails, null, 2)}</pre>
@@ -710,7 +716,7 @@ export async function sendWithdrawalRequestEmail(
           <h2 style="color: #333; margin-top: 0;">Withdrawal Request Received</h2>
           <p style="color: #666; line-height: 1.6;">
             Dear ${investorName},<br>
-            We have received your request to withdraw <strong>$${amount.toLocaleString()}</strong>.
+            We have received your request to withdraw <strong>₦${amount.toLocaleString()}</strong>.
           </p>
           <p style="color: #666; line-height: 1.6;">
             Our team will process your request shortly. You will be notified once the transfer is complete.

@@ -2,9 +2,9 @@ import mongoose, { Schema, model, models } from "mongoose";
 
 const WithdrawalSchema = new Schema(
   {
-    user: {
+    investor: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Investor",
       required: true,
     },
     amount: {

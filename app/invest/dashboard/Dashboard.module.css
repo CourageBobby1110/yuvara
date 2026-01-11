@@ -1,11 +1,17 @@
 .container {
   min-height: 100vh;
-  background-color: var(--color-bg-secondary);
+  background-color: #fafafa; /* Lighter background brightness */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
 }
 
 .header {
-  background-color: var(--color-bg-primary);
-  box-shadow: var(--shadow-sm);
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .headerContent {
@@ -19,8 +25,9 @@
 
 .title {
   font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
+  font-weight: 800; /* Bolder */
+  color: #111827;
+  letter-spacing: -0.025em;
 }
 
 .userInfo {
@@ -35,15 +42,22 @@
 
 .logoutButton {
   font-size: 0.875rem;
-  color: var(--color-error);
-  background: none;
+  color: #ef4444;
+  background: rgba(254, 226, 226, 0.5);
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
   border: none;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 600;
+  transition: all 0.2s;
 }
 
 .logoutButton:hover {
   text-decoration: underline;
+}
+
+.logoutButton:active {
+  transform: scale(0.95);
 }
 
 .main {
@@ -66,35 +80,47 @@
 }
 
 .card {
-  background-color: var(--color-bg-primary);
+  background-color: #ffffff;
   padding: 1.5rem;
-  border-radius: 0.5rem;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--color-border-light);
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+  transition: transform 0.2s;
+}
+
+/* Card Press Effect on Mobile */
+@media (hover: none) {
+  .card:active {
+    transform: scale(0.99);
+  }
 }
 
 .cardLabel {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
 }
 
 .cardValue {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
-  margin-top: 0.5rem;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.05em;
 }
 
 .cardValueGreen {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-success);
-  margin-top: 0.5rem;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #059669;
+  letter-spacing: -0.05em;
 }
 
 .profitText {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
   color: var(--color-success);
   margin-top: 0.25rem;
 }
@@ -104,7 +130,7 @@
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: capitalize;
   margin-top: 0.5rem;
 }
@@ -113,84 +139,69 @@
   background-color: #d1fae5;
   color: #065f46;
 }
-
 .statusWithdrawalRequested {
   background-color: #fef3c7;
   color: #92400e;
 }
-
 .statusCompleted {
   background-color: #dbeafe;
   color: #1e40af;
 }
-
 .statusDefault {
   background-color: #f3f4f6;
   color: #1f2937;
 }
 
 .sectionTitle {
-  font-size: 1.125rem;
-  font-weight: 500;
+  font-size: 1.25rem;
+  font-weight: 700;
   color: var(--color-text-primary);
   margin-bottom: 1rem;
 }
 
 .progressContainer {
   position: relative;
-  padding-top: 0.25rem;
+  padding-top: 0.5rem;
 }
 
 .progressLabels {
   display: flex;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   align-items: center;
   justify-content: space-between;
 }
 
-.progressBadge {
-  font-size: 0.75rem;
-  font-weight: 600;
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  text-transform: uppercase;
-  border-radius: 9999px;
-  color: var(--color-info);
-  background-color: #dbeafe;
-}
-
+.progressBadge,
 .progressText {
   font-size: 0.75rem;
   font-weight: 600;
-  display: inline-block;
   color: var(--color-info);
+  background-color: #dbeafe;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+}
+.progressText {
+  background: none;
+  color: #6b7280;
 }
 
 .progressBarBg {
   overflow: hidden;
-  height: 0.5rem;
+  height: 0.75rem;
   margin-bottom: 1rem;
-  font-size: 0.75rem;
-  display: flex;
-  border-radius: 0.25rem;
-  background-color: #dbeafe;
+  border-radius: 9999px;
+  background-color: #e5e7eb;
 }
 
 .progressBarFill {
-  box-shadow: none;
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  white-space: nowrap;
-  color: #ffffff;
-  justify-content: center;
   background-color: var(--color-info);
-  transition: width 500ms;
+  transition: width 0.5s ease-out;
 }
 
 .progressFooter {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
+  line-height: 1.5;
 }
 
 .messageBox {
@@ -198,71 +209,92 @@
   padding: 1rem;
   background-color: #f0fdf4;
   color: #15803d;
-  border-radius: 0.375rem;
+  border-radius: 0.5rem;
 }
 
-.withdrawButton {
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.375rem;
+.withdrawButton,
+.submitButton {
+  width: 100%;
+  padding: 0.875rem;
+  border-radius: 0.75rem;
   color: #ffffff;
-  font-weight: 500;
-  transition: background-color 0.2s;
+  font-weight: 600;
+  transition: all 0.2s;
   border: none;
   cursor: pointer;
+  background-color: var(--color-primary);
+  font-size: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.withdrawButtonActive:active,
+.submitButton:active {
+  transform: scale(0.98);
+}
+.withdrawButtonActive:hover,
+.submitButton:hover {
+  filter: brightness(110%);
+}
+
+.withdrawButtonDisabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 .withdrawButtonActive {
   background-color: var(--color-success);
 }
 
-.withdrawButtonActive:hover {
-  background-color: #059669;
-}
-
-.withdrawButtonDisabled {
-  background-color: var(--color-text-light);
-  cursor: not-allowed;
-}
-
 .maturityText {
-  margin-top: 0.5rem;
+  margin-top: 1rem;
   font-size: 0.875rem;
   color: var(--color-text-secondary);
+  text-align: center;
 }
 
-.messageList {
+.form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 1.25rem;
 }
 
-.messageItem {
-  border-left: 4px solid var(--color-info);
-  background-color: #eff6ff;
-  padding: 1rem;
-}
-
-.messageTitle {
-  font-weight: 700;
-  color: #1e3a8a;
-}
-
-.messageContent {
-  color: #1e40af;
-  margin-top: 0.25rem;
-}
-
-.messageDate {
-  font-size: 0.75rem;
-  color: var(--color-info);
-  margin-top: 0.5rem;
-  display: block;
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .noMessages {
-  color: var(--color-text-secondary);
-  margin-bottom: 1.5rem;
+  padding: 3rem 1rem;
+  text-align: center;
+  background-color: #f9fafb;
+  border-radius: 0.75rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.emptyIcon {
+  width: 3rem;
+  height: 3rem;
+  color: #9ca3af;
+  margin-bottom: 0.5rem;
+}
+
+.emptyTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.emptyText {
+  font-size: 0.875rem;
+  color: #6b7280;
+  max-width: 20rem;
+  margin: 0 auto;
 }
 
 .supportSection {
@@ -271,7 +303,7 @@
 }
 
 .supportTitle {
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: 0.5rem;
 }
@@ -279,62 +311,101 @@
 .supportText {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
-  margin-bottom: 1rem;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.formGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  margin-bottom: 1.5rem;
 }
 
 .label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
 }
 
 .input,
 .textarea {
   width: 100%;
   border: 1px solid var(--color-border-medium);
-  border-radius: 0.375rem;
-  padding: 0.5rem;
-  box-shadow: var(--shadow-sm);
+  border-radius: 0.75rem;
+  padding: 0.875rem;
+  font-size: 1rem; /* Better for mobile input to avoid zoom */
+  transition: border-color 0.2s;
+  background-color: #f9fafb;
 }
 
 .input:focus,
 .textarea:focus {
   outline: none;
-  border-color: var(--color-info);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  border-color: var(--color-primary);
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.submitButton {
-  display: inline-flex;
-  justify-content: center;
-  padding: 0.5rem 1rem;
-  border: 1px solid transparent;
-  box-shadow: var(--shadow-sm);
-  font-size: 0.875rem;
-  font-weight: 500;
-  border-radius: 0.375rem;
-  color: #ffffff;
-  background-color: var(--color-info);
-  cursor: pointer;
-}
+/* Mobile Optimizations */
+@media (max-width: 640px) {
+  /* Mobile Header Polish */
+  .headerContent {
+    padding: 0.75rem 1rem; /* Slightly reduced top/bottom padding for sleekness */
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem; /* Ensure minimal gap between Title and UserInfo */
+  }
 
-.submitButton:hover {
-  background-color: #2563eb;
-}
+  .title {
+    font-size: 1rem; /* Smaller title to prevent crowding */
+    flex-shrink: 0; /* Don't shrink the title */
+  }
 
-.submitButton:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  .userInfo {
+    gap: 0.5rem;
+    flex: 1; /* Allow user info to take remaining space */
+    justify-content: flex-end; /* Push to right */
+    min-width: 0; /* Enable flex child truncation */
+  }
+
+  .welcomeText {
+    display: block;
+    font-size: 0.8125rem; /* 13px */
+    max-width: 80px; /* Tighter truncation threshold */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #6b7280; /* Muted color for "Hi, name" */
+    text-align: right;
+  }
+
+  .logoutButton {
+    padding: 0.375rem 0.75rem; /* Slightly smaller button */
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .main {
+    padding: 1rem;
+    padding-bottom: 5rem; /* Space for bottom actions if needed */
+  }
+
+  .grid {
+    gap: 1rem;
+  }
+
+  .card {
+    padding: 1.25rem;
+    border-radius: 1.25rem; /* softer corners */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05),
+      0 4px 6px -2px rgba(0, 0, 0, 0.025);
+    border: none; /* Remove border for cleaner look */
+  }
+
+  .cardValue,
+  .cardValueGreen {
+    font-size: 1.75rem;
+  }
+
+  /* Make forms closer to native feel */
+  .input,
+  .textarea {
+    background-color: #f3f4f6;
+    border: none;
+    padding: 1rem;
+    border-radius: 1rem;
+  }
 }

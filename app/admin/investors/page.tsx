@@ -13,6 +13,7 @@ interface Investor {
   initialAmount: number;
   status: string;
   startDate: string;
+  pendingTopUp: number;
 }
 
 export default function AdminInvestorsPage() {
@@ -29,11 +30,19 @@ export default function AdminInvestorsPage() {
     initialAmount: 0,
     status: "active",
   });
+  // Top Up State
+  const [isTopUpModalOpen, setIsTopUpModalOpen] = useState(false);
+  const [topUpAmount, setTopUpAmount] = useState("");
+  const [topUpLoading, setTopUpLoading] = useState(false);
+
+  const [globalProfitRate, setGlobalProfitRate] = useState<number | "">("");
+  const [updatingSettings, setUpdatingSettings] = useState(false);
 
   const router = useRouter();
 
   useEffect(() => {
     fetchInvestors();
+    fetchGlobalSettings();
   }, []);
 
   const fetchInvestors = async () => {
@@ -46,6 +55,50 @@ export default function AdminInvestorsPage() {
       console.error(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchGlobalSettings = async () => {
+    try {
+      const res = await fetch("/api/admin/settings/investment");
+      if (res.ok) {
+        const data = await res.json();
+        setGlobalProfitRate(data.investmentProfitRate);
+      }
+    } catch (error) {
+      console.error("Failed to fetch settings", error);
+    }
+  };
+
+  const updateGlobalProfitRate = async () => {
+    const rate = Number(globalProfitRate);
+    if (rate < 0 || isNaN(rate)) {
+      alert("Please enter a valid percentage (0 or higher).");
+      return;
+    }
+
+    if (
+      !confirm(
+        `Are you sure you want to set the global profit rate to ${rate}%? This will affect ALL active investments.`
+      )
+    ) {
+      return;
+    }
+
+    setUpdatingSettings(true);
+    try {
+      const res = await fetch("/api/admin/settings/investment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ profitRate: rate }),
+      });
+
+      if (!res.ok) throw new Error("Failed to update settings");
+      alert(`Global Profit Rate updated to ${rate}%`);
+    } catch (error: any) {
+      alert(error.message);
+    } finally {
+      setUpdatingSettings(false);
     }
   };
 
@@ -117,6 +170,57 @@ export default function AdminInvestorsPage() {
     });
   };
 
+  const openTopUpModal = (investor: Investor) => {
+    setEditingInvestor(investor);
+    setIsTopUpModalOpen(true);
+    setTopUpAmount("");
+  };
+
+  const handleTopUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingInvestor) return;
+
+    const amount = parseFloat(topUpAmount);
+    if (!amount || amount <= 0) {
+      alert("Please enter a valid amount");
+      return;
+    }
+
+    if (
+      !confirm(
+        `Are you sure you want to add ₦${amount.toLocaleString()} to ${
+          editingInvestor.name
+        }'s capital?`
+      )
+    ) {
+      return;
+    }
+
+    setTopUpLoading(true);
+    try {
+      const res = await fetch(
+        `/api/admin/investors/${editingInvestor._id}/top-up`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount }),
+        }
+      );
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Top-up failed");
+
+      alert("Top-up successful!");
+      setIsTopUpModalOpen(false);
+      setEditingInvestor(null);
+      fetchInvestors(); // Refresh list to see new capital
+    } catch (error: any) {
+      alert(error.message);
+    } finally {
+      setTopUpLoading(false);
+    }
+  };
+
   const generateCredentials = () => {
     const randomPin = Math.floor(100000 + Math.random() * 900000).toString();
     const randomPass = Math.random().toString(36).slice(-8);
@@ -152,6 +256,90 @@ export default function AdminInvestorsPage() {
         </button>
       </div>
 
+      {/* Global Settings Card */}
+      <div
+        style={{
+          background: "white",
+          padding: "1.5rem",
+          borderRadius: "12px",
+          marginBottom: "2rem",
+          boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
+        }}
+      >
+        <h3
+          style={{ margin: "0 0 1rem 0", fontSize: "1.1rem", color: "#1f2937" }}
+        >
+          Global Investment Settings
+        </h3>
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <label
+              style={{
+                fontSize: "0.875rem",
+                color: "#6b7280",
+                marginBottom: "0.25rem",
+              }}
+            >
+              Monthly Profit Percentage (%)
+            </label>
+            <div
+              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+            >
+              <input
+                type="number"
+                value={globalProfitRate}
+                onChange={(e) =>
+                  setGlobalProfitRate(
+                    e.target.value === "" ? "" : Number(e.target.value)
+                  )
+                }
+                style={{
+                  padding: "0.5rem",
+                  border: "1px solid #d1d5db",
+                  borderRadius: "0.375rem",
+                  width: "100px",
+                }}
+              />
+              <button
+                onClick={updateGlobalProfitRate}
+                disabled={updatingSettings}
+                style={{
+                  background: "#3b82f6",
+                  color: "white",
+                  border: "none",
+                  padding: "0.5rem 1rem",
+                  borderRadius: "0.375rem",
+                  cursor: updatingSettings ? "not-allowed" : "pointer",
+                  opacity: updatingSettings ? 0.7 : 1,
+                }}
+              >
+                {updatingSettings ? "Updating..." : "Update Rate"}
+              </button>
+            </div>
+          </div>
+          <p
+            style={{
+              fontSize: "0.875rem",
+              color: "#6b7280",
+              maxWidth: "400px",
+              lineHeight: "1.4",
+            }}
+          >
+            This controls the monthly ROI for{" "}
+            <strong>ALL active investors</strong>. Currently, an investment of
+            ₦10,000 will yield{" "}
+            <strong>
+              ₦
+              {(
+                (10000 * (Number(globalProfitRate) || 0)) /
+                100
+              ).toLocaleString()}
+            </strong>{" "}
+            profit.
+          </p>
+        </div>
+      </div>
+
       {loading ? (
         <div
           style={{ display: "flex", justifyContent: "center", padding: "2rem" }}
@@ -159,61 +347,80 @@ export default function AdminInvestorsPage() {
           <YuvaraLoader text="Loading Investors..." />
         </div>
       ) : (
-        <div className={styles.tableContainer}>
-          <table className={styles.table}>
-            <thead className={styles.thead}>
-              <tr>
-                <th className={styles.th}>Name / Email</th>
-                <th className={styles.th}>Access Pin</th>
-                <th className={styles.th}>Initial Amount</th>
-                <th className={styles.th}>Status</th>
-                <th className={styles.th}>Start Date</th>
-                <th className={`${styles.th} text-right`}>Actions</th>
-              </tr>
-            </thead>
-            <tbody className={styles.tbody}>
-              {investors.map((investor) => (
-                <tr key={investor._id} className={styles.tr}>
-                  <td className={styles.td}>
-                    <div className={styles.investorName}>{investor.name}</div>
-                    <div className={styles.investorEmail}>{investor.email}</div>
-                  </td>
-                  <td className={`${styles.td} text-sm text-gray-500`}>
-                    {investor.accessPin}
-                  </td>
-                  <td className={`${styles.td} text-sm text-gray-900`}>
+        <div className={styles.grid}>
+          {investors.map((investor) => (
+            <div key={investor._id} className={styles.card}>
+              <div className={styles.cardHeader}>
+                <div>
+                  <div className={styles.investorName}>{investor.name}</div>
+                  <div className={styles.investorEmail}>{investor.email}</div>
+                </div>
+                <span
+                  className={`${styles.statusBadge} ${getStatusClass(
+                    investor.status
+                  )}`}
+                >
+                  {investor.status.replace("_", " ")}
+                </span>
+              </div>
+
+              <div className={styles.cardBody}>
+                <div className={styles.row}>
+                  <span className={styles.label}>Access Pin</span>
+                  <span className={styles.value}>{investor.accessPin}</span>
+                </div>
+                <div className={styles.row}>
+                  <span className={styles.label}>Initial Amount</span>
+                  <span className={styles.value}>
                     ₦{investor.initialAmount.toLocaleString()}
-                  </td>
-                  <td className={styles.td}>
-                    <span
-                      className={`${styles.statusBadge} ${getStatusClass(
-                        investor.status
-                      )}`}
-                    >
-                      {investor.status.replace("_", " ")}
-                    </span>
-                  </td>
-                  <td className={`${styles.td} text-sm text-gray-500`}>
+                  </span>
+                </div>
+                <div className={styles.row}>
+                  <span className={styles.label}>Start Date</span>
+                  <span className={styles.value}>
                     {new Date(investor.startDate).toLocaleDateString()}
-                  </td>
-                  <td className={`${styles.td} text-right`}>
-                    <button
-                      onClick={() => openEditModal(investor)}
-                      className={styles.actionButton}
+                  </span>
+                </div>
+                {investor.pendingTopUp > 0 && (
+                  <div className={styles.row}>
+                    <span
+                      className={styles.label}
+                      style={{ color: "#3b82f6", fontWeight: "600" }}
                     >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(investor._id)}
-                      className={styles.deleteButton}
+                      Pending Cycle
+                    </span>
+                    <span
+                      className={styles.value}
+                      style={{ color: "#2563eb", fontWeight: "700" }}
                     >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                      ₦{investor.pendingTopUp.toLocaleString()}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className={styles.cardFooter}>
+                <button
+                  onClick={() => openTopUpModal(investor)}
+                  className={`${styles.actionButton} ${styles.topUpButton}`}
+                >
+                  Top Up
+                </button>
+                <button
+                  onClick={() => openEditModal(investor)}
+                  className={styles.actionButton}
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(investor._id)}
+                  className={styles.deleteButton}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
@@ -339,6 +546,59 @@ export default function AdminInvestorsPage() {
                   style={{ opacity: saving ? 0.7 : 1 }}
                 >
                   {saving ? "Saving..." : "Save"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* Top Up Modal */}
+      {isTopUpModalOpen && editingInvestor && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent} style={{ maxWidth: "400px" }}>
+            <h2 className={styles.modalTitle}>Top Up Investment</h2>
+            <p className="mb-4 text-sm text-gray-600">
+              Add funds to <strong>{editingInvestor.name}</strong>. This will
+              increase their active capital and daily profit immediately.
+            </p>
+            <form onSubmit={handleTopUp}>
+              <div className={styles.formGroup}>
+                <label className={styles.label}>Amount to Add (₦)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={topUpAmount}
+                  onChange={(e) => setTopUpAmount(e.target.value)}
+                  className={styles.input}
+                  required
+                  min="1"
+                  placeholder="e.g. 50000"
+                  autoFocus
+                />
+              </div>
+
+              <div className={styles.modalActions}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsTopUpModalOpen(false);
+                    setEditingInvestor(null);
+                  }}
+                  className={styles.cancelButton}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className={styles.saveButton}
+                  style={{
+                    backgroundColor: "#10B981",
+                    color: "white",
+                    opacity: topUpLoading ? 0.7 : 1,
+                  }}
+                  disabled={topUpLoading}
+                >
+                  {topUpLoading ? "Adding..." : "Confirm Top Up"}
                 </button>
               </div>
             </form>

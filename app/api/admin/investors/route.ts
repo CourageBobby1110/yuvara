@@ -65,7 +65,13 @@ export async function POST(req: Request) {
     });
 
     // Send Welcome Email
-    await sendInvestmentWelcomeEmail(email, name, accessPin, initialAmount);
+    await sendInvestmentWelcomeEmail(
+      email,
+      name,
+      accessPin,
+      initialAmount,
+      password
+    );
 
     return NextResponse.json(newInvestor, { status: 201 });
   } catch (error) {
