@@ -35,8 +35,15 @@ export function getValidUrl(url: string | any): string {
         return getValidUrl(parsed[0]);
       }
     } catch (e) {
-      // Failed to parse, treat as invalid if it looks like an array structure
-      return "";
+      // If JSON parse fails, fall through to regex check below
+    }
+  }
+
+  // Handle malformed array-like strings or messy CSV data e.g. '["https://...'
+  if (cleanUrl.startsWith('["') || cleanUrl.startsWith("['")) {
+    const match = cleanUrl.match(/(https?:\/\/[^"']+)/);
+    if (match) {
+      return getValidUrl(match[1]);
     }
   }
 

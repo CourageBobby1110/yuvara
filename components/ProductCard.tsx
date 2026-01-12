@@ -8,7 +8,7 @@ import { useCurrency } from "@/context/CurrencyContext";
 import WishlistButton from "./WishlistButton";
 import { Share2, Star, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
-import { getProductMainImage } from "@/lib/utils";
+import { getProductMainImage, getValidUrl } from "@/lib/utils";
 
 import styles from "./ProductCard.module.css";
 
@@ -17,9 +17,32 @@ interface ProductCardProps {
   onQuickAdd?: (product: Product) => void;
 }
 
-export default function ProductCard({ product, onQuickAdd }: ProductCardProps) {
+export default function ProductCard({
+  product,
+  onQuickAdd,
+  index = 0,
+}: ProductCardProps & { index?: number }) {
   const { data: session } = useSession();
   const { formatPrice } = useCurrency();
+
+  // Generate a predictable aspect ratio based on index for the masonry/staggered feel
+  // We alternate between tall (3/4 - standard), taller (2/3), and slightly shorter (4/5)
+  // This creates the "up and down" look
+  const getAspectRatioStyle = (idx: number) => {
+    const ratios = ["3/4", "2/3", "4/5", "3/4", "3/4", "9/16"];
+    return { aspectRatio: ratios[idx % ratios.length] };
+  };
+
+  // Get second image for hover effect
+  const mainImage = getProductMainImage(product);
+
+  let hoverImage = mainImage;
+  if (product.images && product.images.length > 1) {
+    const secondImg = getValidUrl(product.images[1]);
+    if (secondImg) {
+      hoverImage = secondImg;
+    }
+  }
 
   const handleShare = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -63,14 +86,29 @@ export default function ProductCard({ product, onQuickAdd }: ProductCardProps) {
   return (
     <div className={styles.card}>
       {/* Image Container */}
-      <Link href={`/products/${product.slug}`} className={styles.imageLink}>
+      <Link
+        href={`/products/${product.slug}`}
+        className={styles.imageLink}
+        style={getAspectRatioStyle(index)}
+      >
         <Image
-          src={getProductMainImage(product)}
+          src={mainImage}
           alt={product.name || "Product"}
           fill
           className={styles.productImage}
           sizes="(max-width: 640px) 50vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
         />
+
+        {/* Hover Image */}
+        {hoverImage !== mainImage && (
+          <Image
+            src={hoverImage}
+            alt={product.name || "Product Hover"}
+            fill
+            className={`${styles.productImage} ${styles.productImageHover}`}
+            sizes="(max-width: 640px) 50vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+          />
+        )}
 
         {/* Overlay Gradient */}
         <div className={styles.overlay} />
