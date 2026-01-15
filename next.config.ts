@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   images: {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    qualities: [75, 90], // Allow custom quality 90
     remotePatterns: [
       {
         protocol: "https",
