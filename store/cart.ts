@@ -52,7 +52,6 @@ interface CartStore {
   closeCart: () => void;
   totalItems: () => number;
   totalPrice: () => number;
-  freeShippingThreshold: number;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -60,7 +59,6 @@ export const useCartStore = create<CartStore>()(
     (set, get) => ({
       items: [],
       isOpen: false,
-      freeShippingThreshold: 500, // Free shipping for orders over $500
 
       addItem: (item) => {
         const currentItems = get().items;

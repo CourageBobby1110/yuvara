@@ -20,7 +20,7 @@ const COUNTRIES = [
 export default function CheckoutPage() {
   const router = useRouter();
   const { data: session, status, update } = useSession();
-  const { items, totalPrice, freeShippingThreshold } = useCartStore();
+  const { items, totalPrice } = useCartStore();
   const { formatPrice, exchangeRates } = useCurrency();
   const [loading, setLoading] = useState(false);
 
@@ -282,8 +282,8 @@ export default function CheckoutPage() {
   const calculateTotal = () => {
     const subtotal = totalPrice();
     const rateNGN = exchangeRates["NGN"] || 1500;
-    const isFreeShipping = subtotal >= freeShippingThreshold;
-    const shippingInUSD = isFreeShipping ? 0 : selectedStateFee / rateNGN;
+    const isFreeShipping = false;
+    const shippingInUSD = selectedStateFee / rateNGN;
 
     let total = subtotal + shippingInUSD;
 
@@ -326,10 +326,7 @@ export default function CheckoutPage() {
       // Final calculation in NGN
       let amountInNGN = totalUSD * rateNGN;
 
-      const isFreeShipping = totalUSD >= freeShippingThreshold;
-      if (!isFreeShipping) {
-        amountInNGN += selectedStateFee;
-      }
+      amountInNGN += selectedStateFee;
 
       if (appliedCoupon) {
         amountInNGN -= appliedCoupon.discountAmount;
@@ -346,7 +343,7 @@ export default function CheckoutPage() {
         cartItems: items,
         shippingAddress: formData,
         total: amountInNGN, // Store final NGN total to pay
-        shippingFee: isFreeShipping ? 0 : selectedStateFee,
+        shippingFee: selectedStateFee,
         couponCode: appliedCoupon?.code,
         discountAmount: appliedCoupon?.discountAmount,
         giftCardCode: appliedGiftCard?.code,
@@ -445,8 +442,8 @@ export default function CheckoutPage() {
   }
 
   const rateNGN = exchangeRates["NGN"] || 1500;
-  const isFreeShipping = totalPrice() >= freeShippingThreshold;
-  const shippingInUSD = isFreeShipping ? 0 : selectedStateFee / rateNGN;
+  // const isFreeShipping = totalPrice() >= freeShippingThreshold;
+  const shippingInUSD = selectedStateFee / rateNGN;
   const discountInUSD = appliedCoupon
     ? appliedCoupon.discountAmount / rateNGN
     : 0;
@@ -596,9 +593,7 @@ export default function CheckoutPage() {
                   </span>
                   <span>
                     {selectedStateFee > 0
-                      ? isFreeShipping
-                        ? "Free"
-                        : formatPrice(shippingInUSD)
+                      ? formatPrice(shippingInUSD)
                       : "Calculated at next step"}
                   </span>
                 </div>

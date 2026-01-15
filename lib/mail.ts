@@ -1,13 +1,42 @@
 import nodemailer from "nodemailer";
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_SERVER_HOST,
-  port: Number(process.env.EMAIL_SERVER_PORT),
-  auth: {
-    user: process.env.EMAIL_SERVER_USER,
-    pass: process.env.EMAIL_SERVER_PASSWORD,
-  },
-});
+// Helper to send mail with retry logic across ports
+async function sendMailWithRetry(mailOptions: any) {
+  const ports = [587, 465, 25, 2525];
+
+  for (const port of ports) {
+    try {
+      console.log(`Attempting to send email via port ${port}...`);
+      const transporter = nodemailer.createTransport({
+        host: process.env.EMAIL_SERVER_HOST,
+        port: port,
+        secure: port === 465, // Use secure for port 465
+        auth: {
+          user: process.env.EMAIL_SERVER_USER,
+          pass: process.env.EMAIL_SERVER_PASSWORD,
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
+      });
+
+      // Verify connection configuration
+      await transporter.verify();
+
+      // Attempt to send
+      await transporter.sendMail(mailOptions);
+      console.log(`Email successfully sent via port ${port}`);
+      return; // Success, exit function
+    } catch (error: any) {
+      console.warn(`Failed to send email via port ${port}:`, error.message);
+      // Continue to next port
+    }
+  }
+
+  throw new Error(
+    `Failed to send email after trying ports: ${ports.join(", ")}`
+  );
+}
 
 export async function sendMail({
   to,
@@ -27,7 +56,7 @@ export async function sendMail({
     html,
     text,
   };
-  await transporter.sendMail(mailOptions);
+  await sendMailWithRetry(mailOptions);
 }
 
 export async function sendAdminNewOrderNotification(order: any) {
@@ -73,7 +102,7 @@ export async function sendAdminNewOrderNotification(order: any) {
     `,
   };
 
-  await transporter.sendMail(mailOptions);
+  await sendMailWithRetry(mailOptions);
 }
 
 export async function sendNewProductNotification(product: any, users: any[]) {
@@ -120,7 +149,7 @@ export async function sendNewProductNotification(product: any, users: any[]) {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sendMailWithRetry(mailOptions);
     console.log(
       `Newsletter sent to ${users.length} users for product ${product.name}`
     );
@@ -176,7 +205,7 @@ export async function sendTargetedProductNotification(
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sendMailWithRetry(mailOptions);
     console.log(
       `Marketing email sent to ${users.length} users for product ${product.name}`
     );
@@ -197,7 +226,7 @@ export const sendNewsletter = async (
   // For bulk, many services recommend sending in batches. Here we'll loop for simplicity but in prod use a queue.
 
   const sendPromises = recipients.map((recipient) =>
-    transporter.sendMail({
+    sendMailWithRetry({
       from: `Yuvara <${process.env.EMAIL_FROM}>`,
       to: recipient,
       subject: subject,
@@ -288,7 +317,7 @@ export async function sendCustomerOrderConfirmation(order: any) {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sendMailWithRetry(mailOptions);
     console.log(`Order confirmation sent to ${mailOptions.to}`);
   } catch (error) {
     console.error("Failed to send order confirmation", error);
@@ -348,7 +377,7 @@ export async function sendOrderStatusUpdate(order: any) {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sendMailWithRetry(mailOptions);
     console.log(`Order status update sent to ${mailOptions.to}`);
   } catch (error) {
     console.error("Failed to send order status update", error);
@@ -414,7 +443,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sendMailWithRetry(mailOptions);
     console.log(`Password reset email sent to ${email}`);
   } catch (error) {
     console.error("Failed to send password reset email", error);
@@ -473,7 +502,7 @@ export async function sendContactFormNotification(
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sendMailWithRetry(mailOptions);
     console.log(
       `Contact form notification sent to admin for message ${messageId}`
     );
@@ -537,7 +566,7 @@ export async function sendGiftCardEmail(giftCard: any) {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sendMailWithRetry(mailOptions);
     console.log(`Gift card email sent to ${recipientEmail}`);
   } catch (error) {
     console.error("Failed to send gift card email", error);
@@ -602,7 +631,7 @@ export async function sendVerificationEmail(email: string, token: string) {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sendMailWithRetry(mailOptions);
     console.log(`Verification email sent to ${email}`);
   } catch (error) {
     console.error("Failed to send verification email", error);
@@ -667,7 +696,7 @@ export async function sendInvestmentWelcomeEmail(
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sendMailWithRetry(mailOptions);
     console.log(`Investment welcome email sent to ${email}`);
   } catch (error) {
     console.error("Failed to send investment welcome email", error);
@@ -731,8 +760,8 @@ export async function sendWithdrawalRequestEmail(
   };
 
   try {
-    await transporter.sendMail(adminMailOptions);
-    await transporter.sendMail(userMailOptions);
+    await sendMailWithRetry(adminMailOptions);
+    await sendMailWithRetry(userMailOptions);
     console.log(`Withdrawal emails sent for ${investorName}`);
   } catch (error) {
     console.error("Failed to send withdrawal emails", error);
@@ -766,7 +795,7 @@ export async function sendIssueReportEmail(
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sendMailWithRetry(mailOptions);
     console.log(`Issue report email sent from ${investorName}`);
   } catch (error) {
     console.error("Failed to send issue report email", error);
