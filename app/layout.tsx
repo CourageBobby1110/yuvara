@@ -22,42 +22,58 @@ export const metadata: Metadata = {
     process.env.NEXTAUTH_URL || process.env.URL || "https://yuvara.netlify.app"
   ),
   title: {
-    default: "Yuvara - Global Online Shopping",
+    default: "Yuvara | Premium Global Online Shopping",
     template: "%s | Yuvara",
   },
   description:
-    "Shop the latest trends in fashion, electronics, and more at Yuvara. Global shipping, premium quality, and unbeatable prices.",
+    "Discover Yuvara's exclusive collection of fashion, electronics, and lifestyle products. Experience premium quality, global shipping, and exceptional service.",
   keywords: [
     "Yuvara",
-    "Online Shopping",
+    "Premium Shopping",
     "Fashion",
     "Electronics",
     "Global Shipping",
-    "Deals",
+    "Luxury",
+    "Online Store",
   ],
-  authors: [{ name: "Yuvara" }],
+  authors: [{ name: "Yuvara Team" }],
   creator: "Yuvara",
   publisher: "Yuvara",
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "/",
-    title: "Yuvara - Global Online Shopping",
+    title: "Yuvara | Premium Global Online Shopping",
     description:
-      "Shop the latest trends in fashion, electronics, and more at Yuvara.",
+      "Discover Yuvara's exclusive collection of fashion, electronics, and lifestyle products. Experience premium quality and global shipping.",
     siteName: "Yuvara",
+    images: [
+      {
+        url: "/logo.png",
+        width: 800,
+        height: 800,
+        alt: "Yuvara Logo",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Yuvara - Global Online Shopping",
+    title: "Yuvara | Premium Global Online Shopping",
     description:
-      "Shop the latest trends in fashion, electronics, and more at Yuvara.",
+      "Discover Yuvara's exclusive collection of fashion, electronics, and lifestyle products.",
+    images: ["/logo.png"],
     creator: "@yuvara",
   },
   icons: {
-    icon: "/favicon.svg",
-    apple: "/apple-touch-icon.svg",
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+    other: {
+      rel: "apple-touch-icon-precomposed",
+      url: "/logo.png",
+    },
   },
+  manifest: "/site.webmanifest",
 };
 
 import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
