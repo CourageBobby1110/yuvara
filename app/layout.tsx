@@ -65,8 +65,8 @@ export const metadata: Metadata = {
     creator: "@yuvara",
   },
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
+    icon: "/icon.png",
+    shortcut: "/icon.png",
     apple: "/logo.png",
     other: {
       rel: "apple-touch-icon-precomposed",
