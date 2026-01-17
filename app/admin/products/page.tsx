@@ -44,6 +44,10 @@ export default function AdminProductsPage() {
       const sanitizedData = Array.isArray(data)
         ? data.map((p: any) => ({
             ...p,
+            category:
+              p.category && p.category.includes(">")
+                ? p.category.split(">").pop()?.trim() || p.category
+                : p.category,
             images: Array.isArray(p.images)
               ? p.images
                   .map((img: any) => {
