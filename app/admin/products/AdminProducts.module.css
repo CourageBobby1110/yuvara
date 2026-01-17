@@ -165,17 +165,20 @@
 }
 
 /* Upper Section: Image & Details */
+/* Upper Section: Image & Details */
 .cardMain {
   display: flex;
+  flex-direction: column;
   gap: 1rem;
   padding: 1rem;
 }
 
 .productCardImageWrapper {
   position: relative;
-  width: 88px;
-  height: 88px;
-  border-radius: 16px; /* Slightly softer internal radius */
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16/9;
+  border-radius: 12px;
   overflow: hidden;
   flex-shrink: 0;
   background-color: var(--color-bg-secondary);
@@ -221,6 +224,7 @@
   align-items: center;
   gap: 0.75rem;
   margin-top: 0.75rem;
+  width: 100%;
 }
 
 .productCardPrice {
@@ -228,6 +232,10 @@
   font-size: 1.15rem;
   color: var(--color-primary);
   letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .productCardStock {
