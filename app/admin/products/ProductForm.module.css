@@ -4,18 +4,19 @@
   margin: 0 auto;
 }
 
-.header {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2rem;
+/* Base mobile header styles are in .mobileHeader below */
+
+/* Desktop Header Container - Hidden on Mobile */
+.desktopHeaderContainer {
+  display: none;
 }
 
-@media (min-width: 1024px) {
-  .header {
-    flex-direction: row;
+@media (min-width: 768px) {
+  .desktopHeaderContainer {
+    display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 2rem;
   }
 }
 
@@ -28,14 +29,24 @@
 }
 
 .form {
-  background-color: var(--color-bg-primary);
-  border-radius: 20px;
-  border: 1px solid var(--color-border-light);
-  padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
+  /* Layout only - visual styles moved to .card */
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  width: 100%;
+}
+
+.card {
+  background-color: var(--color-bg-primary);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-light);
+  transition: box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
 }
 
 /* Edit Page Specifics */
@@ -329,7 +340,7 @@
   opacity: 0.9;
 }
 
-.submitButton {
+.saveProductButton {
   background-color: var(--color-luxury-gold);
   color: #fff;
   padding: 1rem 2rem;
@@ -345,13 +356,99 @@
     box-shadow 0.2s;
 }
 
-.submitButton:hover {
+.saveProductButton:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-gold);
 }
 
-.submitButton:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
+/* Mobile App-Like Design Overrides */
+@media (max-width: 768px) {
+  .container {
+    padding-bottom: 5rem; /* Space for potentially fixed bottom elements */
+  }
+
+  /* Hide default desktop header title/actions if needed via component logic, 
+     but here we style the mobile header container */
+  .mobileHeader {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--color-border-light);
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: -1.5rem -1.5rem 1.5rem -1.5rem; /* Negative margin to stretch full width in container if needed */
+  }
+
+  .mobileTitle {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .mobileActions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .mobileCancelBtn {
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 0.5rem;
+  }
+
+  .mobileSaveBtn {
+    background: none;
+    border: none;
+    color: var(--color-luxury-gold);
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 0.5rem;
+  }
+
+  .form {
+    padding: 1rem;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    gap: 1rem;
+  }
+
+  /* Make inputs taller for touch */
+  .input,
+  .select,
+  .textarea {
+    padding: 0.875rem 1rem;
+    font-size: 1rem; /* Prevent iOS zoom */
+  }
+
+  .label {
+    font-size: 0.9rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .variantsSection {
+    padding: 0;
+    background: transparent;
+    margin-top: 0;
+  }
+
+  .variantCard {
+    margin-bottom: 1.5rem;
+  }
+
+  /* Full width grids on mobile */
+  .grid2,
+  .grid3 {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
 }

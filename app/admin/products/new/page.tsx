@@ -144,119 +144,262 @@ export default function NewProductPage() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Add New Product</h1>
+      {/* Mobile Sticky Header */}
+      <div className={`${styles.mobileHeader} md:hidden`}>
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className={styles.mobileCancelBtn}
+        >
+          Cancel
+        </button>
+        <h1 className={styles.mobileTitle}>New Product</h1>
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={loading}
+          className={styles.mobileSaveBtn}
+        >
+          Save
+        </button>
+      </div>
 
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <div className={styles.grid2}>
-          <div>
-            <label className={styles.label}>Product Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className={styles.input}
-            />
+      {/* Desktop Header (Hidden on Mobile via CSS) */}
+      <div className={styles.desktopHeaderContainer}>
+        <h1 className={styles.title} style={{ marginBottom: 0 }}>
+          Add New Product
+        </h1>
+        <button
+          type="submit"
+          form="product-form"
+          disabled={loading}
+          className={styles.saveProductButton}
+          style={{ width: "auto", marginTop: 0, padding: "0.75rem 2rem" }}
+        >
+          {loading ? "Creating..." : "Save Product"}
+        </button>
+      </div>
+
+      <form id="product-form" onSubmit={handleSubmit} className={styles.form}>
+        {/* Basic Info Card */}
+        <div className={styles.card}>
+          <div className={styles.grid2}>
+            <div>
+              <label className={styles.label}>Product Name</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className={styles.input}
+              />
+            </div>
+            <div>
+              <label className={styles.label}>Slug</label>
+              <input
+                type="text"
+                name="slug"
+                value={formData.slug}
+                onChange={handleChange}
+                required
+                className={`${styles.input} ${styles.inputSlug}`}
+              />
+            </div>
           </div>
-          <div>
-            <label className={styles.label}>Slug</label>
-            <input
-              type="text"
-              name="slug"
-              value={formData.slug}
+
+          <div style={{ marginTop: "1rem" }}>
+            <label className={styles.label}>Description</label>
+            <textarea
+              name="description"
+              value={formData.description}
               onChange={handleChange}
               required
-              className={`${styles.input} ${styles.inputSlug}`}
+              rows={5}
+              className={styles.textarea}
             />
           </div>
         </div>
 
-        <div>
-          <label className={styles.label}>Description</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            required
-            rows={5}
-            className={styles.textarea}
-          />
-        </div>
+        {/* Pricing & Stock Card */}
+        <div className={styles.card}>
+          <div className={styles.grid3}>
+            <div>
+              <label className={styles.label}>Price ($)</label>
+              <div
+                style={{ display: "flex", gap: "8px", alignItems: "center" }}
+              >
+                <input
+                  type="number"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleChange}
+                  required
+                  min="0"
+                  step="0.01"
+                  className={styles.input}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const currentPrice = parseFloat(formData.price) || 0;
+                    const newPrice = (currentPrice + 3).toFixed(2);
+                    setFormData((prev) => ({ ...prev, price: newPrice }));
 
-        <div className={styles.grid3}>
-          <div>
-            <label className={styles.label}>Price ($)</label>
-            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                    // Update all variants
+                    const newVariants = variants.map((v) => ({
+                      ...v,
+                      price: (parseFloat(v.price || "0") + 3).toFixed(2),
+                    }));
+                    setVariants(newVariants);
+                  }}
+                  className={styles.addVariantButton}
+                  style={{
+                    whiteSpace: "nowrap",
+                    padding: "0.75rem",
+                    fontSize: "0.8rem",
+                  }}
+                >
+                  +$3 Markup
+                </button>
+              </div>
+              {renderCurrencyPreviews(formData.price)}
+            </div>
+            <div>
+              <label className={styles.label}>Stock</label>
               <input
                 type="number"
-                name="price"
-                value={formData.price}
+                name="stock"
+                value={formData.stock}
                 onChange={handleChange}
                 required
                 min="0"
-                step="0.01"
                 className={styles.input}
               />
-              <button
-                type="button"
-                onClick={() => {
-                  const currentPrice = parseFloat(formData.price) || 0;
-                  const newPrice = (currentPrice + 3).toFixed(2);
-                  setFormData((prev) => ({ ...prev, price: newPrice }));
-
-                  // Update all variants
-                  const newVariants = variants.map((v) => ({
-                    ...v,
-                    price: (parseFloat(v.price || "0") + 3).toFixed(2),
-                  }));
-                  setVariants(newVariants);
-                }}
-                className={styles.addVariantButton}
-                style={{
-                  whiteSpace: "nowrap",
-                  padding: "0.75rem",
-                  fontSize: "0.8rem",
-                }}
-              >
-                +$3 Markup
-              </button>
             </div>
-            {renderCurrencyPreviews(formData.price)}
-          </div>
-          <div>
-            <label className={styles.label}>Stock</label>
-            <input
-              type="number"
-              name="stock"
-              value={formData.stock}
-              onChange={handleChange}
-              required
-              min="0"
-              className={styles.input}
-            />
-          </div>
-          <div>
-            <label className={styles.label}>Category</label>
-            <input
-              type="text"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              required
-              list="category-list"
-              className={styles.input}
-              placeholder="Select or type a category"
-            />
-            <datalist id="category-list">
-              {PRODUCT_CATEGORIES.map((cat) => (
-                <option key={cat} value={cat} />
-              ))}
-            </datalist>
+            <div>
+              <label className={styles.label}>Category</label>
+              <input
+                type="text"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                required
+                list="category-list"
+                className={styles.input}
+                placeholder="Select or type a category"
+              />
+              <datalist id="category-list">
+                {PRODUCT_CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat} />
+                ))}
+              </datalist>
+            </div>
           </div>
         </div>
 
-        <div className={styles.variantsSection}>
+        {/* Media Card */}
+        <div className={styles.card}>
+          <div>
+            <label className={styles.label}>Images</label>
+            <div className={styles.uploadContainer}>
+              <UploadDropzone
+                endpoint="imageUploader"
+                onClientUploadComplete={(res) => {
+                  if (res) {
+                    setImages((prev) => [
+                      ...prev,
+                      ...res.map((file) => file.url),
+                    ]);
+                  }
+                }}
+                onUploadError={(error: Error) => {
+                  alert(`ERROR! ${error.message}`);
+                }}
+                appearance={{
+                  button: {
+                    background: "var(--color-primary)",
+                    color: "white",
+                  },
+                  allowedContent: { color: "var(--color-text-secondary)" },
+                }}
+              />
+            </div>
+
+            {images.length > 0 && (
+              <div className={styles.imagesGrid}>
+                {images.map((url, index) => (
+                  <div key={index} className={styles.imageWrapper}>
+                    <Image
+                      src={url}
+                      alt={`Product ${index + 1}`}
+                      fill
+                      className={styles.image}
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setImages(images.filter((_, i) => i !== index))
+                      }
+                      className={styles.removeImageButton}
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div style={{ marginTop: "2rem" }}>
+            <label className={styles.label}>Product Video</label>
+            <div className={styles.uploadContainer}>
+              <UploadDropzone
+                endpoint="videoUploader"
+                onClientUploadComplete={(res) => {
+                  if (res) {
+                    setVideos((prev) => [
+                      ...prev,
+                      ...res.map((file) => file.url),
+                    ]);
+                  }
+                }}
+                onUploadError={(error: Error) => {
+                  alert(`ERROR! ${error.message}`);
+                }}
+                appearance={{
+                  button: {
+                    background: "var(--color-primary)",
+                    color: "white",
+                  },
+                  allowedContent: { color: "var(--color-text-secondary)" },
+                }}
+              />
+            </div>
+
+            {videos.length > 0 && (
+              <div className={styles.imagesGrid}>
+                {videos.map((url, index) => (
+                  <div key={index} className={styles.imageWrapper}>
+                    <video src={url} controls className={styles.image} />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setVideos(videos.filter((_, i) => i !== index))
+                      }
+                      className={styles.removeImageButton}
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Shipping Rates Card */}
+        <div className={styles.card}>
           <div
             style={{
               display: "flex",
@@ -402,122 +545,34 @@ export default function NewProductPage() {
           ))}
         </div>
 
-        <div>
-          <label className={styles.label}>Product URL (Optional)</label>
-          <input
-            type="url"
-            name="productUrl"
-            value={formData.productUrl}
-            onChange={handleChange}
-            className={`${styles.input} ${styles.productsUrlInput}`}
-            placeholder="https://example.com/product"
-          />
-        </div>
-
-        <div className={styles.grid2}>
-          <div>
-            <label className={styles.label}>Sizes (comma separated)</label>
-            <input
-              type="text"
-              name="sizes"
-              placeholder="e.g. 7, 8, 9, 10"
-              onChange={handleChange}
-              className={styles.input}
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className={styles.label}>Images</label>
-          <div className={styles.uploadContainer}>
-            <UploadDropzone
-              endpoint="imageUploader"
-              onClientUploadComplete={(res) => {
-                if (res) {
-                  setImages((prev) => [
-                    ...prev,
-                    ...res.map((file) => file.url),
-                  ]);
-                }
-              }}
-              onUploadError={(error: Error) => {
-                alert(`ERROR! ${error.message}`);
-              }}
-              appearance={{
-                button: { background: "var(--color-primary)", color: "white" },
-                allowedContent: { color: "var(--color-text-secondary)" },
-              }}
-            />
-          </div>
-
-          {images.length > 0 && (
-            <div className={styles.imagesGrid}>
-              {images.map((url, index) => (
-                <div key={index} className={styles.imageWrapper}>
-                  <Image
-                    src={url}
-                    alt={`Product ${index + 1}`}
-                    fill
-                    className={styles.image}
-                  />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setImages(images.filter((_, i) => i !== index))
-                    }
-                    className={styles.removeImageButton}
-                  >
-                    X
-                  </button>
-                </div>
-              ))}
+        {/* Rest of the form (Optional fields, etc.) */}
+        <div className={styles.card}>
+          <div className={styles.grid2}>
+            <div>
+              <label className={styles.label}>Product URL (Optional)</label>
+              <input
+                type="url"
+                name="productUrl"
+                value={formData.productUrl}
+                onChange={handleChange}
+                className={`${styles.input} ${styles.productsUrlInput}`}
+                placeholder="https://example.com/product"
+              />
             </div>
-          )}
-        </div>
-
-        <div>
-          <label className={styles.label}>Product Video</label>
-          <div className={styles.uploadContainer}>
-            <UploadDropzone
-              endpoint="videoUploader"
-              onClientUploadComplete={(res) => {
-                if (res) {
-                  setVideos((prev) => [
-                    ...prev,
-                    ...res.map((file) => file.url),
-                  ]);
-                }
-              }}
-              onUploadError={(error: Error) => {
-                alert(`ERROR! ${error.message}`);
-              }}
-              appearance={{
-                button: { background: "var(--color-primary)", color: "white" },
-                allowedContent: { color: "var(--color-text-secondary)" },
-              }}
-            />
-          </div>
-
-          {videos.length > 0 && (
-            <div className={styles.imagesGrid}>
-              {videos.map((url, index) => (
-                <div key={index} className={styles.imageWrapper}>
-                  <video src={url} controls className={styles.image} />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setVideos(videos.filter((_, i) => i !== index))
-                    }
-                    className={styles.removeImageButton}
-                  >
-                    X
-                  </button>
-                </div>
-              ))}
+            <div>
+              <label className={styles.label}>Sizes (comma separated)</label>
+              <input
+                type="text"
+                name="sizes"
+                placeholder="e.g. 7, 8, 9, 10"
+                onChange={handleChange}
+                className={styles.input}
+              />
             </div>
-          )}
+          </div>
         </div>
 
+        {/* Variants Card */}
         <div className={styles.variantsSection}>
           <div
             style={{
@@ -699,7 +754,7 @@ export default function NewProductPage() {
         <button
           type="submit"
           disabled={loading}
-          className={styles.submitButton}
+          className={`${styles.saveProductButton} hidden md:block`}
         >
           {loading ? "Creating..." : "Create Product"}
         </button>

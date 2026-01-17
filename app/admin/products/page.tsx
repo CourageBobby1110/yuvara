@@ -220,7 +220,7 @@ export default function AdminProductsPage() {
         <h1 className={styles.title}>All Products</h1>
 
         <div className={styles.controlsWrapper}>
-          <div className={styles.searchContainer}>
+          <div className={styles.searchWrapper}>
             <Search className={styles.searchIcon} />
             <input
               type="text"
@@ -231,7 +231,7 @@ export default function AdminProductsPage() {
             />
           </div>
 
-          <div className={styles.actionsGroup}>
+          <div className={styles.actionsWrapper}>
             <div className={styles.toggleWrapper}>
               <span className={styles.toggleLabel}>10% Markup</span>
               <label className={styles.switch}>
@@ -257,13 +257,7 @@ export default function AdminProductsPage() {
             <select
               value={currency}
               onChange={(e) => setCurrency(e.target.value as any)}
-              className={styles.secondaryButton} // Reusing styling
-              style={{
-                padding: "0.625rem",
-                borderRadius: "9999px",
-                fontSize: "0.875rem",
-                fontWeight: 600,
-              }}
+              className={styles.currencySelect}
             >
               <option value="USD">USD ($)</option>
               <option value="NGN">NGN (₦)</option>
@@ -271,10 +265,7 @@ export default function AdminProductsPage() {
               <option value="GBP">GBP (£)</option>
             </select>
 
-            <Link
-              href="/admin/products/new"
-              className={`${styles.actionButton} ${styles.primaryButton}`}
-            >
+            <Link href="/admin/products/new" className={styles.addButton}>
               + Add Product
             </Link>
           </div>
@@ -285,50 +276,59 @@ export default function AdminProductsPage() {
       <div className={styles.mobileList}>
         {paginatedProducts.map((product) => (
           <div key={product._id} className={styles.productCard}>
-            <input
-              type="checkbox"
-              className={styles.cardCheckbox}
-              checked={selectedProducts.includes(product._id)}
-              onChange={() => handleSelectProduct(product._id)}
-            />
-            <div className={styles.cardImageWrapper}>
-              <Image
-                src={product.images[0] || "/placeholder.png"}
-                alt={product.name}
-                fill
-                className={styles.productImage}
-              />
-            </div>
-            <div className={styles.cardContent}>
-              <div>
-                <div className={styles.cardTitle}>{product.name}</div>
-                <div className={styles.cardCategory}>{product.category}</div>
+            {/* Top Section: Checkbox + Image + Details */}
+            <div className={styles.cardMain}>
+              <div style={{ display: "flex", alignItems: "flex-start" }}>
+                <input
+                  type="checkbox"
+                  className={styles.cardCheckbox}
+                  checked={selectedProducts.includes(product._id)}
+                  onChange={() => handleSelectProduct(product._id)}
+                />
               </div>
-              <div className={styles.cardFooter}>
-                <div className={styles.cardPrice}>
-                  {formatPrice(product.price)}
+
+              <div className={styles.productCardImageWrapper}>
+                <Image
+                  src={product.images[0] || "/placeholder.png"}
+                  alt={product.name}
+                  fill
+                  className={styles.productImage}
+                />
+              </div>
+
+              <div className={styles.productCardContent}>
+                <div>
+                  <div className={styles.productCardCategory}>
+                    {product.category}
+                  </div>
+                  <div className={styles.productCardName}>{product.name}</div>
+                  <div className={styles.productCardStock}>
+                    {product.stock} in stock
+                  </div>
                 </div>
-                <div className={styles.cardStock}>Stock: {product.stock}</div>
+
+                <div className={styles.productCardFooter}>
+                  <div className={styles.productCardPrice}>
+                    {formatPrice(product.price)}
+                  </div>
+                </div>
               </div>
-              <div className={styles.cardActions}>
-                <Link
-                  href={`/admin/products/${product._id}`}
-                  className={styles.cardActionBtn}
-                >
-                  Edit
-                </Link>
-                <button
-                  onClick={() => handleDelete(product._id)}
-                  className={styles.cardActionBtn}
-                  style={{
-                    color: "#ef4444",
-                    borderColor: "#fecaca",
-                    background: "#fee2e2",
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
+            </div>
+
+            {/* Bottom Section: Full-Width Actions */}
+            <div className={styles.productCardActions}>
+              <Link
+                href={`/admin/products/${product._id}`}
+                className={`${styles.actionButton} ${styles.editAction}`}
+              >
+                Edit
+              </Link>
+              <button
+                onClick={() => handleDelete(product._id)}
+                className={`${styles.actionButton} ${styles.deleteAction}`} // Added deleteAction class
+              >
+                Delete
+              </button>
             </div>
           </div>
         ))}

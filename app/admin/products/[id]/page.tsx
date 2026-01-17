@@ -359,7 +359,28 @@ export default function EditProductPage({
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
+      {/* Mobile Sticky Header */}
+      <div className={styles.mobileHeader}>
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className={styles.mobileCancelBtn}
+        >
+          Cancel
+        </button>
+        <h1 className={styles.mobileTitle}>Edit Product</h1>
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={submitting}
+          className={styles.mobileSaveBtn}
+        >
+          Save
+        </button>
+      </div>
+
+      {/* Desktop Header (Hidden on Mobile) */}
+      <div className={`${styles.header} hidden md:flex`}>
         <h1 className={styles.title}>Edit Product</h1>
         <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
           <button
@@ -431,129 +452,192 @@ export default function EditProductPage({
       </div>
 
       <form onSubmit={handleSubmit} className={styles.form}>
-        <div className={styles.grid2}>
-          <div>
-            <label className={styles.label}>Product Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className={styles.input}
-            />
+        {/* Mobile Actions Card (Sync Buttons) - Visible only on mobile if needed, or keep in regular flow but styled inside a card for better touch access */}
+        <div className={`${styles.card} block md:hidden`}>
+          <h4 className="font-semibold mb-3 text-sm text-gray-500 uppercase tracking-wider">
+            Quick Actions
+          </h4>
+          <div className="flex flex-col gap-3">
+            <button
+              type="button"
+              onClick={syncPrice}
+              disabled={syncingPrice}
+              className={`${styles.syncButton} w-full justify-center py-3`}
+            >
+              {syncingPrice ? "Syncing..." : "Sync Price From CJ"}
+            </button>
+            <button
+              type="button"
+              onClick={async () => {
+                if (
+                  !confirm(
+                    "This will fetch the latest stock levels from CJ for all variants.",
+                  )
+                )
+                  return;
+                setSyncingStock(true);
+                try {
+                  const res = await fetch(
+                    "/api/admin/dropshipping/sync-stock",
+                    {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ productId: id }),
+                    },
+                  );
+                  if (res.ok) {
+                    alert("Stock synced successfully!");
+                    fetchProduct(); // Reload data
+                  } else {
+                    const d = await res.json();
+                    alert(d.error || "Failed to sync stock");
+                  }
+                } catch (e) {
+                  alert("Error syncing stock");
+                } finally {
+                  setSyncingStock(false);
+                }
+              }}
+              className={`${styles.syncButton} w-full justify-center py-3`}
+              disabled={syncingStock}
+            >
+              {syncingStock ? "Syncing..." : "Sync Stock From CJ"}
+            </button>
           </div>
-          <div>
-            <label className={styles.label}>Base Price ($)</label>
-            <div className="flex gap-2">
+        </div>
+
+        {/* Basic Info Card */}
+        <div className={styles.card}>
+          <div className={styles.grid2}>
+            <div>
+              <label className={styles.label}>Product Name</label>
               <input
-                type="number"
-                name="price"
-                value={formData.price}
+                type="text"
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
                 required
+                className={styles.input}
+              />
+            </div>
+            <div>
+              <label className={styles.label}>Base Price ($)</label>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleChange}
+                  required
+                  min="0"
+                  step="0.01"
+                  className={styles.input}
+                />
+                {/* 10% Markup Toggle */}
+                <label
+                  className="flex items-center gap-2 cursor-pointer bg-gray-100 px-2 rounded border border-gray-300"
+                  style={{
+                    height: "42px",
+                    backgroundColor: "var(--color-bg-secondary)",
+                    borderColor: "var(--color-border-medium)",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={markupActive}
+                    onChange={(e) => {
+                      const isActive = e.target.checked;
+                      setMarkupActive(isActive);
+
+                      const multiplier = isActive ? 1.1 : 1 / 1.1;
+                      const newPrice = (
+                        parseFloat(formData.price || "0") * multiplier
+                      ).toFixed(2);
+
+                      setFormData((prev) => ({ ...prev, price: newPrice }));
+
+                      // Also apply to all variants
+                      const newVariants = variants.map((v) => ({
+                        ...v,
+                        price: (
+                          parseFloat(v.price || "0") * multiplier
+                        ).toFixed(2),
+                      }));
+                      setVariants(newVariants);
+                    }}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm font-medium whitespace-nowrap hidden sm:inline">
+                    +10%
+                  </span>
+                </label>
+              </div>
+              {formData.price && renderCurrencyPreviews(formData.price)}
+            </div>
+          </div>
+        </div>
+
+        {/* Stock & Category Card */}
+        <div className={styles.card}>
+          <div className={styles.grid2}>
+            <div>
+              <label className={styles.label}>Stock</label>
+              <input
+                type="number"
+                name="stock"
+                value={formData.stock}
+                onChange={handleChange}
+                required
+                min="0"
+                className={styles.input}
+              />
+            </div>
+            <div>
+              <label className={styles.label}>Category</label>
+              <input
+                type="text"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                required
+                list="category-list"
+                className={styles.input}
+                placeholder="Select or type a category"
+              />
+              <datalist id="category-list">
+                {PRODUCT_CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat} />
+                ))}
+              </datalist>
+            </div>
+            <div>
+              <label className={styles.label}>Shipping Fee ($)</label>
+              <input
+                type="number"
+                name="shippingFee"
+                value={formData.shippingFee}
+                onChange={handleChange}
                 min="0"
                 step="0.01"
                 className={styles.input}
               />
-              {/* 10% Markup Toggle */}
-              <label
-                className="flex items-center gap-2 cursor-pointer bg-gray-100 px-2 rounded border border-gray-300"
-                style={{
-                  height: "42px",
-                  backgroundColor: "var(--color-bg-secondary)",
-                  borderColor: "var(--color-border-medium)",
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={markupActive}
-                  onChange={(e) => {
-                    const isActive = e.target.checked;
-                    setMarkupActive(isActive);
-
-                    const multiplier = isActive ? 1.1 : 1 / 1.1;
-                    const newPrice = (
-                      parseFloat(formData.price || "0") * multiplier
-                    ).toFixed(2);
-
-                    setFormData((prev) => ({ ...prev, price: newPrice }));
-
-                    // Also apply to all variants
-                    const newVariants = variants.map((v) => ({
-                      ...v,
-                      price: (parseFloat(v.price || "0") * multiplier).toFixed(
-                        2,
-                      ),
-                    }));
-                    setVariants(newVariants);
-                  }}
-                  className="w-4 h-4"
-                />
-                <span className="text-sm font-medium whitespace-nowrap">
-                  10% Markup
-                </span>
-              </label>
             </div>
-            {formData.price && renderCurrencyPreviews(formData.price)}
-          </div>
-          <div>
-            <label className={styles.label}>Stock</label>
-            <input
-              type="number"
-              name="stock"
-              value={formData.stock}
-              onChange={handleChange}
-              required
-              min="0"
-              className={styles.input}
-            />
-          </div>
-          <div>
-            <label className={styles.label}>Shipping Fee ($)</label>
-            <input
-              type="number"
-              name="shippingFee"
-              value={formData.shippingFee}
-              onChange={handleChange}
-              min="0"
-              step="0.01"
-              className={styles.input}
-            />
-          </div>
-          <div>
-            <label className={styles.label}>Category</label>
-            <input
-              type="text"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              required
-              list="category-list"
-              className={styles.input}
-              placeholder="Select or type a category"
-            />
-            <datalist id="category-list">
-              {PRODUCT_CATEGORIES.map((cat) => (
-                <option key={cat} value={cat} />
-              ))}
-            </datalist>
+            <div>
+              <label className={styles.label}>Product URL (Optional)</label>
+              <input
+                type="url"
+                name="productUrl"
+                value={formData.productUrl}
+                onChange={handleChange}
+                className={`${styles.input} ${styles.productsUrlInput}`}
+                placeholder="https://example.com/product"
+              />
+            </div>
           </div>
         </div>
 
-        <div>
-          <label className={styles.label}>Product URL (Optional)</label>
-          <input
-            type="url"
-            name="productUrl"
-            value={formData.productUrl}
-            onChange={handleChange}
-            className={`${styles.input} ${styles.productsUrlInput}`}
-            placeholder="https://example.com/product"
-          />
-        </div>
-
-        <div className={styles.grid2}>
+        {/* Sizes Card */}
+        <div className={styles.card}>
           <div>
             <label className={styles.label}>Sizes (comma separated)</label>
             <input
@@ -567,7 +651,8 @@ export default function EditProductPage({
           </div>
         </div>
 
-        <div style={{ marginBottom: "2rem" }}>
+        {/* Reviews Toggle Card */}
+        <div className={styles.card}>
           <label
             className={styles.label}
             style={{
@@ -575,6 +660,7 @@ export default function EditProductPage({
               alignItems: "center",
               gap: "0.5rem",
               cursor: "pointer",
+              marginBottom: 0,
             }}
           >
             <input
@@ -588,86 +674,93 @@ export default function EditProductPage({
           </label>
         </div>
 
-        <div>
-          <label className={styles.label}>Images</label>
-          <div className={styles.uploadContainer}>
-            <UploadDropzone
-              endpoint="imageUploader"
-              onClientUploadComplete={(res) => {
-                if (res) {
-                  setImages((prev) => [
-                    ...prev,
-                    ...res.map((file) => file.url),
-                  ]);
-                  alert("Upload Completed");
-                }
-              }}
-              onUploadError={(error: Error) => {
-                alert(`ERROR! ${error.message}`);
-              }}
-              appearance={{
-                button: { background: "var(--color-primary)", color: "white" },
-                allowedContent: { color: "var(--color-text-secondary)" },
-              }}
-            />
+        {/* Media Card */}
+        <div className={styles.card}>
+          <div>
+            <label className={styles.label}>Images</label>
+            <div className={styles.uploadContainer}>
+              <UploadDropzone
+                endpoint="imageUploader"
+                onClientUploadComplete={(res) => {
+                  if (res) {
+                    setImages((prev) => [
+                      ...prev,
+                      ...res.map((file) => file.url),
+                    ]);
+                    alert("Upload Completed");
+                  }
+                }}
+                onUploadError={(error: Error) => {
+                  alert(`ERROR! ${error.message}`);
+                }}
+                appearance={{
+                  button: {
+                    background: "var(--color-primary)",
+                    color: "white",
+                  },
+                  allowedContent: { color: "var(--color-text-secondary)" },
+                }}
+              />
+            </div>
+
+            {images.length > 0 && (
+              <div className={styles.imagesGrid}>
+                {images.map((url, index) => (
+                  <div key={index} className={styles.imageWrapper}>
+                    <Image
+                      src={url}
+                      alt={`Product ${index + 1}`}
+                      fill
+                      className={styles.image}
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setImages(images.filter((_, i) => i !== index))
+                      }
+                      className={styles.removeImageButton}
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          {images.length > 0 && (
-            <div className={styles.imagesGrid}>
-              {images.map((url, index) => (
-                <div key={index} className={styles.imageWrapper}>
-                  <Image
-                    src={url}
-                    alt={`Product ${index + 1}`}
-                    fill
-                    className={styles.image}
-                  />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setImages(images.filter((_, i) => i !== index))
-                    }
-                    className={styles.removeImageButton}
-                  >
-                    X
-                  </button>
-                </div>
-              ))}
+          <div style={{ marginTop: "2rem" }}>
+            <label className={styles.label}>Videos</label>
+            <div className="mb-4">
+              <CloudinaryVideoUpload
+                onUpload={(url) => {
+                  setVideos((prev) => [...prev, url]);
+                  alert("Video added!");
+                }}
+              />
             </div>
-          )}
-        </div>
 
-        <div style={{ marginTop: "2rem" }}>
-          <label className={styles.label}>Videos</label>
-          <div className="mb-4">
-            <CloudinaryVideoUpload
-              onUpload={(url) => {
-                setVideos((prev) => [...prev, url]);
-                alert("Video added!");
-              }}
-            />
+            {videos.length > 0 && (
+              <div className={styles.imagesGrid}>
+                {videos.map((url, index) => (
+                  <div key={index} className={styles.imageWrapper}>
+                    <video src={url} className={styles.image} controls />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setVideos(videos.filter((_, i) => i !== index))
+                      }
+                      className={styles.removeImageButton}
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-
-          {videos.length > 0 && (
-            <div className={styles.imagesGrid}>
-              {videos.map((url, index) => (
-                <div key={index} className={styles.imageWrapper}>
-                  <video src={url} className={styles.image} controls />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setVideos(videos.filter((_, i) => i !== index))
-                    }
-                    className={styles.removeImageButton}
-                  >
-                    X
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
+        {/* Variants Section */}
         <div className={styles.variantsSection}>
           <div className="flex justify-between items-center mb-4">
             <label className={styles.label}>Product Variants</label>
@@ -1133,7 +1226,7 @@ export default function EditProductPage({
         <button
           type="submit"
           disabled={submitting}
-          className={styles.submitButton}
+          className={`${styles.submitButton} hidden md:block`}
         >
           {submitting ? "Saving..." : "Update Product"}
         </button>
