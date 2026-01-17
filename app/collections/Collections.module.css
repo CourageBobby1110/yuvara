@@ -70,6 +70,10 @@
   min-height: 600px;
 }
 
+.productGrid {
+  scroll-margin-top: 9rem; /* 6rem header + extra space */
+}
+
 .controlsBar {
   display: none;
   justify-content: space-between;

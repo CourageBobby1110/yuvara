@@ -7,7 +7,8 @@ import Image from "next/image";
 import { PRODUCT_CATEGORIES } from "@/lib/categories";
 import { useCurrency } from "@/context/CurrencyContext";
 
-import styles from "./AdminProductForm.module.css";
+// Point to the shared CSS module
+import styles from "../ProductForm.module.css";
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -47,7 +48,7 @@ export default function NewProductPage() {
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -86,7 +87,7 @@ export default function NewProductPage() {
             stock: parseInt(v.stock),
           })),
           colors: Array.from(new Set(variants.map((v) => v.color))).filter(
-            Boolean
+            Boolean,
           ),
           shippingRates: shippingRates.map((r) => ({
             ...r,
@@ -186,7 +187,7 @@ export default function NewProductPage() {
         <div className={styles.grid3}>
           <div>
             <label className={styles.label}>Price ($)</label>
-            <div className="flex items-center gap-2">
+            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
               <input
                 type="number"
                 name="price"
@@ -211,7 +212,12 @@ export default function NewProductPage() {
                   }));
                   setVariants(newVariants);
                 }}
-                className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm whitespace-nowrap"
+                className={styles.addVariantButton}
+                style={{
+                  whiteSpace: "nowrap",
+                  padding: "0.75rem",
+                  fontSize: "0.8rem",
+                }}
               >
                 +$3 Markup
               </button>
@@ -251,8 +257,15 @@ export default function NewProductPage() {
         </div>
 
         <div className={styles.variantsSection}>
-          <div className="flex justify-between items-center mb-4">
-            <label className={styles.label}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "1rem",
+            }}
+          >
+            <label className={styles.label} style={{ marginBottom: 0 }}>
               Shipping Rates (Multi-Country)
             </label>
             <button
@@ -270,40 +283,35 @@ export default function NewProductPage() {
                 ])
               }
               className={styles.addVariantButton}
-              style={{
-                padding: "0.5rem 1rem",
-                backgroundColor: "#f3f4f6",
-                borderRadius: "0.375rem",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-              }}
             >
               + Add Rate
             </button>
           </div>
 
           {shippingRates.map((rate, index) => (
-            <div
-              key={index}
-              className={styles.variantCard}
-              style={{
-                border: "1px solid #e5e7eb",
-                padding: "1rem",
-                borderRadius: "0.5rem",
-                marginBottom: "1rem",
-                backgroundColor: "#f9fafb",
-              }}
-            >
-              <div className="flex justify-between mb-2">
-                <h4 className="font-medium">Rate {index + 1}</h4>
+            <div key={index} className={styles.variantCard}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                <h4 style={{ fontWeight: 600 }}>Rate {index + 1}</h4>
                 <button
                   type="button"
                   onClick={() =>
                     setShippingRates(
-                      shippingRates.filter((_, i) => i !== index)
+                      shippingRates.filter((_, i) => i !== index),
                     )
                   }
-                  className="text-red-500 text-sm"
+                  style={{
+                    color: "#ef4444",
+                    border: "none",
+                    background: "none",
+                    cursor: "pointer",
+                    fontSize: "0.875rem",
+                  }}
                 >
                   Remove
                 </button>
@@ -311,8 +319,11 @@ export default function NewProductPage() {
 
               <div className={styles.grid2}>
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">
-                    Country Code (e.g. NG, US)
+                  <label
+                    className={styles.label}
+                    style={{ fontSize: "0.75rem" }}
+                  >
+                    Country Code
                   </label>
                   <input
                     type="text"
@@ -329,7 +340,10 @@ export default function NewProductPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">
+                  <label
+                    className={styles.label}
+                    style={{ fontSize: "0.75rem" }}
+                  >
                     Country Name
                   </label>
                   <input
@@ -346,7 +360,10 @@ export default function NewProductPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">
+                  <label
+                    className={styles.label}
+                    style={{ fontSize: "0.75rem" }}
+                  >
                     Price ($)
                   </label>
                   <input
@@ -362,7 +379,10 @@ export default function NewProductPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">
+                  <label
+                    className={styles.label}
+                    style={{ fontSize: "0.75rem" }}
+                  >
                     Method (Optional)
                   </label>
                   <input
@@ -374,22 +394,6 @@ export default function NewProductPage() {
                       setShippingRates(newRates);
                     }}
                     placeholder="DHL"
-                    className={styles.input}
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500 mb-1 block">
-                    Delivery Time (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    value={rate.deliveryTime}
-                    onChange={(e) => {
-                      const newRates = [...shippingRates];
-                      newRates[index].deliveryTime = e.target.value;
-                      setShippingRates(newRates);
-                    }}
-                    placeholder="10-20 days"
                     className={styles.input}
                   />
                 </div>
@@ -405,7 +409,7 @@ export default function NewProductPage() {
             name="productUrl"
             value={formData.productUrl}
             onChange={handleChange}
-            className={styles.input}
+            className={`${styles.input} ${styles.productsUrlInput}`}
             placeholder="https://example.com/product"
           />
         </div>
@@ -434,11 +438,14 @@ export default function NewProductPage() {
                     ...prev,
                     ...res.map((file) => file.url),
                   ]);
-                  alert("Upload Completed");
                 }
               }}
               onUploadError={(error: Error) => {
                 alert(`ERROR! ${error.message}`);
+              }}
+              appearance={{
+                button: { background: "var(--color-primary)", color: "white" },
+                allowedContent: { color: "var(--color-text-secondary)" },
               }}
             />
           </div>
@@ -479,11 +486,14 @@ export default function NewProductPage() {
                     ...prev,
                     ...res.map((file) => file.url),
                   ]);
-                  alert("Video Upload Completed");
                 }
               }}
               onUploadError={(error: Error) => {
                 alert(`ERROR! ${error.message}`);
+              }}
+              appearance={{
+                button: { background: "var(--color-primary)", color: "white" },
+                allowedContent: { color: "var(--color-text-secondary)" },
               }}
             />
           </div>
@@ -492,12 +502,7 @@ export default function NewProductPage() {
             <div className={styles.imagesGrid}>
               {videos.map((url, index) => (
                 <div key={index} className={styles.imageWrapper}>
-                  <video
-                    src={url}
-                    controls
-                    className={styles.image} // Reusing image class for sizing
-                    style={{ objectFit: "cover" }}
-                  />
+                  <video src={url} controls className={styles.image} />
                   <button
                     type="button"
                     onClick={() =>
@@ -514,8 +519,17 @@ export default function NewProductPage() {
         </div>
 
         <div className={styles.variantsSection}>
-          <div className="flex justify-between items-center mb-4">
-            <label className={styles.label}>Product Variants</label>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "1rem",
+            }}
+          >
+            <label className={styles.label} style={{ marginBottom: 0 }}>
+              Product Variants
+            </label>
             <button
               type="button"
               onClick={() =>
@@ -530,38 +544,33 @@ export default function NewProductPage() {
                 ])
               }
               className={styles.addVariantButton}
-              style={{
-                padding: "0.5rem 1rem",
-                backgroundColor: "#f3f4f6",
-                borderRadius: "0.375rem",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-              }}
             >
               + Add Variant
             </button>
           </div>
 
           {variants.map((variant, index) => (
-            <div
-              key={index}
-              className={styles.variantCard}
-              style={{
-                border: "1px solid #e5e7eb",
-                padding: "1rem",
-                borderRadius: "0.5rem",
-                marginBottom: "1rem",
-                backgroundColor: "#f9fafb",
-              }}
-            >
-              <div className="flex justify-between mb-2">
-                <h4 className="font-medium">Variant {index + 1}</h4>
+            <div key={index} className={styles.variantCard}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                <h4 style={{ fontWeight: 600 }}>Variant {index + 1}</h4>
                 <button
                   type="button"
                   onClick={() =>
                     setVariants(variants.filter((_, i) => i !== index))
                   }
-                  className="text-red-500 text-sm"
+                  style={{
+                    color: "#ef4444",
+                    border: "none",
+                    background: "none",
+                    cursor: "pointer",
+                    fontSize: "0.875rem",
+                  }}
                 >
                   Remove
                 </button>
@@ -569,7 +578,10 @@ export default function NewProductPage() {
 
               <div className={styles.grid2}>
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">
+                  <label
+                    className={styles.label}
+                    style={{ fontSize: "0.75rem" }}
+                  >
                     Color Name
                   </label>
                   <input
@@ -586,7 +598,10 @@ export default function NewProductPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">
+                  <label
+                    className={styles.label}
+                    style={{ fontSize: "0.75rem" }}
+                  >
                     Price Override
                   </label>
                   <input
@@ -603,7 +618,10 @@ export default function NewProductPage() {
                   {renderCurrencyPreviews(variant.price)}
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">
+                  <label
+                    className={styles.label}
+                    style={{ fontSize: "0.75rem" }}
+                  >
                     Stock
                   </label>
                   <input
@@ -618,16 +636,22 @@ export default function NewProductPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">
+                  <label
+                    className={styles.label}
+                    style={{ fontSize: "0.75rem" }}
+                  >
                     Variant Image
                   </label>
                   {variant.image ? (
-                    <div className="relative w-20 h-20">
+                    <div
+                      className={styles.imageWrapper}
+                      style={{ width: "80px", height: "80px" }}
+                    >
                       <Image
                         src={variant.image}
                         alt="Variant"
                         fill
-                        className="object-cover rounded"
+                        className={styles.image}
                       />
                       <button
                         type="button"
@@ -636,7 +660,7 @@ export default function NewProductPage() {
                           newVariants[index].image = "";
                           setVariants(newVariants);
                         }}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                        className={styles.removeImageButton}
                       >
                         X
                       </button>
@@ -649,7 +673,6 @@ export default function NewProductPage() {
                           const newVariants = [...variants];
                           newVariants[index].image = res[0].url;
                           setVariants(newVariants);
-                          // Also add to main images if not present
                           if (!images.includes(res[0].url)) {
                             setImages((prev) => [...prev, res[0].url]);
                           }
@@ -662,8 +685,8 @@ export default function NewProductPage() {
                         button: {
                           padding: "0.25rem 0.5rem",
                           fontSize: "0.75rem",
+                          background: "var(--color-primary)",
                         },
-                        container: { padding: "0.5rem" },
                       }}
                     />
                   )}

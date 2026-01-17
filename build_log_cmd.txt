@@ -1,0 +1,63 @@
+
+> yuvara@0.1.0 build
+> next build
+
+   ▲ Next.js 16.0.7 (Turbopack)
+   - Environments: .env
+
+   Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build failed with 2 errors:
+./app/admin/products/new/page.tsx:11:1
+Module not found: Can't resolve '../../ProductForm.module.css'
+[0m [90m  9 |[39m
+ [90m 10 |[39m [90m// Point to the shared CSS module[39m
+[31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m styles [36mfrom[39m [32m"../../ProductForm.module.css"[39m[33m;[39m
+ [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 12 |[39m [36mexport[39m [36mdefault[39m [36mfunction[39m [33mNewProductPage[39m() {
+ [90m 13 |[39m   [36mconst[39m router [33m=[39m useRouter()[33m;[39m
+ [90m 14 |[39m   [36mconst[39m {[0m
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/admin/products/new/page.tsx [Client Component Browser]
+    ./app/admin/products/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/admin/products/new/page.tsx [Client Component SSR]
+    ./app/admin/products/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./app/admin/products/new/page.tsx:11:1
+Module not found: Can't resolve '../../ProductForm.module.css'
+[0m [90m  9 |[39m
+ [90m 10 |[39m [90m// Point to the shared CSS module[39m
+[31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m styles [36mfrom[39m [32m"../../ProductForm.module.css"[39m[33m;[39m
+ [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 12 |[39m
+ [90m 13 |[39m [36mexport[39m [36mdefault[39m [36mfunction[39m [33mNewProductPage[39m() {
+ [90m 14 |[39m   [36mconst[39m router [33m=[39m useRouter()[33m;[39m[0m
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/admin/products/new/page.tsx [Client Component Browser]
+    ./app/admin/products/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/admin/products/new/page.tsx [Client Component SSR]
+    ./app/admin/products/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> (./app/admin/products/new/page.tsx:11:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (./app/admin/products/new/page.tsx:11:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)

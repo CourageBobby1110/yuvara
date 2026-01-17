@@ -2,7 +2,8 @@
 
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
-import { useRef } from "react";
+
+import { useRef, useTransition, useEffect, useState } from "react";
 import styles from "./Search.module.css";
 
 export default function Search() {
@@ -10,6 +11,22 @@ export default function Search() {
   const pathname = usePathname();
   const { replace } = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [isPending, startTransition] = useTransition();
+  const [didSearch, setDidSearch] = useState(false);
+
+  // Auto-scroll effect
+  useEffect(() => {
+    if (didSearch && !isPending) {
+      const productGrid = document.getElementById("products-grid");
+      if (productGrid) {
+        // Small delay to ensure DOM update
+        setTimeout(() => {
+          productGrid.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      }
+      setDidSearch(false);
+    }
+  }, [isPending, didSearch]);
 
   const handleSearch = useDebouncedCallback((term: string) => {
     const params = new URLSearchParams(searchParams);
@@ -18,7 +35,10 @@ export default function Search() {
     } else {
       params.delete("search");
     }
-    replace(`${pathname}?${params.toString()}`);
+    startTransition(() => {
+      replace(`${pathname}?${params.toString()}`, { scroll: false });
+    });
+    setDidSearch(true);
   }, 300);
 
   const clearSearch = () => {
@@ -61,28 +81,33 @@ export default function Search() {
             />
           </svg>
         </div>
-        {searchParams.get("search") && (
-          <button
-            onClick={clearSearch}
-            className={styles.clearButton}
-            aria-label="Clear search"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className={styles.clearIcon}
-              aria-hidden="true"
+
+        {isPending ? (
+          <div className={styles.spinner} />
+        ) : (
+          searchParams.get("search") && (
+            <button
+              onClick={clearSearch}
+              className={styles.clearButton}
+              aria-label="Clear search"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className={styles.clearIcon}
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          )
         )}
       </div>
     </div>

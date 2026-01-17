@@ -7,7 +7,7 @@ import Image from "next/image";
 import { PRODUCT_CATEGORIES } from "@/lib/categories";
 import AdminLoader from "@/components/AdminLoader";
 import { formatDistanceToNow } from "date-fns";
-import styles from "./EditProduct.module.css";
+import styles from "../ProductForm.module.css";
 import { useCurrency } from "@/context/CurrencyContext";
 import CloudinaryVideoUpload from "@/components/CloudinaryVideoUpload";
 
@@ -63,7 +63,6 @@ export default function EditProductPage({
   const [submitting, setSubmitting] = useState(false);
   const [syncingStock, setSyncingStock] = useState(false);
   const [syncingPrice, setSyncingPrice] = useState(false);
-  const [syncingShipping, setSyncingShipping] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [syncingVariantId, setSyncingVariantId] = useState<string | null>(null);
   const [syncingStockVariantId, setSyncingStockVariantId] = useState<
@@ -189,7 +188,7 @@ export default function EditProductPage({
             shippingFee: v.shippingFee,
             cjVid: (v as any).cjVid, // Ensure we capture cjVid
             shippingRates: v.shippingRates,
-          })) || []
+          })) || [],
         );
         setShippingRates(
           product.shippingRates?.map((r) => ({
@@ -198,7 +197,7 @@ export default function EditProductPage({
             price: r.price.toString(),
             method: r.method || "",
             deliveryTime: r.deliveryTime || "",
-          })) || []
+          })) || [],
         );
       } else {
         alert("Failed to fetch product");
@@ -216,7 +215,7 @@ export default function EditProductPage({
   const syncPrice = async () => {
     if (
       !confirm(
-        "This will update all variant prices from CJ (Cost * 1.5). Continue?"
+        "This will update all variant prices from CJ (Cost * 1.5). Continue?",
       )
     )
       return;
@@ -244,7 +243,7 @@ export default function EditProductPage({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     const { name, value, type } = e.target;
 
@@ -286,7 +285,7 @@ export default function EditProductPage({
           stock: parseInt(v.stock),
         })),
         colors: Array.from(new Set(variants.map((v) => v.color))).filter(
-          Boolean
+          Boolean,
         ),
         shippingRates: shippingRates.map((r) => ({
           ...r,
@@ -377,16 +376,13 @@ export default function EditProductPage({
             </span>
           )}
         </div>
-        <div
-          className={styles.currencyWrapper}
-          style={{ display: "flex", gap: "10px" }}
-        >
+        <div className={styles.currencyWrapper}>
           <button
             type="button"
             onClick={async () => {
               if (
                 !confirm(
-                  "This will fetch the latest stock levels from CJ for all variants."
+                  "This will fetch the latest stock levels from CJ for all variants.",
                 )
               )
                 return;
@@ -425,12 +421,6 @@ export default function EditProductPage({
             value={currency}
             onChange={(e) => setCurrency(e.target.value as any)}
             className={styles.currencySelect}
-            style={{
-              padding: "0.5rem",
-              borderRadius: "8px",
-              border: "1px solid #e5e7eb",
-              fontSize: "0.875rem",
-            }}
           >
             <option value="USD">USD ($)</option>
             <option value="NGN">NGN (₦)</option>
@@ -467,7 +457,14 @@ export default function EditProductPage({
                 className={styles.input}
               />
               {/* 10% Markup Toggle */}
-              <label className="flex items-center gap-2 cursor-pointer bg-gray-100 px-2 rounded border border-gray-300">
+              <label
+                className="flex items-center gap-2 cursor-pointer bg-gray-100 px-2 rounded border border-gray-300"
+                style={{
+                  height: "42px",
+                  backgroundColor: "var(--color-bg-secondary)",
+                  borderColor: "var(--color-border-medium)",
+                }}
+              >
                 <input
                   type="checkbox"
                   checked={markupActive}
@@ -486,7 +483,7 @@ export default function EditProductPage({
                     const newVariants = variants.map((v) => ({
                       ...v,
                       price: (parseFloat(v.price || "0") * multiplier).toFixed(
-                        2
+                        2,
                       ),
                     }));
                     setVariants(newVariants);
@@ -551,7 +548,7 @@ export default function EditProductPage({
             name="productUrl"
             value={formData.productUrl}
             onChange={handleChange}
-            className={styles.input}
+            className={`${styles.input} ${styles.productsUrlInput}`}
             placeholder="https://example.com/product"
           />
         </div>
@@ -607,6 +604,10 @@ export default function EditProductPage({
               }}
               onUploadError={(error: Error) => {
                 alert(`ERROR! ${error.message}`);
+              }}
+              appearance={{
+                button: { background: "var(--color-primary)", color: "white" },
+                allowedContent: { color: "var(--color-text-secondary)" },
               }}
             />
           </div>
@@ -699,7 +700,13 @@ export default function EditProductPage({
                   onClick={() =>
                     setVariants(variants.filter((_, i) => i !== index))
                   }
-                  className="text-red-500 text-sm"
+                  style={{
+                    color: "#ef4444",
+                    border: "none",
+                    background: "none",
+                    cursor: "pointer",
+                    fontSize: "0.875rem",
+                  }}
                 >
                   Remove
                 </button>
@@ -707,9 +714,7 @@ export default function EditProductPage({
 
               <div className={styles.grid2}>
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">
-                    Color Name
-                  </label>
+                  <label className={styles.label}>Color Name</label>
                   <input
                     type="text"
                     value={variant.color}
@@ -724,9 +729,7 @@ export default function EditProductPage({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">
-                    Size (Optional)
-                  </label>
+                  <label className={styles.label}>Size (Optional)</label>
                   <input
                     type="text"
                     value={(variant as any).size || ""}
@@ -740,9 +743,7 @@ export default function EditProductPage({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">
-                    Price Override
-                  </label>
+                  <label className={styles.label}>Price Override</label>
                   <input
                     type="number"
                     value={variant.price}
@@ -757,9 +758,7 @@ export default function EditProductPage({
                   {renderCurrencyPreviews(variant.price)}
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">
-                    Stock
-                  </label>
+                  <label className={styles.label}>Stock</label>
                   <input
                     type="number"
                     value={variant.stock}
@@ -773,16 +772,14 @@ export default function EditProductPage({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">
-                    Shipping Fee ($)
-                  </label>
+                  <label className={styles.label}>Shipping Fee ($)</label>
                   <input
                     type="number"
                     value={variant.shippingFee || 0}
                     onChange={(e) => {
                       const newVariants = [...variants];
                       newVariants[index].shippingFee = parseFloat(
-                        e.target.value
+                        e.target.value,
                       );
                       setVariants(newVariants);
                     }}
@@ -791,7 +788,14 @@ export default function EditProductPage({
                     step="0.01"
                   />
                   {variant.cjVid && (
-                    <div className="flex flex-col gap-1 mt-2">
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.5rem",
+                        marginTop: "0.5rem",
+                      }}
+                    >
                       <button
                         type="button"
                         onClick={async () => {
@@ -806,7 +810,7 @@ export default function EditProductPage({
                                   productId: id,
                                   targetVid: variant.cjVid,
                                 }),
-                              }
+                              },
                             );
                             if (res.ok) {
                               alert("Shipping synced for this variant!");
@@ -814,7 +818,7 @@ export default function EditProductPage({
                             } else {
                               const d = await res.json();
                               alert(
-                                d.error || "Failed to sync variant shipping"
+                                d.error || "Failed to sync variant shipping",
                               );
                             }
                           } catch (e) {
@@ -824,7 +828,11 @@ export default function EditProductPage({
                           }
                         }}
                         disabled={syncingVariantId === variant.cjVid}
-                        className="text-xs bg-blue-500 text-white px-2 py-1 rounded"
+                        className={styles.syncButton}
+                        style={{
+                          fontSize: "0.75rem",
+                          padding: "0.25rem 0.5rem",
+                        }}
                       >
                         {syncingVariantId === variant.cjVid
                           ? "Syncing..."
@@ -844,7 +852,7 @@ export default function EditProductPage({
                                   productId: id,
                                   targetVid: variant.cjVid,
                                 }),
-                              }
+                              },
                             );
                             if (res.ok) {
                               alert("Stock synced for this variant!");
@@ -860,7 +868,11 @@ export default function EditProductPage({
                           }
                         }}
                         disabled={syncingStockVariantId === variant.cjVid}
-                        className="text-xs bg-green-600 text-white px-2 py-1 rounded"
+                        className={styles.syncButton}
+                        style={{
+                          fontSize: "0.75rem",
+                          padding: "0.25rem 0.5rem",
+                        }}
                       >
                         {syncingStockVariantId === variant.cjVid
                           ? "Syncing..."
@@ -880,7 +892,7 @@ export default function EditProductPage({
                                   productId: id,
                                   targetVid: variant.cjVid,
                                 }),
-                              }
+                              },
                             );
                             if (res.ok) {
                               alert("Price synced for this variant!");
@@ -896,7 +908,11 @@ export default function EditProductPage({
                           }
                         }}
                         disabled={syncingPriceVariantId === variant.cjVid}
-                        className="text-xs bg-yellow-600 text-white px-2 py-1 rounded"
+                        className={styles.syncButton}
+                        style={{
+                          fontSize: "0.75rem",
+                          padding: "0.25rem 0.5rem",
+                        }}
                       >
                         {syncingPriceVariantId === variant.cjVid
                           ? "Syncing..."
@@ -906,16 +922,17 @@ export default function EditProductPage({
                   )}
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">
-                    Variant Image
-                  </label>
+                  <label className={styles.label}>Variant Image</label>
                   {variant.image ? (
-                    <div className="relative w-20 h-20">
+                    <div
+                      className={styles.imageWrapper}
+                      style={{ width: "80px", height: "80px" }}
+                    >
                       <Image
                         src={variant.image}
                         alt="Variant"
                         fill
-                        className="object-cover rounded"
+                        className={styles.image}
                       />
                       <button
                         type="button"
@@ -924,7 +941,7 @@ export default function EditProductPage({
                           newVariants[index].image = "";
                           setVariants(newVariants);
                         }}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                        className={styles.removeImageButton}
                       >
                         X
                       </button>
@@ -946,17 +963,22 @@ export default function EditProductPage({
                       onUploadError={(error: Error) => {
                         alert(`ERROR! ${error.message}`);
                       }}
+                      appearance={{
+                        button: {
+                          padding: "0.25rem 0.5rem",
+                          fontSize: "0.75rem",
+                          background: "var(--color-primary)",
+                        },
+                      }}
                     />
                   )}
                 </div>
               </div>
 
               {/* Variant Shipping Rates Management */}
-              <div className="mt-4 p-4 bg-gray-50 rounded border border-gray-200">
-                <div className="flex justify-between items-center mb-3">
-                  <h5 className="font-semibold text-gray-700">
-                    Shipping Rates
-                  </h5>
+              <div className={styles.shippingRatesContainer}>
+                <div className={styles.shippingRateHeader}>
+                  <h5 className={styles.shippingRateTitle}>Shipping Rates</h5>
                   <button
                     type="button"
                     onClick={() => {
@@ -975,19 +997,20 @@ export default function EditProductPage({
                       ];
                       setVariants(newVariants);
                     }}
-                    className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                    className={styles.addVariantButton}
+                    style={{ fontSize: "0.75rem", padding: "0.25rem 0.5rem" }}
                   >
                     + Add Rate
                   </button>
                 </div>
 
                 {(variant.shippingRates || []).map((rate, rIndex) => (
-                  <div
-                    key={rIndex}
-                    className="mb-3 p-3 bg-white rounded border border-gray-200 text-sm shadow-sm"
-                  >
-                    <div className="flex justify-between mb-2">
-                      <span className="font-bold text-gray-700">
+                  <div key={rIndex} className={styles.shippingRateItem}>
+                    <div className={styles.shippingRateItemHeader}>
+                      <span
+                        className="font-bold text-gray-700"
+                        style={{ fontSize: "0.8rem" }}
+                      >
                         Rate #{rIndex + 1}
                       </span>
                       <button
@@ -999,16 +1022,20 @@ export default function EditProductPage({
                           ).filter((_, i) => i !== rIndex);
                           setVariants(newVariants);
                         }}
-                        className="text-red-500 text-xs hover:underline"
+                        style={{
+                          color: "#ef4444",
+                          fontSize: "0.75rem",
+                          border: "none",
+                          background: "none",
+                          cursor: "pointer",
+                        }}
                       >
                         Remove
                       </button>
                     </div>
-                    <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
+                    <div className={styles.shippingRateGrid}>
                       <div>
-                        <label className="text-[10px] text-gray-500 block">
-                          Code
-                        </label>
+                        <label className={styles.shippingRateLabel}>Code</label>
                         <input
                           type="text"
                           value={rate.countryCode}
@@ -1021,11 +1048,11 @@ export default function EditProductPage({
                             setVariants(newVariants);
                           }}
                           placeholder="NG"
-                          className="w-full border rounded px-2 py-1 text-xs"
+                          className={styles.shippingRateInput}
                         />
                       </div>
                       <div>
-                        <label className="text-[10px] text-gray-500 block">
+                        <label className={styles.shippingRateLabel}>
                           Country
                         </label>
                         <input
@@ -1040,11 +1067,11 @@ export default function EditProductPage({
                             setVariants(newVariants);
                           }}
                           placeholder="Nigeria"
-                          className="w-full border rounded px-2 py-1 text-xs"
+                          className={styles.shippingRateInput}
                         />
                       </div>
                       <div>
-                        <label className="text-[10px] text-gray-500 block">
+                        <label className={styles.shippingRateLabel}>
                           Price ($)
                         </label>
                         <input
@@ -1057,11 +1084,11 @@ export default function EditProductPage({
                               parseFloat(e.target.value);
                             setVariants(newVariants);
                           }}
-                          className="w-full border rounded px-2 py-1 text-xs font-medium text-green-700"
+                          className={styles.shippingRateInput}
                         />
                       </div>
                       <div>
-                        <label className="text-[10px] text-gray-500 block">
+                        <label className={styles.shippingRateLabel}>
                           Method
                         </label>
                         <input
@@ -1075,13 +1102,11 @@ export default function EditProductPage({
                             setVariants(newVariants);
                           }}
                           placeholder="Method"
-                          className="w-full border rounded px-2 py-1 text-xs"
+                          className={styles.shippingRateInput}
                         />
                       </div>
                       <div>
-                        <label className="text-[10px] text-gray-500 block">
-                          Time
-                        </label>
+                        <label className={styles.shippingRateLabel}>Time</label>
                         <input
                           type="text"
                           value={rate.deliveryTime}
@@ -1094,7 +1119,7 @@ export default function EditProductPage({
                             setVariants(newVariants);
                           }}
                           placeholder="Time"
-                          className="w-full border rounded px-2 py-1 text-xs"
+                          className={styles.shippingRateInput}
                         />
                       </div>
                     </div>

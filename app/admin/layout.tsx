@@ -1,6 +1,8 @@
 import AdminSidebar from "@/components/AdminSidebar";
+import AdminHeader from "@/components/AdminHeader";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import styles from "./AdminLayout.module.css";
 
 export default async function AdminLayout({
   children,
@@ -17,11 +19,12 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className={styles.container}>
       <AdminSidebar />
-      <main className="flex-1 p-4 sm:p-6 lg:p-12 lg:ml-[280px] transition-all duration-300">
-        {children}
-      </main>
+      <div className={styles.mainWrapper}>
+        <AdminHeader />
+        <main className={styles.content}>{children}</main>
+      </div>
     </div>
   );
 }

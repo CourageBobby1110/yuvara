@@ -186,12 +186,12 @@ export default function AdminOrderDetailPage({
                   >
                     Mark as {status}
                   </button>
-                )
+                ),
               )}
             </div>
 
             {/* CJ Dropshipping Fulfillment */}
-            <div className="mt-4 pt-4 border-t border-gray-100">
+            <div className={styles.fulfillmentSection}>
               <button
                 onClick={async () => {
                   if (!confirm("Send this order to CJ Dropshipping?")) return;
@@ -203,7 +203,7 @@ export default function AdminOrderDetailPage({
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ orderId: order._id }),
-                      }
+                      },
                     );
                     const data = await res.json();
                     if (res.ok) {
@@ -219,7 +219,7 @@ export default function AdminOrderDetailPage({
                   }
                 }}
                 disabled={updating}
-                className="w-full mt-2 bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded transition-colors flex items-center justify-center gap-2"
+                className={styles.fulfillButton}
               >
                 {updating ? "Sending..." : "Fulfill with CJ Dropshipping"}
               </button>

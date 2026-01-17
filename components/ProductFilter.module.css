@@ -159,13 +159,134 @@
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
 }
 
-/* Responsive */
-@media (min-width: 768px) {
-  .header {
-    cursor: default;
+/* Inline Spinner */
+.inlineSpinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(184, 134, 11, 0.1);
+  border-left-color: var(--color-luxury-gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-left: 0.5rem;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
   }
 
-  .toggleIcon {
+  .header {
+    display: none; /* Hide default header */
+  }
+
+  /* Mobile Trigger Button */
+  .mobileTrigger {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #ffffff;
+    border: 1px solid var(--color-border-light);
+    padding: 0.75rem 1.25rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--color-text-primary);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .mobileTrigger:active {
+    transform: scale(0.98);
+    background-color: var(--color-bg-secondary);
+  }
+
+  .filterIcon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  /* Mobile Drawer/Overlay */
+  .content {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #ffffff;
+    padding: 2rem 1.5rem 3rem; /* Extra padding at bottom */
+    border-radius: 1.5rem 1.5rem 0 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    max-height: 85vh;
+    overflow-y: auto;
+    border: 1px solid var(--color-border-light);
+  }
+
+  .content.open {
+    transform: translateY(0);
+    display: flex; /* Ensure it's not hidden by .hidden class logic from desktop */
+  }
+
+  /* Backdrop */
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 90;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+  }
+
+  .backdrop.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Mobile Header inside Drawer */
+  .mobileDrawerHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .mobileTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .closeButton {
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobileTrigger,
+  .backdrop,
+  .mobileDrawerHeader {
     display: none;
   }
 

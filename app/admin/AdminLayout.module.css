@@ -1,0 +1,40 @@
+.container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-bg-secondary);
+}
+
+.mainWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Prevent flex overflow */
+  transition: all 0.3s ease;
+}
+
+/* Sidebar offset for desktop */
+@media (min-width: 1024px) {
+  .mainWrapper {
+    margin-left: 280px; /* Matches Sidebar width */
+  }
+}
+
+.content {
+  flex: 1;
+  padding: 1.5rem;
+  max-width: 100%;
+  margin: 0 auto;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .content {
+    padding: 2rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .content {
+    max-width: 1600px;
+  }
+}

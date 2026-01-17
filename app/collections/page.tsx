@@ -138,7 +138,10 @@ export default async function CollectionsPage({
             {/* Product Grid */}
             <section>
               {products.length > 0 ? (
-                <div className="animate-fade-in">
+                <div
+                  id="products-grid"
+                  className={`animate-fade-in ${styles.productGrid}`}
+                >
                   <FeaturedCollection
                     products={products}
                     title=""

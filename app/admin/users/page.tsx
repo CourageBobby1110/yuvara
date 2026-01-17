@@ -57,7 +57,7 @@ export default function AdminUsersPage() {
 
       if (res.ok) {
         setUsers(
-          users.map((u) => (u._id === userId ? { ...u, role: newRole } : u))
+          users.map((u) => (u._id === userId ? { ...u, role: newRole } : u)),
         );
       } else {
         alert("Failed to update role");
@@ -77,7 +77,7 @@ export default function AdminUsersPage() {
     return users.filter(
       (user) =>
         user.name?.toLowerCase().includes(query) ||
-        user.email?.toLowerCase().includes(query)
+        user.email?.toLowerCase().includes(query),
     );
   }, [users, searchQuery]);
 
@@ -99,19 +99,19 @@ export default function AdminUsersPage() {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>Users</h1>
-      </div>
 
-      {/* Search Bar (Desktop) */}
-      <div className={styles.searchContainer}>
-        <div className={styles.searchWrapper}>
-          <Search className={styles.searchIcon} size={20} />
-          <input
-            type="text"
-            placeholder="Search users..."
-            className={styles.searchInput}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+        {/* Search Bar */}
+        <div className={styles.searchContainer}>
+          <div className={styles.searchWrapper}>
+            <Search className={styles.searchIcon} size={20} />
+            <input
+              type="text"
+              placeholder="Search users..."
+              className={styles.searchInput}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
         </div>
       </div>
 
@@ -133,9 +133,25 @@ export default function AdminUsersPage() {
               </div>
               <div className={styles.userCardEmail}>{user.email}</div>
               <div className={styles.userCardFooter}>
-                <span className={styles.roleBadge}>{user.role}</span>
+                {isAdmin ? (
+                  <select
+                    value={user.role}
+                    onChange={(e) => handleRoleUpdate(user._id, e.target.value)}
+                    disabled={
+                      updating === user._id || user._id === session?.user?.id
+                    }
+                    className={styles.roleSelect}
+                    style={{ padding: "0.25rem 0.5rem", fontSize: "0.75rem" }}
+                  >
+                    <option value="user">User</option>
+                    <option value="worker">Worker</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                ) : (
+                  <span className={styles.roleBadge}>{user.role}</span>
+                )}
                 <span className={styles.userCardDate}>
-                  Joined {new Date(user.createdAt).toLocaleDateString()}
+                  {new Date(user.createdAt).toLocaleDateString()}
                 </span>
               </div>
             </div>
@@ -244,26 +260,12 @@ export default function AdminUsersPage() {
               <ChevronLeft size={16} />
             </button>
 
-            {/* Simple page numbers */}
-            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-              let pageNum = i + 1;
-              if (totalPages > 5 && currentPage > 3) {
-                pageNum = currentPage - 2 + i;
-                if (pageNum > totalPages) pageNum = totalPages - (4 - i);
-              }
-
-              return (
-                <button
-                  key={pageNum}
-                  className={`${styles.pageButton} ${
-                    currentPage === pageNum ? styles.activePage : ""
-                  }`}
-                  onClick={() => setCurrentPage(pageNum)}
-                >
-                  {pageNum}
-                </button>
-              );
-            })}
+            <span
+              className={styles.pageButton}
+              style={{ border: "none", background: "transparent" }}
+            >
+              {currentPage} / {totalPages || 1}
+            </span>
 
             <button
               className={styles.pageButton}

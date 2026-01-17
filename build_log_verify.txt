@@ -1,0 +1,176 @@
+
+> yuvara@0.1.0 build
+> next build
+
+   ▲ Next.js 16.0.7 (Turbopack)
+   - Environments: .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 37.0s
+   Running TypeScript ...
+   Collecting page data using 7 workers ...
+ ⚠ Using edge runtime on a page currently disables static generation for that page
+   Generating static pages using 7 workers (0/134) ...
+   Generating static pages using 7 workers (33/134) 
+   Generating static pages using 7 workers (66/134) 
+   Generating static pages using 7 workers (100/134) 
+ ✓ Generating static pages using 7 workers (134/134) in 6.3s
+   Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ƒ /_not-found
+├ ƒ /about
+├ ƒ /accessibility
+├ ƒ /admin/affiliates
+├ ƒ /admin/analytics
+├ ƒ /admin/cjdropshippingv2
+├ ƒ /admin/coupons
+├ ƒ /admin/coupons/new
+├ ƒ /admin/dashboard
+├ ƒ /admin/doba/search
+├ ƒ /admin/dropshipping
+├ ƒ /admin/dropshipping/search
+├ ƒ /admin/dropshipping/settings
+├ ƒ /admin/favorites
+├ ƒ /admin/gift-cards
+├ ƒ /admin/hero
+├ ƒ /admin/homepage
+├ ƒ /admin/investors
+├ ƒ /admin/marketing
+├ ƒ /admin/messages
+├ ƒ /admin/newsletter
+├ ƒ /admin/orders
+├ ƒ /admin/orders/[id]
+├ ƒ /admin/products
+├ ƒ /admin/products/[id]
+├ ƒ /admin/products/bulk-import
+├ ƒ /admin/products/import
+├ ƒ /admin/products/new
+├ ƒ /admin/referrals
+├ ƒ /admin/reviews
+├ ƒ /admin/settings
+├ ƒ /admin/settings/hero
+├ ƒ /admin/shipping
+├ ƒ /admin/users
+├ ƒ /admin/withdrawals
+├ ƒ /affiliate-program
+├ ƒ /api/admin/affiliates
+├ ƒ /api/admin/affiliates/[id]/pay
+├ ƒ /api/admin/analytics
+├ ƒ /api/admin/coupons
+├ ƒ /api/admin/dashboard-stats
+├ ƒ /api/admin/doba/import
+├ ƒ /api/admin/doba/search
+├ ƒ /api/admin/dropshipping/auth
+├ ƒ /api/admin/dropshipping/import
+├ ƒ /api/admin/dropshipping/orders/create
+├ ƒ /api/admin/dropshipping/search
+├ ƒ /api/admin/dropshipping/settings
+├ ƒ /api/admin/dropshipping/sync
+├ ƒ /api/admin/dropshipping/sync-price
+├ ƒ /api/admin/dropshipping/sync-shipping
+├ ƒ /api/admin/dropshipping/sync-stock
+├ ƒ /api/admin/favorites
+├ ƒ /api/admin/favorites/email
+├ ƒ /api/admin/fix-topup
+├ ƒ /api/admin/gift-cards
+├ ƒ /api/admin/global-search
+├ ƒ /api/admin/import-aliexpress
+├ ƒ /api/admin/investors
+├ ƒ /api/admin/investors/[id]
+├ ƒ /api/admin/investors/[id]/top-up
+├ ƒ /api/admin/marketing/send
+├ ƒ /api/admin/messages
+├ ƒ /api/admin/newsletter/send
+├ ƒ /api/admin/newsletter/subscribers
+├ ƒ /api/admin/orders
+├ ƒ /api/admin/orders/[id]
+├ ƒ /api/admin/products/markup
+├ ƒ /api/admin/referrals
+├ ƒ /api/admin/scraper/list
+├ ƒ /api/admin/seed-shipping
+├ ƒ /api/admin/settings
+├ ƒ /api/admin/settings/hero
+├ ƒ /api/admin/settings/homepage
+├ ƒ /api/admin/settings/investment
+├ ƒ /api/admin/users
+├ ƒ /api/admin/withdrawals
+├ ƒ /api/admin/withdrawals/[id]
+├ ƒ /api/affiliate/withdraw
+├ ƒ /api/auth/[...nextauth]
+├ ƒ /api/auth/forgot-password
+├ ƒ /api/auth/login
+├ ƒ /api/auth/me
+├ ƒ /api/auth/reset-password
+├ ƒ /api/auth/verify-email
+├ ƒ /api/categories
+├ ƒ /api/contact
+├ ƒ /api/coupons/verify
+├ ƒ /api/gift-cards/complete-purchase
+├ ƒ /api/gift-cards/initiate
+├ ƒ /api/gift-cards/redeem
+├ ƒ /api/gift-cards/verify
+├ ƒ /api/invest/data
+├ ƒ /api/invest/login
+├ ƒ /api/invest/report
+├ ƒ /api/invest/update-bank
+├ ƒ /api/invest/withdraw
+├ ƒ /api/newsletter/subscribe
+├ ƒ /api/orders
+├ ƒ /api/orders/[id]
+├ ƒ /api/payment/initialize
+├ ƒ /api/payment/verify
+├ ƒ /api/products
+├ ƒ /api/products/[id]
+├ ƒ /api/products/bulk-delete
+├ ƒ /api/products/bulk-update
+├ ƒ /api/reviews
+├ ƒ /api/reviews/[id]
+├ ƒ /api/seed-products
+├ ƒ /api/settings/affiliate
+├ ƒ /api/settings/hero
+├ ƒ /api/shipping
+├ ƒ /api/signup
+├ ƒ /api/test-auth
+├ ƒ /api/upload
+├ ƒ /api/uploadthing
+├ ƒ /api/user/affiliate
+├ ƒ /api/user/gift-cards
+├ ƒ /api/user/profile
+├ ƒ /api/user/referrals
+├ ƒ /api/webhooks/cj
+├ ƒ /api/wishlist
+├ ƒ /auth/forgot-password
+├ ƒ /auth/reset-password
+├ ƒ /auth/signin
+├ ƒ /auth/signup
+├ ƒ /checkout
+├ ƒ /checkout/callback
+├ ƒ /checkout/success
+├ ƒ /collections
+├ ƒ /contact
+├ ƒ /dashboard/affiliate
+├ ƒ /dashboard/gift-cards
+├ ƒ /dashboard/referrals
+├ ƒ /faq
+├ ƒ /gift-cards
+├ ƒ /gift-cards/verify
+├ ƒ /invest
+├ ƒ /invest/dashboard
+├ ƒ /opengraph-image
+├ ƒ /orders
+├ ƒ /privacy
+├ ƒ /products/[slug]
+├ ƒ /profile
+├ ƒ /shipping-returns
+├ ƒ /size-guide
+├ ƒ /terms
+├ ƒ /verify-email
+└ ƒ /wishlist
+
+
+ƒ Proxy (Middleware)
+
+ƒ  (Dynamic)  server-rendered on demand
+

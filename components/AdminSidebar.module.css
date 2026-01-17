@@ -1,38 +1,35 @@
 .sidebar {
   width: 280px;
   height: 100vh;
-  background-color: #0a0a0a; /* Deep black for premium feel */
-  color: #e5e5e5;
+  background-color: #ffffff;
+  color: var(--color-text-primary);
   display: flex;
   flex-direction: column;
   padding: 2rem 1.5rem;
   position: fixed;
   left: 0;
   top: 0;
-  border-right: 1px solid #262626;
+  border-right: 1px solid var(--color-border-light);
   z-index: 50;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
 }
 
 .header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   margin-bottom: 3rem;
 }
 
 .logo {
-  font-size: 1.25rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: #fff;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding-left: 0.5rem;
+  display: block;
+}
+
+.logoImage {
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--color-luxury-gold); /* Optional: adds a premium touch */
 }
 
 .nav {
@@ -54,12 +51,12 @@
 }
 
 .nav::-webkit-scrollbar-thumb {
-  background: #333;
+  background: #e5e5e5;
   border-radius: 2px;
 }
 
 .link {
-  color: #a3a3a3;
+  color: var(--color-text-secondary);
   text-decoration: none;
   padding: 0.875rem 1rem;
   border-radius: 12px;
@@ -72,22 +69,23 @@
 }
 
 .link:hover {
-  background-color: #171717;
-  color: #fff;
+  background-color: var(--color-bg-secondary);
+  color: var(--color-luxury-gold);
 }
 
 .link.active {
-  background-color: #fff;
-  color: #000;
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-luxury-gold);
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+  box-shadow: none; /* Removed heavy shadow */
+  border: 1px solid var(--color-border-light);
 }
 
 .logoutButton {
   margin-top: auto;
-  background: #171717;
-  border: 1px solid #262626;
-  color: #a3a3a3;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-light);
+  color: var(--color-text-secondary);
   padding: 1rem;
   border-radius: 12px;
   cursor: pointer;
@@ -101,9 +99,9 @@
 }
 
 .logoutButton:hover {
-  background-color: #ef4444;
-  color: #fff;
-  border-color: #ef4444;
+  background-color: #fee2e2;
+  color: #ef4444;
+  border-color: #fecaca;
 }
 
 .hamburger {
@@ -114,12 +112,12 @@
   z-index: 60;
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  color: #000;
+  border: 1px solid var(--color-border-light);
+  color: var(--color-text-primary);
   padding: 0.75rem;
   border-radius: 12px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
   transition: all 0.2s ease;
 }
 

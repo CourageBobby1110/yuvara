@@ -88,23 +88,10 @@ export default function AdminDashboard() {
     <div className={styles.container}>
       <header className={styles.header}>
         <div>
-          <h1 className={styles.title}>Dashboard</h1>
+          <h1 className={styles.title}>Overview</h1>
           <p className={styles.welcomeText}>
-            Welcome back, {session.user?.name || "Admin"}
+            Here's what's happening with your store today.
           </p>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className={styles.avatarWrapper}>
-            {session.user.image ? (
-              <img
-                src={session.user.image}
-                alt="Admin"
-                className={styles.avatarImage}
-              />
-            ) : (
-              <span className={styles.avatarPlaceholder}>ADM</span>
-            )}
-          </div>
         </div>
       </header>
 

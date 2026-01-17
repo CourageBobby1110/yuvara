@@ -5,7 +5,6 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import styles from "./AdminSidebar.module.css";
 import { handleSignOut } from "@/app/actions/auth";
-import MessageNotification from "./MessageNotification";
 
 export default function AdminSidebar() {
   const pathname = usePathname();
@@ -39,12 +38,11 @@ export default function AdminSidebar() {
             <Image
               src="/logo.png"
               alt="Yuvara Admin"
-              width={150}
-              height={50}
-              style={{ objectFit: "contain" }}
+              width={60}
+              height={60}
+              className={styles.logoImage}
             />
           </Link>
-          <MessageNotification />
         </div>
 
         <nav className={styles.nav}>
