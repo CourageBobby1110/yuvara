@@ -43,8 +43,8 @@ export default function SignUpPage() {
       // Redirect to signin page after successful signup, preserving callbackUrl
       router.push(
         `/auth/signin?registered=true&callbackUrl=${encodeURIComponent(
-          callbackUrl
-        )}`
+          callbackUrl,
+        )}`,
       );
     } catch (err) {
       setError("Failed to create account");
@@ -54,35 +54,53 @@ export default function SignUpPage() {
 
   return (
     <div className={styles.container}>
-      {/* Background Elements - Light and subtle */}
-      <div className={styles.backgroundWrapper}>
+      {/* Left Side - Image */}
+      <div className={styles.imageSection}>
         <Image
-          src="/images/auth-bg.jpg"
-          alt="Background"
+          src="/auth-image.png"
+          alt="Premium Shopping"
           fill
-          className={styles.backgroundImage}
+          className={styles.authImage}
           priority
         />
-        <div className={styles.backgroundOverlay} />
+        <div className={styles.imageOverlay}>
+          <div className={styles.imageText}>
+            <h1 className={styles.imageHeading}>Join the Elite.</h1>
+            <p className={styles.imageSubtext}>
+              Create an account to unlock exclusive access, members-only drops,
+              and personalized recommendations.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className={styles.contentWrapper}>
-        {/* Clean Light Container */}
+      {/* Right Side - Form */}
+      <div className={styles.formSection}>
         <div className={styles.card}>
-          {/* Subtle top highlight */}
-          <div className={styles.cardHighlight} />
-
           <div className={styles.header}>
             <div className={styles.title}>
-              <Image
-                src="/logo.png"
-                alt="Yuvara"
-                width={180}
-                height={60}
-                style={{ objectFit: "contain" }}
-              />
+              <Link
+                href="/"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  position: "relative",
+                  display: "block",
+                }}
+              >
+                <Image
+                  src="/logo.png"
+                  alt="Yuvara"
+                  fill
+                  style={{ objectFit: "cover" }}
+                  priority
+                />
+              </Link>
             </div>
             <p className={styles.subtitle}>Create Account</p>
+            <p className={styles.description}>
+              Enter your details to get started.
+            </p>
           </div>
 
           {error && <div className={styles.error}>{error}</div>}
@@ -96,6 +114,7 @@ export default function SignUpPage() {
                   type="text"
                   className={styles.input}
                   placeholder="John Doe"
+                  required
                 />
               </div>
             </div>
@@ -216,7 +235,7 @@ export default function SignUpPage() {
               Already have an account?{" "}
               <Link
                 href={`/auth/signin?callbackUrl=${encodeURIComponent(
-                  callbackUrl
+                  callbackUrl,
                 )}`}
                 className={styles.link}
               >

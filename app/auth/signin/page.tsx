@@ -17,35 +17,53 @@ export default async function SignInPage({
 
   return (
     <div className={styles.container}>
-      {/* Background Elements - Light and subtle */}
-      <div className={styles.backgroundWrapper}>
+      {/* Left Side - Image */}
+      <div className={styles.imageSection}>
         <Image
-          src="/images/auth-bg.jpg"
-          alt="Background"
+          src="/auth-image.png"
+          alt="Premium Shopping"
           fill
-          className={styles.backgroundImage}
+          className={styles.authImage}
           priority
         />
-        <div className={styles.backgroundOverlay} />
+        <div className={styles.imageOverlay}>
+          <div className={styles.imageText}>
+            <h1 className={styles.imageHeading}>Elevate Your Style.</h1>
+            <p className={styles.imageSubtext}>
+              Join our exclusive community and discover curated collections
+              defining modern luxury.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className={styles.contentWrapper}>
-        {/* Clean Light Container */}
+      {/* Right Side - Form */}
+      <div className={styles.formSection}>
         <div className={styles.card}>
-          {/* Subtle top highlight */}
-          <div className={styles.cardHighlight} />
-
           <div className={styles.header}>
             <div className={styles.title}>
-              <Image
-                src="/logo.png"
-                alt="Yuvara"
-                width={180}
-                height={60}
-                style={{ objectFit: "contain" }}
-              />
+              <Link
+                href="/"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  position: "relative",
+                  display: "block",
+                }}
+              >
+                <Image
+                  src="/logo.png"
+                  alt="Yuvara"
+                  fill
+                  style={{ objectFit: "cover" }}
+                  priority
+                />
+              </Link>
             </div>
-            <p className={styles.subtitle}>Member Access</p>
+            <p className={styles.subtitle}>Welcome Back</p>
+            <p className={styles.description}>
+              Please enter your details to sign in.
+            </p>
           </div>
 
           <SignInForm callbackUrl={callbackUrl} />
@@ -56,32 +74,32 @@ export default async function SignInPage({
               <span className={styles.dividerText}>Or continue with</span>
               <div className={styles.line}></div>
             </div>
-
-            <form
-              action={async () => {
-                "use server";
-                await signIn("nodemailer", {
-                  email: "user@example.com",
-                  redirectTo: callbackUrl,
-                });
-              }}
-            >
-              <button disabled className={styles.magicLinkButton}>
-                Magic Link (Coming Soon)
-              </button>
-            </form>
           </div>
+
+          <form
+            action={async () => {
+              "use server";
+              await signIn("nodemailer", {
+                email: "user@example.com",
+                redirectTo: callbackUrl,
+              });
+            }}
+          >
+            <button disabled className={styles.magicLinkButton}>
+              Magic Link (Coming Soon)
+            </button>
+          </form>
 
           <div className={styles.footer}>
             <p className={styles.footerText}>
-              New to Yuvara?{" "}
+              Don't have an account?{" "}
               <Link
                 href={`/auth/signup?callbackUrl=${encodeURIComponent(
-                  callbackUrl
+                  callbackUrl,
                 )}`}
                 className={styles.link}
               >
-                Create Account
+                Sign up
               </Link>
             </p>
             <Link href="/" className={styles.returnLink}>

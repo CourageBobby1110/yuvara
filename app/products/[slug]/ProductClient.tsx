@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import AddToCart from "@/components/AddToCart";
 import WishlistButton from "@/components/WishlistButton";
+import SimilarProducts from "@/components/SimilarProducts";
 import Image from "next/image";
 import { notFound, useParams } from "next/navigation";
 import { useCurrency } from "@/context/CurrencyContext";
@@ -107,7 +108,7 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
   } | null>(
     sanitizedProduct.variants && sanitizedProduct.variants.length > 0
       ? sanitizedProduct.variants[0]
-      : null
+      : null,
   );
 
   const [activeMedia, setActiveMedia] = useState<{
@@ -168,7 +169,7 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
         // Fetch Reviews if enabled
         if (product.reviewsEnabled) {
           const reviewsRes = await fetch(
-            `/api/reviews?productId=${product._id}`
+            `/api/reviews?productId=${product._id}`,
           );
           const reviewsData = await reviewsRes.json();
           setReviews(reviewsData);
@@ -241,7 +242,7 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
 
   const averageRating = reviews.length
     ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(
-        1
+        1,
       )
     : "0.0";
 
@@ -277,7 +278,7 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
                   // Auto-select variant if image matches
                   if (product.variants) {
                     const matchingVariant = product.variants.find(
-                      (v) => v.image === image
+                      (v) => v.image === image,
                     );
                     if (matchingVariant) {
                       setSelectedVariant(matchingVariant);
@@ -382,7 +383,7 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
 
           <div className={styles.price}>
             {formatPrice(
-              selectedVariant ? selectedVariant.price : product.price
+              selectedVariant ? selectedVariant.price : product.price,
             )}
           </div>
 
@@ -398,7 +399,7 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
                   (color, index) => {
                     // Find first variant with this color to get the image
                     const variant = product.variants!.find(
-                      (v) => v.color === color
+                      (v) => v.color === color,
                     )!;
                     const isSelected = selectedVariant?.color === color;
 
@@ -410,10 +411,10 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
                           const sameSizeVariant = product.variants!.find(
                             (v) =>
                               v.color === color &&
-                              v.size === selectedVariant?.size
+                              v.size === selectedVariant?.size,
                           );
                           const firstVariantOfColor = product.variants!.find(
-                            (v) => v.color === color
+                            (v) => v.color === color,
                           );
 
                           const nextVariant =
@@ -439,7 +440,7 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
                         />
                       </button>
                     );
-                  }
+                  },
                 )}
               </div>
 
@@ -585,6 +586,11 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
           </div>
         </div>
       )}
+      {/* Similar Products */}
+      <SimilarProducts
+        currentProductId={product._id}
+        category={product.category}
+      />
     </main>
   );
 }

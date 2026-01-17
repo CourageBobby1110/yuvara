@@ -4,6 +4,7 @@ import Product from "@/models/Product";
 import { auth } from "@/auth";
 
 import { getProducts } from "@/lib/products";
+import { determineCategory } from "@/lib/categories";
 import User from "@/models/User";
 import { sendNewProductNotification } from "@/lib/mail";
 
@@ -19,7 +20,7 @@ export async function GET(req: Request) {
       if (!product) {
         return NextResponse.json(
           { error: "Product not found" },
-          { status: 404 }
+          { status: 404 },
         );
       }
       return NextResponse.json(product);
@@ -56,7 +57,7 @@ export async function GET(req: Request) {
     console.error("Error fetching products:", error);
     return NextResponse.json(
       { error: "Failed to fetch products" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -75,7 +76,7 @@ export async function POST(req: Request) {
     if (!body.name || !body.price || !body.slug) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -98,8 +99,13 @@ export async function POST(req: Request) {
     if (existingProduct) {
       return NextResponse.json(
         { error: "Product with this slug already exists" },
-        { status: 400 }
+        { status: 400 },
       );
+    }
+
+    // Apply dynamic category logic
+    if (body.category) {
+      body.category = determineCategory(body.category);
     }
 
     const product = await Product.create(body);
@@ -120,7 +126,7 @@ export async function POST(req: Request) {
     console.error("Error creating product:", error);
     return NextResponse.json(
       { error: "Failed to create product" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

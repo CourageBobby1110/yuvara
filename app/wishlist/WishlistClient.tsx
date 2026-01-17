@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useCartStore } from "@/store/cart";
 import { useWishlistStore } from "@/store/wishlist";
 import { useCurrency } from "@/context/CurrencyContext";
+import { getValidUrl } from "@/lib/utils";
 import styles from "./Wishlist.module.css";
 
 interface WishlistItem {
@@ -64,10 +65,10 @@ export default function WishlistClient() {
   const handleAddToCart = (item: WishlistItem) => {
     // Filter out empty strings or whitespace-only strings
     const validSizes = item.product.sizes.filter(
-      (s) => s && s.trim().length > 0
+      (s) => s && s.trim().length > 0,
     );
     const validColors = item.product.colors.filter(
-      (c) => c && c.trim().length > 0
+      (c) => c && c.trim().length > 0,
     );
 
     // Only require selection if valid options are available
@@ -95,13 +96,13 @@ export default function WishlistClient() {
   const updatePreference = async (
     itemId: string,
     field: "selectedSize" | "selectedColor",
-    value: string
+    value: string,
   ) => {
     // Optimistic update
     setItems(
       items.map((item) =>
-        item._id === itemId ? { ...item, [field]: value } : item
-      )
+        item._id === itemId ? { ...item, [field]: value } : item,
+      ),
     );
 
     // Persist to DB (optional, but good for UX if they leave and come back)
@@ -144,7 +145,10 @@ export default function WishlistClient() {
               <div key={item._id} className={styles.card}>
                 <div className={styles.imageWrapper}>
                   <Image
-                    src={item.product.images?.[0] || "/placeholder.png"}
+                    src={
+                      getValidUrl(item.product.images?.[0]) ||
+                      "/placeholder.png"
+                    }
                     alt={item.product.name}
                     fill
                     className={styles.image}
@@ -189,7 +193,7 @@ export default function WishlistClient() {
                             updatePreference(
                               item._id,
                               "selectedSize",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           className={styles.select}
@@ -214,7 +218,7 @@ export default function WishlistClient() {
                             updatePreference(
                               item._id,
                               "selectedColor",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           className={styles.select}

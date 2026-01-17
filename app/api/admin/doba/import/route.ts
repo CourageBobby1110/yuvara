@@ -5,6 +5,7 @@ import Product from "@/models/Product";
 import axios from "axios";
 import mongoose from "mongoose";
 import crypto from "crypto";
+import { determineCategory } from "@/lib/categories";
 
 // Helper to slugify text
 function slugify(text: string) {
@@ -21,7 +22,7 @@ function slugify(text: string) {
 function generateDobaSignature(
   appKey: string,
   appSecret: string,
-  timestamp: string
+  timestamp: string,
 ) {
   const str = `${appKey}${timestamp}${appSecret}`;
   return crypto.createHash("md5").update(str).digest("hex");
@@ -39,7 +40,7 @@ export async function POST(req: Request) {
     if (!id) {
       return NextResponse.json(
         { error: "Product ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -54,7 +55,7 @@ export async function POST(req: Request) {
     if (!appKey || !appSecret) {
       return NextResponse.json(
         { error: "Doba API Key not configured" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -79,7 +80,7 @@ export async function POST(req: Request) {
       if (existing) {
         return NextResponse.json(
           { error: "Product already exists" },
-          { status: 409 }
+          { status: 409 },
         );
       }
 
@@ -103,7 +104,7 @@ export async function POST(req: Request) {
             "doba-timestamp": timestamp,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (!response.data.success) {
@@ -147,12 +148,14 @@ export async function POST(req: Request) {
     // Extract sizes/colors
     const sizes = [
       ...new Set(
-        variants.map((v: any) => v.size).filter((s: string) => s !== "Default")
+        variants.map((v: any) => v.size).filter((s: string) => s !== "Default"),
       ),
     ];
     const colors = [
       ...new Set(
-        variants.map((v: any) => v.color).filter((c: string) => c !== "Default")
+        variants
+          .map((v: any) => v.color)
+          .filter((c: string) => c !== "Default"),
       ),
     ];
 
@@ -161,7 +164,7 @@ export async function POST(req: Request) {
     if (existing) {
       return NextResponse.json(
         { error: "Product already exists" },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -171,7 +174,9 @@ export async function POST(req: Request) {
       description,
       price,
       images,
-      category: "Doba Import",
+      category: determineCategory(
+        productData.categoryName || productData.catName || "Doba Import",
+      ),
       stock: variants.reduce((acc: number, v: any) => acc + v.stock, 0),
       isFeatured: false,
       sizes: sizes as string[],
@@ -185,7 +190,7 @@ export async function POST(req: Request) {
     console.error("Doba Import Error:", error.message);
     return NextResponse.json(
       { error: error.message || "Failed to import product" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

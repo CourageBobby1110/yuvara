@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     creator: "@yuvara",
   },
   icons: {
-    icon: "/icon.png",
+    icon: ["/favicon.ico", "/icon.png"],
     shortcut: "/icon.png",
     apple: "/logo.png",
     other: {

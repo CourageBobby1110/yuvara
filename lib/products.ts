@@ -22,10 +22,25 @@ export async function getProducts(filter: ProductFilter = {}) {
     const matchStage: Record<string, any> = {};
 
     if (filter.search) {
-      matchStage.$or = [
-        { name: { $regex: filter.search, $options: "i" } },
-        { description: { $regex: filter.search, $options: "i" } },
-      ];
+      const searchTerms = filter.search.trim().split(/\s+/).filter(Boolean);
+      if (searchTerms.length > 0) {
+        matchStage.$and = searchTerms.map((term) => ({
+          $or: [
+            {
+              name: {
+                $regex: term.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"),
+                $options: "i",
+              },
+            },
+            {
+              description: {
+                $regex: term.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"),
+                $options: "i",
+              },
+            },
+          ],
+        }));
+      }
     }
 
     if (filter.category && filter.category !== "all") {
