@@ -327,7 +327,7 @@ export default function EditProductPage({
     if (isNaN(priceNum)) return null;
 
     return (
-      <div className="text-xs text-gray-500 mt-1 flex gap-2 flex-wrap">
+      <div className={styles.currencyPreviews}>
         <span>
           🇳🇬{" "}
           {new Intl.NumberFormat("en-NG", {
@@ -360,109 +360,132 @@ export default function EditProductPage({
   return (
     <div className={styles.container}>
       {/* Mobile Sticky Header */}
+      {/* Mobile Header (Non-sticky, Column) */}
       <div className={styles.mobileHeader}>
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className={styles.mobileCancelBtn}
-        >
-          Cancel
-        </button>
         <h1 className={styles.mobileTitle}>Edit Product</h1>
-        <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={submitting}
-          className={styles.mobileSaveBtn}
-        >
-          Save
-        </button>
+        <div className={styles.mobileActions}>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={submitting}
+            className={styles.mobileSaveBtn}
+          >
+            {submitting ? "Saving..." : "Save Changes"}
+          </button>
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className={styles.mobileCancelBtn}
+          >
+            Cancel
+          </button>
+        </div>
       </div>
 
       {/* Desktop Header (Hidden on Mobile) */}
-      <div className={`${styles.header} hidden md:flex`}>
+      <div className={styles.header}>
         <h1 className={styles.title}>Edit Product</h1>
-        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-          <button
-            type="button"
-            onClick={syncPrice}
-            disabled={syncingPrice}
-            className={styles.syncButton}
-          >
-            {syncingPrice ? "Syncing..." : "Sync Price (CJ)"}
-          </button>
-          {formData.lastSyncedPrice && (
-            <span className="text-xs text-gray-500">
-              {formatDistanceToNow(new Date(formData.lastSyncedPrice))} ago
-            </span>
-          )}
-        </div>
-        <div className={styles.currencyWrapper}>
-          <button
-            type="button"
-            onClick={async () => {
-              if (
-                !confirm(
-                  "This will fetch the latest stock levels from CJ for all variants.",
-                )
-              )
-                return;
-              setSyncingStock(true);
-              try {
-                const res = await fetch("/api/admin/dropshipping/sync-stock", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ productId: id }),
-                });
-                if (res.ok) {
-                  alert("Stock synced successfully!");
-                  fetchProduct(); // Reload data
-                } else {
-                  const d = await res.json();
-                  alert(d.error || "Failed to sync stock");
-                }
-              } catch (e) {
-                alert("Error syncing stock");
-              } finally {
-                setSyncingStock(false);
-              }
-            }}
-            className={styles.syncButton}
-            disabled={syncingStock}
-          >
-            {syncingStock ? "Syncing..." : "Sync Stock"}
-          </button>
-          {formData.lastSyncedStock && (
-            <span className="text-xs text-gray-500">
-              {formatDistanceToNow(new Date(formData.lastSyncedStock))} ago
-            </span>
-          )}
-
-          <select
-            value={currency}
-            onChange={(e) => setCurrency(e.target.value as any)}
-            className={styles.currencySelect}
-          >
-            <option value="USD">USD ($)</option>
-            <option value="NGN">NGN (₦)</option>
-            <option value="EUR">EUR (€)</option>
-            <option value="GBP">GBP (£)</option>
-          </select>
-        </div>
-      </div>
-
-      <form onSubmit={handleSubmit} className={styles.form}>
-        {/* Mobile Actions Card (Sync Buttons) - Visible only on mobile if needed, or keep in regular flow but styled inside a card for better touch access */}
-        <div className={`${styles.card} block md:hidden`}>
-          <h4 className="font-semibold mb-3 text-sm text-gray-500 uppercase tracking-wider">
-            Quick Actions
-          </h4>
-          <div className="flex flex-col gap-3">
+        <div className={styles.controlsRow}>
+          <div className={styles.syncGroup}>
             <button
               type="button"
               onClick={syncPrice}
               disabled={syncingPrice}
-              className={`${styles.syncButton} w-full justify-center py-3`}
+              className={styles.syncButton}
+            >
+              {syncingPrice ? "Syncing..." : "Sync Price (CJ)"}
+            </button>
+            {formData.lastSyncedPrice && (
+              <span className={styles.syncTime}>
+                {formatDistanceToNow(new Date(formData.lastSyncedPrice))} ago
+              </span>
+            )}
+          </div>
+          <div className={styles.currencyWrapper}>
+            <button
+              type="button"
+              onClick={async () => {
+                if (
+                  !confirm(
+                    "This will fetch the latest stock levels from CJ for all variants.",
+                  )
+                )
+                  return;
+                setSyncingStock(true);
+                try {
+                  const res = await fetch(
+                    "/api/admin/dropshipping/sync-stock",
+                    {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ productId: id }),
+                    },
+                  );
+                  if (res.ok) {
+                    alert("Stock synced successfully!");
+                    fetchProduct(); // Reload data
+                  } else {
+                    const d = await res.json();
+                    alert(d.error || "Failed to sync stock");
+                  }
+                } catch (e) {
+                  alert("Error syncing stock");
+                } finally {
+                  setSyncingStock(false);
+                }
+              }}
+              className={styles.syncButton}
+              disabled={syncingStock}
+            >
+              {syncingStock ? "Syncing..." : "Sync Stock"}
+            </button>
+            {formData.lastSyncedStock && (
+              <span className={styles.syncTime}>
+                {formatDistanceToNow(new Date(formData.lastSyncedStock))} ago
+              </span>
+            )}
+
+            <select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value as any)}
+              className={styles.currencySelect}
+            >
+              <option value="USD">USD ($)</option>
+              <option value="NGN">NGN (₦)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+            </select>
+          </div>
+          <div className={styles.desktopActions}>
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className={styles.desktopCancelBtn}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={submitting}
+              className={styles.desktopSaveBtn}
+            >
+              {submitting ? "Saving..." : "Save Changes"}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className={styles.form}>
+        {/* Mobile Actions Card (Sync Buttons) */}
+        <div className={`${styles.card} ${styles.mobileQuickActionsCard}`}>
+          <h4 className={styles.quickActionsTitle}>Quick Actions</h4>
+          <div className={styles.quickActionsGrid}>
+            <button
+              type="button"
+              onClick={syncPrice}
+              disabled={syncingPrice}
+              className={`${styles.syncButton} ${styles.mobileSyncButton}`}
             >
               {syncingPrice ? "Syncing..." : "Sync Price From CJ"}
             </button>
@@ -498,7 +521,7 @@ export default function EditProductPage({
                   setSyncingStock(false);
                 }
               }}
-              className={`${styles.syncButton} w-full justify-center py-3`}
+              className={`${styles.syncButton} ${styles.mobileSyncButton}`}
               disabled={syncingStock}
             >
               {syncingStock ? "Syncing..." : "Sync Stock From CJ"}
@@ -522,7 +545,7 @@ export default function EditProductPage({
             </div>
             <div>
               <label className={styles.label}>Base Price ($)</label>
-              <div className="flex gap-2">
+              <div className={styles.priceRow}>
                 <input
                   type="number"
                   name="price"
@@ -534,14 +557,7 @@ export default function EditProductPage({
                   className={styles.input}
                 />
                 {/* 10% Markup Toggle */}
-                <label
-                  className="flex items-center gap-2 cursor-pointer bg-gray-100 px-2 rounded border border-gray-300"
-                  style={{
-                    height: "42px",
-                    backgroundColor: "var(--color-bg-secondary)",
-                    borderColor: "var(--color-border-medium)",
-                  }}
-                >
+                <label className={styles.markupToggle}>
                   <input
                     type="checkbox"
                     checked={markupActive}
@@ -565,11 +581,9 @@ export default function EditProductPage({
                       }));
                       setVariants(newVariants);
                     }}
-                    className="w-4 h-4"
+                    className={styles.markupCheckbox}
                   />
-                  <span className="text-sm font-medium whitespace-nowrap hidden sm:inline">
-                    +10%
-                  </span>
+                  <span className={styles.markupLabelText}>+10%</span>
                 </label>
               </div>
               {formData.price && renderCurrencyPreviews(formData.price)}
@@ -728,9 +742,9 @@ export default function EditProductPage({
             )}
           </div>
 
-          <div style={{ marginTop: "2rem" }}>
+          <div className={styles.videoSection}>
             <label className={styles.label}>Videos</label>
-            <div className="mb-4">
+            <div className={styles.videoContainer}>
               <CloudinaryVideoUpload
                 onUpload={(url) => {
                   setVideos((prev) => [...prev, url]);
@@ -762,7 +776,7 @@ export default function EditProductPage({
 
         {/* Variants Section */}
         <div className={styles.variantsSection}>
-          <div className="flex justify-between items-center mb-4">
+          <div className={styles.sectionHeader}>
             <label className={styles.label}>Product Variants</label>
             <button
               type="button"
@@ -786,20 +800,14 @@ export default function EditProductPage({
 
           {variants.map((variant, index) => (
             <div key={index} className={styles.variantCard}>
-              <div className="flex justify-between mb-2">
+              <div className={styles.variantCardHeader}>
                 <h4 className="font-medium">Variant {index + 1}</h4>
                 <button
                   type="button"
                   onClick={() =>
                     setVariants(variants.filter((_, i) => i !== index))
                   }
-                  style={{
-                    color: "#ef4444",
-                    border: "none",
-                    background: "none",
-                    cursor: "pointer",
-                    fontSize: "0.875rem",
-                  }}
+                  className={styles.removeVariantButton}
                 >
                   Remove
                 </button>
@@ -1100,10 +1108,7 @@ export default function EditProductPage({
                 {(variant.shippingRates || []).map((rate, rIndex) => (
                   <div key={rIndex} className={styles.shippingRateItem}>
                     <div className={styles.shippingRateItemHeader}>
-                      <span
-                        className="font-bold text-gray-700"
-                        style={{ fontSize: "0.8rem" }}
-                      >
+                      <span className={styles.rateTitle}>
                         Rate #{rIndex + 1}
                       </span>
                       <button
@@ -1115,13 +1120,8 @@ export default function EditProductPage({
                           ).filter((_, i) => i !== rIndex);
                           setVariants(newVariants);
                         }}
-                        style={{
-                          color: "#ef4444",
-                          fontSize: "0.75rem",
-                          border: "none",
-                          background: "none",
-                          cursor: "pointer",
-                        }}
+                        className={styles.removeVariantButton}
+                        style={{ fontSize: "0.75rem" }}
                       >
                         Remove
                       </button>
@@ -1226,7 +1226,7 @@ export default function EditProductPage({
         <button
           type="submit"
           disabled={submitting}
-          className={`${styles.submitButton} hidden md:block`}
+          className={styles.submitButton}
         >
           {submitting ? "Saving..." : "Update Product"}
         </button>
