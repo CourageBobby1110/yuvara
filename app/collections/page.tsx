@@ -1,5 +1,6 @@
 import { getProducts, getCategories } from "@/lib/products";
 import FeaturedCollection from "@/components/FeaturedCollection";
+import ProductGridWithLoadMore from "@/components/ProductGridWithLoadMore";
 import Search from "@/components/Search";
 import ProductFilter from "@/components/ProductFilter";
 import ProductSort from "@/components/ProductSort";
@@ -68,6 +69,7 @@ export default async function CollectionsPage({
     minPrice: convertedMinPrice,
     maxPrice: convertedMaxPrice,
     sort,
+    limit: 200,
   });
 
   const categories = await getCategories();
@@ -99,10 +101,6 @@ export default async function CollectionsPage({
                 <Search />
               </Suspense>
               <div className={styles.mobileControlsRow}>
-                <span className={styles.productCount}>
-                  {products.length}{" "}
-                  {products.length === 1 ? "product" : "products"}
-                </span>
                 <Suspense>
                   <ProductSort />
                 </Suspense>
@@ -125,10 +123,6 @@ export default async function CollectionsPage({
                 </Suspense>
               </div>
               <div className={styles.sortContainer}>
-                <div className={styles.productCount}>
-                  {products.length}{" "}
-                  {products.length === 1 ? "product" : "products"}
-                </div>
                 <Suspense>
                   <ProductSort />
                 </Suspense>
@@ -142,10 +136,15 @@ export default async function CollectionsPage({
                   id="products-grid"
                   className={`animate-fade-in ${styles.productGrid}`}
                 >
-                  <FeaturedCollection
-                    products={products}
-                    title=""
-                    subtitle=""
+                  <ProductGridWithLoadMore
+                    initialProducts={products}
+                    filter={{
+                      search,
+                      category,
+                      minPrice: convertedMinPrice,
+                      maxPrice: convertedMaxPrice,
+                      sort,
+                    }}
                   />
                 </div>
               ) : (

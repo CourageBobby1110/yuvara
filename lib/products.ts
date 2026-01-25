@@ -9,6 +9,7 @@ export interface ProductFilter {
   maxPrice?: number;
   sort?: string;
   limit?: number;
+  skip?: number;
   isFeatured?: boolean;
 }
 
@@ -100,7 +101,11 @@ export async function getProducts(filter: ProductFilter = {}) {
 
     pipeline.push({ $sort: sortStage });
 
-    // 6. Limit
+    // 6. Skip and Limit
+    if (filter.skip) {
+      pipeline.push({ $skip: filter.skip });
+    }
+
     if (filter.limit) {
       pipeline.push({ $limit: filter.limit });
     }
@@ -163,7 +168,7 @@ export async function getCategories() {
 }
 
 export async function getProductBySlug(
-  slug: string
+  slug: string,
 ): Promise<ProductType | null> {
   try {
     await dbConnect();
