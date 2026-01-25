@@ -137,6 +137,13 @@ export default async function CollectionsPage({
                   className={`animate-fade-in ${styles.productGrid}`}
                 >
                   <ProductGridWithLoadMore
+                    key={JSON.stringify({
+                      search,
+                      category,
+                      minPrice: convertedMinPrice,
+                      maxPrice: convertedMaxPrice,
+                      sort,
+                    })}
                     initialProducts={products}
                     filter={{
                       search,
