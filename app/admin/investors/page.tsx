@@ -79,7 +79,7 @@ export default function AdminInvestorsPage() {
 
     if (
       !confirm(
-        `Are you sure you want to set the global profit rate to ${rate}%? This will affect ALL active investments.`
+        `Are you sure you want to set the global profit rate to ${rate}%? This will affect ALL active investments.`,
       )
     ) {
       return;
@@ -190,7 +190,7 @@ export default function AdminInvestorsPage() {
       !confirm(
         `Are you sure you want to add ₦${amount.toLocaleString()} to ${
           editingInvestor.name
-        }'s capital?`
+        }'s capital?`,
       )
     ) {
       return;
@@ -204,7 +204,7 @@ export default function AdminInvestorsPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ amount }),
-        }
+        },
       );
 
       const data = await res.json();
@@ -257,74 +257,34 @@ export default function AdminInvestorsPage() {
       </div>
 
       {/* Global Settings Card */}
-      <div
-        style={{
-          background: "white",
-          padding: "1.5rem",
-          borderRadius: "12px",
-          marginBottom: "2rem",
-          boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
-        }}
-      >
-        <h3
-          style={{ margin: "0 0 1rem 0", fontSize: "1.1rem", color: "#1f2937" }}
-        >
-          Global Investment Settings
-        </h3>
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <label
-              style={{
-                fontSize: "0.875rem",
-                color: "#6b7280",
-                marginBottom: "0.25rem",
-              }}
-            >
+      <div className={styles.globalSettingsCard}>
+        <h3 className={styles.settingsTitle}>Global Investment Settings</h3>
+        <div className={styles.settingsContent}>
+          <div className={styles.settingsInputGroup}>
+            <label className={styles.settingsLabel}>
               Monthly Profit Percentage (%)
             </label>
-            <div
-              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-            >
+            <div className={styles.settingsInputWrapper}>
               <input
                 type="number"
                 value={globalProfitRate}
                 onChange={(e) =>
                   setGlobalProfitRate(
-                    e.target.value === "" ? "" : Number(e.target.value)
+                    e.target.value === "" ? "" : Number(e.target.value),
                   )
                 }
-                style={{
-                  padding: "0.5rem",
-                  border: "1px solid #d1d5db",
-                  borderRadius: "0.375rem",
-                  width: "100px",
-                }}
+                className={styles.settingsInput}
               />
               <button
                 onClick={updateGlobalProfitRate}
                 disabled={updatingSettings}
-                style={{
-                  background: "#3b82f6",
-                  color: "white",
-                  border: "none",
-                  padding: "0.5rem 1rem",
-                  borderRadius: "0.375rem",
-                  cursor: updatingSettings ? "not-allowed" : "pointer",
-                  opacity: updatingSettings ? 0.7 : 1,
-                }}
+                className={styles.settingsButton}
               >
                 {updatingSettings ? "Updating..." : "Update Rate"}
               </button>
             </div>
           </div>
-          <p
-            style={{
-              fontSize: "0.875rem",
-              color: "#6b7280",
-              maxWidth: "400px",
-              lineHeight: "1.4",
-            }}
-          >
+          <p className={styles.settingsDescription}>
             This controls the monthly ROI for{" "}
             <strong>ALL active investors</strong>. Currently, an investment of
             ₦10,000 will yield{" "}
@@ -357,7 +317,7 @@ export default function AdminInvestorsPage() {
                 </div>
                 <span
                   className={`${styles.statusBadge} ${getStatusClass(
-                    investor.status
+                    investor.status,
                   )}`}
                 >
                   {investor.status.replace("_", " ")}
