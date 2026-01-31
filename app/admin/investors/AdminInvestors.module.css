@@ -1,255 +1,513 @@
+/* Container & Layout */
 .container {
-  padding: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 2rem);
+  min-height: 100vh;
 }
 
+/* Header Section */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
-}
-
-.addButton {
-  background-color: var(--color-primary);
-  color: #ffffff;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.addButton:hover {
-  background-color: var(--color-secondary);
-}
-
-/* Main Grid Layout */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
-  padding-bottom: 2rem;
-}
-
-.card {
-  background: var(--color-bg-primary);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  border: 1px solid var(--color-border-light);
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-direction: column;
   gap: 1rem;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-.cardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-border-light);
-}
-
-.cardBody {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.investorName {
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: 0.25rem;
-  font-size: 1rem;
-}
-
-.investorEmail {
-  font-size: 0.8125rem;
-  color: var(--color-text-secondary);
-}
-
-.row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.875rem;
-}
-
-.label {
-  color: var(--color-text-secondary);
-  font-weight: 500;
-}
-
-.value {
-  color: var(--color-text-primary);
-  font-weight: 600;
-  text-align: right;
-}
-
-.statusBadge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-}
-
-.statusActive {
-  background-color: #d1fae5;
-  color: #065f46;
-}
-
-.statusWithdrawalRequested {
-  background-color: #fef3c7;
-  color: #92400e;
-}
-
-.statusCompleted {
-  background-color: #dbeafe;
-  color: #1e40af;
-}
-
-.statusDefault {
-  background-color: #f3f4f6;
-  color: #1f2937;
-}
-
-.cardFooter {
-  margin-top: auto;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-border-light);
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
+  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
   flex-wrap: wrap;
 }
 
-.actionButton {
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  border: 1px solid #e2e8f0;
-  background: white;
-  color: #334155;
-  transition: all 0.2s;
+.title {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  color: var(--color-text-primary, #1a1a1a);
+  letter-spacing: -0.02em;
+  margin: 0;
 }
 
-.actionButton:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
-}
-
-.deleteButton {
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  border: 1px solid #fee2e2;
-  background: white;
-  color: #ef4444;
-}
-
-.deleteButton:hover {
-  background: #fef2f2;
-}
-
-.topUpButton {
-  background-color: #f0fdf4;
-  color: #166534;
-  border-color: #bbf7d0;
-}
-
-.topUpButton:hover {
-  background-color: #dcfce7;
-}
-
-/* Global Settings */
-.globalSettingsCard {
-  background: white;
-  padding: 1.5rem;
+.addButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
   border-radius: 12px;
-  margin-bottom: 2rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  white-space: nowrap;
+}
+
+.addButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.addButton:active {
+  transform: translateY(0);
+}
+
+/* Global Settings Card */
+.globalSettingsCard {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border-radius: 16px;
+  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .settingsTitle {
-  margin: 0 0 1rem 0;
-  font-size: 1.1rem;
-  color: #1f2937;
+  margin: 0 0 1.25rem 0;
+  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+  font-weight: 700;
+  color: #2d3748;
+  letter-spacing: -0.01em;
 }
 
 .settingsContent {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 1rem;
 }
 
 .settingsInputGroup {
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
 }
 
 .settingsLabel {
   font-size: 0.875rem;
-  color: #6b7280;
-  margin-bottom: 0.25rem;
+  font-weight: 600;
+  color: #4a5568;
+  letter-spacing: 0.01em;
 }
 
 .settingsInputWrapper {
   display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
 }
 
 .settingsInput {
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  width: 100px;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  width: 120px;
+  font-size: 1rem;
+  font-weight: 600;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.settingsInput:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .settingsButton {
-  background: #3b82f6;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
   cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.settingsButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
 .settingsButton:disabled {
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: 0.6;
+  transform: none;
 }
 
 .settingsDescription {
   font-size: 0.875rem;
-  color: #6b7280;
-  max-width: 400px;
-  line-height: 1.4;
-  margin: 0;
+  color: #4a5568;
+  line-height: 1.6;
+  margin: 0.5rem 0 0 0;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
 }
 
+/* Grid Layout */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+  padding-bottom: 2rem;
+}
+
+/* Card Styles */
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  border-color: #cbd5e0;
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f7fafc;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  flex: 1;
+}
+
+.investorName {
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 0.25rem;
+  font-size: clamp(1rem, 2vw, 1.125rem);
+  letter-spacing: -0.01em;
+}
+
+.investorEmail {
+  font-size: 0.8125rem;
+  color: #718096;
+  font-weight: 500;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  padding: 0.5rem 0;
+}
+
+.label {
+  color: #718096;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.value {
+  color: #2d3748;
+  font-weight: 700;
+  text-align: right;
+  font-size: 0.9375rem;
+}
+
+/* Status Badges */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.875rem;
+  border-radius: 20px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.statusActive {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  color: #065f46;
+}
+
+.statusWithdrawalRequested {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+}
+
+.statusCompleted {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1e40af;
+}
+
+.statusDefault {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  color: #1f2937;
+}
+
+/* Card Footer */
+.cardFooter {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 2px solid #f7fafc;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+}
+
+/* Action Buttons */
+.actionButton {
+  padding: 0.625rem 1.125rem;
+  border-radius: 10px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid #e2e8f0;
+  background: white;
+  color: #4a5568;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.actionButton:hover {
+  background: #f7fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.actionButton:active {
+  transform: translateY(0);
+}
+
+.deleteButton {
+  padding: 0.625rem 1.125rem;
+  border-radius: 10px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid #fee2e2;
+  background: white;
+  color: #ef4444;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.deleteButton:hover {
+  background: #fef2f2;
+  border-color: #fecaca;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.15);
+}
+
+.deleteButton:active {
+  transform: translateY(0);
+}
+
+.topUpButton {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  color: #065f46;
+  border: 2px solid #6ee7b7;
+}
+
+.topUpButton:hover {
+  background: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
+  border-color: #34d399;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modalContent {
+  background: white;
+  border-radius: 20px;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modalTitle {
+  font-size: clamp(1.375rem, 3vw, 1.75rem);
+  font-weight: 700;
+  color: #2d3748;
+  margin: 0 0 1.5rem 0;
+  letter-spacing: -0.02em;
+}
+
+.formGroup {
+  margin-bottom: 1.25rem;
+}
+
+.col {
+  flex: 1;
+  min-width: 0;
+}
+
+.input,
+select.input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  transition: all 0.2s ease;
+  background: white;
+  color: #2d3748;
+  font-weight: 500;
+}
+
+.input:focus,
+select.input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.generateLink {
+  background: none;
+  border: none;
+  color: #667eea;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.generateLink:hover {
+  color: #764ba2;
+}
+
+.modalActions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.cancelButton {
+  flex: 1;
+  padding: 0.875rem 1.5rem;
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
+  background: white;
+  color: #4a5568;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.cancelButton:hover {
+  background: #f7fafc;
+  border-color: #cbd5e1;
+}
+
+.saveButton {
+  flex: 1;
+  padding: 0.875rem 1.5rem;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  min-width: 120px;
+}
+
+.saveButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.saveButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Tablet Styles */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  }
+}
+
+/* Mobile Responsive Styles */
 @media (max-width: 768px) {
   .container {
     padding: 1rem;
@@ -261,41 +519,138 @@
     gap: 1rem;
   }
 
+  .title {
+    text-align: center;
+  }
+
   .addButton {
+    width: 100%;
+    padding: 1rem 1.5rem;
+  }
+
+  .globalSettingsCard {
+    padding: 1.25rem;
+  }
+
+  .settingsContent {
+    gap: 1rem;
+  }
+
+  .settingsInputWrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .settingsInput {
     width: 100%;
   }
 
-  /* Global Settings Mobile */
-  .settingsContent {
-    flex-direction: column;
-    align-items: flex-start;
+  .settingsButton {
+    width: 100%;
+    padding: 1rem 1.5rem;
   }
 
   .settingsDescription {
-    max-width: 100%;
+    font-size: 0.8125rem;
   }
 
-  /* Grid Mobile */
   .grid {
     grid-template-columns: 1fr;
-    max-width: 500px;
-    margin: 0 auto;
     gap: 1rem;
+  }
+
+  .card {
+    padding: 1.25rem;
+  }
+
+  .cardHeader {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .statusBadge {
+    align-self: flex-start;
+  }
+
+  .cardFooter {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .actionButton,
+  .deleteButton,
+  .topUpButton {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    text-align: center;
+  }
+
+  .modalContent {
+    padding: 1.5rem;
+    max-height: 85vh;
+  }
+
+  .modalActions {
+    flex-direction: column;
+  }
+
+  .cancelButton,
+  .saveButton {
+    width: 100%;
+  }
+
+  .row .col {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Small Mobile Styles */
+@media (max-width: 480px) {
+  .container {
+    padding: 0.75rem;
+  }
+
+  .title {
+    font-size: 1.375rem;
   }
 
   .card {
     padding: 1rem;
   }
 
-  .cardFooter {
-    justify-content: stretch;
+  .investorName {
+    font-size: 1rem;
   }
 
-  .actionButton,
-  .deleteButton,
-  .topUpButton {
-    flex: 1;
-    text-align: center;
-    padding: 0.75rem;
+  .investorEmail {
+    font-size: 0.75rem;
   }
+
+  .modalContent {
+    padding: 1.25rem;
+    border-radius: 16px;
+  }
+
+  .modalTitle {
+    font-size: 1.25rem;
+  }
+}
+
+/* Smooth Scrolling for Modal */
+.modalContent::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modalContent::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.modalContent::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 10px;
+}
+
+.modalContent::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
 }
