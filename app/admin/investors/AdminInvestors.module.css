@@ -25,7 +25,7 @@
 }
 
 .addButton {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--color-primary, #000000);
   color: #ffffff;
   padding: 0.75rem 1.5rem;
   border-radius: 12px;
@@ -34,13 +34,14 @@
   font-weight: 600;
   font-size: 0.9375rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   white-space: nowrap;
 }
 
 .addButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  background: var(--color-luxury-gold, #996515);
+  box-shadow: 0 6px 20px rgba(153, 101, 21, 0.35);
 }
 
 .addButton:active {
@@ -49,12 +50,12 @@
 
 /* Global Settings Card */
 .globalSettingsCard {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: var(--color-bg-secondary, #f9fafb);
   padding: clamp(1.25rem, 3vw, 2rem);
   border-radius: 16px;
   margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--color-border-light, #e5e7eb);
 }
 
 .settingsTitle {
@@ -104,12 +105,12 @@
 
 .settingsInput:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: var(--color-luxury-gold, #996515);
+  box-shadow: 0 0 0 3px rgba(153, 101, 21, 0.1);
 }
 
 .settingsButton {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--color-primary, #000000);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -118,12 +119,13 @@
   font-weight: 600;
   font-size: 0.9375rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .settingsButton:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  background: var(--color-luxury-gold, #996515);
+  box-shadow: 0 6px 20px rgba(153, 101, 21, 0.35);
 }
 
 .settingsButton:disabled {
@@ -140,7 +142,7 @@
   padding: 1rem;
   background: rgba(255, 255, 255, 0.6);
   border-radius: 8px;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid var(--color-luxury-gold, #996515);
 }
 
 /* Grid Layout */
@@ -173,7 +175,7 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background: var(--color-luxury-gold, #996515);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -257,22 +259,22 @@
 }
 
 .statusActive {
-  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  background: #d1fae5;
   color: #065f46;
 }
 
 .statusWithdrawalRequested {
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  background: #fef3c7;
   color: #92400e;
 }
 
 .statusCompleted {
-  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  background: #dbeafe;
   color: #1e40af;
 }
 
 .statusDefault {
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  background: #f3f4f6;
   color: #1f2937;
 }
 
@@ -337,13 +339,13 @@
 }
 
 .topUpButton {
-  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  background: #d1fae5;
   color: #065f46;
   border: 2px solid #6ee7b7;
 }
 
 .topUpButton:hover {
-  background: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
+  background: #a7f3d0;
   border-color: #34d399;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
@@ -428,14 +430,14 @@ select.input {
 .input:focus,
 select.input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: var(--color-luxury-gold, #996515);
+  box-shadow: 0 0 0 3px rgba(153, 101, 21, 0.1);
 }
 
 .generateLink {
   background: none;
   border: none;
-  color: #667eea;
+  color: var(--color-luxury-gold, #996515);
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
@@ -445,7 +447,7 @@ select.input:focus {
 }
 
 .generateLink:hover {
-  color: #764ba2;
+  color: var(--color-luxury-gold-dark, #724b0f);
 }
 
 .modalActions {
@@ -479,19 +481,20 @@ select.input:focus {
   padding: 0.875rem 1.5rem;
   border-radius: 10px;
   border: none;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--color-primary, #000000);
   color: white;
   font-weight: 600;
   font-size: 0.9375rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   min-width: 120px;
 }
 
 .saveButton:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  background: var(--color-luxury-gold, #996515);
+  box-shadow: 0 6px 20px rgba(153, 101, 21, 0.35);
 }
 
 .saveButton:disabled {
