@@ -28,7 +28,7 @@ export async function GET(req: Request) {
     if (!investor) {
       return NextResponse.json(
         { error: "Investor not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -49,7 +49,7 @@ export async function GET(req: Request) {
     const now = new Date();
 
     let cycleStartDate = new Date(
-      investor.cycleStartDate || investor.startDate
+      investor.cycleStartDate || investor.startDate,
     );
     let activeCapital = investor.activeCapital || investor.initialAmount;
 
@@ -62,7 +62,7 @@ export async function GET(req: Request) {
     // We loop to handle if multiple cycles passed
     while (true) {
       const cycleEndTime = new Date(
-        cycleStartDate.getTime() + TOTAL_CYCLE_DAYS * 24 * 60 * 60 * 1000
+        cycleStartDate.getTime() + TOTAL_CYCLE_DAYS * 24 * 60 * 60 * 1000,
       );
 
       if (now >= cycleEndTime) {
@@ -83,7 +83,7 @@ export async function GET(req: Request) {
         const withdrawnInCurrentCycle = investor.withdrawnProfit || 0;
         const remainingProfit = Math.max(
           0,
-          profitForCycle - withdrawnInCurrentCycle
+          profitForCycle - withdrawnInCurrentCycle,
         );
 
         // COMPOUND: Add remaining profit to Active Capital
@@ -130,7 +130,7 @@ export async function GET(req: Request) {
     const currentDiffTime = Math.abs(now.getTime() - cycleStartDate.getTime());
     const daysElapsed = Math.min(
       Math.floor(currentDiffTime / (1000 * 60 * 60 * 24)),
-      CYCLE_DURATION_DAYS // Cap visual growth at 30 days
+      CYCLE_DURATION_DAYS, // Cap visual growth at 30 days
     );
 
     // Profit Calculation
@@ -178,6 +178,7 @@ export async function GET(req: Request) {
         bankDetails: investor.bankDetails,
         rolloverHistory: investor.rolloverHistory.reverse(), // Send history (newest first)
         pendingTopUp: investor.pendingTopUp, // Send pending
+        termsAccepted: investor.termsAccepted || false,
       },
       withdrawals: withdrawals, // Send withdrawals
       growth: {
@@ -198,7 +199,7 @@ export async function GET(req: Request) {
     console.error("Investor Data Error:", error);
     return NextResponse.json(
       { error: "Failed to fetch data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -89,8 +89,15 @@ const InvestorSchema = new Schema(
       ],
       default: [],
     },
+    termsAccepted: {
+      type: Boolean,
+      default: false,
+    },
+    termsAcceptedDate: {
+      type: Date,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Pre-save hook to ensure activeCapital is set
@@ -141,6 +148,8 @@ export interface IInvestor extends mongoose.Document {
     date: Date;
     status: string;
   }[];
+  termsAccepted: boolean;
+  termsAcceptedDate?: Date;
 }
 
 const Investor =

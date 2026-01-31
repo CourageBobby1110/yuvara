@@ -24,6 +24,7 @@ interface InvestorData {
     };
     rolloverHistory: any[];
     pendingTopUp: number;
+    termsAccepted: boolean;
   };
   withdrawals: any[];
   growth: {
@@ -41,6 +42,8 @@ interface InvestorData {
   };
 }
 
+import InvestmentAgreementModal from "@/components/InvestmentAgreementModal";
+
 export default function InvestmentDashboardPage() {
   const [data, setData] = useState<InvestorData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -55,6 +58,10 @@ export default function InvestmentDashboardPage() {
     accountName: "",
   });
   const [updatingBank, setUpdatingBank] = useState(false);
+
+  // Terms State
+  const [showAgreement, setShowAgreement] = useState(false);
+  const [agreeing, setAgreeing] = useState(false);
 
   const router = useRouter();
   const { formatPrice, exchangeRates } = useCurrency();
@@ -82,6 +89,12 @@ export default function InvestmentDashboardPage() {
       if (!res.ok) throw new Error("Failed to fetch data");
       const jsonData = await res.json();
       setData(jsonData);
+
+      // Check for Terms Acceptance
+      if (jsonData.investor && !jsonData.investor.termsAccepted) {
+        setShowAgreement(true);
+      }
+
       if (jsonData.investor.bankDetails) {
         setBankDetails(jsonData.investor.bankDetails);
       }
@@ -89,6 +102,39 @@ export default function InvestmentDashboardPage() {
       setError("Failed to load dashboard data");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAgreeTerms = async () => {
+    setAgreeing(true);
+    const token = localStorage.getItem("investorToken");
+    try {
+      const res = await fetch("/api/invest/accept-terms", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to accept terms");
+
+      // Update local state
+      if (data) {
+        setData({
+          ...data,
+          investor: {
+            ...data.investor,
+            termsAccepted: true,
+          },
+        });
+      }
+      setShowAgreement(false);
+      alert("Agreement Signed Successfully!");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to sign agreement. Please try again.");
+    } finally {
+      setAgreeing(false);
     }
   };
 
@@ -213,6 +259,15 @@ export default function InvestmentDashboardPage() {
 
   return (
     <div className={styles.container}>
+      {showAgreement && (
+        <InvestmentAgreementModal
+          investorName={investor.name}
+          amount={investor.initialAmount}
+          startDate={investor.startDate}
+          onAgree={handleAgreeTerms}
+        />
+      )}
+
       {/* Header */}
       <header className={styles.header}>
         <div className={styles.headerContent}>
@@ -387,8 +442,8 @@ export default function InvestmentDashboardPage() {
                               w.status === "approved"
                                 ? "bg-green-100 text-green-700"
                                 : w.status === "rejected"
-                                ? "bg-red-100 text-red-700"
-                                : "bg-yellow-100 text-yellow-700"
+                                  ? "bg-red-100 text-red-700"
+                                  : "bg-yellow-100 text-yellow-700"
                             }`}
                           >
                             {w.status}
