@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useCurrency } from "@/context/CurrencyContext";
 import styles from "./Dashboard.module.css";
 import YuvaraLoader from "@/components/YuvaraLoader";
+import { Download } from "lucide-react";
 
 interface InvestorData {
   investor: {
@@ -732,6 +733,16 @@ export default function InvestmentDashboardPage() {
               </button>
             </form>
           </div>
+        </div>
+        {/* Download Agreement Section */}
+        <div className={styles.downloadSection}>
+          <button
+            onClick={() => window.open("/invest/agreement", "_blank")}
+            className={styles.downloadButton}
+          >
+            <Download size={20} />
+            Download Signed Agreement
+          </button>
         </div>
       </main>
     </div>

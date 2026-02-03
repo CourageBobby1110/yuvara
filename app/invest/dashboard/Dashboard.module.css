@@ -412,3 +412,35 @@
     border-radius: 1rem;
   }
 }
+
+.downloadSection {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.downloadButton {
+  background-color: #000;
+  color: #fff;
+  padding: 1rem 2.5rem;
+  border-radius: 9999px; /* Fully curved */
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
+.downloadButton:hover {
+  background-color: #333;
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
