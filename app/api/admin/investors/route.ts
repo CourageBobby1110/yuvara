@@ -19,7 +19,7 @@ export async function GET(req: Request) {
     console.error("Fetch Investors Error:", error);
     return NextResponse.json(
       { error: "Failed to fetch investors" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -33,27 +33,31 @@ export async function POST(req: Request) {
 
     await dbConnect();
     const body = await req.json();
-    const { name, email, password, accessPin, initialAmount, status } = body;
-
+    const {
+      name,
+      email,
+      password,
+      accessPin,
+      initialAmount,
+      status,
+      customProfitRate,
+    } = body;
     // Check uniqueness
     const existingEmail = await Investor.findOne({ email });
     if (existingEmail) {
       return NextResponse.json(
         { error: "Email already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
-
     const existingPin = await Investor.findOne({ accessPin });
     if (existingPin) {
       return NextResponse.json(
         { error: "Access Pin already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
-
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const newInvestor = await Investor.create({
       name,
       email,
@@ -61,6 +65,10 @@ export async function POST(req: Request) {
       accessPin,
       initialAmount,
       status,
+      customProfitRate:
+        customProfitRate !== "" && customProfitRate !== undefined
+          ? Number(customProfitRate)
+          : null,
       startDate: new Date(),
     });
 
@@ -70,7 +78,7 @@ export async function POST(req: Request) {
       name,
       accessPin,
       initialAmount,
-      password
+      password,
     );
 
     return NextResponse.json(newInvestor, { status: 201 });
@@ -78,7 +86,7 @@ export async function POST(req: Request) {
     console.error("Create Investor Error:", error);
     return NextResponse.json(
       { error: "Failed to create investor" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

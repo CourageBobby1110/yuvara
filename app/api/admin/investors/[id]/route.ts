@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 
 export async function PUT(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth();
@@ -31,7 +31,7 @@ export async function PUT(
     if (!investor) {
       return NextResponse.json(
         { error: "Investor not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -39,6 +39,10 @@ export async function PUT(
     if (email) investor.email = email;
     if (initialAmount !== undefined) investor.initialAmount = initialAmount;
     if (status) investor.status = status;
+    if (body.customProfitRate !== undefined) {
+      investor.customProfitRate =
+        body.customProfitRate !== "" ? Number(body.customProfitRate) : null;
+    }
 
     if (password) {
       investor.password = await bcrypt.hash(password, 10);
@@ -50,7 +54,7 @@ export async function PUT(
         if (existing) {
           return NextResponse.json(
             { error: "Access Pin already in use" },
-            { status: 409 }
+            { status: 409 },
           );
         }
         investor.accessPin = accessPin;
@@ -73,14 +77,14 @@ export async function PUT(
     console.error("Error updating investor:", error);
     return NextResponse.json(
       { error: "Failed to update investor" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth();
@@ -96,7 +100,7 @@ export async function DELETE(
     if (!deletedInvestor) {
       return NextResponse.json(
         { error: "Investor not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -105,7 +109,7 @@ export async function DELETE(
     console.error("Error deleting investor:", error);
     return NextResponse.json(
       { error: "Failed to delete investor" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -14,6 +14,7 @@ interface Investor {
   status: string;
   startDate: string;
   pendingTopUp: number;
+  customProfitRate?: number;
 }
 
 export default function AdminInvestorsPage() {
@@ -29,6 +30,7 @@ export default function AdminInvestorsPage() {
     accessPin: "",
     initialAmount: 0,
     status: "active",
+    customProfitRate: "",
   });
   // Top Up State
   const [isTopUpModalOpen, setIsTopUpModalOpen] = useState(false);
@@ -155,6 +157,11 @@ export default function AdminInvestorsPage() {
       accessPin: investor.accessPin,
       initialAmount: investor.initialAmount,
       status: investor.status,
+      customProfitRate:
+        investor.customProfitRate !== undefined &&
+        investor.customProfitRate !== null
+          ? investor.customProfitRate.toString()
+          : "",
     });
     setIsModalOpen(true);
   };
@@ -167,6 +174,7 @@ export default function AdminInvestorsPage() {
       accessPin: "",
       initialAmount: 0,
       status: "active",
+      customProfitRate: "",
     });
   };
 
@@ -341,6 +349,15 @@ export default function AdminInvestorsPage() {
                     {new Date(investor.startDate).toLocaleDateString()}
                   </span>
                 </div>
+                <div className={styles.row}>
+                  <span className={styles.label}>Profit Rate</span>
+                  <span className={styles.value}>
+                    {investor.customProfitRate !== undefined &&
+                    investor.customProfitRate !== null
+                      ? `${investor.customProfitRate}% (Custom)`
+                      : `${globalProfitRate}% (Global)`}
+                  </span>
+                </div>
                 {investor.pendingTopUp > 0 && (
                   <div className={styles.row}>
                     <span
@@ -469,6 +486,36 @@ export default function AdminInvestorsPage() {
                   }
                   className={styles.input}
                   required
+                  min="0"
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label className={styles.label}>
+                  Custom Profit Rate (%)
+                  <span
+                    style={{
+                      fontSize: "0.8rem",
+                      color: "#6b7280",
+                      fontWeight: "normal",
+                      marginLeft: "0.5rem",
+                    }}
+                  >
+                    (Leave blank to use Global Rate: {globalProfitRate}%)
+                  </span>
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.customProfitRate}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      customProfitRate: e.target.value,
+                    })
+                  }
+                  className={styles.input}
+                  placeholder={`Global Rate: ${globalProfitRate}%`}
                   min="0"
                 />
               </div>

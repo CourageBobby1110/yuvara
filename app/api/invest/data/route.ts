@@ -38,7 +38,12 @@ export async function GET(req: Request) {
     if (!settings) {
       settings = await GlobalSettings.create({ investmentProfitRate: 50 });
     }
-    const profitRate = settings.investmentProfitRate / 100;
+    const globalRate = settings.investmentProfitRate / 100;
+    const profitRate =
+      investor.customProfitRate !== null &&
+      investor.customProfitRate !== undefined
+        ? investor.customProfitRate / 100
+        : globalRate;
 
     // --- Maturity Cycle & Rollover Logic ---
     const CYCLE_DURATION_DAYS = 30; // 30 Days Cycle
@@ -192,7 +197,7 @@ export async function GET(req: Request) {
         totalProfit: currentGrowth,
         availableProfit: availableProfit,
         accumulatedProfit: Math.max(0, activeCapital - investor.initialAmount),
-        profitRate: settings.investmentProfitRate, // Send rate to frontend
+        profitRate: profitRate * 100, // Send effective rate to frontend
       },
     });
   } catch (error) {

@@ -63,6 +63,10 @@ const InvestorSchema = new Schema(
         isTopUp: { type: Boolean, default: false },
       },
     ],
+    customProfitRate: {
+      type: Number,
+      default: null,
+    },
     pendingTopUp: {
       type: Number,
       default: 0,
@@ -135,6 +139,7 @@ export interface IInvestor extends mongoose.Document {
     newCapital: number;
     isTopUp: boolean;
   }[];
+  customProfitRate?: number;
   pendingTopUp: number;
   messages: {
     title: string;
