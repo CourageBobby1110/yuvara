@@ -223,6 +223,15 @@ export default function AdminSidebar() {
             Messages
           </Link>
           <Link
+            href="/admin/whatsapp"
+            className={`${styles.link} ${
+              isActive("/admin/whatsapp") ? styles.active : ""
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            WhatsApp Bot
+          </Link>
+          <Link
             href="/admin/favorites"
             className={`${styles.link} ${
               isActive("/admin/favorites") ? styles.active : ""
