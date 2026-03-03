@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
               code: couponCode,
               user: referrer._id,
               batch: activeBatch._id,
-              maxAmount: 5000,
+              maxAmount: 1000,
             });
 
             // Update Batch

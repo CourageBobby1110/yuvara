@@ -147,6 +147,52 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        {session?.user?.referralCode && (
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>My Referral Code</h2>
+            <div className={styles.inputGroup}>
+              <div 
+                style={{
+                  display: "flex", 
+                  alignItems: "center", 
+                  border: "1px dashed var(--color-border-light)", 
+                  padding: "0.875rem 1rem", 
+                  borderRadius: "0.5rem",
+                  backgroundColor: "var(--color-bg-secondary)",
+                  justifyContent: "space-between"
+                }}
+              >
+                <code style={{ fontSize: "1.125rem", fontWeight: "700", letterSpacing: "0.05em", color: "var(--color-text-primary)" }}>
+                  {session.user.referralCode}
+                </code>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigator.clipboard.writeText(session.user.referralCode || "");
+                    alert("Referral code copied to clipboard!");
+                  }}
+                  style={{
+                    background: "var(--color-text-primary)",
+                    border: "none",
+                    color: "var(--color-bg-primary)",
+                    cursor: "pointer",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "0.25rem",
+                    fontWeight: "600",
+                    fontSize: "0.75rem"
+                  }}
+                >
+                  Copy
+                </button>
+              </div>
+              <p style={{ fontSize: "0.875rem", color: "var(--color-text-light)", marginTop: "0.5rem", lineHeight: "1.4" }}>
+                Share this code with friends! When 20 friends sign up with your code, you'll earn a 1,000 NGN discount coupon.
+              </p>
+            </div>
+          </div>
+        )}
+
         <button
           type="submit"
           disabled={loading}
