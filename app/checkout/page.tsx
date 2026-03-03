@@ -303,11 +303,6 @@ export default function CheckoutPage() {
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (status === "unauthenticated") {
-      router.push("/auth/signup?callbackUrl=/checkout");
-      return;
-    }
-
     setLoading(true);
 
     try {
@@ -380,7 +375,7 @@ export default function CheckoutPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             amount: amountInNGN,
-            email: session?.user?.email,
+            email: session?.user?.email || formData.email,
             affiliateCode, // Send affiliate code
           }),
         });
@@ -782,8 +777,6 @@ export default function CheckoutPage() {
                         </svg>
                         Processing...
                       </>
-                    ) : status === "unauthenticated" ? (
-                      "Sign in to Pay"
                     ) : (
                       `Pay ${formatPrice(calculateTotal())}`
                     )}

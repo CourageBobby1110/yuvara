@@ -128,8 +128,8 @@ export default function ProductFilter({
             >
               <option value="all">All Categories</option>
               {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
+                <option key={cat} value={cat} title={cat}>
+                  {cat?.split(/[\/>]/).pop()?.trim() || cat}
                 </option>
               ))}
             </select>

@@ -37,9 +37,6 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
 
     await dbConnect();
     const {
@@ -82,9 +79,35 @@ export async function POST(req: Request) {
       coupon.isUsed = true;
       coupon.usedAt = new Date();
 
+      // Find or Create User
+      let userId = session?.user?.id;
+      const email = session?.user?.email || shippingAddress.email;
+
+      if (!userId && email) {
+        const User = (await import("@/models/User")).default;
+        let user = await User.findOne({ email: email.toLowerCase() });
+        
+        if (!user) {
+          user = await User.create({
+            email: email.toLowerCase(),
+            name: email.split("@")[0],
+            isGuest: true,
+            role: "user",
+          });
+        }
+        userId = user._id;
+      }
+
+      if (!userId) {
+        return NextResponse.json(
+          { error: "Could not identify or create user" },
+          { status: 400 }
+        );
+      }
+
       // Create Order
       const order = await Order.create({
-        user: session.user.id,
+        user: userId,
         items: items.map((item: any) => ({
           ...item,
           cjVid: item.cjVid,

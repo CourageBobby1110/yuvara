@@ -4,9 +4,6 @@ import { auth } from "@/auth";
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (!session || !session.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
 
     const body = await req.json();
     const { amount, email, affiliateCode } = body;
@@ -23,7 +20,7 @@ export async function POST(req: Request) {
       amount: Math.round(amount * 100), // Paystack expects amount in kobo
       callback_url: `${process.env.NEXTAUTH_URL}/checkout/callback`,
       metadata: {
-        userId: session.user.email, // Using email as ID for now since we might not have DB ID in session
+        userId: session?.user?.email || email, // Using email as ID for now since we might not have DB ID in session
         affiliateCode, // Pass to Paystack
       },
     };

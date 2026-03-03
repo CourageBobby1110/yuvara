@@ -155,7 +155,9 @@ export default function ProductCard({
       {/* Product Info */}
       <div className={styles.info}>
         <div className={styles.headerRow}>
-          <p className={styles.category}>{product.category}</p>
+          <p className={styles.category} title={product.category}>
+            {product.category?.split(/[\/>]/).pop()?.trim() || product.category}
+          </p>
 
           {/* Reviews */}
           <div className={styles.reviews}>

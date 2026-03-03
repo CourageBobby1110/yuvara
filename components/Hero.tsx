@@ -25,8 +25,9 @@ export default function Hero({ categories, heroImage }: HeroProps) {
               <Link
                 href={`/collections?category=${encodeURIComponent(category)}`}
                 className={styles.categoryLink}
+                title={category}
               >
-                {category}
+                {category?.split(/[\/>]/).pop()?.trim() || category}
               </Link>
             </li>
           ))}
@@ -89,8 +90,9 @@ export default function Hero({ categories, heroImage }: HeroProps) {
                 key={category}
                 href={`/collections?category=${encodeURIComponent(category)}`}
                 className={styles.mobileCategoryTab}
+                title={category}
               >
-                {category}
+                {category?.split(/[\/>]/).pop()?.trim() || category}
               </Link>
             ))}
           </motion.div>

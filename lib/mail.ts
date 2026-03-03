@@ -801,3 +801,58 @@ export async function sendIssueReportEmail(
     console.error("Failed to send issue report email", error);
   }
 }
+
+export async function sendClaimAccountEmail(email: string, token: string) {
+  const baseUrl = process.env.NEXTAUTH_URL;
+  if (!baseUrl) {
+    throw new Error("NEXTAUTH_URL is missing");
+  }
+
+  const claimUrl = `${baseUrl}/auth/claim-account?token=${token}&email=${encodeURIComponent(email)}`;
+
+  const mailOptions = {
+    from: `Yuvara <${process.env.EMAIL_FROM}>`,
+    to: email,
+    subject: "Complete your Yuvara Account Setup",
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="text-align: center; padding: 20px 0; border-bottom: 1px solid #eee;">
+          <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 2px; color: #000;">YUVARA</h1>
+        </div>
+        
+        <div style="padding: 20px 0;">
+          <h2 style="color: #333; margin-top: 0;">Thanks for shopping at Yuvara!</h2>
+          <p style="color: #666; line-height: 1.6;">
+            We noticed you placed an order as a guest. To track your orders and manage your details easily in the future, you can finish setting up your account by creating a password below.
+          </p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${claimUrl}" 
+               style="background: #000; color: #fff; padding: 14px 40px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">
+              Create Password
+            </a>
+          </div>
+          
+          <p style="color: #666; line-height: 1.6;">
+            Or copy and paste this link into your browser:
+          </p>
+          <p style="color: #999; word-break: break-all; font-size: 14px;">
+            ${claimUrl}
+          </p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px;">
+          <p>&copy; ${new Date().getFullYear()} Yuvara. All rights reserved.</p>
+        </div>
+      </div>
+    `,
+  };
+
+  try {
+    await sendMailWithRetry(mailOptions);
+    console.log(`Account claim email sent to ${email}`);
+  } catch (error) {
+    console.error("Failed to send claim account email", error);
+    throw error;
+  }
+}

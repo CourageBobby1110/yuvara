@@ -1,0 +1,30 @@
+{
+  "srv": [
+    {
+      "name": "ac-8nggafi-shard-00-01.pnnmbp1.mongodb.net",
+      "port": 27017,
+      "priority": 0,
+      "weight": 0,
+      "type": "SRV"
+    },
+    {
+      "name": "ac-8nggafi-shard-00-02.pnnmbp1.mongodb.net",
+      "port": 27017,
+      "priority": 0,
+      "weight": 0,
+      "type": "SRV"
+    },
+    {
+      "name": "ac-8nggafi-shard-00-00.pnnmbp1.mongodb.net",
+      "port": 27017,
+      "priority": 0,
+      "weight": 0,
+      "type": "SRV"
+    }
+  ],
+  "txt": [
+    [
+      "authSource=admin&replicaSet=atlas-uzmu48-shard-0"
+    ]
+  ]
+}

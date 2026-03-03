@@ -1,6 +1,7 @@
 "use client";
 
 import { useCurrency } from "@/context/CurrencyContext";
+import { Currency, DEFAULT_RATES } from "@/lib/currency";
 import { useState, useRef, useEffect } from "react";
 
 export default function CurrencySelector({
@@ -12,7 +13,7 @@ export default function CurrencySelector({
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const currencies = ["USD", "NGN", "EUR", "GBP"] as const;
+  const currencies = Object.keys(DEFAULT_RATES) as Currency[];
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

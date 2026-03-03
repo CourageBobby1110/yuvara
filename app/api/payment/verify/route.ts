@@ -10,10 +10,6 @@ import {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const body = await req.json();
     const {
       reference,
@@ -71,15 +67,31 @@ export async function POST(req: Request) {
     await dbConnect();
 
     // Find user or use session
-    let userId = session.user.id;
+    let userId = session?.user?.id;
 
-    // If session.user.id is missing (sometimes happens), try to find by email
-    if (!userId && session.user.email) {
+    const email = session?.user?.email || shippingAddress.email;
+
+    if (!userId && email) {
       const User = (await import("@/models/User")).default;
-      const user = await User.findOne({ email: session.user.email });
-      if (user) {
-        userId = user._id;
+      let user = await User.findOne({ email: email.toLowerCase() });
+      
+      if (!user) {
+        // Create Shadow Account
+        user = await User.create({
+          email: email.toLowerCase(),
+          name: email.split("@")[0],
+          isGuest: true,
+          role: "user",
+        });
       }
+      userId = user._id;
+    }
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Could not identify or create user" },
+        { status: 400 }
+      );
     }
 
     // Handle Gift Card Redemption

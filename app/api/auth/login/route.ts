@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 export async function POST(req: Request) {
   try {
     await dbConnect();
-    const { email, password } = await req.json();
+    let { email, password } = await req.json();
 
     if (!email || !password) {
       return NextResponse.json(
@@ -15,6 +15,8 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
+    email = email.toLowerCase();
 
     const user = await User.findOne({ email }).select("+password");
 

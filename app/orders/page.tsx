@@ -43,7 +43,14 @@ export default function UserOrdersPage() {
     try {
       const res = await fetch("/api/orders");
       const data = await res.json();
-      setOrders(data);
+      if (res.ok) {
+        setOrders(data);
+      } else {
+        setOrders([]);
+        if (res.status === 401) {
+           window.location.href = "/auth/signin";
+        }
+      }
     } catch (error) {
       console.error("Failed to fetch orders", error);
     } finally {

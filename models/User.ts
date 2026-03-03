@@ -32,6 +32,10 @@ const UserSchema = new Schema(
     emailVerified: {
       type: Date,
     },
+    isGuest: {
+      type: Boolean,
+      default: false,
+    },
     referralCode: {
       type: String,
       unique: true,

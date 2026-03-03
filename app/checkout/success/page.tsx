@@ -1,7 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import styles from "./Success.module.css";
 
 export default function OrderSuccessPage() {
+  const { data: session } = useSession();
+
   return (
     <div className={styles.container}>
       <div className={styles.card}>
@@ -30,9 +35,17 @@ export default function OrderSuccessPage() {
           <Link href="/" className={styles.primaryButton}>
             Continue Shopping
           </Link>
-          <Link href="/orders" className={styles.secondaryButton}>
-            View My Orders
-          </Link>
+          {session?.user ? (
+            <Link href="/orders" className={styles.secondaryButton}>
+              View My Orders
+            </Link>
+          ) : (
+            <div className={styles.secondaryMessage}>
+              <p style={{ fontSize: "14px", color: "#666", marginTop: "1rem" }}>
+                A confirmation has been sent to your email. You can claim your guest account from the email to track this order!
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

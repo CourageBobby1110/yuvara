@@ -368,7 +368,9 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
               </div>
             </div>
             <div className={styles.meta}>
-              <p className={styles.category}>{product.category}</p>
+              <p className={styles.category} title={product.category}>
+                {product.category?.split(/[\/>]/).pop()?.trim() || product.category}
+              </p>
               {product.reviewsEnabled && (
                 <div className={styles.ratingWrapper}>
                   <Star size={18} fill="#fbbf24" color="#fbbf24" />

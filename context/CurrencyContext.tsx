@@ -33,7 +33,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
 
         if (
           data.currency &&
-          ["USD", "NGN", "EUR", "GBP"].includes(data.currency)
+          Object.keys(DEFAULT_RATES).includes(data.currency)
         ) {
           setCurrency(data.currency as Currency);
         } else if (data.country_code === "NG") {

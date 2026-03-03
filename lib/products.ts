@@ -45,7 +45,10 @@ export async function getProducts(filter: ProductFilter = {}) {
     }
 
     if (filter.category && filter.category !== "all") {
-      matchStage.category = filter.category;
+      const safeCategory = filter.category.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+      matchStage.category = {
+        $regex: new RegExp(`(^|[\\\\/>]\\s*)${safeCategory}$`, "i")
+      };
     }
 
     if (filter.minPrice !== undefined || filter.maxPrice !== undefined) {
@@ -159,8 +162,9 @@ export async function getProducts(filter: ProductFilter = {}) {
 export async function getCategories() {
   try {
     await dbConnect();
-    const categories = await Product.distinct("category");
-    return categories;
+    const categories: string[] = await Product.distinct("category");
+    const shortNames = categories.map((cat) => cat.split(/[\/>]/).pop()?.trim() || cat);
+    return Array.from(new Set(shortNames)).sort();
   } catch (error) {
     console.error("Error fetching categories:", error);
     return [];

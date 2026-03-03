@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   try {
     await dbConnect();
 
-    const { email, password, name, referralCode } = await req.json();
+    let { email, password, name, referralCode } = await req.json();
 
     // Validate input
     if (!email || !password) {
@@ -31,6 +31,9 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Normalize email to lowercase
+    email = email.toLowerCase();
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
