@@ -32,17 +32,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Normalize email to lowercase
-    email = email.toLowerCase();
+    email = email.trim();
 
     // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ 
+      email: { $regex: new RegExp(`^${email}$`, "i") } 
+    });
     if (existingUser) {
       return NextResponse.json(
         { error: "User already exists" },
         { status: 400 }
       );
     }
+
+    // Normalize email to lowercase for consistent storage format
+    email = email.toLowerCase();
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);

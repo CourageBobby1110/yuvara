@@ -12,10 +12,14 @@ export default function SignInForm({ callbackUrl }: { callbackUrl: string }) {
 
   return (
     <form
-      action={async (formData) => {
+      onSubmit={async (e) => {
+        e.preventDefault();
         setLoading(true);
         setError("");
+        
+        const formData = new FormData(e.currentTarget);
         formData.append("redirectTo", callbackUrl);
+        
         try {
           const res = await handleSignIn(formData);
           if (res?.error) {
@@ -23,7 +27,6 @@ export default function SignInForm({ callbackUrl }: { callbackUrl: string }) {
             setLoading(false);
           }
         } catch (e) {
-          // If it's a redirect, it will be handled by Next.js
           console.error(e);
           setLoading(false);
         }

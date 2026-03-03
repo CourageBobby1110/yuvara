@@ -9,14 +9,18 @@ export async function POST(req: NextRequest) {
   try {
     await dbConnect();
 
-    const { email } = await req.json();
+    let { email } = await req.json();
 
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
+    email = email.trim();
+
     // Find user by email
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const user = await User.findOne({ 
+      email: { $regex: new RegExp(`^${email}$`, "i") } 
+    });
 
     // For security, always return success even if user doesn't exist
     // This prevents email enumeration attacks

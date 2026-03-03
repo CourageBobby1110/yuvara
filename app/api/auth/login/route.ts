@@ -16,9 +16,11 @@ export async function POST(req: Request) {
       );
     }
 
-    email = email.toLowerCase();
+    email = email.trim();
 
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ 
+      email: { $regex: new RegExp(`^${email}$`, "i") } 
+    }).select("+password");
 
     if (!user || !user.password) {
       return NextResponse.json(

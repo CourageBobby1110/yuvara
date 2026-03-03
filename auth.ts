@@ -38,11 +38,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
-        const email = (credentials.email as string).toLowerCase();
+        const email = (credentials.email as string).trim();
 
-        const user = await User.findOne({ email }).select(
-          "+password"
-        );
+        const user = await User.findOne({ 
+          email: { $regex: new RegExp(`^${email}$`, "i") } 
+        }).select("+password");
 
         if (!user || !user.password) {
           return null;
