@@ -1,80 +1,199 @@
+/* ===== Contact Page - Premium Design ===== */
+
 .container {
-  max-width: 56rem;
+  max-width: 72rem;
   margin: 0 auto;
-  padding: 3rem 1rem;
+  padding: 2rem 1rem 4rem;
 }
 
-.title {
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
-  margin-bottom: 2rem;
+/* ===== Hero Section ===== */
+.hero {
   text-align: center;
+  margin-bottom: 3rem;
+  padding: 2.5rem 1rem;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 3rem;
-}
-
-.infoSection {
-  display: flex;
-  flex-direction: column;
-}
-
-.sectionTitle {
-  font-size: 1.25rem;
+.heroLabel {
+  display: inline-block;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--color-luxury-gold);
+  background: rgba(153, 101, 21, 0.08);
+  padding: 0.35rem 1rem;
+  border-radius: 100px;
   margin-bottom: 1rem;
 }
 
-.description {
-  color: var(--color-text-secondary);
-  margin-bottom: 1.5rem;
+.title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0.75rem 0;
+  line-height: 1.15;
 }
 
-.contactList {
+.heroText {
+  font-size: 1.05rem;
+  color: var(--color-text-secondary);
+  max-width: 32rem;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ===== Contact Cards ===== */
+.contactCards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 3.5rem;
+}
+
+.contactCard {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  align-items: center;
+  text-align: center;
+  padding: 2rem 1.5rem;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-light);
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
 }
 
-.contactItem {
+.contactCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--color-luxury-gold-dark),
+    var(--color-luxury-gold),
+    var(--color-luxury-gold-light)
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.contactCard:hover {
+  border-color: var(--color-luxury-gold-light);
+  box-shadow: var(--shadow-gold);
+  transform: translateY(-4px);
+}
+
+.contactCard:hover::before {
+  opacity: 1;
+}
+
+.cardIconWrap {
+  width: 3.25rem;
+  height: 3.25rem;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  background: rgba(153, 101, 21, 0.08);
+  margin-bottom: 1rem;
+  transition: background 0.3s ease;
 }
 
-.icon {
+.contactCard:hover .cardIconWrap {
+  background: rgba(153, 101, 21, 0.15);
+}
+
+.cardIcon {
   width: 1.5rem;
   height: 1.5rem;
-  color: var(--color-text-light);
-  margin-top: 0.25rem;
-  margin-right: 0.75rem;
+  color: var(--color-luxury-gold);
 }
 
-.contactLabel {
-  font-weight: 500;
+.cardTitle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  margin: 0 0 0.35rem;
+}
+
+.cardValue {
+  font-size: 1.05rem;
+  font-weight: 600;
   color: var(--color-text-primary);
+  margin: 0 0 0.75rem;
+  word-break: break-word;
 }
 
-.contactValue {
+.cardAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-luxury-gold);
+  transition: gap 0.2s ease;
+}
+
+.contactCard:hover .cardAction {
+  gap: 0.6rem;
+}
+
+.cardSubtext {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  margin: 0;
+}
+
+/* ===== Form Section ===== */
+.formSection {
+  max-width: 44rem;
+  margin: 0 auto;
+}
+
+.formHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.formTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.formSubtitle {
+  font-size: 0.95rem;
   color: var(--color-text-secondary);
+  margin: 0;
 }
 
 .formCard {
-  background-color: var(--color-bg-primary);
+  background: var(--color-bg-primary);
   padding: 2rem;
   border-radius: 1rem;
-  box-shadow: var(--shadow-sm);
   border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-sm);
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
 }
 
 .inputGroup {
@@ -84,86 +203,164 @@
 
 .label {
   display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: var(--color-text-secondary);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.4rem;
 }
 
 .input,
 .textarea {
   width: 100%;
-  border-radius: 0.5rem;
-  border: 1px solid var(--color-border-light);
-  padding: 0.5rem 0.75rem;
+  border-radius: 0.6rem;
+  border: 1.5px solid var(--color-border-light);
+  padding: 0.7rem 0.9rem;
+  font-size: 0.95rem;
+  color: var(--color-text-primary);
+  background: var(--color-bg-secondary);
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .input:focus,
 .textarea:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 1px var(--color-primary);
+  border-color: var(--color-luxury-gold);
+  box-shadow: 0 0 0 3px rgba(153, 101, 21, 0.1);
+  background: var(--color-bg-primary);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--color-text-light);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 7rem;
 }
 
 .submitButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   width: 100%;
-  background-color: var(--color-text-primary);
-  color: var(--color-bg-primary);
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
+  padding: 0.85rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: var(--color-text-primary);
   border: none;
+  border-radius: 0.6rem;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .submitButton:hover {
-  background-color: var(--color-text-secondary);
+  background: var(--color-secondary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.submitButton:active {
+  transform: translateY(0);
 }
 
 .submitButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
 }
 
-.successMessage {
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
-  font-size: 0.875rem;
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
 }
 
-.errorMessage {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
-  font-size: 0.875rem;
-}
-
-/* Responsive */
-@media (min-width: 640px) {
-  .container {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
-@media (min-width: 768px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
+/* ===== Messages ===== */
+.successMessage {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  padding: 0.85rem 1rem;
+  border-radius: 0.6rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.errorMessage {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  padding: 0.85rem 1rem;
+  border-radius: 0.6rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* ===== Responsive ===== */
+@media (min-width: 640px) {
+  .container {
+    padding: 3rem 1.5rem 5rem;
+  }
+
+  .title {
+    font-size: 2.75rem;
+  }
+
+  .contactCards {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
 @media (min-width: 1024px) {
   .container {
-    padding-left: 2rem;
-    padding-right: 2rem;
+    padding: 3.5rem 2rem 5rem;
+  }
+
+  .hero {
+    padding: 3rem 1rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .title {
+    font-size: 3rem;
+  }
+
+  .contactCards {
+    gap: 1.5rem;
+  }
+
+  .formCard {
+    padding: 2.5rem;
   }
 }

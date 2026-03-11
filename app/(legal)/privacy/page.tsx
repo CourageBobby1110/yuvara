@@ -76,7 +76,7 @@ export default function PrivacyPolicy() {
         <h2 className={styles.sectionTitle}>5. Contact Us</h2>
         <p>
           If you have any questions about this privacy policy or our privacy
-          practices, please contact us at support@yuvara.com.
+          practices, please contact us at support@yuvarastore.com.
         </p>
       </div>
     </div>

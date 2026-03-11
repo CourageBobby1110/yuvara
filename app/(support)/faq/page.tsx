@@ -21,7 +21,7 @@ export default function FAQ() {
     {
       question: "Can I change or cancel my order?",
       answer:
-        "We process orders quickly, but if you need to make a change, please contact us immediately at support@yuvara.com. If the order hasn't shipped, we'll do our best to accommodate your request.",
+        "We process orders quickly, but if you need to make a change, please contact us immediately at support@yuvarastore.com. If the order hasn't shipped, we'll do our best to accommodate your request.",
     },
     {
       question: "How do I determine my size?",

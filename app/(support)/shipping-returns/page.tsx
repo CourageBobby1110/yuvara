@@ -43,7 +43,7 @@ export default function ShippingReturns() {
         <h3 className={styles.subSectionTitle}>How to Initiate a Return</h3>
         <p>
           To start a return, please contact our support team at
-          support@yuvara.com with your order number and reason for return. We
+          support@yuvarastore.com with your order number and reason for return. We
           will provide you with a return shipping label and instructions on how
           and where to send your package.
         </p>
