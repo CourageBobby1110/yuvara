@@ -81,6 +81,7 @@ import FacebookPixel from "@/components/FacebookPixel";
 import KlaviyoScript from "@/components/KlaviyoScript";
 import TikTokPixel from "@/components/TikTokPixel";
 import ReferralHandler from "@/components/ReferralHandler";
+import CapacitorHandler from "@/components/CapacitorHandler";
 
 export default async function RootLayout({
   children,
@@ -120,6 +121,7 @@ export default async function RootLayout({
         <KlaviyoScript id={klaviyoId} />
         <TikTokPixel id={tiktokId} />
         <ReferralHandler />
+        <CapacitorHandler />
       </body>
     </html>
   );
