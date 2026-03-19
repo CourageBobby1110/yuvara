@@ -31,7 +31,8 @@ android {
 
 // Custom task to copy the APK to the public folder
 tasks.register('copyApkToPublic', Copy) {
-    from("${buildDir}/outputs/apk/debug/yuvara.apk")
+    dependsOn 'assembleDebug'
+    from("${layout.buildDirectory.get().asFile}/outputs/apk/debug/yuvara.apk")
     into("../../../public")
 }
 
