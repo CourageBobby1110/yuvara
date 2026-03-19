@@ -108,6 +108,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/download" className={styles.link}>
+                  Download App
+                </Link>
+              </li>
+              <li>
                 <Link href="/privacy" className={styles.link}>
                   Privacy Policy
                 </Link>
