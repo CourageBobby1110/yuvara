@@ -29,6 +29,12 @@ android {
     }
 }
 
+// Custom task to copy the APK to the public folder
+tasks.register('copyApkToPublic', Copy) {
+    from("${buildDir}/outputs/apk/debug/yuvara.apk")
+    into("../../../public")
+}
+
 repositories {
     flatDir{
         dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
