@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
-import { App } from "@capacitor/app";
 
 export default function CapacitorHandler() {
   useEffect(() => {
     // Check if we are running on a native platform
     const setupBackButton = async () => {
       try {
+        const { App } = await import("@capacitor/app");
+        
         await App.addListener("backButton", (data) => {
           if (data.canGoBack) {
             window.history.back();
@@ -25,7 +26,13 @@ export default function CapacitorHandler() {
 
     return () => {
       // Clean up listeners if necessary
-      App.removeAllListeners();
+      const cleanup = async () => {
+        try {
+          const { App } = await import("@capacitor/app");
+          App.removeAllListeners();
+        } catch (e) {}
+      };
+      cleanup();
     };
   }, []);
 
