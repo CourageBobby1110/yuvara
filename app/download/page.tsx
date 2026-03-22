@@ -107,7 +107,7 @@ export default function DownloadPage() {
             }}></div>
             <div style={{ position: "relative", zIndex: 1 }}>
               <Image 
-                src="/images/app-mockup.png" 
+                src="/images/app-mockup-flagship.png" 
                 alt="Yuvara App" 
                 width={450} 
                 height={750} 
