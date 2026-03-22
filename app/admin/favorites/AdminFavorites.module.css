@@ -1,384 +1,346 @@
-/* Container */
 .container {
-  padding: 1rem;
-  max-width: 80rem;
+  padding: 1.5rem 1rem;
+  max-width: 1400px;
   margin: 0 auto;
+  min-height: 100vh;
+  background-color: var(--color-bg-secondary);
 }
 
-/* Header */
 .header {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 2px solid var(--color-border-light);
 }
 
 .title {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 2.25rem;
+  font-weight: 900;
+  color: var(--color-primary);
+  letter-spacing: -0.05em;
   margin: 0 0 0.5rem 0;
-  color: #111;
-  line-height: 1.2;
+  text-transform: uppercase;
+  line-height: 1;
 }
 
 .subtitle {
-  color: #4b5563;
-  font-size: 0.875rem;
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
   margin: 0;
-  line-height: 1.5;
 }
 
-/* Mobile Card List */
+/* Mobile View - Cards */
 .mobileCardList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .mobileCardList {
+    display: none;
+  }
+}
+
+.favoriteCard {
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid var(--color-border-light);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.favoriteCard:hover {
+  border-color: var(--color-luxury-gold);
+  box-shadow: var(--shadow-gold);
+}
+
+.cardHeader {
+  padding: 1.25rem;
+  background: linear-gradient(135deg, rgba(249, 250, 251, 1) 0%, rgba(243, 244, 246, 1) 100%);
+  border-bottom: 1px solid var(--color-border-light);
+  display: flex;
+  gap: 1rem;
+}
+
+.cardImageWrapper {
+  position: relative;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid var(--color-border-light);
+  background: #ffffff;
+  flex-shrink: 0;
+}
+
+.productImage {
+  object-fit: cover;
+}
+
+.cardProductInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.cardProductName {
+  font-weight: 800;
+  color: var(--color-primary);
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.cardProductPrice {
+  font-weight: 900;
+  color: var(--color-luxury-gold);
+  font-size: 1.1rem;
+}
+
+.cardBody {
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.favoriteCard {
-  background-color: #fff;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  border: 1px solid #f3f4f6;
-  padding: 1rem;
+.cardRow {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  transition: box-shadow 0.2s, transform 0.2s;
-}
-
-.favoriteCard:active {
-  transform: scale(0.99);
-}
-
-.cardHeader {
-  display: flex;
-  gap: 0.75rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid #f3f4f6;
-}
-
-.cardImageWrapper {
-  position: relative;
-  width: 4rem;
-  height: 4rem;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  background-color: #f3f4f6;
-  flex-shrink: 0;
-}
-
-.cardProductInfo {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   gap: 0.25rem;
 }
 
-.cardProductName {
-  font-weight: 600;
-  color: #111827;
-  font-size: 0.938rem;
-  margin: 0;
-  line-height: 1.4;
-}
-
-.cardProductPrice {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
-  line-height: 1.4;
-}
-
-.cardBody {
-  display: flex;
-  flex-direction: column;
-  gap: 0.625rem;
-}
-
-.cardRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 0.5rem;
-}
-
 .cardLabel {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #6b7280;
+  font-size: 0.7rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.025em;
-  min-width: 4rem;
+  letter-spacing: 0.1em;
+  color: var(--color-text-light);
 }
 
 .cardValue {
-  font-size: 0.875rem;
-  color: #111827;
-  text-align: right;
-  flex: 1;
-  min-width: 0;
-}
-
-.cardUserName {
-  font-weight: 500;
-  color: #111827;
-  margin: 0 0 0.125rem 0;
-  line-height: 1.4;
-}
-
-.cardUserEmail {
-  font-size: 0.813rem;
-  color: #6b7280;
-  margin: 0;
-  line-height: 1.4;
-  word-break: break-word;
-}
-
-.cardFooter {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 0.75rem;
-  border-top: 1px solid #f3f4f6;
+  flex-wrap: wrap;
   gap: 0.5rem;
 }
 
-.cardDate {
-  font-size: 0.813rem;
-  color: #6b7280;
-  line-height: 1.4;
+.cardUserName {
+  font-weight: 800;
+  color: var(--color-primary);
+  font-size: 0.95rem;
+  margin: 0;
 }
 
-/* Table Card */
+.cardUserEmail {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  word-break: break-all;
+  margin: 0;
+}
+
+.variantBadge {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  text-transform: uppercase;
+  border: 1px solid var(--color-border-light);
+}
+
+.cardFooter {
+  padding: 1rem 1.25rem;
+  background: #ffffff;
+  border-top: 1px solid var(--color-border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cardDate {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-text-light);
+  text-transform: uppercase;
+}
+
+/* Desktop View - Table */
 .tableCard {
   display: none;
 }
 
-.tableWrapper {
+@media (min-width: 1024px) {
+  .tableCard {
+    display: block;
+    background: #ffffff;
+    border-radius: 1rem;
+    border: 1px solid var(--color-border-light);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+}
+
+.tableContainer {
+  width: 100%;
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 640px;
-}
-
-.thead {
-  background-color: #f9fafb;
-  border-bottom: 1px solid #f3f4f6;
 }
 
 .th {
-  padding: 0.75rem 1rem;
+  padding: 1.25rem 1.5rem;
+  background-color: var(--color-bg-secondary);
+  border-bottom: 2px solid var(--color-border-light);
   text-align: left;
   font-size: 0.75rem;
-  font-weight: 600;
-  color: #111827;
-  white-space: nowrap;
-  line-height: 1.4;
+  font-weight: 800;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .thRight {
   text-align: right;
 }
 
-.tbody {
-  background-color: #fff;
-}
-
-.tr {
-  border-bottom: 1px solid #f3f4f6;
-  transition: background-color 0.2s;
-}
-
-.tr:hover {
-  background-color: #f9fafb;
-}
-
-.tr:last-child {
-  border-bottom: none;
-}
-
 .td {
-  padding: 0.875rem 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-border-light);
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
   vertical-align: middle;
-  font-size: 0.875rem;
 }
 
 .tdRight {
   text-align: right;
 }
 
-/* Product Cell */
+.tr:hover {
+  background-color: rgba(249, 250, 251, 1);
+}
+
 .productCell {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1.25rem;
 }
 
 .imageWrapper {
   position: relative;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 3.5rem;
+  height: 3.5rem;
   border-radius: 0.5rem;
   overflow: hidden;
-  background-color: #f3f4f6;
+  border: 1px solid var(--color-border-light);
+  background: #ffffff;
   flex-shrink: 0;
-}
-
-.productImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
 }
 
 .productInfo {
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
-  min-width: 0;
 }
 
 .productName {
-  font-weight: 500;
-  color: #111827;
-  margin: 0;
-  line-height: 1.4;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-weight: 800;
+  color: var(--color-primary);
+  font-size: 0.95rem;
 }
 
 .productPrice {
-  font-size: 0.813rem;
-  color: #6b7280;
-  margin: 0;
-  line-height: 1.4;
+  font-weight: 900;
+  color: var(--color-luxury-gold);
 }
 
-/* User Cell */
 .userInfo {
   display: flex;
   flex-direction: column;
-  gap: 0.125rem;
-  min-width: 0;
 }
 
 .userName {
-  font-weight: 500;
-  color: #111827;
-  margin: 0;
-  line-height: 1.4;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-weight: 800;
+  color: var(--color-primary);
 }
 
 .userEmail {
-  font-size: 0.813rem;
-  color: #6b7280;
-  margin: 0;
-  line-height: 1.4;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
 }
 
-/* Variant Cell */
 .variantInfo {
-  font-size: 0.813rem;
-  color: #4b5563;
-  line-height: 1.5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
 }
 
-.variantBadge {
-  display: inline-block;
-  margin-right: 0.5rem;
-  padding: 0.25rem 0.5rem;
-  background-color: #f3f4f6;
-  border-radius: 0.25rem;
-  font-size: 0.688rem;
-  font-weight: 500;
-  color: #374151;
-  white-space: nowrap;
-}
-
-/* Date Cell */
 .dateText {
-  font-size: 0.813rem;
-  color: #6b7280;
-  white-space: nowrap;
-  line-height: 1.4;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
 }
 
-/* Actions */
+/* Action Button */
 .sendButton {
+  padding: 0.75rem 1.25rem;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 0.25rem;
+  font-weight: 800;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 0.5rem 1rem;
-  font-size: 0.813rem;
-  font-weight: 500;
-  color: #fff;
-  background-color: #000;
-  border-radius: 0.5rem;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s, transform 0.2s;
-  outline: none;
-  white-space: nowrap;
-  min-width: 80px;
+  gap: 0.5rem;
 }
 
 .sendButton:hover:not(:disabled) {
-  background-color: #1f2937;
-}
-
-.sendButton:active:not(:disabled) {
-  transform: scale(0.98);
+  background-color: var(--color-luxury-gold);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-gold);
 }
 
 .sendButton:disabled {
   opacity: 0.5;
-  cursor: not-allowed;
+  cursor: checked;
 }
 
+/* Utilities */
 .spinner {
   animation: spin 1s linear infinite;
-  margin-right: 0.5rem;
-  height: 0.875rem;
-  width: 0.875rem;
-  color: #fff;
-  flex-shrink: 0;
-}
-
-.spinnerCircle {
-  opacity: 0.25;
-}
-
-.spinnerPath {
-  opacity: 0.75;
+  width: 1rem;
+  height: 1rem;
 }
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-/* Empty State */
 .emptyState {
-  padding: 2rem 1rem;
   text-align: center;
-  color: #6b7280;
-  font-size: 0.875rem;
-  line-height: 1.6;
+  padding: 5rem 2rem;
+  background: #ffffff;
+  border: 2px dashed var(--color-border-light);
+  border-radius: 1rem;
+  color: var(--color-text-muted);
+  font-weight: 700;
+  font-size: 1.2rem;
 }
 
 /* Loader */
@@ -386,245 +348,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 300px;
+  min-height: 400px;
 }
 
 .loader {
-  height: 2.5rem;
-  width: 2.5rem;
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid var(--color-border-light);
+  border-top-color: var(--color-luxury-gold);
   border-radius: 50%;
-  border-top: 2px solid #000;
-  border-bottom: 2px solid #000;
-  border-left: 2px solid transparent;
-  border-right: 2px solid transparent;
   animation: spin 1s linear infinite;
-}
-
-/* Mobile Small - max-width 480px */
-@media (max-width: 480px) {
-  .container {
-    padding: 0.75rem;
-  }
-
-  .header {
-    margin-bottom: 1rem;
-  }
-
-  .title {
-    font-size: 1.25rem;
-  }
-
-  .subtitle {
-    font-size: 0.813rem;
-  }
-
-  .sendButton {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.75rem;
-    min-width: 70px;
-  }
-
-  .spinner {
-    height: 0.75rem;
-    width: 0.75rem;
-  }
-
-  .emptyState {
-    padding: 1.5rem 0.75rem;
-    font-size: 0.813rem;
-  }
-
-  .loaderContainer {
-    min-height: 250px;
-  }
-
-  .loader {
-    height: 2rem;
-    width: 2rem;
-  }
-}
-
-/* Tablet - 640px */
-@media (min-width: 640px) {
-  .container {
-    padding: 1.25rem;
-  }
-
-  .header {
-    margin-bottom: 1.75rem;
-  }
-
-  .title {
-    font-size: 1.625rem;
-  }
-
-  .subtitle {
-    font-size: 0.938rem;
-  }
-
-  .sendButton {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-    min-width: 90px;
-  }
-
-  .spinner {
-    height: 1rem;
-    width: 1rem;
-  }
-
-  .emptyState {
-    padding: 2.5rem 1.25rem;
-  }
-
-  .loaderContainer {
-    min-height: 350px;
-  }
-
-  .loader {
-    height: 2.75rem;
-    width: 2.75rem;
-  }
-}
-
-/* Desktop - 768px */
-@media (min-width: 768px) {
-  .mobileCardList {
-    display: none;
-  }
-
-  .tableCard {
-    display: block;
-    background-color: #fff;
-    border-radius: 0.75rem;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    border: 1px solid #f3f4f6;
-    overflow: hidden;
-  }
-
-  .container {
-    padding: 1.5rem;
-  }
-
-  .header {
-    margin-bottom: 2rem;
-  }
-
-  .title {
-    font-size: 1.875rem;
-  }
-
-  .subtitle {
-    font-size: 1rem;
-  }
-
-  .table {
-    min-width: 640px;
-  }
-
-  .th {
-    padding: 1rem 1.5rem;
-    font-size: 0.875rem;
-  }
-
-  .td {
-    padding: 1rem 1.5rem;
-  }
-
-  .imageWrapper {
-    width: 3rem;
-    height: 3rem;
-  }
-
-  .productCell {
-    gap: 1rem;
-  }
-
-  .productName {
-    font-size: 0.875rem;
-  }
-
-  .productPrice {
-    font-size: 0.875rem;
-  }
-
-  .userName {
-    font-size: 0.875rem;
-  }
-
-  .userEmail {
-    font-size: 0.875rem;
-  }
-
-  .variantInfo {
-    font-size: 0.875rem;
-  }
-
-  .variantBadge {
-    font-size: 0.75rem;
-  }
-
-  .dateText {
-    font-size: 0.875rem;
-  }
-
-  .sendButton {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-    min-width: 100px;
-  }
-
-  .emptyState {
-    padding: 3rem 1.5rem;
-    font-size: 0.938rem;
-  }
-
-  .loaderContainer {
-    min-height: 400px;
-  }
-
-  .loader {
-    height: 3rem;
-    width: 3rem;
-  }
-}
-
-/* Large Desktop - 1024px */
-@media (min-width: 1024px) {
-  .title {
-    font-size: 2rem;
-  }
-
-  .subtitle {
-    font-size: 1.063rem;
-  }
-
-  .th {
-    padding: 1.125rem 1.5rem;
-  }
-
-  .td {
-    padding: 1.125rem 1.5rem;
-  }
-
-  .sendButton {
-    padding: 0.5rem 1.25rem;
-    min-width: 110px;
-  }
-}
-
-/* Extra Large Desktop - 1280px */
-@media (min-width: 1280px) {
-  .container {
-    padding: 2rem;
-  }
-
-  .title {
-    font-size: 2.25rem;
-  }
-
-  .emptyState {
-    padding: 4rem 2rem;
-    font-size: 1rem;
-  }
 }

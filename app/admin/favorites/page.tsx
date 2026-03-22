@@ -99,15 +99,15 @@ export default function AdminFavoritesPage() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>User Favorites</h1>
+        <h1 className={styles.title}>Wishlists</h1>
         <p className={styles.subtitle}>
-          View and manage items users have added to their wishlist.
+          Premium insights into user trends and desired collections.
         </p>
       </div>
 
       <div className={styles.mobileCardList}>
         {favorites.length === 0 ? (
-          <div className={styles.emptyState}>No favorites found.</div>
+          <div className={styles.emptyState}>No wishlist items trending yet.</div>
         ) : (
           favorites.map((item) => {
             if (!item.product || !item.user) return null;
@@ -134,25 +134,23 @@ export default function AdminFavoritesPage() {
 
                 <div className={styles.cardBody}>
                   <div className={styles.cardRow}>
-                    <span className={styles.cardLabel}>User</span>
-                    <div className={styles.cardValue}>
-                      <p className={styles.cardUserName}>{item.user.name}</p>
-                      <p className={styles.cardUserEmail}>{item.user.email}</p>
-                    </div>
+                    <span className={styles.cardLabel}>Investor</span>
+                    <p className={styles.cardUserName}>{item.user.name}</p>
+                    <p className={styles.cardUserEmail}>{item.user.email}</p>
                   </div>
 
                   {(item.selectedSize || item.selectedColor) && (
                     <div className={styles.cardRow}>
-                      <span className={styles.cardLabel}>Variant</span>
+                      <span className={styles.cardLabel}>Selection</span>
                       <div className={styles.cardValue}>
                         {item.selectedSize && (
                           <span className={styles.variantBadge}>
-                            Size: {item.selectedSize}
+                            {item.selectedSize}
                           </span>
                         )}
                         {item.selectedColor && (
                           <span className={styles.variantBadge}>
-                            Color: {item.selectedColor}
+                            {item.selectedColor}
                           </span>
                         )}
                       </div>
@@ -162,40 +160,23 @@ export default function AdminFavoritesPage() {
 
                 <div className={styles.cardFooter}>
                   <span className={styles.cardDate}>
-                    {new Date(item.createdAt).toLocaleDateString()}
+                    {new Date(item.createdAt).toLocaleDateString(undefined, {
+                      month: "short",
+                      day: "numeric",
+                    })}
                   </span>
                   <button
                     onClick={() => handleSendEmail(item)}
                     disabled={sendingEmail === item._id}
                     className={styles.sendButton}
                   >
-                    {sendingEmail === item._id ? (
-                      <>
-                        <svg
-                          className={styles.spinner}
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className={styles.spinnerCircle}
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className={styles.spinnerPath}
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        Sending...
-                      </>
-                    ) : (
-                      "Send Email"
+                    {sendingEmail === item._id && (
+                      <svg className={styles.spinner} viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="4" opacity="0.25" />
+                        <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4" />
+                      </svg>
                     )}
+                    {sendingEmail === item._id ? "Sending..." : "Engage"}
                   </button>
                 </div>
               </div>
@@ -205,22 +186,22 @@ export default function AdminFavoritesPage() {
       </div>
 
       <div className={styles.tableCard}>
-        <div className={styles.tableWrapper}>
+        <div className={styles.tableContainer}>
           <table className={styles.table}>
-            <thead className={styles.thead}>
+            <thead>
               <tr>
                 <th className={styles.th}>Product</th>
                 <th className={styles.th}>User</th>
-                <th className={styles.th}>Variant</th>
-                <th className={styles.th}>Date Added</th>
-                <th className={`${styles.th} ${styles.thRight}`}>Actions</th>
+                <th className={styles.th}>Selection</th>
+                <th className={styles.th}>Date</th>
+                <th className={`${styles.th} ${styles.thRight}`}>Engagement</th>
               </tr>
             </thead>
-            <tbody className={styles.tbody}>
+            <tbody>
               {favorites.length === 0 ? (
                 <tr>
                   <td colSpan={5} className={styles.emptyState}>
-                    No favorites found.
+                    No wishlist items found.
                   </td>
                 </tr>
               ) : (
@@ -260,12 +241,12 @@ export default function AdminFavoritesPage() {
                         <div className={styles.variantInfo}>
                           {item.selectedSize && (
                             <span className={styles.variantBadge}>
-                              Size: {item.selectedSize}
+                              {item.selectedSize}
                             </span>
                           )}
                           {item.selectedColor && (
                             <span className={styles.variantBadge}>
-                              Color: {item.selectedColor}
+                              {item.selectedColor}
                             </span>
                           )}
                           {!item.selectedSize && !item.selectedColor && "-"}
@@ -280,33 +261,13 @@ export default function AdminFavoritesPage() {
                           disabled={sendingEmail === item._id}
                           className={styles.sendButton}
                         >
-                          {sendingEmail === item._id ? (
-                            <>
-                              <svg
-                                className={styles.spinner}
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                              >
-                                <circle
-                                  className={styles.spinnerCircle}
-                                  cx="12"
-                                  cy="12"
-                                  r="10"
-                                  stroke="currentColor"
-                                  strokeWidth="4"
-                                ></circle>
-                                <path
-                                  className={styles.spinnerPath}
-                                  fill="currentColor"
-                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                ></path>
-                              </svg>
-                              Sending...
-                            </>
-                          ) : (
-                            "Send Email"
+                          {sendingEmail === item._id && (
+                            <svg className={styles.spinner} viewBox="0 0 24 24">
+                              <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="4" opacity="0.25" />
+                              <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4" />
+                            </svg>
                           )}
+                          {sendingEmail === item._id ? "Sending..." : "Send Offer"}
                         </button>
                       </td>
                     </tr>
