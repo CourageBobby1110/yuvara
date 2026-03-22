@@ -85,9 +85,9 @@ export default function AdminWithdrawalsPage() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Withdrawal Requests</h1>
+        <h1 className={styles.title}>Withdrawals</h1>
         <button className={styles.refreshButton} onClick={fetchWithdrawals}>
-          <span>↻</span> Refresh
+          <span>↻</span> Refresh List
         </button>
       </div>
 
@@ -100,21 +100,21 @@ export default function AdminWithdrawalsPage() {
       ) : (
         <div className={styles.grid}>
           {withdrawals.length === 0 ? (
-            <div className={styles.emptyState} style={{ gridColumn: "1 / -1" }}>
+            <div className={styles.emptyState}>
               No withdrawal requests found.
             </div>
           ) : (
             withdrawals.map((item) => (
               <div key={item._id} className={styles.card}>
                 <div className={styles.cardHeader}>
-                  <div>
+                  <div className={styles.investorInfo}>
                     <div className={styles.investorName}>
                       {item.investor?.name ||
                         item.bankDetails?.accountName ||
-                        "Unknown"}
+                        "Unknown Investor"}
                     </div>
                     <div className={styles.investorEmail}>
-                      {item.investor?.email || "No email linked"}
+                      {item.investor?.email || "No email available"}
                     </div>
                   </div>
                   <span
@@ -127,37 +127,41 @@ export default function AdminWithdrawalsPage() {
                 </div>
 
                 <div className={styles.cardBody}>
-                  <div className={styles.row}>
-                    <span className={styles.label}>Amount</span>
-                    <span className={styles.amount}>
+                  <div className={styles.amountRow}>
+                    <span className={styles.amountLabel}>Requested Amount</span>
+                    <span className={styles.amountValue}>
                       ₦{item.amount.toLocaleString()}
                     </span>
                   </div>
-                  <div className={styles.row}>
-                    <span className={styles.label}>Date</span>
-                    <span className={styles.value}>
-                      {new Date(item.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
+                  
                   <div className={styles.bankDetails}>
-                    <div className={styles.row}>
-                      <span className={styles.bankLabel}>Bank</span>
-                      <span className={styles.bankValue}>
+                    <div className={styles.detailRow}>
+                      <span className={styles.detailLabel}>Bank</span>
+                      <span className={styles.detailValue}>
                         {item.bankDetails?.bankName}
                       </span>
                     </div>
-                    <div className={styles.row}>
-                      <span className={styles.bankLabel}>Acct No.</span>
-                      <span className={styles.bankValue}>
+                    <div className={styles.detailRow}>
+                      <span className={styles.detailLabel}>Account No.</span>
+                      <span className={styles.detailValue}>
                         {item.bankDetails?.accountNumber}
                       </span>
                     </div>
-                    <div className={styles.row}>
-                      <span className={styles.bankLabel}>Acct Name</span>
-                      <span className={styles.bankValue}>
+                    <div className={styles.detailRow}>
+                      <span className={styles.detailLabel}>Account Name</span>
+                      <span className={styles.detailValue}>
                         {item.bankDetails?.accountName}
                       </span>
                     </div>
+                  </div>
+
+                  <div className={styles.dateRow}>
+                    <span>Request Date</span>
+                    <span>{new Date(item.createdAt).toLocaleDateString(undefined, {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}</span>
                   </div>
                 </div>
 
@@ -183,7 +187,7 @@ export default function AdminWithdrawalsPage() {
                         processingId === item._id ? styles.disabledButton : ""
                       }`}
                     >
-                      {processingId === item._id ? "..." : "Approve"}
+                      {processingId === item._id ? "Processing..." : "Approve"}
                     </button>
                   </div>
                 )}
