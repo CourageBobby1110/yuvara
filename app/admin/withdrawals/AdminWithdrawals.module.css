@@ -219,6 +219,18 @@
   font-weight: 600;
 }
 
+@media (max-width: 768px) {
+  .detailRow, .dateRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .detailValue {
+    text-align: left;
+  }
+}
+
 /* Card Footer */
 .cardFooter {
   padding: 1.25rem 1.5rem;
