@@ -127,13 +127,13 @@ export default function AdminAffiliatesPage() {
     <div className={styles.container}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Affiliate Management</h1>
+          <h1 className={styles.title}>Partners</h1>
           <p className={styles.subtitle}>
-            Track and manage affiliate partners.
+            Manage your global affiliate network and earnings.
           </p>
         </div>
         <div className={styles.statusControl}>
-          <label className={styles.statusLabel}>Program Status:</label>
+          <label className={styles.statusLabel}>Program Status</label>
           <select
             value={programStatus}
             onChange={(e) => handleStatusChange(e.target.value)}
@@ -155,10 +155,10 @@ export default function AdminAffiliatesPage() {
               <tr>
                 <th className={styles.th}>Affiliate</th>
                 <th className={styles.th}>Code</th>
-                <th className={styles.th}>Referrals</th>
+                <th className={styles.th}>Refs</th>
                 <th className={styles.th}>Total Earnings</th>
-                <th className={styles.th}>Unpaid Balance</th>
-                <th className={styles.th}>Bank Details</th>
+                <th className={styles.th}>Unpaid</th>
+                <th className={styles.th}>Payment Details</th>
                 <th className={styles.th}>Actions</th>
               </tr>
             </thead>
@@ -166,7 +166,7 @@ export default function AdminAffiliatesPage() {
               {affiliates.length > 0 ? (
                 affiliates.map((user) => (
                   <tr key={user._id}>
-                    <td className={styles.td} data-label="Affiliate">
+                    <td className={styles.td}>
                       <div className={styles.userCell}>
                         <div className={styles.avatar}>
                           {user.name?.[0] || "U"}
@@ -177,18 +177,18 @@ export default function AdminAffiliatesPage() {
                         </div>
                       </div>
                     </td>
-                    <td className={styles.td} data-label="Code">
+                    <td className={styles.td}>
                       <span className={styles.code}>{user.referralCode}</span>
                     </td>
-                    <td className={styles.td} data-label="Referrals">
+                    <td className={styles.td}>
                       <span className={styles.stat}>{user.referralCount}</span>
                     </td>
-                    <td className={styles.td} data-label="Total Earnings">
+                    <td className={styles.td}>
                       <span className={styles.amount}>
                         {formatAmount(user.totalEarnings)}
                       </span>
                     </td>
-                    <td className={styles.td} data-label="Unpaid Balance">
+                    <td className={styles.td}>
                       <div className={styles.balanceWrapper}>
                         <span
                           className={`${styles.amount} ${
@@ -204,7 +204,7 @@ export default function AdminAffiliatesPage() {
                         )}
                       </div>
                     </td>
-                    <td className={styles.td} data-label="Bank Details">
+                    <td className={styles.td}>
                       {user.affiliateBankDetails?.accountNumber ? (
                         <div className={styles.bankDetails}>
                           <p className={styles.bankName}>
@@ -218,10 +218,10 @@ export default function AdminAffiliatesPage() {
                           </p>
                         </div>
                       ) : (
-                        <span className={styles.notSet}>Not set</span>
+                        <span className={styles.notSet}>Not provided</span>
                       )}
                     </td>
-                    <td className={styles.td} data-label="Actions">
+                    <td className={styles.td}>
                       {user.affiliateBalance > 0 && (
                         <button
                           onClick={() => handleMarkPaid(user._id)}
@@ -236,7 +236,7 @@ export default function AdminAffiliatesPage() {
               ) : (
                 <tr>
                   <td colSpan={7} className={styles.emptyState}>
-                    No affiliates found.
+                    No partners found in the network.
                   </td>
                 </tr>
               )}
@@ -263,20 +263,20 @@ export default function AdminAffiliatesPage() {
 
               <div className={styles.cardBody}>
                 <div className={styles.cardRow}>
-                  <span className={styles.label}>Referrals</span>
+                  <span className={styles.label}>Total Referrals</span>
                   <span className={styles.value}>{user.referralCount}</span>
                 </div>
                 <div className={styles.cardRow}>
-                  <span className={styles.label}>Total Earnings</span>
-                  <span className={styles.value}>
+                  <span className={styles.label}>Lifetime Earnings</span>
+                  <span className={styles.amount}>
                     {formatAmount(user.totalEarnings)}
                   </span>
                 </div>
                 <div className={styles.cardRow}>
-                  <span className={styles.label}>Unpaid Balance</span>
+                  <span className={styles.label}>Outstanding Balance</span>
                   <div className={styles.balanceWrapper}>
                     <span
-                      className={`${styles.value} ${
+                      className={`${styles.amount} ${
                         user.affiliateBalance > 0
                           ? styles.balanceDue
                           : styles.balancePaid
@@ -291,9 +291,9 @@ export default function AdminAffiliatesPage() {
                 </div>
 
                 {user.affiliateBankDetails?.accountNumber && (
-                  <div className={styles.cardRow}>
-                    <span className={styles.label}>Bank Details</span>
+                  <div className={styles.cardRow} style={{ marginTop: '0.5rem' }}>
                     <div className={styles.bankDetails}>
+                      <span className={styles.label}>Bank Account</span>
                       <p className={styles.bankName}>
                         {user.affiliateBankDetails.bankName}
                       </p>
@@ -321,7 +321,7 @@ export default function AdminAffiliatesPage() {
             </div>
           ))
         ) : (
-          <div className={styles.emptyState}>No affiliates found.</div>
+          <div className={styles.emptyState}>No partners found in the network.</div>
         )}
       </div>
     </div>
