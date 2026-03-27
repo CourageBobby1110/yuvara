@@ -6,6 +6,8 @@ import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
 import { PRODUCT_CATEGORIES } from "@/lib/categories";
 import AdminLoader from "@/components/AdminLoader";
+import { Search, ChevronLeft, ChevronRight, X, Trash2, Save, RotateCcw, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import styles from "../ProductForm.module.css";
 import { useCurrency } from "@/context/CurrencyContext";
@@ -202,12 +204,12 @@ export default function EditProductPage({
           })) || [],
         );
       } else {
-        alert("Failed to fetch product");
+        toast.error("Failed to fetch product");
         router.push("/admin/products");
       }
     } catch (error) {
       console.error("Error fetching product", error);
-      alert("Something went wrong");
+      toast.error("Something went wrong");
       router.push("/admin/products");
     } finally {
       setFetching(false);
@@ -712,7 +714,7 @@ export default function EditProductPage({
                 onSuccess={(result: any) => {
                   if (result.info?.secure_url) {
                     setImages((prev) => [...prev, result.info.secure_url]);
-                    alert("Upload Completed");
+                    toast.success("Upload Completed");
                   }
                 }}
               >
@@ -759,7 +761,7 @@ export default function EditProductPage({
               <CloudinaryVideoUpload
                 onUpload={(url: string) => {
                   setVideos((prev) => [...prev, url]);
-                  alert("Video added!");
+                  toast.success("Video added!");
                 }}
               />
             </div>
@@ -833,7 +835,7 @@ export default function EditProductPage({
                     body: JSON.stringify({ productId: id, targetVid: v.cjVid }),
                   });
                   if (res.ok) {
-                    alert("Shipping synced!");
+                    toast.success("Shipping synced!");
                     fetchProduct();
                   }
                 } finally {
@@ -851,7 +853,7 @@ export default function EditProductPage({
                     body: JSON.stringify({ productId: id, targetVid: v.cjVid }),
                   });
                   if (res.ok) {
-                    alert("Stock synced!");
+                    toast.success("Stock synced!");
                     fetchProduct();
                   }
                 } finally {
@@ -869,7 +871,7 @@ export default function EditProductPage({
                     body: JSON.stringify({ productId: id, targetVid: v.cjVid }),
                   });
                   if (res.ok) {
-                    alert("Price synced!");
+                    toast.success("Price synced!");
                     fetchProduct();
                   }
                 } finally {
