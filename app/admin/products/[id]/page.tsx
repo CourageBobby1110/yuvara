@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { UploadDropzone } from "@/lib/uploadthing";
+import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
 import { PRODUCT_CATEGORIES } from "@/lib/categories";
 import AdminLoader from "@/components/AdminLoader";
@@ -693,28 +693,25 @@ export default function EditProductPage({
           <div>
             <label className={styles.label}>Images</label>
             <div className={styles.uploadContainer}>
-              <UploadDropzone
-                endpoint="imageUploader"
-                onClientUploadComplete={(res) => {
-                  if (res) {
-                    setImages((prev) => [
-                      ...prev,
-                      ...res.map((file) => file.url),
-                    ]);
+              <CldUploadWidget
+                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_PRESET || "yuvara_preset"}
+                onSuccess={(result: any) => {
+                  if (result.info?.secure_url) {
+                    setImages((prev) => [...prev, result.info.secure_url]);
                     alert("Upload Completed");
                   }
                 }}
-                onUploadError={(error: Error) => {
-                  alert(`ERROR! ${error.message}`);
-                }}
-                appearance={{
-                  button: {
-                    background: "var(--color-primary)",
-                    color: "white",
-                  },
-                  allowedContent: { color: "var(--color-text-secondary)" },
-                }}
-              />
+              >
+                {({ open }) => (
+                  <button
+                    type="button"
+                    onClick={() => open()}
+                    className={styles.uploadButton}
+                  >
+                    Upload Images
+                  </button>
+                )}
+              </CldUploadWidget>
             </div>
 
             {images.length > 0 && (
@@ -1048,30 +1045,29 @@ export default function EditProductPage({
                       </button>
                     </div>
                   ) : (
-                    <UploadDropzone
-                      endpoint="imageUploader"
-                      onClientUploadComplete={(res) => {
-                        if (res && res[0]) {
+                      <CldUploadWidget
+                      uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_PRESET || "yuvara_preset"}
+                      onSuccess={(result: any) => {
+                        if (result.info?.secure_url) {
                           const newVariants = [...variants];
-                          newVariants[index].image = res[0].url;
+                          newVariants[index].image = result.info.secure_url;
                           setVariants(newVariants);
-                          // Also add to main images if not present
-                          if (!images.includes(res[0].url)) {
-                            setImages((prev) => [...prev, res[0].url]);
+                          if (!images.includes(result.info.secure_url)) {
+                            setImages((prev) => [...prev, result.info.secure_url]);
                           }
                         }
                       }}
-                      onUploadError={(error: Error) => {
-                        alert(`ERROR! ${error.message}`);
-                      }}
-                      appearance={{
-                        button: {
-                          padding: "0.25rem 0.5rem",
-                          fontSize: "0.75rem",
-                          background: "var(--color-primary)",
-                        },
-                      }}
-                    />
+                    >
+                      {({ open }) => (
+                        <button
+                          type="button"
+                          onClick={() => open()}
+                          className={styles.uploadButtonSmall}
+                        >
+                          Upload
+                        </button>
+                      )}
+                    </CldUploadWidget>
                   )}
                 </div>
               </div>

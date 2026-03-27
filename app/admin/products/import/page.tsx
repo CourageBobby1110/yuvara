@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { PRODUCT_CATEGORIES } from "@/lib/categories";
-import { UploadDropzone } from "@/lib/uploadthing";
 import { useCurrency } from "@/context/CurrencyContext";
 import styles from "../new/AdminProductForm.module.css"; // Reuse styles
 

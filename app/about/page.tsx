@@ -1,104 +1,87 @@
 import React from "react";
 import Link from "next/link";
+import { getMarkdownContent } from "@/lib/markdown";
+import dbConnect from "@/lib/db";
+import SiteSettings from "@/models/SiteSettings";
 import styles from "./About.module.css";
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  await dbConnect();
+  const settings = await SiteSettings.findOne().lean();
+  const heroImage = settings?.heroImageUrl || "/hero-shoe-minimalist.png";
+  const contentHtml = await getMarkdownContent("about");
+
   return (
     <main className={styles.container}>
       {/* Hero Section */}
       <section className={styles.hero}>
-        <div className={styles.heroOverlay} />
+        <div 
+          className={styles.heroOverlay} 
+          style={{ backgroundImage: `url(${heroImage})` }}
+        />
         <div className={styles.heroContent}>
-          <h1 className={styles.heroTitle}>About Yuvara</h1>
+          <h1 className={styles.heroTitle}>Our Story</h1>
           <p className={styles.heroSubtitle}>
-            Redefining modern fashion for the global citizen
+            Bridging the gap between global quality and local affordability.
           </p>
         </div>
       </section>
 
-      {/* Our Story */}
-      <section className={styles.storySection}>
-        <div className={styles.contentContainer}>
-          <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Our Story</h2>
-            <div className={styles.separator} />
-          </div>
-
-          <div className={styles.prose}>
-            <p className={styles.text}>
-              Founded with a vision to merge timeless craftsmanship with
-              contemporary design, Yuvara represents the pinnacle of modern
-              style. Each piece in our collection tells a story of dedication,
-              artistry, and uncompromising quality.
-            </p>
-
-            <p className={styles.text}>
-              Our journey began in the heart of Milan, where tradition meets
-              innovation. We collaborate with master artisans who have honed
-              their craft over generations, ensuring every stitch, every curve,
-              and every detail meets our exacting standards.
-            </p>
-
-            <p className={styles.text}>
-              Today, Yuvara stands as a testament to what happens when passion
-              meets precision. We don&apos;t just create clothes; we craft
-              experiences, memories, and statements of individual style that
-              transcend fleeting trends.
-            </p>
-          </div>
+      {/* Dynamic Content Section */}
+      <section className={styles.contentSection}>
+        <div className={styles.glassPanel}>
+          <div 
+            className={styles.prose}
+            dangerouslySetInnerHTML={{ __html: contentHtml }}
+          />
         </div>
       </section>
 
-      {/* Values Section */}
+      {/* Values Section - Premium Grid */}
       <section className={styles.valuesSection}>
         <div className={styles.contentContainer}>
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Our Values</h2>
+            <h2 className={styles.sectionTitle}>The Yuvara Standard</h2>
             <div className={styles.separator} />
           </div>
 
           <div className={styles.valuesGrid}>
             <div className={styles.valueItem}>
-              <div className={styles.valueIcon}>C</div>
-              <h3 className={styles.valueTitle}>Craftsmanship</h3>
+              <div className={styles.valueIcon}>G</div>
+              <h3 className={styles.valueTitle}>Global Access</h3>
               <p className={styles.valueDescription}>
-                Every piece is meticulously crafted by skilled artisans,
-                ensuring unparalleled quality and attention to detail.
+                We source directly from international manufacturers to bring you world-class products.
               </p>
             </div>
 
             <div className={styles.valueItem}>
-              <div className={styles.valueIcon}>I</div>
-              <h3 className={styles.valueTitle}>Innovation</h3>
+              <div className={styles.valueIcon}>A</div>
+              <h3 className={styles.valueTitle}>Affordability</h3>
               <p className={styles.valueDescription}>
-                We blend traditional techniques with cutting-edge design,
-                creating fashion that&apos;s both timeless and contemporary.
+                Luxury shouldn't be expensive. We optimize logistics to keep prices fair for everyone.
               </p>
             </div>
 
             <div className={styles.valueItem}>
-              <div className={styles.valueIcon}>S</div>
-              <h3 className={styles.valueTitle}>Sustainability</h3>
+              <div className={styles.valueIcon}>T</div>
+              <h3 className={styles.valueTitle}>Trust</h3>
               <p className={styles.valueDescription}>
-                We&apos;re committed to ethical sourcing and sustainable
-                practices, ensuring our luxury doesn&apos;t come at the
-                planet&apos;s expense.
+                Every product in our hub is vetted for quality, durability, and value.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* CTA Section - Premium Background */}
       <section className={styles.ctaSection}>
-        <div className={styles.ctaContent}>
-          <h2 className={styles.ctaTitle}>Experience Yuvara</h2>
+        <div className={styles.ctaCard}>
+          <h2 className={styles.ctaTitle}>Start Your Global Journey</h2>
           <p className={styles.ctaText}>
-            Discover our curated collection of fashion and accessories, where
-            every piece is a statement.
+            Explore thousands of products curated for quality and value.
           </p>
           <Link href="/collections" className={styles.ctaButton}>
-            Explore Collection
+            Browse Collections
           </Link>
         </div>
       </section>
