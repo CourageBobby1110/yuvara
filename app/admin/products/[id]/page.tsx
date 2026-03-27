@@ -543,6 +543,17 @@ export default function EditProductPage({
                 className={styles.input}
               />
             </div>
+            <div style={{ gridColumn: "1 / -1", marginTop: "1rem" }}>
+              <label className={styles.label}>Description</label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                required
+                rows={5}
+                className={styles.textarea}
+              />
+            </div>
             <div>
               <label className={styles.label}>Base Price ($)</label>
               <div className={styles.priceRow}>
