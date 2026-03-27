@@ -147,10 +147,14 @@ export default function AdminHeader() {
                         width={32}
                         height={32}
                         className={styles.resultImage}
+                        onError={(e) => {
+                          // Fallback if image fails to load
+                          (e.target as HTMLImageElement).style.display = "none";
+                        }}
                       />
                     ) : (
                       <div className={styles.resultPlaceholderIcon}>
-                        {result.type === "order" ? "📦" : "👤"}
+                        {result.type === "order" ? "📦" : result.type === "product" ? "🛍️" : "👤"}
                       </div>
                     )}
                   </div>

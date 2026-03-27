@@ -10,6 +10,8 @@ import { formatDistanceToNow } from "date-fns";
 import styles from "../ProductForm.module.css";
 import { useCurrency } from "@/context/CurrencyContext";
 import CloudinaryVideoUpload from "@/components/CloudinaryVideoUpload";
+import ProductVariantCard from "@/components/ProductVariantCard";
+import { ShippingRate, ProductVariant as Variant } from "@/lib/types";
 
 interface Product {
   _id: string;
@@ -142,13 +144,13 @@ export default function EditProductPage({
           reviewsEnabled: product.reviewsEnabled ?? true,
           productUrl: product.productUrl || "",
           lastSyncedPrice: product.lastSyncedPrice
-            ? new Date(product.lastSyncedPrice).toISOString()
+            ? new Date(product.lastSyncedPrice).getTime().toString()
             : "",
           lastSyncedStock: product.lastSyncedStock
-            ? new Date(product.lastSyncedStock).toISOString()
+            ? new Date(product.lastSyncedStock).getTime().toString()
             : "",
           lastSyncedShipping: product.lastSyncedShipping
-            ? new Date(product.lastSyncedShipping).toISOString()
+            ? new Date(product.lastSyncedShipping).getTime().toString()
             : "",
         });
         const repairUrl = (url: any) => {
@@ -247,24 +249,25 @@ export default function EditProductPage({
   ) => {
     const { name, value, type } = e.target;
 
-    if (type === "checkbox") {
-      const checked = (e.target as HTMLInputElement).checked;
-      setFormData((prev) => ({ ...prev, [name]: checked }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
+    setFormData((prev) => {
+      const newState = { ...prev } as any;
+      
+      if (type === "checkbox") {
+        newState[name] = (e.target as HTMLInputElement).checked;
+      } else {
+        newState[name] = value;
+      }
 
-    // Auto-generate slug from name
-    if (name === "name") {
-      setFormData((prev) => ({
-        ...prev,
-        name: value,
-        slug: value
+      // Auto-generate slug from name if changed
+      if (name === "name") {
+        newState.slug = value
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, "-")
-          .replace(/(^-|-$)+/g, ""),
-      }));
-    }
+          .replace(/(^-|-$)+/g, "");
+      }
+
+      return newState;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -395,9 +398,9 @@ export default function EditProductPage({
             >
               {syncingPrice ? "Syncing..." : "Sync Price (CJ)"}
             </button>
-            {formData.lastSyncedPrice && (
+            {formData.lastSyncedPrice && !isNaN(Number(formData.lastSyncedPrice)) && (
               <span className={styles.syncTime}>
-                {formatDistanceToNow(new Date(formData.lastSyncedPrice))} ago
+                {formatDistanceToNow(new Date(Number(formData.lastSyncedPrice)))} ago
               </span>
             )}
           </div>
@@ -439,9 +442,9 @@ export default function EditProductPage({
             >
               {syncingStock ? "Syncing..." : "Sync Stock"}
             </button>
-            {formData.lastSyncedStock && (
+            {formData.lastSyncedStock && !isNaN(Number(formData.lastSyncedStock)) && (
               <span className={styles.syncTime}>
-                {formatDistanceToNow(new Date(formData.lastSyncedStock))} ago
+                {formatDistanceToNow(new Date(Number(formData.lastSyncedStock)))} ago
               </span>
             )}
 
@@ -754,7 +757,7 @@ export default function EditProductPage({
             <label className={styles.label}>Videos</label>
             <div className={styles.videoContainer}>
               <CloudinaryVideoUpload
-                onUpload={(url) => {
+                onUpload={(url: string) => {
                   setVideos((prev) => [...prev, url]);
                   alert("Video added!");
                 }}
@@ -807,426 +810,77 @@ export default function EditProductPage({
           </div>
 
           {variants.map((variant, index) => (
-            <div key={index} className={styles.variantCard}>
-              <div className={styles.variantCardHeader}>
-                <h4 className="font-medium">Variant {index + 1}</h4>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setVariants(variants.filter((_, i) => i !== index))
+            <ProductVariantCard
+              key={index}
+              variant={variant as any}
+              index={index}
+              onUpdate={(idx, updated) => {
+                const newVariants = [...variants];
+                newVariants[idx] = updated;
+                setVariants(newVariants);
+              }}
+              onRemove={(idx) => {
+                setVariants(variants.filter((_, i) => i !== idx));
+              }}
+              onSyncShipping={async (idx) => {
+                const v = variants[idx];
+                if (!v.cjVid) return;
+                setSyncingVariantId(v.cjVid);
+                try {
+                  const res = await fetch("/api/admin/dropshipping/sync-shipping", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ productId: id, targetVid: v.cjVid }),
+                  });
+                  if (res.ok) {
+                    alert("Shipping synced!");
+                    fetchProduct();
                   }
-                  className={styles.removeVariantButton}
-                >
-                  Remove
-                </button>
-              </div>
-
-              <div className={styles.grid2}>
-                <div>
-                  <label className={styles.label}>Color Name</label>
-                  <input
-                    type="text"
-                    value={variant.color}
-                    onChange={(e) => {
-                      const newVariants = [...variants];
-                      newVariants[index].color = e.target.value;
-                      setVariants(newVariants);
-                    }}
-                    placeholder="e.g. Red"
-                    className={styles.input}
-                    required
-                  />
-                </div>
-                <div>
-                  <label className={styles.label}>Size (Optional)</label>
-                  <input
-                    type="text"
-                    value={(variant as any).size || ""}
-                    onChange={(e) => {
-                      const newVariants = [...variants];
-                      (newVariants[index] as any).size = e.target.value;
-                      setVariants(newVariants);
-                    }}
-                    placeholder="e.g. XL"
-                    className={styles.input}
-                  />
-                </div>
-                <div>
-                  <label className={styles.label}>Price Override</label>
-                  <input
-                    type="number"
-                    value={variant.price}
-                    onChange={(e) => {
-                      const newVariants = [...variants];
-                      newVariants[index].price = e.target.value;
-                      setVariants(newVariants);
-                    }}
-                    className={styles.input}
-                    required
-                  />
-                  {renderCurrencyPreviews(variant.price)}
-                </div>
-                <div>
-                  <label className={styles.label}>Stock</label>
-                  <input
-                    type="number"
-                    value={variant.stock}
-                    onChange={(e) => {
-                      const newVariants = [...variants];
-                      newVariants[index].stock = e.target.value;
-                      setVariants(newVariants);
-                    }}
-                    className={styles.input}
-                    required
-                  />
-                </div>
-                <div>
-                  <label className={styles.label}>Shipping Fee ($)</label>
-                  <input
-                    type="number"
-                    value={variant.shippingFee || 0}
-                    onChange={(e) => {
-                      const newVariants = [...variants];
-                      newVariants[index].shippingFee = parseFloat(
-                        e.target.value,
-                      );
-                      setVariants(newVariants);
-                    }}
-                    className={styles.input}
-                    min="0"
-                    step="0.01"
-                  />
-                  {variant.cjVid && (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "0.5rem",
-                        marginTop: "0.5rem",
-                      }}
-                    >
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          setSyncingVariantId(variant.cjVid!);
-                          try {
-                            const res = await fetch(
-                              "/api/admin/dropshipping/sync-shipping",
-                              {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                  productId: id,
-                                  targetVid: variant.cjVid,
-                                }),
-                              },
-                            );
-                            if (res.ok) {
-                              alert("Shipping synced for this variant!");
-                              fetchProduct();
-                            } else {
-                              const d = await res.json();
-                              alert(
-                                d.error || "Failed to sync variant shipping",
-                              );
-                            }
-                          } catch (e) {
-                            alert("Error syncing variant shipping");
-                          } finally {
-                            setSyncingVariantId(null);
-                          }
-                        }}
-                        disabled={syncingVariantId === variant.cjVid}
-                        className={styles.syncButton}
-                        style={{
-                          fontSize: "0.75rem",
-                          padding: "0.25rem 0.5rem",
-                        }}
-                      >
-                        {syncingVariantId === variant.cjVid
-                          ? "Syncing..."
-                          : "Sync Shipping"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          setSyncingStockVariantId(variant.cjVid!);
-                          try {
-                            const res = await fetch(
-                              "/api/admin/dropshipping/sync-stock",
-                              {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                  productId: id,
-                                  targetVid: variant.cjVid,
-                                }),
-                              },
-                            );
-                            if (res.ok) {
-                              alert("Stock synced for this variant!");
-                              fetchProduct();
-                            } else {
-                              const d = await res.json();
-                              alert(d.error || "Failed to sync variant stock");
-                            }
-                          } catch (e) {
-                            alert("Error syncing variant stock");
-                          } finally {
-                            setSyncingStockVariantId(null);
-                          }
-                        }}
-                        disabled={syncingStockVariantId === variant.cjVid}
-                        className={styles.syncButton}
-                        style={{
-                          fontSize: "0.75rem",
-                          padding: "0.25rem 0.5rem",
-                        }}
-                      >
-                        {syncingStockVariantId === variant.cjVid
-                          ? "Syncing..."
-                          : "Sync Stock"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          setSyncingPriceVariantId(variant.cjVid!);
-                          try {
-                            const res = await fetch(
-                              "/api/admin/dropshipping/sync-price",
-                              {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                  productId: id,
-                                  targetVid: variant.cjVid,
-                                }),
-                              },
-                            );
-                            if (res.ok) {
-                              alert("Price synced for this variant!");
-                              fetchProduct();
-                            } else {
-                              const d = await res.json();
-                              alert(d.error || "Failed to sync variant price");
-                            }
-                          } catch (e) {
-                            alert("Error syncing variant price");
-                          } finally {
-                            setSyncingPriceVariantId(null);
-                          }
-                        }}
-                        disabled={syncingPriceVariantId === variant.cjVid}
-                        className={styles.syncButton}
-                        style={{
-                          fontSize: "0.75rem",
-                          padding: "0.25rem 0.5rem",
-                        }}
-                      >
-                        {syncingPriceVariantId === variant.cjVid
-                          ? "Syncing..."
-                          : "Sync Price (CJ)"}
-                      </button>
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <label className={styles.label}>Variant Image</label>
-                  {variant.image ? (
-                    <div
-                      className={styles.imageWrapper}
-                      style={{ width: "80px", height: "80px" }}
-                    >
-                      <Image
-                        src={variant.image}
-                        alt="Variant"
-                        fill
-                        className={styles.image}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const newVariants = [...variants];
-                          newVariants[index].image = "";
-                          setVariants(newVariants);
-                        }}
-                        className={styles.removeImageButton}
-                      >
-                        X
-                      </button>
-                    </div>
-                  ) : (
-                      <CldUploadWidget
-                      uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_PRESET || "yuvara_preset"}
-                      onSuccess={(result: any) => {
-                        if (result.info?.secure_url) {
-                          const newVariants = [...variants];
-                          newVariants[index].image = result.info.secure_url;
-                          setVariants(newVariants);
-                          if (!images.includes(result.info.secure_url)) {
-                            setImages((prev) => [...prev, result.info.secure_url]);
-                          }
-                        }
-                      }}
-                    >
-                      {({ open }) => (
-                        <button
-                          type="button"
-                          onClick={() => open()}
-                          className={styles.uploadButtonSmall}
-                        >
-                          Upload
-                        </button>
-                      )}
-                    </CldUploadWidget>
-                  )}
-                </div>
-              </div>
-
-              {/* Variant Shipping Rates Management */}
-              <div className={styles.shippingRatesContainer}>
-                <div className={styles.shippingRateHeader}>
-                  <h5 className={styles.shippingRateTitle}>Shipping Rates</h5>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const newVariants = [...variants];
-                      const currentRates =
-                        newVariants[index].shippingRates || [];
-                      newVariants[index].shippingRates = [
-                        ...currentRates,
-                        {
-                          countryCode: "",
-                          countryName: "",
-                          price: 0,
-                          method: "",
-                          deliveryTime: "",
-                        },
-                      ];
-                      setVariants(newVariants);
-                    }}
-                    className={styles.addVariantButton}
-                    style={{ fontSize: "0.75rem", padding: "0.25rem 0.5rem" }}
-                  >
-                    + Add Rate
-                  </button>
-                </div>
-
-                {(variant.shippingRates || []).map((rate, rIndex) => (
-                  <div key={rIndex} className={styles.shippingRateItem}>
-                    <div className={styles.shippingRateItemHeader}>
-                      <span className={styles.rateTitle}>
-                        Rate #{rIndex + 1}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const newVariants = [...variants];
-                          newVariants[index].shippingRates = (
-                            newVariants[index].shippingRates || []
-                          ).filter((_, i) => i !== rIndex);
-                          setVariants(newVariants);
-                        }}
-                        className={styles.removeVariantButton}
-                        style={{ fontSize: "0.75rem" }}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                    <div className={styles.shippingRateGrid}>
-                      <div>
-                        <label className={styles.shippingRateLabel}>Code</label>
-                        <input
-                          type="text"
-                          value={rate.countryCode}
-                          onChange={(e) => {
-                            const newVariants = [...variants];
-                            if (!newVariants[index].shippingRates) return;
-                            newVariants[index].shippingRates![
-                              rIndex
-                            ].countryCode = e.target.value.toUpperCase();
-                            setVariants(newVariants);
-                          }}
-                          placeholder="NG"
-                          className={styles.shippingRateInput}
-                        />
-                      </div>
-                      <div>
-                        <label className={styles.shippingRateLabel}>
-                          Country
-                        </label>
-                        <input
-                          type="text"
-                          value={rate.countryName}
-                          onChange={(e) => {
-                            const newVariants = [...variants];
-                            if (!newVariants[index].shippingRates) return;
-                            newVariants[index].shippingRates![
-                              rIndex
-                            ].countryName = e.target.value;
-                            setVariants(newVariants);
-                          }}
-                          placeholder="Nigeria"
-                          className={styles.shippingRateInput}
-                        />
-                      </div>
-                      <div>
-                        <label className={styles.shippingRateLabel}>
-                          Price ($)
-                        </label>
-                        <input
-                          type="number"
-                          value={rate.price}
-                          onChange={(e) => {
-                            const newVariants = [...variants];
-                            if (!newVariants[index].shippingRates) return;
-                            newVariants[index].shippingRates![rIndex].price =
-                              parseFloat(e.target.value);
-                            setVariants(newVariants);
-                          }}
-                          className={styles.shippingRateInput}
-                        />
-                      </div>
-                      <div>
-                        <label className={styles.shippingRateLabel}>
-                          Method
-                        </label>
-                        <input
-                          type="text"
-                          value={rate.method}
-                          onChange={(e) => {
-                            const newVariants = [...variants];
-                            if (!newVariants[index].shippingRates) return;
-                            newVariants[index].shippingRates![rIndex].method =
-                              e.target.value;
-                            setVariants(newVariants);
-                          }}
-                          placeholder="Method"
-                          className={styles.shippingRateInput}
-                        />
-                      </div>
-                      <div>
-                        <label className={styles.shippingRateLabel}>Time</label>
-                        <input
-                          type="text"
-                          value={rate.deliveryTime}
-                          onChange={(e) => {
-                            const newVariants = [...variants];
-                            if (!newVariants[index].shippingRates) return;
-                            newVariants[index].shippingRates![
-                              rIndex
-                            ].deliveryTime = e.target.value;
-                            setVariants(newVariants);
-                          }}
-                          placeholder="Time"
-                          className={styles.shippingRateInput}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+                } finally {
+                  setSyncingVariantId(null);
+                }
+              }}
+              onSyncStock={async (idx) => {
+                const v = variants[idx];
+                if (!v.cjVid) return;
+                setSyncingStockVariantId(v.cjVid);
+                try {
+                  const res = await fetch("/api/admin/dropshipping/sync-stock", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ productId: id, targetVid: v.cjVid }),
+                  });
+                  if (res.ok) {
+                    alert("Stock synced!");
+                    fetchProduct();
+                  }
+                } finally {
+                  setSyncingStockVariantId(null);
+                }
+              }}
+              onSyncPrice={async (idx) => {
+                const v = variants[idx];
+                if (!v.cjVid) return;
+                setSyncingPriceVariantId(v.cjVid);
+                try {
+                  const res = await fetch("/api/admin/dropshipping/sync-price", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ productId: id, targetVid: v.cjVid }),
+                  });
+                  if (res.ok) {
+                    alert("Price synced!");
+                    fetchProduct();
+                  }
+                } finally {
+                  setSyncingPriceVariantId(null);
+                }
+              }}
+              syncingShipping={syncingVariantId === variant.cjVid}
+              syncingStock={syncingStockVariantId === variant.cjVid}
+              syncingPrice={syncingPriceVariantId === variant.cjVid}
+              renderCurrencyPreviews={renderCurrencyPreviews}
+            />
           ))}
         </div>
 

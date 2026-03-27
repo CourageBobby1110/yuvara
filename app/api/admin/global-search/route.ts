@@ -55,14 +55,30 @@ export async function GET(req: Request) {
     ]);
 
     const results = [
-      ...products.map((p: any) => ({
-        type: "product",
-        id: p._id,
-        label: p.name,
-        subtext: p.category,
-        image: p.images?.[0], // Preview image
-        url: `/admin/products/${p._id}`,
-      })),
+      ...products.map((p: any) => {
+        let displayImage = p.images?.[0] || "";
+        if (displayImage) {
+          let str = String(displayImage).trim();
+          if (str.startsWith("[") || str.startsWith('"')) {
+            const urlMatch = str.match(/https?:\/\/[^"'\s\]]+/);
+            if (urlMatch) str = urlMatch[0];
+            else str = str.replace(/[\[\]"']/g, "");
+          }
+          str = str.replace(/^["']|["']$/g, "");
+          if (str.startsWith("//")) str = `https:${str}`;
+          else if (!str.startsWith("/") && !str.startsWith("http")) str = `https://${str}`;
+          displayImage = str;
+        }
+
+        return {
+          type: "product",
+          id: p._id,
+          label: p.name,
+          subtext: p.category,
+          image: displayImage,
+          url: `/admin/products/${p._id}`,
+        };
+      }),
       ...orders.map((o: any) => ({
         type: "order",
         id: o._id,
