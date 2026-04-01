@@ -552,3 +552,91 @@
   font-weight: 700 !important;
   color: var(--color-text-secondary);
 }
+
+/* ==========================================================================
+   MOBILE SEARCH BAR (Glassmorphism)
+   ========================================================================== */
+
+.mobileSearchBar {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--color-border-light);
+  padding: 0.75rem 1.5rem;
+  z-index: 9000;
+  animation: slideDown 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.mobileSearchForm {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border: 1px solid var(--color-border-light);
+  border-radius: 9999px;
+  padding: 0 0.5rem 0 1.25rem;
+  height: 3rem;
+  transition: all 0.3s ease;
+}
+
+.mobileSearchForm:focus-within {
+  border-color: var(--color-luxury-gold);
+  box-shadow: 0 0 0 4px rgba(153, 101, 21, 0.1);
+}
+
+.mobileSearchInput {
+  flex: 1;
+  border: none;
+  background: none;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  outline: none;
+}
+
+.mobileSearchSubmit {
+  background-color: var(--color-text-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  padding: 0 1.25rem;
+  height: 2.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mobileSearchSubmit:active {
+  transform: scale(0.95);
+}
+
+/* ==========================================================================
+   MOBILE MENU FOOTER
+   ========================================================================== */
+
+.mobileFooter {
+  padding: 2rem 1.5rem;
+  border-top: 1px solid var(--color-border-light);
+  background-color: var(--color-bg-secondary);
+  text-align: center;
+  margin-top: auto; /* Push to bottom */
+}
+
+.copyright {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  margin: 0;
+  letter-spacing: 0.02em;
+}

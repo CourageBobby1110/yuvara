@@ -20,7 +20,7 @@ export default function Navbar({ session }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
   const [itemCount, setItemCount] = useState(0);
-  const { totalItems, openCart } = useCartStore();
+  const { totalItems, toggleCart } = useCartStore();
   const { t } = useLanguage();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
@@ -40,10 +40,11 @@ export default function Navbar({ session }: NavbarProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isAccountDropdownOpen]);
 
+  const items = useCartStore((state) => state.items);
   // Hydration fix for cart count
   useEffect(() => {
     setItemCount(totalItems());
-  }, [totalItems]);
+  }, [items, totalItems]);
 
   // Prevent scrolling when menu is open
   useEffect(() => {
@@ -263,7 +264,7 @@ export default function Navbar({ session }: NavbarProps) {
                 </Link>
               )}
 
-              <button onClick={openCart} className={styles.cartButton}>
+              <button onClick={toggleCart} className={styles.cartButton}>
                 <svg
                   width="20"
                   height="20"
@@ -274,7 +275,7 @@ export default function Navbar({ session }: NavbarProps) {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth="2"
+                    strokeWidth="2.2"
                     d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
                   />
                 </svg>
@@ -293,14 +294,14 @@ export default function Navbar({ session }: NavbarProps) {
               className={styles.mobileSearchBtn}
               aria-label="Search"
             >
-              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
 
-            <button onClick={openCart} className={styles.mobileCartBtn} aria-label="Cart">
-              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            <button onClick={toggleCart} className={styles.mobileCartBtn} aria-label="Cart">
+              <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
               {itemCount > 0 && <span className={styles.cartBadge}>{itemCount}</span>}
             </button>
@@ -468,6 +469,7 @@ export default function Navbar({ session }: NavbarProps) {
                 transition={{ delay: 0.4 }}
                 className={styles.mobileUtility}
               >
+                <LanguageSwitcher />
                 <CurrencySelector variant="flowing" />
               </motion.div>
             </div>
