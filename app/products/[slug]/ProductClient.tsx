@@ -23,15 +23,17 @@ export interface ProductType {
   reviewsEnabled?: boolean;
   category: string;
   stock: number;
+  isBestSeller: boolean;
   isFeatured: boolean;
-  sizes: string[];
-  colors: string[];
+  sizes?: string[];
+  colors?: string[];
   variants?: {
     color: string;
     image: string;
     price: number;
     stock: number;
     size?: string;
+    cjVid?: string;
     shippingFee?: number;
     shippingRates?: {
       countryCode: string;
@@ -41,6 +43,9 @@ export interface ProductType {
       deliveryTime?: string;
     }[];
   }[];
+  productUrl?: string;
+  averageRating?: number;
+  reviewCount?: number;
   createdAt?: Date;
   updatedAt?: Date;
   shippingRates?: {
