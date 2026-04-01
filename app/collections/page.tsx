@@ -76,20 +76,6 @@ export default async function CollectionsPage({
 
   return (
     <main className={styles.pageContainer}>
-      {/* Premium Hero Section */}
-      <section className={styles.hero}>
-        <div className={styles.heroContent}>
-          <div className="inline-block">
-            <span className={styles.label}>Curated Selection</span>
-          </div>
-          <h1 className={styles.title}>The Collection</h1>
-          <p className={styles.description}>
-            Discover our meticulously curated selection of premium essentials,
-            <br className="hidden md:block" />
-            designed for the modern lifestyle.
-          </p>
-        </div>
-      </section>
 
       <div className={styles.contentContainer}>
         <div className={styles.layout}>

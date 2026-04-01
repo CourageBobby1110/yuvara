@@ -52,7 +52,7 @@ export default async function Image() {
             marginBottom: "10px",
           }}
         >
-          Yuvara
+          YuVara
         </div>
         <div
           style={{

@@ -46,7 +46,8 @@ export default function WishlistButton({
       onClick={handleClick}
       disabled={isLoading}
       className={cn(
-        "p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-all duration-300 z-10 shadow-sm",
+        "flex items-center justify-center transition-all duration-300 z-10",
+        !className && "p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white shadow-sm",
         isLoading && "opacity-70 cursor-not-allowed",
         className
       )}
@@ -54,15 +55,15 @@ export default function WishlistButton({
     >
       <svg
         className={cn(
-          "w-5 h-5 transition-colors duration-300",
+          "w-5 h-5 transition-all duration-300",
           isAdded
             ? "fill-red-500 text-red-500"
-            : "fill-none text-gray-600 hover:text-red-500",
+            : "fill-none text-current hover:text-red-500",
           isLoading && "animate-pulse"
         )}
         viewBox="0 0 24 24"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="2.25"
       >
         <path
           strokeLinecap="round"

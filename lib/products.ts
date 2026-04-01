@@ -171,6 +171,33 @@ export async function getCategories() {
   }
 }
 
+export async function getCategoriesWithImages() {
+  try {
+    await dbConnect();
+    
+    // Aggregation to get distinct categories with the first image from the first product found
+    const categories = await Product.aggregate([
+      { $sort: { createdAt: -1 } }, // Newest products first usually have better images
+      {
+        $group: {
+          _id: "$category",
+          image: { $first: { $arrayElemAt: ["$images", 0] } },
+        }
+      },
+      { $limit: 20 } // Limit to top 20 subcategories
+    ]);
+
+    return categories.map(cat => ({
+      name: cat._id.split(/[\/>]/).pop()?.trim() || cat._id,
+      fullName: cat._id,
+      image: cat.image || "/placeholder.png"
+    })).sort((a, b) => a.name.localeCompare(b.name));
+  } catch (error) {
+    console.error("Error fetching categories with images:", error);
+    return [];
+  }
+}
+
 export async function getProductBySlug(
   slug: string,
 ): Promise<ProductType | null> {

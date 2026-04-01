@@ -1,0 +1,128 @@
+.container {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 1.5rem 1rem;
+  background-color: transparent;
+  display: block;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+}
+
+.container::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome/Safari */
+}
+
+.scrollTrack {
+  display: flex;
+  gap: 1.25rem;
+  width: max-content;
+  padding: 0 0.5rem;
+}
+
+.categoryCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  width: 90px;
+  transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.categoryCard:hover {
+  transform: translateY(-4px);
+}
+
+.imageWrapper {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  padding: 3px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-luxury-gold-light), #ffffff, var(--color-luxury-gold));
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.categoryCard:hover .imageWrapper {
+  box-shadow: 0 8px 24px rgba(153, 101, 21, 0.3);
+  transform: scale(1.05);
+}
+
+.imageInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #ffffff;
+  background-color: #f3f4f6;
+}
+
+.image {
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.categoryCard:hover .image {
+  transform: scale(1.15);
+}
+
+.label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  letter-spacing: -0.01em;
+  transition: color 0.2s ease;
+}
+
+.categoryCard:hover .label {
+  color: var(--color-luxury-gold);
+}
+
+/* Luxury Dot Indicator */
+.categoryCard::after {
+  content: "";
+  width: 4px;
+  height: 4px;
+  background-color: var(--color-luxury-gold);
+  border-radius: 50%;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: all 0.3s ease;
+}
+
+.categoryCard:hover::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 1.25rem 0.75rem;
+  }
+  
+  .scrollTrack {
+    gap: 1rem;
+  }
+  
+  .categoryCard {
+    width: 80px;
+  }
+  
+  .imageWrapper {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .label {
+    font-size: 0.75rem;
+  }
+}

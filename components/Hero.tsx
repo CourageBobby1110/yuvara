@@ -76,28 +76,6 @@ export default function Hero({ categories, heroImage }: HeroProps) {
         </div>
       </div>
 
-      {/* Mobile Draggable Categories */}
-      <div className={styles.mobileCategoriesWrapper}>
-        <div className={styles.mobileCategoriesContainer} ref={constraintsRef}>
-          <motion.div
-            className={styles.mobileCategoriesTrack}
-            drag="x"
-            dragConstraints={constraintsRef}
-            dragElastic={0.2}
-          >
-            {categories.map((category) => (
-              <Link
-                key={category}
-                href={`/collections?category=${encodeURIComponent(category)}`}
-                className={styles.mobileCategoryTab}
-                title={category}
-              >
-                {category?.split(/[\/>]/).pop()?.trim() || category}
-              </Link>
-            ))}
-          </motion.div>
-        </div>
-      </div>
     </div>
   );
 }

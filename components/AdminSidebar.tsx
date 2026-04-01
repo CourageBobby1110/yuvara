@@ -36,10 +36,10 @@ export default function AdminSidebar() {
             onClick={() => setIsOpen(false)}
           >
             <Image
-              src="/logo.png"
-              alt="Yuvara Admin"
-              width={60}
-              height={60}
+              src="/icon-v2.svg"
+              alt="YuVara Admin"
+              width={50}
+              height={50}
               className={styles.logoImage}
             />
           </Link>

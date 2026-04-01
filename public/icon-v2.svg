@@ -1,0 +1,18 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Diagonal Gradient to ensure both horizontal and vertical strokes catch colors -->
+    <linearGradient id="gold-white-merge-icon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#996515" />
+      <stop offset="30%" stop-color="#D4AF37" />
+      <stop offset="50%" stop-color="#FFFFFF" />
+      <stop offset="70%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#996515" />
+    </linearGradient>
+  </defs>
+
+  <circle cx="32" cy="32" r="30" fill="#000000" />
+  <circle cx="32" cy="32" r="28" stroke="url(#gold-white-merge-icon)" stroke-width="1.5" />
+  
+  <!-- Unified Shimmering Y Icon - Single path for better rendering -->
+  <path d="M18 20L32 35L46 20M32 35V52" stroke="url(#gold-white-merge-icon)" stroke-width="5" stroke-linejoin="miter" stroke-linecap="butt" />
+</svg>

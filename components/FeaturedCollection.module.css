@@ -29,15 +29,15 @@
   margin: 0 auto;
 }
 
-/* Masonry Layout */
+/* Abundance Grid Layout */
 .masonryGrid {
-  column-count: 2; /* 2 columns on mobile for that "everywhere" feel */
-  column-gap: 0.5rem; /* Tighter gap */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
+  gap: 0.5rem; /* Tight gaps for abundance */
 }
 
 .masonryItem {
-  break-inside: avoid; /* Prevent items from splitting across columns */
-  margin-bottom: 0.5rem; /* Gap between rows */
+  height: 100%;
 }
 
 .viewAllContainer {
@@ -47,7 +47,7 @@
 
 .viewAllButton {
   display: inline-block;
-  background-color: #000;
+  background-color: var(--color-primary);
   color: #fff;
   padding: 0.75rem 2rem;
   border-radius: 9999px;
@@ -59,7 +59,8 @@
 
 .viewAllButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
+  background-color: var(--color-luxury-gold);
 }
 
 /* Responsive adjustments */
@@ -73,12 +74,8 @@
   }
 
   .masonryGrid {
-    column-count: 3;
-    column-gap: 1.5rem;
-  }
-
-  .masonryItem {
-    margin-bottom: 1.5rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
   }
 
   .title {
@@ -88,10 +85,11 @@
 
 @media (min-width: 1024px) {
   .masonryGrid {
-    column-count: 4; /* 4 columns on desktop */
+    grid-template-columns: repeat(5, minmax(0, 1fr)); /* Capped at 5 for better premium look */
+    gap: 1.5rem;
   }
 
   .title {
-    font-size: 2.25rem;
+    font-size: 2.5rem;
   }
 }

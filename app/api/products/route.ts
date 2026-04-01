@@ -39,6 +39,9 @@ export async function GET(req: Request) {
     const limit = searchParams.get("limit")
       ? Number(searchParams.get("limit"))
       : undefined;
+    const skip = searchParams.get("skip")
+      ? Number(searchParams.get("skip"))
+      : undefined;
     const isFeatured =
       searchParams.get("isFeatured") === "true" ? true : undefined;
 
@@ -49,6 +52,7 @@ export async function GET(req: Request) {
       maxPrice,
       sort,
       limit,
+      skip,
       isFeatured,
     });
 

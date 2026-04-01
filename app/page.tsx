@@ -1,44 +1,39 @@
 export const dynamic = "force-dynamic";
 import { auth } from "@/auth";
 import Hero from "@/components/Hero";
-import FeaturedCollection from "@/components/FeaturedCollection";
+import ProductGridWithLoadMore from "@/components/ProductGridWithLoadMore";
 import TrendingMarquee from "@/components/TrendingMarquee";
-import Newsletter from "@/components/Newsletter";
-import { getProducts, getCategories } from "@/lib/products";
-import { shuffleArray } from "@/lib/utils";
+
+import { getProducts, getCategories, getCategoriesWithImages } from "@/lib/products";
+import { shuffleArray, getValidUrl } from "@/lib/utils";
 import SiteSettings from "@/models/SiteSettings";
 import dbConnect from "@/lib/db";
+import CategoryCircles from "@/components/CategoryCircles";
 
 export default async function Home() {
   const session = await auth();
   await dbConnect();
 
   // Fetch data
-  const categories = await getCategories();
+  const categoriesOriginal = await getCategories();
+  const categoriesWithImagesRaw = await getCategoriesWithImages();
+  const categoriesWithImages = categoriesWithImagesRaw.map((cat: any) => ({
+    ...cat,
+    image: getValidUrl(cat.image) || "/placeholder.png",
+  }));
+
   const settings = await SiteSettings.findOne().lean();
   const heroImage = settings?.heroImageUrl || "/hero-shoe-minimalist.png";
 
-  // Time-based seed (changes every 30 mins)
-  const currentWindowSeed = Math.floor(Date.now() / (30 * 60 * 1000));
+  // Time-based seed (changes every 1 hour)
+  const currentWindowSeed = Math.floor(Date.now() / (60 * 60 * 1000));
 
-  // Fetch larger pools for shuffling
-  const newArrivalsPool = await getProducts({ limit: 48, sort: "newest" });
-  const bestSellersPool = await getProducts({ limit: 48, sort: "price_desc" }); // Proxy for best sellers
-  const featuredPool = await getProducts({ limit: 24, isFeatured: true });
+  // Fetch initial batch of 200 cheapest products
+  const filter = { limit: 200, sort: "price_asc" };
+  const productsPool = await getProducts(filter);
 
-  // Shuffle and slice
-  const newArrivals = shuffleArray(newArrivalsPool, currentWindowSeed).slice(
-    0,
-    8
-  );
-  const bestSellers = shuffleArray(
-    bestSellersPool,
-    currentWindowSeed + 1
-  ).slice(0, 8);
-  const featured = shuffleArray(featuredPool, currentWindowSeed + 2).slice(
-    0,
-    4
-  );
+  // Randomly shuffle the pool using the 1-hour seed
+  const shuffledProducts = shuffleArray(productsPool, currentWindowSeed);
 
   return (
     <main
@@ -46,20 +41,28 @@ export default async function Home() {
         backgroundColor: "var(--color-bg-secondary)",
         minHeight: "100vh",
         paddingBottom: "2rem",
+        width: "100%",
       }}
     >
-      <Hero categories={categories.slice(0, 15)} heroImage={heroImage} />
+
+      <Hero categories={categoriesOriginal.slice(0, 15)} heroImage={heroImage} />
+      
       <TrendingMarquee />
 
-      <div
-        style={{ maxWidth: "1400px", margin: "0 auto", padding: "0 1.5rem" }}
-      >
-        <FeaturedCollection products={newArrivals} title="New Arrivals" />
-        <FeaturedCollection products={bestSellers} title="Best Sellers" />
-        <FeaturedCollection products={featured} title="Featured Products" />
+      <div style={{ backgroundColor: "#ffffff" }}>
+        <CategoryCircles categories={categoriesWithImages} />
       </div>
 
-      <Newsletter />
+      <div
+        style={{ width: "98%", margin: "0 auto", padding: "0 0.25rem", boxSizing: "border-box" }}
+      >
+        <ProductGridWithLoadMore
+          initialProducts={shuffledProducts}
+          filter={filter}
+        />
+      </div>
+
+
     </main>
   );
 }

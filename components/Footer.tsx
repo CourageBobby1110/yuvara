@@ -10,9 +10,9 @@ export default function Footer() {
           <div className={styles.brandColumn}>
             <div className={styles.logo}>
               <Image
-                src="/logo.png"
-                alt="Yuvara"
-                width={120}
+                src="/logo-v2.svg"
+                alt="YuVara"
+                width={150}
                 height={40}
                 style={{ objectFit: "contain" }}
               />

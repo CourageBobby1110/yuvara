@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Open_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import "@uploadthing/react/styles.css";
 import { SessionProvider as AuthProvider } from "next-auth/react";
@@ -11,9 +11,9 @@ import { Toaster } from "sonner";
 import dbConnect from "@/lib/db";
 import SiteSettings from "@/models/SiteSettings";
 
-const openSans = Open_Sans({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-open-sans",
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -35,6 +35,7 @@ export const metadata: Metadata = {
     "Global Shipping",
     "Luxury",
     "Online Store",
+    "Online Shopping",
   ],
   authors: [{ name: "Yuvara Team" }],
   creator: "Yuvara",
@@ -49,9 +50,9 @@ export const metadata: Metadata = {
     siteName: "Yuvara",
     images: [
       {
-        url: "/logo.png",
-        width: 800,
-        height: 800,
+        url: "/logo-v2.svg",
+        width: 1200,
+        height: 630,
         alt: "Yuvara Logo",
       },
     ],
@@ -61,16 +62,16 @@ export const metadata: Metadata = {
     title: "Yuvara | Premium Global Online Shopping",
     description:
       "Discover Yuvara's exclusive collection of fashion, electronics, and lifestyle products.",
-    images: ["/logo.png"],
+    images: ["/logo-v2.svg"],
     creator: "@yuvara",
   },
   icons: {
-    icon: ["/favicon.ico", "/icon.png"],
-    shortcut: "/icon.png",
-    apple: "/logo.png",
+    icon: "/icon-v2.svg",
+    shortcut: "/icon-v2.svg",
+    apple: "/icon-v2.svg",
     other: {
       rel: "apple-touch-icon-precomposed",
-      url: "/logo.png",
+      url: "/icon-v2.svg",
     },
   },
   manifest: "/site.webmanifest",
@@ -104,7 +105,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${openSans.variable} antialiased font-sans`}
+        className={`${inter.variable} antialiased font-sans`}
         suppressHydrationWarning
       >
         <LanguageProvider>

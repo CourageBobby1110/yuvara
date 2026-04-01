@@ -15,10 +15,10 @@ export default function YuvaraLoader({
     <div className={styles.loaderContainer}>
       <div className={styles.logoWrapper} style={{ width: size, height: size }}>
         <Image
-          src="/logo.png"
+          src="/icon-v2.svg"
           alt="Loading..."
           fill
-          style={{ objectFit: "cover", borderRadius: "50%" }}
+          style={{ objectFit: "contain" }}
         />
       </div>
       {text && <p className={styles.loadingText}>{text}</p>}

@@ -52,6 +52,10 @@ const ProductSchema = new Schema(
       ],
       default: [],
     },
+    isBestSeller: {
+      type: Boolean,
+      default: false,
+    },
     isFeatured: {
       type: Boolean,
       default: false,
@@ -142,6 +146,7 @@ export type Product = {
     method?: string;
     deliveryTime?: string;
   }[];
+  isBestSeller: boolean;
   isFeatured: boolean;
   sizes?: string[];
   colors?: string[];

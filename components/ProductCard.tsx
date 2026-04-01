@@ -90,6 +90,8 @@ export default function ProductCard({
         href={`/products/${product.slug}`}
         className={styles.imageLink}
         style={getAspectRatioStyle(index)}
+        target="_blank"
+        rel="noopener noreferrer"
       >
         <Image
           src={mainImage}
@@ -120,6 +122,11 @@ export default function ProductCard({
               Featured
             </span>
           )}
+          {product.isBestSeller && (
+            <span className={`${styles.badge} ${styles.badgeBestSeller}`}>
+              Best Seller
+            </span>
+          )}
           {isOutOfStock && (
             <span className={`${styles.badge} ${styles.badgeSoldOut}`}>
               Sold Out
@@ -129,9 +136,10 @@ export default function ProductCard({
 
         {/* Action Buttons */}
         <div className={styles.actions}>
-          <div className={styles.actionButton}>
-            <WishlistButton productId={product._id} />
-          </div>
+          <WishlistButton 
+            productId={product._id} 
+            className={styles.actionButton} 
+          />
           <button
             onClick={handleQuickAddClick}
             disabled={isOutOfStock}
@@ -140,14 +148,14 @@ export default function ProductCard({
             }`}
             aria-label="Quick Add"
           >
-            <ShoppingCart size={18} strokeWidth={1.5} />
+            <ShoppingCart size={20} strokeWidth={2.25} />
           </button>
           <button
             onClick={handleShare}
             className={styles.actionButton}
             aria-label="Share product"
           >
-            <Share2 size={18} strokeWidth={1.5} />
+            <Share2 size={20} strokeWidth={2.25} />
           </button>
         </div>
       </Link>
@@ -171,7 +179,12 @@ export default function ProductCard({
           </div>
         </div>
 
-        <Link href={`/products/${product.slug}`} className={styles.titleLink}>
+        <Link
+          href={`/products/${product.slug}`}
+          className={styles.titleLink}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <h3 className={styles.title}>{product.name}</h3>
         </Link>
 
