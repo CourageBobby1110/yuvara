@@ -619,7 +619,7 @@ export default function CheckoutPage() {
 
               <form onSubmit={handleCheckout} className={styles.form}>
                 <div className={styles.formGrid}>
-                  <div className="sm:col-span-2">
+                  <div className={styles.fullWidth}>
                     <label className={styles.label}>Street Address</label>
                     <input
                       type="text"
@@ -662,7 +662,7 @@ export default function CheckoutPage() {
                       ))}
                     </select>
                     {availableCountries.length < COUNTRIES.length && (
-                      <p className="text-xs text-amber-600 mt-1">
+                      <p style={{ fontSize: '0.6875rem', color: '#d97706', marginTop: '0.25rem' }}>
                         {availableCountries.length === 0
                           ? "No common shipping country found for these items."
                           : `Only shipping to ${availableCountries
@@ -698,7 +698,7 @@ export default function CheckoutPage() {
                     />
                   </div>
 
-                  <div className="sm:col-span-2">
+                  <div className={styles.fullWidth}>
                     <label className={styles.label}>
                       Email Address <span className={styles.required}>*</span>
                     </label>
@@ -717,7 +717,7 @@ export default function CheckoutPage() {
                     />
                   </div>
 
-                  <div className="sm:col-span-2">
+                  <div className={styles.fullWidth}>
                     <label className={styles.label}>
                       Phone Number <span className={styles.required}>*</span>
                     </label>
@@ -732,7 +732,7 @@ export default function CheckoutPage() {
                     />
                   </div>
 
-                  <div className="sm:col-span-2">
+                  <div className={styles.fullWidth}>
                     <label className={styles.checkboxLabel}>
                       <input
                         type="checkbox"

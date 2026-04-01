@@ -1,87 +1,99 @@
+/* ==========================================================================
+   YUVARA CHECKOUT — Mobile-First, App-Like
+   ========================================================================== */
+
 .container {
   min-height: 100vh;
-  background-color: rgba(249, 250, 251, 0.5); /* gray-50/50 */
-  padding: 3rem 1rem;
+  background-color: var(--color-bg-secondary);
+  padding: 1rem 0.75rem 2rem;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .contentWrapper {
   max-width: 80rem;
   margin: 0 auto;
+  width: 100%;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 1.25rem;
 }
 
 .title {
-  font-size: 2.25rem;
-  font-weight: 900;
+  font-size: 1.5rem;
+  font-weight: 800;
   letter-spacing: -0.025em;
   color: var(--color-text-primary);
-  margin-bottom: 0.5rem;
+  margin: 0 0 0.25rem;
 }
 
 .subtitle {
   color: var(--color-text-secondary);
+  font-size: 0.8125rem;
+  margin: 0;
 }
 
 .grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-/* Order Summary */
+/* ==========================================================================
+   ORDER SUMMARY
+   ========================================================================== */
+
 .summarySection {
-  /* lg:col-span-5 lg:order-2 */
   width: 100%;
+  order: 1;
 }
 
 .summaryCard {
   background-color: var(--color-bg-primary);
   border-radius: 1rem;
-  box-shadow: var(--shadow-sm);
   border: 1px solid var(--color-border-light);
-  padding: 1.5rem;
-  position: sticky;
-  top: 6rem;
+  padding: 1rem;
+  box-shadow: none;
 }
 
 .summaryHeader {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 700;
-  margin-bottom: 1.5rem;
+  margin: 0 0 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .itemCount {
-  font-size: 0.875rem;
-  font-weight: 400;
+  font-size: 0.75rem;
+  font-weight: 500;
   color: var(--color-text-secondary);
 }
 
 .itemsList {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-  max-height: 400px;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  max-height: 200px;
   overflow-y: auto;
-  padding-right: 0.5rem;
+  padding-right: 0.25rem;
 }
 
 .item {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
+  align-items: center;
+  min-width: 0;
 }
 
 .imageWrapper {
   position: relative;
-  width: 5rem;
-  height: 6rem;
+  width: 3.5rem;
+  height: 3.5rem;
   flex-shrink: 0;
   background-color: var(--color-bg-secondary);
   border-radius: 0.5rem;
@@ -95,58 +107,73 @@
 .itemDetails {
   flex: 1;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: space-between;
-  padding: 0.25rem 0;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 0;
 }
 
 .itemName {
   font-weight: 600;
+  font-size: 0.8125rem;
   color: var(--color-text-primary);
   display: -webkit-box;
   -webkit-line-clamp: 1;
   line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  margin: 0;
 }
 
 .itemQty {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: var(--color-text-secondary);
+  margin: 0.125rem 0 0;
 }
 
 .itemPrice {
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 0.8125rem;
   color: var(--color-text-primary);
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin: 0;
 }
 
+/* ==========================================================================
+   COUPON & GIFT CARD
+   ========================================================================== */
+
 .couponSection {
-  margin-bottom: 1.5rem;
-  padding-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  padding-top: 0.75rem;
   border-top: 1px solid var(--color-border-light);
 }
 
 .couponLabel {
   display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 600;
   color: var(--color-text-primary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.375rem;
 }
 
 .couponInputGroup {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.375rem;
 }
 
 .couponInput {
   flex: 1;
+  min-width: 0;
   border-radius: 0.5rem;
   border: 1px solid var(--color-border-light);
   background-color: var(--color-bg-secondary);
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
   outline: none;
+  box-sizing: border-box;
 }
 
 .couponInput:focus {
@@ -157,12 +184,13 @@
 .applyButton {
   background-color: var(--color-text-primary);
   color: var(--color-bg-primary);
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.875rem;
   border-radius: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 600;
   border: none;
   cursor: pointer;
+  white-space: nowrap;
   transition: background-color 0.2s ease;
 }
 
@@ -171,130 +199,142 @@
 }
 
 .removeButton {
-  background-color: #e5e7eb; /* gray-200 */
-  color: #1f2937; /* gray-800 */
-  padding: 0.5rem 1rem;
+  background-color: #e5e7eb;
+  color: #1f2937;
+  padding: 0.5rem 0.875rem;
   border-radius: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 600;
   border: none;
   cursor: pointer;
+  white-space: nowrap;
   transition: background-color 0.2s ease;
 }
 
 .removeButton:hover {
-  background-color: #d1d5db; /* gray-300 */
+  background-color: #d1d5db;
 }
 
 .errorText {
-  color: #ef4444; /* red-500 */
-  font-size: 0.75rem;
+  color: #ef4444;
+  font-size: 0.6875rem;
   margin-top: 0.25rem;
 }
 
 .successText {
-  color: #16a34a; /* green-600 */
-  font-size: 0.75rem;
+  color: #16a34a;
+  font-size: 0.6875rem;
   margin-top: 0.25rem;
 }
 
+/* ==========================================================================
+   TOTALS
+   ========================================================================== */
+
 .totalsSection {
   border-top: 1px solid var(--color-border-light);
-  padding-top: 1.5rem;
+  padding-top: 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .totalRow {
   display: flex;
   justify-content: space-between;
+  font-size: 0.8125rem;
   color: var(--color-text-secondary);
 }
 
 .discountRow {
   display: flex;
   justify-content: space-between;
-  color: #16a34a; /* green-600 */
+  font-size: 0.8125rem;
+  color: #16a34a;
   font-weight: 500;
 }
 
 .grandTotalRow {
   display: flex;
   justify-content: space-between;
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 700;
   color: var(--color-text-primary);
-  padding-top: 1rem;
+  padding-top: 0.5rem;
   border-top: 1px solid var(--color-border-light);
 }
 
-/* Shipping Form */
+/* ==========================================================================
+   SHIPPING FORM
+   ========================================================================== */
+
 .formSection {
-  /* lg:col-span-7 lg:order-1 */
   width: 100%;
+  order: 2;
 }
 
 .formCard {
   background-color: var(--color-bg-primary);
   border-radius: 1rem;
-  box-shadow: var(--shadow-sm);
   border: 1px solid var(--color-border-light);
-  padding: 1.5rem;
+  padding: 1rem;
+  box-shadow: none;
 }
 
 .formTitle {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 700;
-  margin-bottom: 1.5rem;
+  margin: 0 0 1rem;
   color: var(--color-text-primary);
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0;
 }
 
 .formGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .fullWidth {
-  grid-column: 1 / -1;
+  width: 100%;
 }
 
 .label {
   display: block;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--color-text-primary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .required {
-  color: #ef4444; /* red-500 */
+  color: #ef4444;
 }
 
 .helperText {
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   color: var(--color-text-secondary);
-  margin-bottom: 0.5rem;
+  margin: 0 0 0.25rem;
 }
 
 .input,
 .select {
   display: block;
   width: 100%;
-  border-radius: 0.75rem;
+  border-radius: 0.625rem;
   border: 1px solid var(--color-border-light);
   background-color: var(--color-bg-secondary);
-  padding: 0.75rem 1rem;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.875rem;
   color: var(--color-text-primary);
   outline: none;
   transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
 .input:focus,
@@ -313,17 +353,17 @@
 
 .checkbox {
   border-radius: 0.25rem;
-  border-color: #d1d5db; /* gray-300 */
+  border-color: #d1d5db;
   color: #000;
 }
 
 .checkboxText {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: var(--color-text-primary);
 }
 
 .submitSection {
-  padding-top: 1.5rem;
+  padding-top: 1rem;
 }
 
 .submitButton {
@@ -331,83 +371,86 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 1rem 1.5rem;
+  padding: 0.875rem 1.5rem;
   border-radius: 0.75rem;
-  font-size: 1rem;
+  font-size: 0.9375rem;
   font-weight: 700;
   color: var(--color-bg-primary);
   background-color: var(--color-text-primary);
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: var(--shadow-lg);
 }
 
 .submitButton:hover {
   background-color: var(--color-text-secondary);
-  transform: translateY(-2px);
 }
 
 .submitButton:disabled {
   opacity: 0.7;
   cursor: not-allowed;
-  transform: none;
 }
 
 .spinner {
   animation: spin 1s linear infinite;
-  margin-right: 0.75rem;
-  height: 1.25rem;
-  width: 1.25rem;
+  margin-right: 0.5rem;
+  height: 1.125rem;
+  width: 1.125rem;
 }
 
 .secureText {
   text-align: center;
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   color: var(--color-text-light);
-  margin-top: 1rem;
+  margin-top: 0.75rem;
 }
 
-/* Empty Cart */
+/* ==========================================================================
+   EMPTY CART
+   ========================================================================== */
+
 .emptyCartContainer {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: var(--color-bg-secondary);
+  padding: 1rem;
 }
 
 .emptyCartContent {
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .emptyIconWrapper {
   background-color: var(--color-bg-primary);
-  padding: 1.5rem;
+  padding: 1.25rem;
   border-radius: 1rem;
-  box-shadow: var(--shadow-sm);
   border: 1px solid var(--color-border-light);
   display: inline-block;
   margin: 0 auto;
 }
 
 .emptyIcon {
-  width: 3rem;
-  height: 3rem;
+  width: 2.5rem;
+  height: 2.5rem;
   color: var(--color-text-light);
 }
 
 .emptyTitle {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--color-text-primary);
+  margin: 0;
 }
 
 .emptyText {
   color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  margin: 0;
 }
 
 .returnButton {
@@ -416,9 +459,12 @@
   color: var(--color-bg-primary);
   padding: 0.75rem 2rem;
   border-radius: 9999px;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 0.875rem;
   transition: background-color 0.2s ease;
   text-decoration: none;
+  border: none;
+  cursor: pointer;
 }
 
 .returnButton:hover {
@@ -426,39 +472,77 @@
 }
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-/* Responsive */
+/* ==========================================================================
+   TABLET ( >= 640px )
+   ========================================================================== */
+
 @media (min-width: 640px) {
   .container {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
+    padding: 2rem 1.5rem;
   }
 
-  .formGrid {
-    grid-template-columns: repeat(2, 1fr);
+  .title {
+    font-size: 2rem;
   }
 
-  .formCard {
-    padding: 2rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .container {
-    padding-left: 2rem;
-    padding-right: 2rem;
+  .header {
+    margin-bottom: 2rem;
   }
 
   .grid {
+    gap: 1.5rem;
+  }
+
+  .summaryCard,
+  .formCard {
+    padding: 1.5rem;
+  }
+
+  .formGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .imageWrapper {
+    width: 4.5rem;
+    height: 5rem;
+  }
+
+  .itemsList {
+    max-height: 350px;
+  }
+
+  .itemName {
+    font-size: 0.875rem;
+  }
+}
+
+/* ==========================================================================
+   DESKTOP ( >= 1024px )
+   ========================================================================== */
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 3rem 2rem;
+  }
+
+  .title {
+    font-size: 2.25rem;
+  }
+
+  .header {
+    margin-bottom: 3rem;
+  }
+
+  .grid {
+    display: grid;
     grid-template-columns: repeat(12, 1fr);
-    gap: 3rem;
+    gap: 2.5rem;
   }
 
   .summarySection {
@@ -469,5 +553,26 @@
   .formSection {
     grid-column: span 7;
     order: 1;
+  }
+
+  .summaryCard {
+    position: sticky;
+    top: 6rem;
+    padding: 1.75rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .formCard {
+    padding: 2rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .itemsList {
+    max-height: 400px;
+  }
+
+  .imageWrapper {
+    width: 5rem;
+    height: 6rem;
   }
 }
