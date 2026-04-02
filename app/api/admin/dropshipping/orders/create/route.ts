@@ -206,6 +206,7 @@ export async function POST(req: Request) {
       "United Kingdom": "GB",
       Canada: "CA",
       Australia: "AU",
+      Germany: "DE",
     };
 
     const reverseCountryMap: { [key: string]: string } = {
@@ -214,6 +215,7 @@ export async function POST(req: Request) {
       GB: "United Kingdom",
       CA: "Canada",
       AU: "Australia",
+      DE: "Germany",
     };
 
     let shippingCountry = order.shippingAddress.country;

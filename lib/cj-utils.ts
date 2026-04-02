@@ -65,6 +65,7 @@ export const TARGET_COUNTRIES = [
   { code: "GB", name: "United Kingdom" },
   { code: "CA", name: "Canada" },
   { code: "AU", name: "Australia" },
+  { code: "DE", name: "Germany" },
 ];
 
 /**

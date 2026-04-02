@@ -15,6 +15,7 @@ const COUNTRIES = [
   { name: "United Kingdom", code: "GB" },
   { name: "Canada", code: "CA" },
   { name: "Australia", code: "AU" },
+  { name: "Germany", code: "DE" },
 ];
 
 export default function CheckoutPage() {

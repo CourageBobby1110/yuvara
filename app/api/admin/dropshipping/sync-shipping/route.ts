@@ -44,6 +44,7 @@ async function fetchShippingRates(accessToken: string, vid: string) {
     { code: "GB", name: "United Kingdom" },
     { code: "CA", name: "Canada" },
     { code: "AU", name: "Australia" },
+    { code: "DE", name: "Germany" },
   ];
 
   const rates = [];

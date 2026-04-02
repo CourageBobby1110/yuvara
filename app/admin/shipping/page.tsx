@@ -18,6 +18,7 @@ const COUNTRIES = [
   "United States",
   "United Kingdom",
   "Canada",
+  "Germany",
   "Ghana",
 ];
 
