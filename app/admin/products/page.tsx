@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 import AdminLoader from "@/components/AdminLoader";
 import { useCurrency } from "@/context/CurrencyContext";
 import styles from "./AdminProducts.module.css";
@@ -20,6 +21,7 @@ interface Product {
 }
 
 export default function AdminProductsPage() {
+  const { data: session } = useSession();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
@@ -32,6 +34,8 @@ export default function AdminProductsPage() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+
+  const isWorker = session?.user?.role === "worker";
 
   useEffect(() => {
     fetchProducts();
@@ -201,8 +205,8 @@ export default function AdminProductsPage() {
     const query = searchQuery.toLowerCase();
     return products.filter(
       (product) =>
-        product.name.toLowerCase().includes(query) ||
-        product.category.toLowerCase().includes(query),
+          product.name.toLowerCase().includes(query) ||
+          product.category.toLowerCase().includes(query),
     );
   }, [products, searchQuery]);
 
@@ -236,20 +240,22 @@ export default function AdminProductsPage() {
           </div>
 
           <div className={styles.actionsWrapper}>
-            <div className={styles.toggleWrapper}>
-              <span className={styles.toggleLabel}>10% Markup</span>
-              <label className={styles.switch}>
-                <input
-                  type="checkbox"
-                  checked={markupActive}
-                  onChange={handleMarkupToggle}
-                  disabled={updating}
-                />
-                <span className={styles.slider}></span>
-              </label>
-            </div>
+            {!isWorker && (
+              <div className={styles.toggleWrapper}>
+                <span className={styles.toggleLabel}>10% Markup</span>
+                <label className={styles.switch}>
+                  <input
+                    type="checkbox"
+                    checked={markupActive}
+                    onChange={handleMarkupToggle}
+                    disabled={updating}
+                  />
+                  <span className={styles.slider}></span>
+                </label>
+              </div>
+            )}
 
-            {selectedProducts.length > 0 && (
+            {!isWorker && selectedProducts.length > 0 && (
               <button
                 onClick={handleBulkDelete}
                 className={`${styles.actionButton} ${styles.destructiveButton}`}
@@ -327,12 +333,14 @@ export default function AdminProductsPage() {
               >
                 Edit
               </Link>
-              <button
-                onClick={() => handleDelete(product._id)}
-                className={`${styles.actionButton} ${styles.deleteAction}`} // Added deleteAction class
-              >
-                Delete
-              </button>
+              {!isWorker && (
+                <button
+                  onClick={() => handleDelete(product._id)}
+                  className={`${styles.actionButton} ${styles.deleteAction}`} // Added deleteAction class
+                >
+                  Delete
+                </button>
+              )}
             </div>
           </div>
         ))}
@@ -401,12 +409,14 @@ export default function AdminProductsPage() {
                     >
                       Edit
                     </Link>
-                    <button
-                      onClick={() => handleDelete(product._id)}
-                      className={styles.deleteLink}
-                    >
-                      Delete
-                    </button>
+                    {!isWorker && (
+                      <button
+                        onClick={() => handleDelete(product._id)}
+                        className={styles.deleteLink}
+                      >
+                        Delete
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Order from "@/models/Order";
 import User from "@/models/User";
+import Product from "@/models/Product";
 import { auth } from "@/auth";
 
 export async function GET() {
@@ -22,6 +23,7 @@ export async function GET() {
       activeOrdersCount,
       customersCount,
       recentOrders,
+      totalProductsCount,
     ] = await Promise.all([
       // Aggregate total revenue
       Order.aggregate([{ $group: { _id: null, total: { $sum: "$total" } } }]),
@@ -33,6 +35,8 @@ export async function GET() {
       User.countDocuments({ role: "user" }),
       // Fetch recent 5 orders
       Order.find({}).sort({ createdAt: -1 }).limit(5).populate("user", "name"),
+      // Count total products
+      Product.countDocuments({}),
     ]);
 
     const revenue =
@@ -43,6 +47,7 @@ export async function GET() {
       activeOrders: activeOrdersCount,
       customers: customersCount,
       recentOrders,
+      totalProducts: totalProductsCount,
     });
   } catch (error) {
     console.error("Dashboard stats fetch error:", error);

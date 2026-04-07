@@ -24,6 +24,7 @@ export default function AdminDashboard() {
     revenue: 0,
     activeOrders: 0,
     customers: 0,
+    totalProducts: 0,
   });
 
   const { formatPrice, exchangeRates } = useCurrency();
@@ -52,9 +53,10 @@ export default function AdminDashboard() {
         revenue: revenueUSD,
         activeOrders: data.activeOrders,
         customers: data.customers,
+        totalProducts: data.totalProducts || 0,
       });
 
-      setOrders(data.recentOrders);
+      setOrders(data.recentOrders || []);
     } catch (error) {
       console.error("Failed to fetch dashboard data", error);
     } finally {
@@ -63,7 +65,6 @@ export default function AdminDashboard() {
   };
 
   const getStatusColor = (status: string) => {
-    // ... (keep existing switch case)
     switch (status) {
       case "pending":
         return "#eab308"; // yellow-500
@@ -84,56 +85,63 @@ export default function AdminDashboard() {
 
   if (!session) return <AdminLoader />;
 
+  const isWorker = session?.user?.role === "worker";
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
         <div>
           <h1 className={styles.title}>Overview</h1>
           <p className={styles.welcomeText}>
-            Here's what's happening with your store today.
+            {isWorker
+              ? "Manage your product inventory and stock."
+              : "Here's what's happening with your store today."}
           </p>
         </div>
       </header>
 
       <div className={styles.statsGrid}>
-        <div className={styles.statCard}>
-          <p className={styles.statLabel}>Total Revenue</p>
-          <div className={styles.statValueWrapper}>
-            {session?.user?.role === "worker" ? (
-              <h3
-                className={styles.statValue}
-                style={{ filter: "blur(8px)", userSelect: "none" }}
-              >
-                $0,000.00
-              </h3>
-            ) : (
-              <h3 className={styles.statValue}>{formatPrice(stats.revenue)}</h3>
-            )}
+        {isWorker ? (
+          <div className={styles.statCard}>
+            <p className={styles.statLabel}>Total Products</p>
+            <div className={styles.statValueWrapper}>
+              <h3 className={styles.statValue}>{(stats as any).totalProducts}</h3>
+            </div>
           </div>
-        </div>
+        ) : (
+          <>
+            <div className={styles.statCard}>
+              <p className={styles.statLabel}>Total Revenue</p>
+              <div className={styles.statValueWrapper}>
+                <h3 className={styles.statValue}>{formatPrice(stats.revenue)}</h3>
+              </div>
+            </div>
 
-        <div className={styles.statCard}>
-          <p className={styles.statLabel}>Active Orders</p>
-          <div className={styles.statValueWrapper}>
-            <h3 className={styles.statValue}>{stats.activeOrders}</h3>
-          </div>
-        </div>
+            <div className={styles.statCard}>
+              <p className={styles.statLabel}>Active Orders</p>
+              <div className={styles.statValueWrapper}>
+                <h3 className={styles.statValue}>{stats.activeOrders}</h3>
+              </div>
+            </div>
 
-        <div className={styles.statCard}>
-          <p className={styles.statLabel}>Total Customers</p>
-          <div className={styles.statValueWrapper}>
-            <h3 className={styles.statValue}>{stats.customers}</h3>
-          </div>
-        </div>
+            <div className={styles.statCard}>
+              <p className={styles.statLabel}>Total Customers</p>
+              <div className={styles.statValueWrapper}>
+                <h3 className={styles.statValue}>{stats.customers}</h3>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
-      <div className={styles.recentOrdersContainer}>
-        <div className={styles.recentOrdersHeader}>
-          <h3 className={styles.recentOrdersTitle}>Recent Orders</h3>
-          <Link href="/admin/orders" className={styles.viewAllLink}>
-            View All
-          </Link>
-        </div>
+      {!isWorker && (
+        <div className={styles.recentOrdersContainer}>
+          <div className={styles.recentOrdersHeader}>
+            <h3 className={styles.recentOrdersTitle}>Recent Orders</h3>
+            <Link href="/admin/orders" className={styles.viewAllLink}>
+              View All
+            </Link>
+          </div>
 
         {/* Mobile Order Cards */}
         <div className={styles.mobileOrders}>
@@ -234,6 +242,7 @@ export default function AdminDashboard() {
           </table>
         </div>
       </div>
-    </div>
-  );
+    )}
+  </div>
+);
 }

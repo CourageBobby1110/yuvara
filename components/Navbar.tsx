@@ -190,7 +190,7 @@ export default function Navbar({ session }: NavbarProps) {
                         <p className={styles.userEmail}>{session.user?.email}</p>
                       </div>
                       <div className={styles.dropdownContent}>
-                        {session.user?.role === "admin" && (
+                        {(session.user?.role === "admin" || session.user?.role === "worker") && (
                           <Link
                             href="/admin/dashboard"
                             className={styles.dropdownLink}
@@ -403,7 +403,7 @@ export default function Navbar({ session }: NavbarProps) {
                   </Link>
 
                   <div className="grid grid-cols-2 gap-2 mt-1">
-                    {session.user?.role === "admin" && (
+                    {(session.user?.role === "admin" || session.user?.role === "worker") && (
                       <Link href="/admin/dashboard" className={styles.mobileUserLink} onClick={() => setIsMenuOpen(false)}>
                         <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="mb-2">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />

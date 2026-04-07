@@ -44,7 +44,8 @@ export const authConfig = {
         if (!isLoggedIn) {
           return false; // Redirect to login
         }
-        if ((auth?.user as any)?.role !== "admin") {
+        const role = (auth?.user as any)?.role;
+        if (role !== "admin" && role !== "worker") {
           return Response.redirect(new URL("/", nextUrl.nextUrl));
         }
       }

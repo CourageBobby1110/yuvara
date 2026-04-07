@@ -22,7 +22,14 @@ export const proxy = auth((req) => {
     if (!isLoggedIn) {
       return NextResponse.redirect(new URL("/auth/signin", req.nextUrl));
     }
-    if ((req.auth?.user as any)?.role !== "admin") {
+    const role = (req.auth?.user as any)?.role;
+    const isMainSettingsPage = req.nextUrl.pathname.startsWith("/admin/settings");
+
+    if (role === "worker" && isMainSettingsPage) {
+      return NextResponse.redirect(new URL("/admin/worker-settings", req.nextUrl));
+    }
+
+    if (role !== "admin" && role !== "worker") {
       return NextResponse.redirect(new URL("/", req.nextUrl));
     }
   }
