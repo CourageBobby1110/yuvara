@@ -89,7 +89,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         
         if (needsSync) {
           await dbConnect();
-          const dbUser = await User.findById(token.id).lean();
+          const dbUser = await User.findById(token.id).lean() as any;
           if (dbUser) {
             token.emailVerified = dbUser.emailVerified;
             token.referralCode = dbUser.referralCode;
