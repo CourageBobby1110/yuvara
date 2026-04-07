@@ -48,10 +48,9 @@ export const authConfig = {
         if (!isLoggedIn) {
           return false; // Redirect to login
         }
-        const role = (auth?.user as any)?.role;
-        if (role !== "admin" && role !== "worker") {
-          return Response.redirect(new URL("/", nextUrl.nextUrl));
-        }
+        // Let the server-side AdminLayout handle specific role checks
+        // for more reliable RBAC when roles are updated in the DB
+        return true;
       }
 
       return true;

@@ -36,7 +36,7 @@ export default function AdminSidebar() {
       <aside className={`${styles.sidebar} ${isOpen ? styles.open : ""}`}>
         <div className={styles.header}>
           <Link
-            href="/"
+            href="/admin/dashboard"
             className={styles.logo}
             onClick={() => setIsOpen(false)}
           >
@@ -291,19 +291,21 @@ export default function AdminSidebar() {
               >
                 Hero Settings
               </Link>
-              <Link
-                href={isWorker ? "/admin/worker-settings" : "/admin/settings"}
-                className={`${styles.link} ${
-                  isActive("/admin/settings") || isActive("/admin/worker-settings")
-                    ? styles.active
-                    : ""
-                }`}
-                onClick={() => setIsOpen(false)}
-              >
-                Settings
-              </Link>
             </>
           )}
+
+          {/* Settings - Visible to everyone, but links to worker-settings for workers */}
+          <Link
+            href={isWorker ? "/admin/worker-settings" : "/admin/settings"}
+            className={`${styles.link} ${
+              isActive("/admin/settings") || isActive("/admin/worker-settings")
+                ? styles.active
+                : ""
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Settings
+          </Link>
         </nav>
 
         <button onClick={() => handleSignOut()} className={styles.logoutButton}>

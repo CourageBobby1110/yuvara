@@ -213,7 +213,9 @@ export default function AdminHeader() {
               {session?.user?.name || "User"}
             </span>
             <span className={styles.userRole}>
-              {(session?.user as any)?.role?.toUpperCase() || "ADMINISTRATOR"}
+              {(session?.user as any)?.role === "worker"
+                ? "WORKER"
+                : (session?.user as any)?.role?.toUpperCase() || "ADMINISTRATOR"}
             </span>
           </div>
         </div>

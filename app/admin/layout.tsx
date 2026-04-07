@@ -11,10 +11,12 @@ export default async function AdminLayout({
 }) {
   const session = await auth();
 
-  if (
-    !session ||
-    (session.user?.role !== "admin" && session.user?.role !== "worker")
-  ) {
+  // Only permit access to users with 'admin' or 'worker' roles.
+  // The session role is kept in sync with the database via the JWT callback in auth.ts
+  const userRole = session?.user?.role;
+  const isAuthorized = userRole === "admin" || userRole === "worker";
+
+  if (!session || !isAuthorized) {
     redirect("/");
   }
 
