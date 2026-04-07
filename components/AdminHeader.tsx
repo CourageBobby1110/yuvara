@@ -191,7 +191,7 @@ export default function AdminHeader() {
 
         {/* Settings */}
         <Link
-          href="/admin/settings"
+          href={(session?.user as any)?.role === "worker" ? "/admin/worker-settings" : "/admin/settings"}
           className={styles.iconButton}
           aria-label="Settings"
         >
@@ -201,18 +201,19 @@ export default function AdminHeader() {
         {/* User Profile */}
         <div className={styles.profileButton} title="Sign Out">
           <Image
-            src={session?.user?.image || "/placeholder.png"}
+            src={session?.user?.image || "/placeholder-user.png"}
             alt="Profile"
             width={32}
             height={32}
             className={styles.avatar}
+            unoptimized={true}
           />
           <div className={styles.profileInfo}>
             <span className={styles.userName}>
-              {session?.user?.name || "Admin User"}
+              {session?.user?.name || "User"}
             </span>
             <span className={styles.userRole}>
-              {session?.user?.role || "Administrator"}
+              {(session?.user as any)?.role?.toUpperCase() || "ADMINISTRATOR"}
             </span>
           </div>
         </div>

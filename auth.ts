@@ -83,16 +83,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token = await authConfig.callbacks.jwt({ token, user, trigger } as any);
       }
 
-      // Refresh data on session update
-      if (trigger === "update" && token.id) {
-        await dbConnect();
-        const dbUser = await User.findById(token.id);
-        if (dbUser) {
-          token.emailVerified = dbUser.emailVerified;
-          token.referralCode = dbUser.referralCode;
-          token.role = dbUser.role;
-          token.image = dbUser.image; // Critical for immediate profile photo feedback
-          token.name = dbUser.name;
+      // Sync with DB if missing data or on manual update
+      if (token.id) {
+        const needsSync = !token.image || trigger === "update";
+        
+        if (needsSync) {
+          await dbConnect();
+          const dbUser = await User.findById(token.id).lean();
+          if (dbUser) {
+            token.emailVerified = dbUser.emailVerified;
+            token.referralCode = dbUser.referralCode;
+            token.role = dbUser.role;
+            token.image = dbUser.image || "";
+            token.name = dbUser.name || "";
+          }
         }
       }
 

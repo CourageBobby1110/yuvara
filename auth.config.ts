@@ -14,6 +14,8 @@ export const authConfig = {
         token.id = user.id;
         token.emailVerified = (user as any).emailVerified;
         token.referralCode = (user as any).referralCode;
+        token.image = user.image;
+        token.name = user.name;
       }
       return token;
     },
@@ -23,6 +25,8 @@ export const authConfig = {
         (session.user as any).id = token.id;
         (session.user as any).emailVerified = token.emailVerified;
         (session.user as any).referralCode = token.referralCode;
+        session.user.image = token.image as string;
+        session.user.name = token.name as string;
       }
       return session;
     },

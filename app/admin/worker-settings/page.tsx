@@ -11,6 +11,7 @@ import AdminLoader from "@/components/AdminLoader";
 export default function WorkerSettingsPage() {
   const { data: session, update } = useSession();
   const [name, setName] = useState("");
+  const [avatar, setAvatar] = useState(""); // Local state for immediate display
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -18,11 +19,19 @@ export default function WorkerSettingsPage() {
     if (session?.user?.name) {
       setName(session.user.name);
     }
+    if (session?.user?.image) {
+      setAvatar(session.user.image);
+    }
   }, [session]);
 
   if (!session) return <AdminLoader />;
 
   const handleUpdateProfile = async (imageUrl?: string) => {
+    // If we have a new image, show it immediately
+    if (imageUrl) {
+      setAvatar(imageUrl);
+    }
+    
     setLoading(true);
     setSuccess(false);
     try {
@@ -31,28 +40,29 @@ export default function WorkerSettingsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: name,
-          image: imageUrl || session.user?.image,
+          image: imageUrl || avatar || session.user?.image,
         }),
       });
 
       if (res.ok) {
         // Trigger session update to refresh UI everywhere
         await update({
-          ...session,
           user: {
             ...session.user,
             name: name,
-            image: imageUrl || session.user?.image,
+            image: imageUrl || avatar || session.user?.image,
           },
         });
         setSuccess(true);
         setTimeout(() => setSuccess(false), 3000);
       } else {
-        alert("Failed to update profile");
+        const errorData = await res.json();
+        console.error("Profile update failed:", errorData);
+        alert("Failed to update profile: " + (errorData.error || "Unknown error"));
       }
     } catch (error) {
       console.error("Update profile error:", error);
-      alert("Something went wrong");
+      alert("Something went wrong with the update");
     } finally {
       setLoading(false);
     }
@@ -66,18 +76,24 @@ export default function WorkerSettingsPage() {
         <div className={styles.profileSection}>
           <div className={styles.imageWrapper}>
             <Image
-              src={session.user?.image || "/placeholder-user.png"}
+              src={avatar || "/placeholder-user.png"}
               alt="Profile"
               fill
               className={styles.profileImage}
               priority
+              unoptimized={true} // Avoid potential caching/optimization delays
             />
             <CldUploadWidget
               uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_PRESET || "yuvara_preset"}
               onSuccess={(result: any) => {
-                if (result.info?.secure_url) {
+                console.log("Cloudinary Upload Success:", result);
+                if (result.event === "success" && result.info?.secure_url) {
                   handleUpdateProfile(result.info.secure_url);
                 }
+              }}
+              onError={(error: any) => {
+                console.error("Cloudinary Upload Error:", error);
+                alert("Upload failed. Please check your connection or image size.");
               }}
             >
               {({ open }) => (
