@@ -83,11 +83,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token = await authConfig.callbacks.jwt({ token, user, trigger } as any);
       }
 
-      // Sync with DB if missing data or on manual update
+      // Always sync with DB if token.id is present to ensure latest roles and profile data
       if (token.id) {
-        const needsSync = !token.image || trigger === "update";
-        
-        if (needsSync) {
+        try {
           await dbConnect();
           const dbUser = await User.findById(token.id).lean() as any;
           if (dbUser) {
@@ -97,6 +95,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             token.image = dbUser.image || "";
             token.name = dbUser.name || "";
           }
+        } catch (error) {
+          console.error("JWT sync error:", error);
         }
       }
 
