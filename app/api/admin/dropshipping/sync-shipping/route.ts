@@ -97,9 +97,12 @@ async function fetchShippingRates(accessToken: string, vid: string) {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    // if (!session || session.user?.role !== "admin") {
-    //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    // }
+    if (
+      !session ||
+      (session.user?.role !== "admin" && session.user?.role !== "worker")
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const { productId, targetVid } = await req.json();
 

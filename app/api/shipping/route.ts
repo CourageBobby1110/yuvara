@@ -25,7 +25,12 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (!session || !session.user || (session.user as any).role !== "admin") {
+    if (
+      !session ||
+      !session.user ||
+      ((session.user as any).role !== "admin" &&
+        (session.user as any).role !== "worker")
+    ) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
