@@ -60,6 +60,9 @@ async function fetchVariantStock(
               vid || sku
             }. Retrying...`
           );
+          if (retries === 1) {
+            throw new Error("CJ API rate limit exceeded. Syncing will resume tomorrow.");
+          }
           retries--;
           await wait(2000);
         } else {

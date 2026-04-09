@@ -232,13 +232,17 @@ export default function EditProductPage({
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        alert("Prices synced successfully!");
+        toast.success("Prices synced successfully!");
         fetchProduct(); // Refresh data
       } else {
-        alert(data.error || "Failed to sync prices");
+        const errorMsg = data.error || "Failed to sync prices";
+        toast.error(errorMsg);
+        if (errorMsg.includes("rate limit exceeded")) {
+          alert(errorMsg); // Double alert for critical rate limit
+        }
       }
-    } catch (e) {
-      alert("Error syncing prices");
+    } catch (e: any) {
+      toast.error("Error syncing prices");
     } finally {
       setSyncingPrice(false);
     }
@@ -427,14 +431,18 @@ export default function EditProductPage({
                     },
                   );
                   if (res.ok) {
-                    alert("Stock synced successfully!");
+                    toast.success("Stock synced successfully!");
                     fetchProduct(); // Reload data
                   } else {
                     const d = await res.json();
-                    alert(d.error || "Failed to sync stock");
+                    const errorMsg = d.error || "Failed to sync stock";
+                    toast.error(errorMsg);
+                    if (errorMsg.includes("rate limit exceeded")) {
+                      alert(errorMsg);
+                    }
                   }
                 } catch (e) {
-                  alert("Error syncing stock");
+                  toast.error("Error syncing stock");
                 } finally {
                   setSyncingStock(false);
                 }
@@ -514,14 +522,18 @@ export default function EditProductPage({
                     },
                   );
                   if (res.ok) {
-                    alert("Stock synced successfully!");
+                    toast.success("Stock synced successfully!");
                     fetchProduct(); // Reload data
                   } else {
                     const d = await res.json();
-                    alert(d.error || "Failed to sync stock");
+                    const errorMsg = d.error || "Failed to sync stock";
+                    toast.error(errorMsg);
+                    if (errorMsg.includes("rate limit exceeded")) {
+                      alert(errorMsg);
+                    }
                   }
                 } catch (e) {
-                  alert("Error syncing stock");
+                  toast.error("Error syncing stock");
                 } finally {
                   setSyncingStock(false);
                 }
@@ -837,7 +849,16 @@ export default function EditProductPage({
                   if (res.ok) {
                     toast.success("Shipping synced!");
                     fetchProduct();
+                  } else {
+                    const data = await res.json();
+                    const errorMsg = data.error || "Failed to sync shipping";
+                    toast.error(errorMsg);
+                    if (errorMsg.includes("rate limit exceeded")) {
+                      alert(errorMsg);
+                    }
                   }
+                } catch (e) {
+                  toast.error("Error syncing shipping");
                 } finally {
                   setSyncingVariantId(null);
                 }
@@ -855,7 +876,16 @@ export default function EditProductPage({
                   if (res.ok) {
                     toast.success("Stock synced!");
                     fetchProduct();
+                  } else {
+                    const data = await res.json();
+                    const errorMsg = data.error || "Failed to sync stock";
+                    toast.error(errorMsg);
+                    if (errorMsg.includes("rate limit exceeded")) {
+                      alert(errorMsg);
+                    }
                   }
+                } catch (e) {
+                  toast.error("Error syncing stock");
                 } finally {
                   setSyncingStockVariantId(null);
                 }
@@ -873,7 +903,16 @@ export default function EditProductPage({
                   if (res.ok) {
                     toast.success("Price synced!");
                     fetchProduct();
+                  } else {
+                    const data = await res.json();
+                    const errorMsg = data.error || "Failed to sync price";
+                    toast.error(errorMsg);
+                    if (errorMsg.includes("rate limit exceeded")) {
+                      alert(errorMsg);
+                    }
                   }
+                } catch (e) {
+                  toast.error("Error syncing price");
                 } finally {
                   setSyncingPriceVariantId(null);
                 }

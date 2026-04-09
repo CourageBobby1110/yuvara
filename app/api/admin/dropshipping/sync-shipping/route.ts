@@ -27,6 +27,9 @@ async function fetchFromCJWithRetry(
             i + 1
           }/${retries})...`
         );
+        if (i === retries - 1) {
+          throw new Error("CJ API rate limit exceeded. Syncing will resume tomorrow.");
+        }
         await wait(delay);
       } else {
         throw error; // Throw other errors immediately

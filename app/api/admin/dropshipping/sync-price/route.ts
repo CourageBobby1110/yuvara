@@ -4,6 +4,28 @@ import Product from "@/models/Product";
 import axios from "axios";
 import { getValidCJAccessToken } from "@/lib/cj-auth";
 import dbConnect from "@/lib/db";
+import { wait } from "@/lib/utils"; // Assuming wait is in lib/utils or I'll define it
+
+async function fetchWithRetry(url: string, headers: any, retries = 3): Promise<any> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await axios.get(url, { headers });
+      return res;
+    } catch (error: any) {
+      if (error.response?.status === 429) {
+        const delay = 5000 * (i + 1);
+        console.warn(`[SyncPrice] Hit 429. Retrying in ${delay / 1000}s...`);
+        if (i === retries - 1) {
+          throw new Error("CJ API rate limit exceeded. Syncing will resume tomorrow.");
+        }
+        await new Promise(resolve => setTimeout(resolve, delay));
+      } else {
+        throw error;
+      }
+    }
+  }
+  throw new Error("Max retries exceeded");
+}
 
 export async function POST(req: Request) {
   try {
@@ -49,9 +71,9 @@ export async function POST(req: Request) {
     // Fetch latest product details from CJ
     let productData;
     try {
-      const response = await axios.get(
+      const response = await fetchWithRetry(
         `https://developers.cjdropshipping.com/api2.0/v1/product/query?pid=${product.cjPid}`,
-        { headers: { "CJ-Access-Token": accessToken } }
+        { "CJ-Access-Token": accessToken }
       );
 
       if (response.data && response.data.result && response.data.data) {
@@ -63,9 +85,9 @@ export async function POST(req: Request) {
         );
       }
     } catch (apiError: any) {
-      console.error("CJ API Error:", apiError);
+      console.error("CJ API Error:", apiError.message);
       return NextResponse.json(
-        { error: "Failed to fetch product details from CJ" },
+        { error: apiError.message || "Failed to fetch product details from CJ" },
         { status: 502 }
       );
     }
@@ -73,9 +95,9 @@ export async function POST(req: Request) {
     // Attempt to fetch detailed variants (Deep Fetch) to ensure we get pricing
     let detailedVariants = [];
     try {
-      const vRes = await axios.get(
+      const vRes = await fetchWithRetry(
         `https://developers.cjdropshipping.com/api2.0/v1/product/variant/queryByPid?pid=${product.cjPid}`,
-        { headers: { "CJ-Access-Token": accessToken } }
+        { "CJ-Access-Token": accessToken }
       );
       if (vRes.data?.result && vRes.data?.data) {
         detailedVariants = Array.isArray(vRes.data.data) ? vRes.data.data : [];
@@ -83,7 +105,10 @@ export async function POST(req: Request) {
           `[SyncPrice] Fetched ${detailedVariants.length} detailed variants.`
         );
       }
-    } catch (e) {
+    } catch (e: any) {
+      if (e.message.includes("rate limit exceeded")) {
+        return NextResponse.json({ error: e.message }, { status: 429 });
+      }
       console.warn(
         "[SyncPrice] Deep variant fetch failed, relying on primary data."
       );
