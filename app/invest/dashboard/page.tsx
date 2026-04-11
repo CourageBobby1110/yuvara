@@ -482,17 +482,30 @@ export default function InvestmentDashboardPage() {
                         </td>
                         <td className="py-2">
                           {h.isTopUp ? (
-                            <span className="text-blue-600 font-medium">
-                              Top Up
-                            </span>
+                            h.amountAdded < 0 ? (
+                              <span className="text-red-600 font-medium">
+                                Deduction
+                              </span>
+                            ) : (
+                              <span className="text-blue-600 font-medium">
+                                Top Up
+                              </span>
+                            )
                           ) : (
                             <span className="text-purple-600 font-medium">
                               Rollover
                             </span>
                           )}
                         </td>
-                        <td className="py-2 text-right font-medium text-green-600">
-                          +{formatAmount(h.amountAdded)}
+                        <td
+                          className={`py-2 text-right font-medium ${
+                            h.amountAdded < 0
+                              ? "text-red-600"
+                              : "text-green-600"
+                          }`}
+                        >
+                          {h.amountAdded > 0 && "+"}
+                          {formatAmount(h.amountAdded)}
                         </td>
                       </tr>
                     ))}
