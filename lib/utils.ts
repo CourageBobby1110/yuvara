@@ -106,3 +106,7 @@ export function shuffleArray<T>(array: T[], seed: number): T[] {
 
   return t;
 }
+
+export function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

@@ -15,6 +15,7 @@ interface Investor {
   startDate: string;
   pendingTopUp: number;
   customProfitRate?: number;
+  activeCapital: number;
 }
 
 export default function AdminInvestorsPage() {
@@ -35,6 +36,7 @@ export default function AdminInvestorsPage() {
   // Top Up State
   const [isTopUpModalOpen, setIsTopUpModalOpen] = useState(false);
   const [topUpAmount, setTopUpAmount] = useState("");
+  const [topUpType, setTopUpType] = useState("top_up");
   const [topUpLoading, setTopUpLoading] = useState(false);
 
   const [globalProfitRate, setGlobalProfitRate] = useState<number | "">("");
@@ -182,6 +184,7 @@ export default function AdminInvestorsPage() {
     setEditingInvestor(investor);
     setIsTopUpModalOpen(true);
     setTopUpAmount("");
+    setTopUpType("top_up");
   };
 
   const handleTopUp = async (e: React.FormEvent) => {
@@ -211,7 +214,7 @@ export default function AdminInvestorsPage() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ amount }),
+          body: JSON.stringify({ amount, type: topUpType }),
         },
       );
 
@@ -381,7 +384,7 @@ export default function AdminInvestorsPage() {
                   onClick={() => openTopUpModal(investor)}
                   className={`${styles.actionButton} ${styles.topUpButton}`}
                 >
-                  Top Up
+                  Adjust
                 </button>
                 <button
                   onClick={() => openEditModal(investor)}
@@ -562,15 +565,59 @@ export default function AdminInvestorsPage() {
       {/* Top Up Modal */}
       {isTopUpModalOpen && editingInvestor && (
         <div className={styles.modalOverlay}>
-          <div className={styles.modalContent} style={{ maxWidth: "400px" }}>
-            <h2 className={styles.modalTitle}>Top Up Investment</h2>
+          <div className={styles.modalContent} style={{ maxWidth: "450px" }}>
+            <h2 className={styles.modalTitle}>Adjust Investment</h2>
             <p className="mb-4 text-sm text-gray-600">
-              Add funds to <strong>{editingInvestor.name}</strong>. This will
-              increase their active capital and daily profit immediately.
+              Update <strong>{editingInvestor.name}</strong>'s investment balance.
             </p>
             <form onSubmit={handleTopUp}>
               <div className={styles.formGroup}>
-                <label className={styles.label}>Amount to Add (₦)</label>
+                <label className={styles.label}>Transaction Type</label>
+                <select 
+                  className={styles.input}
+                  value={topUpType}
+                  onChange={(e) => setTopUpType(e.target.value)}
+                >
+                  <option value="top_up">Top Up (Add Capital - Pending Next Cycle)</option>
+                  <option value="deduct_profit">Deduct from Profit (Immediate)</option>
+                  <option value="deduct_principal">Deduct from Principal (Immediate)</option>
+                </select>
+
+                {/* Balance Display */}
+                <div className="mt-2 text-xs p-2 bg-gray-50 rounded border border-gray-100">
+                  {topUpType === "deduct_profit" && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-500 italic">Available Rolling Profit:</span>
+                      <span className="font-bold text-blue-600">
+                        ₦
+                        {(
+                          (editingInvestor?.activeCapital || 0) -
+                          (editingInvestor?.initialAmount || 0)
+                        ).toLocaleString()}
+                      </span>
+                    </div>
+                  )}
+                  {topUpType === "deduct_principal" && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-500 italic">Current Principal:</span>
+                      <span className="font-bold text-amber-600">
+                        ₦{(editingInvestor?.initialAmount || 0).toLocaleString()}
+                      </span>
+                    </div>
+                  )}
+                  {topUpType === "top_up" && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-500 italic">Total Active Capital:</span>
+                      <span className="font-bold text-green-600">
+                        ₦{(editingInvestor?.activeCapital || 0).toLocaleString()}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label className={styles.label}>Amount (₦)</label>
                 <input
                   type="number"
                   step="0.01"
@@ -599,13 +646,13 @@ export default function AdminInvestorsPage() {
                   type="submit"
                   className={styles.saveButton}
                   style={{
-                    backgroundColor: "#10B981",
+                    backgroundColor: topUpType.startsWith("deduct") ? "#EF4444" : "#10B981",
                     color: "white",
                     opacity: topUpLoading ? 0.7 : 1,
                   }}
                   disabled={topUpLoading}
                 >
-                  {topUpLoading ? "Adding..." : "Confirm Top Up"}
+                  {topUpLoading ? "Processing..." : "Confirm Adjustment"}
                 </button>
               </div>
             </form>

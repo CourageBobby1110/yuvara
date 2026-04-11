@@ -4,8 +4,9 @@ import Product from "@/models/Product";
 import axios from "axios";
 import { getValidCJAccessToken } from "@/lib/cj-auth";
 import dbConnect from "@/lib/db";
+import { wait } from "@/lib/utils";
 
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 
 async function fetchVariantStock(
   accessToken: string,

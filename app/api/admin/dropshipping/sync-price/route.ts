@@ -18,7 +18,7 @@ async function fetchWithRetry(url: string, headers: any, retries = 3): Promise<a
         if (i === retries - 1) {
           throw new Error("CJ API rate limit exceeded. Syncing will resume tomorrow.");
         }
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await wait(delay);
       } else {
         throw error;
       }
