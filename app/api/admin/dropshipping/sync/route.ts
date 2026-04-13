@@ -194,6 +194,7 @@ export async function POST(req: Request) {
     product.lastSyncedPrice = new Date();
     product.lastSyncedStock = new Date();
     product.lastSyncedShipping = new Date();
+    product.syncCompleted = true;
 
     // Price update logic: set main price to lowest variant price
     if (updatedVariants.length > 0) {

@@ -121,6 +121,7 @@ const ProductSchema = new Schema(
     lastSyncedPrice: { type: Date },
     lastSyncedStock: { type: Date },
     lastSyncedShipping: { type: Date },
+    syncCompleted: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
@@ -176,6 +177,7 @@ export type Product = {
   lastSyncedPrice?: Date;
   lastSyncedStock?: Date;
   lastSyncedShipping?: Date;
+  syncCompleted?: boolean;
 };
 
 export default Product;

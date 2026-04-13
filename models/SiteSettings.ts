@@ -45,6 +45,9 @@ const SiteSettingsSchema = new Schema(
       default: "open",
     },
     isMarkupActive: { type: Boolean, default: false },
+    lastSyncStatus: { type: String, default: "Idle" },
+    productsSyncedToday: { type: Number, default: 0 },
+    lastSyncDate: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );
@@ -78,6 +81,9 @@ export interface ISiteSettings {
   dobaAppSecret: string;
   affiliateProgramStatus: "open" | "closed" | "postponed";
   isMarkupActive: boolean;
+  lastSyncStatus?: string;
+  productsSyncedToday?: number;
+  lastSyncDate?: Date;
   createdAt?: Date;
   updatedAt?: Date;
 }

@@ -3,15 +3,21 @@
 import { useState, useEffect } from "react";
 import AdminLoader from "@/components/AdminLoader";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const { data: session } = useSession();
+  const userRole = (session?.user as any)?.role;
+
   const [settings, setSettings] = useState({
     googleTagManagerId: "",
     googleAnalyticsId: "",
     klaviyoPublicKey: "",
     tiktokPixelId: "",
+    lastSyncStatus: "",
+    productsSyncedToday: 0,
   });
 
   useEffect(() => {
@@ -58,6 +64,38 @@ export default function SettingsPage() {
       toast.error("Something went wrong");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleTriggerBulkSync = async () => {
+    toast.info("Starting bulk synchronizer...");
+    try {
+      const res = await fetch("/api/admin/dropshipping/bulk-sync", { method: "POST" });
+      const data = await res.json();
+      if (res.ok) {
+         toast.success(data.message || "Background runner dispatched");
+         fetchSettings();
+      } else {
+         toast.error(data.error || "Failed to trigger sync");
+      }
+    } catch (e) {
+      toast.error("Network error");
+    }
+  };
+
+  const handleStopBulkSync = async () => {
+    toast.info("Stopping synchronizer...");
+    try {
+      const res = await fetch("/api/admin/dropshipping/bulk-sync/stop", { method: "POST" });
+      const data = await res.json();
+      if (res.ok) {
+         toast.success(data.message || "Background runner stopped");
+         fetchSettings();
+      } else {
+         toast.error(data.error || "Failed to stop sync");
+      }
+    } catch (e) {
+      toast.error("Network error");
     }
   };
 
@@ -187,6 +225,46 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
+
+        {userRole === "admin" && (
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 pb-10">
+            <h2 className="text-lg font-semibold mb-4 text-purple-700">
+              Bulk Background Synchronizer
+            </h2>
+            <div className="p-5 bg-purple-50 rounded-md border border-purple-100 flex flex-col md:flex-row justify-between items-center gap-4">
+              <div>
+                 <p className="text-sm font-medium text-gray-900">
+                   Current State: <span className="font-bold text-black">{(settings as any).lastSyncStatus || "Idle"}</span>
+                 </p>
+                 <p className="text-sm text-gray-700 mt-1">
+                   Items Synced Today: <span className="font-bold">{(settings as any).productsSyncedToday || 0}</span>
+                 </p>
+              </div>
+              <div className="flex gap-2">
+                {(settings as any).lastSyncStatus === "Running" && (
+                  <button
+                    type="button"
+                    onClick={handleStopBulkSync}
+                    className="bg-red-600 outline-none hover:bg-red-700 text-white font-medium py-2 px-6 rounded-md shadow-sm transition-colors whitespace-nowrap"
+                  >
+                    Stop Syncing
+                  </button>
+                )}
+                <button
+                   type="button"
+                   onClick={handleTriggerBulkSync}
+                   disabled={(settings as any).lastSyncStatus === "Running"}
+                   className="bg-purple-600 outline-none hover:bg-purple-700 disabled:opacity-50 text-white font-medium py-2 px-6 rounded-md shadow-sm transition-colors whitespace-nowrap"
+                 >
+                   {(settings as any).lastSyncStatus === "Running" ? "Synchronizing..." : "Start Syncing"}
+                 </button>
+               </div>
+            </div>
+            <p className="mt-3 text-xs text-gray-500 max-w-2xl">
+              This module asynchronously iterates through unsynced products safely. It mimics sequential fetching to prevent CJ API rate limits (429 errors). If a limit is detected, it automatically suspends the runner and sets the status to "Rate limit reached".
+            </p>
+          </div>
+        )}
 
         <div className="flex justify-end">
           <button
