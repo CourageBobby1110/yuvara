@@ -89,12 +89,12 @@ export default function Navbar({ session }: NavbarProps) {
           {/* Logo */}
           <Link href="/" className={styles.logo}>
             <Image
-              src="/logo-v2.svg"
+              src="/icon.png"
               alt="YuVara"
-              width={150}
-              height={40}
+              width={120}
+              height={48}
               priority
-              style={{ objectFit: "contain" }}
+              style={{ objectFit: "contain", maxHeight: "3rem" }}
             />
           </Link>
 

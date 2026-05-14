@@ -52,10 +52,10 @@ export default async function SignInPage({
                 }}
               >
                 <Image
-                  src="/logo.png"
+                  src="/icon.png"
                   alt="Yuvara"
                   fill
-                  style={{ objectFit: "cover" }}
+                  style={{ objectFit: "contain" }}
                   priority
                 />
               </Link>

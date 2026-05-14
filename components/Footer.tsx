@@ -10,11 +10,11 @@ export default function Footer() {
           <div className={styles.brandColumn}>
             <div className={styles.logo}>
               <Image
-                src="/logo-v2.svg"
+                src="/icon.png"
                 alt="YuVara"
-                width={150}
-                height={40}
-                style={{ objectFit: "contain" }}
+                width={120}
+                height={48}
+                style={{ objectFit: "contain", maxHeight: "3rem" }}
               />
             </div>
             <p className={styles.tagline}>

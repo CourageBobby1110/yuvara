@@ -27,6 +27,15 @@
   font-weight: 800;
   margin-bottom: 1rem;
   letter-spacing: -0.02em;
+  max-height: 3.5rem;
+  overflow: hidden;
+}
+
+.logo img {
+  height: 2.75rem;
+  width: 2.75rem;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .tagline {

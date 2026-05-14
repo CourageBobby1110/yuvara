@@ -34,7 +34,7 @@ export default function LogoSpinner() {
 
         <div className="absolute inset-0 flex items-center justify-center bg-white rounded-full shadow-sm overflow-hidden p-3">
            <Image 
-             src="/icon-v2.svg"
+             src="/icon.png"
              alt="YuVara"
              width={60}
              height={60}

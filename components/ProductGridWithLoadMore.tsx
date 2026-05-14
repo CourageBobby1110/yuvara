@@ -62,7 +62,7 @@ export default function ProductGridWithLoadMore({
             disabled={loading}
             className="px-10 py-4 bg-black text-white text-sm font-bold tracking-widest hover:bg-[#996515] hover:text-white border-2 border-transparent hover:border-[#996515] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed uppercase shadow-lg shadow-black/10"
           >
-            {loading ? "Loading Abundance..." : "Load More Products"}
+            {loading ? "Loading..." : "Load More"}
           </button>
         </div>
       )}

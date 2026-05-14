@@ -200,14 +200,20 @@ export default function AdminHeader() {
 
         {/* User Profile */}
         <div className={styles.profileButton} title="Sign Out">
-          <Image
-            src={session?.user?.image || "/placeholder-user.png"}
-            alt="Profile"
-            width={32}
-            height={32}
-            className={styles.avatar}
-            unoptimized={true}
-          />
+          {session?.user?.image ? (
+            <Image
+              src={session.user.image}
+              alt="Profile"
+              width={32}
+              height={32}
+              className={styles.avatar}
+              unoptimized={true}
+            />
+          ) : (
+            <div className={styles.avatarFallback}>
+              {session?.user?.name?.[0]?.toUpperCase() || "U"}
+            </div>
+          )}
           <div className={styles.profileInfo}>
             <span className={styles.userName}>
               {session?.user?.name || "User"}

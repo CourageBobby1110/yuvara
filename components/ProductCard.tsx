@@ -90,8 +90,6 @@ export default function ProductCard({
         href={`/products/${product.slug}`}
         className={styles.imageLink}
         style={getAspectRatioStyle(index)}
-        target="_blank"
-        rel="noopener noreferrer"
       >
         <Image
           src={mainImage}
@@ -182,8 +180,6 @@ export default function ProductCard({
         <Link
           href={`/products/${product.slug}`}
           className={styles.titleLink}
-          target="_blank"
-          rel="noopener noreferrer"
         >
           <h3 className={styles.title}>{product.name}</h3>
         </Link>

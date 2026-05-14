@@ -89,10 +89,10 @@ export default function SignUpPage() {
                 }}
               >
                 <Image
-                  src="/logo.png"
+                  src="/icon.png"
                   alt="Yuvara"
                   fill
-                  style={{ objectFit: "cover" }}
+                  style={{ objectFit: "contain" }}
                   priority
                 />
               </Link>

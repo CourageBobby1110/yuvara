@@ -32,7 +32,6 @@ export default async function Image() {
           fontFamily: "sans-serif",
         }}
       >
-        {/* Logo Image */}
         <img
           src={logoBase64}
           alt="Yuvara"

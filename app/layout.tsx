@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     siteName: "Yuvara",
     images: [
       {
-        url: "/logo-v2.svg",
+        url: "/icon.png",
         width: 1200,
         height: 630,
         alt: "Yuvara Logo",
@@ -62,16 +62,16 @@ export const metadata: Metadata = {
     title: "Yuvara | Premium Global Online Shopping",
     description:
       "Discover Yuvara's exclusive collection of fashion, electronics, and lifestyle products.",
-    images: ["/logo-v2.svg"],
+    images: ["/icon.png"],
     creator: "@yuvara",
   },
   icons: {
-    icon: "/icon-v2.svg",
-    shortcut: "/icon-v2.svg",
-    apple: "/icon-v2.svg",
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/icon.png",
     other: {
       rel: "apple-touch-icon-precomposed",
-      url: "/icon-v2.svg",
+      url: "/icon.png",
     },
   },
   manifest: "/site.webmanifest",

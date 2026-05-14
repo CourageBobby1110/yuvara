@@ -120,12 +120,18 @@ export default function AdminUsersPage() {
         {filteredUsers.map((user) => (
           <div key={user._id} className={styles.userCard}>
             <div className={styles.userCardImageWrapper}>
-              <Image
-                src={user.image || "/placeholder-user.jpg"}
-                alt={user.name}
-                fill
-                className={styles.userImage}
-              />
+              {user.image ? (
+                <Image
+                  src={user.image}
+                  alt={user.name}
+                  fill
+                  className={styles.userImage}
+                />
+              ) : (
+                <div className={styles.userImageFallback}>
+                  {user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
+                </div>
+              )}
             </div>
             <div className={styles.userCardContent}>
               <div className={styles.userCardName}>
@@ -179,12 +185,18 @@ export default function AdminUsersPage() {
                 <td className={styles.td}>
                   <div className={styles.item}>
                     <div className={styles.imageWrapper}>
-                      <Image
-                        src={user.image || "/placeholder-user.jpg"}
-                        alt={user.name}
-                        fill
-                        className={styles.userImage}
-                      />
+                      {user.image ? (
+                        <Image
+                          src={user.image}
+                          alt={user.name}
+                          fill
+                          className={styles.userImage}
+                        />
+                      ) : (
+                        <div className={styles.userImageFallback}>
+                          {user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
+                        </div>
+                      )}
                     </div>
                     <span className={styles.userName}>
                       {user.name || "No Name"}
