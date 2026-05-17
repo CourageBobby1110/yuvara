@@ -38,9 +38,7 @@
 
 .logo img {
   height: 2.75rem;
-  width: 2.75rem;
-  object-fit: cover;
-  border-radius: 50%;
+  width: auto;
 }
 
 .logo:hover {

@@ -162,8 +162,10 @@ export async function getProducts(filter: ProductFilter = {}) {
 export async function getCategories() {
   try {
     await dbConnect();
-    const categories: string[] = await Product.distinct("category");
-    const shortNames = categories.map((cat) => cat.split(/[\/>]/).pop()?.trim() || cat);
+    const categories: (string | null)[] = await Product.distinct("category");
+    const validCategories = categories.filter((cat): cat is string => !!cat && cat.trim() !== "");
+    
+    const shortNames = validCategories.map((cat) => cat.split(/[\/>]/).pop()?.trim() || cat);
     return Array.from(new Set(shortNames)).sort();
   } catch (error) {
     console.error("Error fetching categories:", error);
@@ -177,7 +179,8 @@ export async function getCategoriesWithImages() {
     
     // Aggregation to get distinct categories with the first image from the first product found
     const categories = await Product.aggregate([
-      { $sort: { createdAt: -1 } }, // Newest products first usually have better images
+      { $match: { category: { $ne: null, $not: /^\s*$/ } } }, // Filter out empty/null categories
+      { $sort: { createdAt: -1 } }, 
       {
         $group: {
           _id: "$category",

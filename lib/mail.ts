@@ -281,6 +281,10 @@ export async function sendCustomerOrderConfirmation(order: any) {
               order.createdAt
             ).toLocaleDateString()}</p>
             <p><strong>Total:</strong> ₦${order.total.toLocaleString()}</p>
+            <p><strong>Estimated Delivery:</strong> 1-14 Days</p>
+            <p style="font-size: 13px; color: #666; margin-top: 12px; border-top: 1px solid #ddd; padding-top: 12px; line-height: 1.5;">
+              <strong>Delivery Policy:</strong> Standard delivery timeline is 1-14 days. In the event that delivery is not completed within 90 days, a <strong>full refund</strong> of your money will be processed immediately.
+            </p>
           </div>
 
           <h3>Items Ordered</h3>

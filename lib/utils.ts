@@ -18,30 +18,18 @@ export function getValidUrl(url: string | any): string {
     (cleanUrl.startsWith("'") && cleanUrl.endsWith("'"))
   ) {
     cleanUrl = cleanUrl.slice(1, -1);
-    // Recurse to handle cases like '"["url"]"'
     return getValidUrl(cleanUrl);
   }
 
-  // Handle protocol-relative URLs (common in CJ Dropshipping)
+  // Handle protocol-relative URLs
   if (cleanUrl.startsWith("//")) {
     cleanUrl = "https:" + cleanUrl;
   }
 
-  // Recursive check for stringified arrays like '["url"]'
-  if (cleanUrl.startsWith("[") && cleanUrl.endsWith("]")) {
-    try {
-      const parsed = JSON.parse(cleanUrl);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return getValidUrl(parsed[0]);
-      }
-    } catch (e) {
-      // If JSON parse fails, fall through to regex check below
-    }
-  }
-
-  // Handle malformed array-like strings or messy CSV data e.g. '["https://...'
-  if (cleanUrl.startsWith('["') || cleanUrl.startsWith("['")) {
-    const match = cleanUrl.match(/(https?:\/\/[^"']+)/);
+  // Handle broken stringified arrays e.g. '["https://...' or '["https://...",'
+  if (cleanUrl.startsWith("[") || cleanUrl.includes('["') || cleanUrl.includes("['")) {
+    // Try to extract the first http URL from the mess
+    const match = cleanUrl.match(/(https?:\/\/[^"'\s,\]\\]+)/);
     if (match) {
       return getValidUrl(match[1]);
     }
@@ -49,11 +37,13 @@ export function getValidUrl(url: string | any): string {
 
   // Final validation: must be http/https or local path
   if (cleanUrl.startsWith("http") || cleanUrl.startsWith("/")) {
+    // Force https for external domains to avoid mixed content issues
+    if (cleanUrl.startsWith("http://") && !cleanUrl.includes("localhost")) {
+      cleanUrl = cleanUrl.replace("http://", "https://");
+    }
     return cleanUrl;
   }
 
-  // Log rejected URLs to server console for debugging
-  console.log("DEBUG: Rejected invalid image URL:", url);
   return "";
 }
 
@@ -81,6 +71,14 @@ export function getProductMainImage(
   if (product.image) {
     const valid = getValidUrl(product.image);
     if (valid) return valid;
+  }
+
+  // 4. Try variants
+  if (Array.isArray(product.variants) && product.variants.length > 0) {
+    for (const variant of product.variants) {
+      const valid = getValidUrl(variant.image);
+      if (valid) return valid;
+    }
   }
 
   return placeholder;

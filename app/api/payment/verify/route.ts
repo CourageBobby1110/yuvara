@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Order from "@/models/Order";
 import { auth } from "@/auth";
+import jwt from "jsonwebtoken";
 import {
   sendAdminNewOrderNotification,
   sendCustomerOrderConfirmation,
@@ -217,9 +218,31 @@ export async function POST(req: Request) {
       // Don't fail the request if email fails
     }
 
+    // Generate JWT token for the user so the mobile app can auto-login and retrieve the order instantly
+    const UserModel = (await import("@/models/User")).default;
+    const dbUser = await UserModel.findById(userId);
+    let token = "";
+    let userJson = null;
+
+    if (dbUser) {
+      token = jwt.sign(
+        { id: dbUser._id, role: dbUser.role || "user" },
+        process.env.NEXTAUTH_SECRET || "fallback_secret",
+        { expiresIn: "30d" }
+      );
+      userJson = {
+        id: dbUser._id,
+        name: dbUser.name || dbUser.email.split("@")[0],
+        email: dbUser.email,
+        role: dbUser.role || "user",
+      };
+    }
+
     return NextResponse.json({
       orderId: order._id,
       message: "Order created successfully",
+      token: token || null,
+      user: userJson,
     });
   } catch (error) {
     console.error("Order creation error:", error);

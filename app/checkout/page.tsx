@@ -785,6 +785,9 @@ export default function CheckoutPage() {
                   <p className={styles.secureText}>
                     Secure payment powered by Paystack. Your data is encrypted.
                   </p>
+                  <p className={styles.secureText} style={{ marginTop: '1rem', borderTop: '1px solid #eee', paddingTop: '1rem', fontSize: '0.8rem', color: '#666', lineHeight: '1.4' }}>
+                    📦 <strong>Delivery Timeline & Guarantee:</strong> Delivery takes <strong>1-14 days</strong>. If delivery is not completed after <strong>90 days</strong>, a <strong>full refund</strong> of your money will be processed immediately.
+                  </p>
                 </div>
               </form>
             </div>

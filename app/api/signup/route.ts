@@ -34,19 +34,16 @@ export async function POST(req: NextRequest) {
 
     email = email.trim();
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ 
-      email: { $regex: new RegExp(`^${email}$`, "i") } 
-    });
-    if (existingUser) {
+    // Normalize email to lowercase for consistent storage format
+    email = email.toLowerCase().trim();
+
+    // Validate input
+    if (!email || !password) {
       return NextResponse.json(
-        { error: "User already exists" },
+        { error: "Email and password are required" },
         { status: 400 }
       );
     }
-
-    // Normalize email to lowercase for consistent storage format
-    email = email.toLowerCase();
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -94,15 +91,44 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Create user
-    const user = await User.create({
-      email,
-      password: hashedPassword,
-      name: userName,
-      role: "user",
-      referralCode: newReferralCode,
-      referredBy: referredBy,
+    // Check if user already exists
+    const existingUser = await User.findOne({ 
+      email: { $regex: new RegExp(`^${email}$`, "i") } 
     });
+
+    let user;
+
+    if (existingUser) {
+      // If user already has a password, they are registered. Block signup.
+      if (existingUser.password) {
+        return NextResponse.json(
+          { error: "User already exists" },
+          { status: 400 }
+        );
+      }
+
+      // Promote existing shadow guest account to fully registered user
+      existingUser.password = hashedPassword;
+      existingUser.name = userName;
+      existingUser.isGuest = false;
+      if (!existingUser.referralCode) {
+        existingUser.referralCode = newReferralCode;
+      }
+      if (!existingUser.referredBy && referredBy) {
+        existingUser.referredBy = referredBy;
+      }
+      user = await existingUser.save();
+    } else {
+      // Create new user
+      user = await User.create({
+        email,
+        password: hashedPassword,
+        name: userName,
+        role: "user",
+        referralCode: newReferralCode,
+        referredBy: referredBy,
+      });
+    }
 
     // Generate Verification Token
     const verificationToken = crypto.randomBytes(32).toString("hex");
@@ -121,7 +147,7 @@ export async function POST(req: NextRequest) {
 
     // Create JWT token
     const token = jwt.sign(
-      { id: user._id, role: user.role },
+      { id: user._id, role: user.role || "user" },
       process.env.NEXTAUTH_SECRET || "fallback_secret",
       { expiresIn: "30d" }
     );
@@ -135,7 +161,7 @@ export async function POST(req: NextRequest) {
           email: user.email,
           name: user.name,
           referralCode: user.referralCode,
-          role: user.role,
+          role: user.role || "user",
         },
       },
       { status: 201 }

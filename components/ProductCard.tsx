@@ -81,7 +81,10 @@ export default function ProductCard({
     }
   };
 
-  const isOutOfStock = !product.variants?.length && product.stock <= 0;
+  const isOutOfStock =
+    product.variants && product.variants.length > 0
+      ? product.variants.every((v) => v.stock <= 0)
+      : product.stock <= 0;
 
   return (
     <div className={styles.card}>

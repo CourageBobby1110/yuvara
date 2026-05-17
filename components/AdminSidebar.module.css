@@ -27,9 +27,7 @@
 }
 
 .logoImage {
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--color-luxury-gold); /* Optional: adds a premium touch */
+  object-fit: contain;
 }
 
 .nav {

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Order from "@/models/Order";
 import { auth } from "@/auth";
+import jwt from "jsonwebtoken";
 import {
   sendAdminNewOrderNotification,
   sendCustomerOrderConfirmation,
@@ -9,18 +10,36 @@ import {
 
 export async function GET(req: Request) {
   try {
+    let userId: string | undefined;
+
+    // 1. Try NextAuth session
     const session = await auth();
-    if (!session || !session.user) {
+    if (session && session.user && session.user.id) {
+      userId = session.user.id;
+    } else {
+      // 2. Try Authorization Bearer Token
+      const authHeader = req.headers.get("Authorization");
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        const token = authHeader.split(" ")[1];
+        try {
+          const decoded = jwt.verify(
+            token,
+            process.env.NEXTAUTH_SECRET || "fallback_secret"
+          ) as any;
+          userId = decoded.id;
+        } catch (jwtError) {
+          console.warn("JWT verification failed on orders fetch:", jwtError);
+        }
+      }
+    }
+
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     await dbConnect();
-    // Find orders for the current user
-    // Assuming session.user.id is available. If not, we might need to find User by email first.
-    // For safety, let's try to find by user ID if present, or fallback to email lookup if needed (but Order stores ObjectId)
-
-    // Ideally session.user.id should be populated by NextAuth callbacks
-    const orders = await Order.find({ user: session.user.id }).sort({
+    // Find orders for the authenticated user
+    const orders = await Order.find({ user: userId }).sort({
       createdAt: -1,
     });
 
