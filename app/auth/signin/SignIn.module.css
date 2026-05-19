@@ -140,8 +140,8 @@
   letter-spacing: 0.05em;
 }
 
-/* Magic Link Button */
-.magicLinkButton {
+/* Google Button */
+.googleButton {
   width: 100%;
   padding: 1rem;
   background-color: #ffffff;
@@ -149,10 +149,17 @@
   color: #111;
   border-radius: 0.5rem;
   font-weight: 500;
-  cursor: not-allowed;
-  opacity: 0.7;
+  cursor: pointer;
   transition: all 0.2s ease;
   font-size: 0.9375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.googleButton:hover {
+  background-color: #f9fafb;
 }
 
 /* Footer link */

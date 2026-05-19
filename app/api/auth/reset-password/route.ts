@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
 
     // Find user by email with reset fields
     const user = await User.findOne({
-      email: email.toLowerCase(),
+      email: { $regex: new RegExp(`^${email}$`, "i") },
     }).select("+resetPasswordToken +resetPasswordExpires");
 
     if (!user) {

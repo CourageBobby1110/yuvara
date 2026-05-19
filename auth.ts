@@ -3,6 +3,7 @@ import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import clientPromise from "@/lib/mongodb";
 import CredentialsProvider from "next-auth/providers/credentials";
 import NodemailerProvider from "next-auth/providers/nodemailer";
+import GoogleProvider from "next-auth/providers/google";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
@@ -24,6 +25,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         },
       },
       from: process.env.EMAIL_FROM,
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || "996596779540-n9qq24oq6orlspb0dirmam4e3efq64mo.apps.googleusercontent.com",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true,
     }),
     CredentialsProvider({
       name: "Credentials",

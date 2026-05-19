@@ -1,41 +1,71 @@
 import nodemailer from "nodemailer";
 
-// Helper to send mail with retry logic across ports
+// Helper to send mail reliably with fallback
 async function sendMailWithRetry(mailOptions: any) {
-  const ports = [587, 465, 25, 2525];
-
-  for (const port of ports) {
-    try {
-      console.log(`Attempting to send email via port ${port}...`);
-      const transporter = nodemailer.createTransport({
-        host: process.env.EMAIL_SERVER_HOST,
+  const configs: any[] = [];
+  
+  // Gmail configs
+  if (process.env.GMAIL_SERVER_USER && process.env.GMAIL_SERVER_PASSWORD) {
+    const gmailPorts = [465, 587];
+    for (const port of gmailPorts) {
+      configs.push({
+        name: `Gmail (Port ${port})`,
+        host: process.env.GMAIL_SERVER_HOST || "smtp.gmail.com",
         port: port,
-        secure: port === 465, // Use secure for port 465
+        secure: port === 465,
         auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
+          user: process.env.GMAIL_SERVER_USER,
+          pass: process.env.GMAIL_SERVER_PASSWORD,
+        },
+        tls: {
+          rejectUnauthorized: false, // Helps bypass local antivirus/VPN TLS interceptions
+        },
+      });
+    }
+  }
+
+  // Brevo configs
+  if (process.env.BREVO_SERVER_USER && process.env.BREVO_SERVER_PASSWORD) {
+    const brevoPorts = [587, 465, 25, 2525];
+    for (const port of brevoPorts) {
+      configs.push({
+        name: `Brevo (Port ${port})`,
+        host: process.env.BREVO_SERVER_HOST || "smtp-relay.brevo.com",
+        port: port,
+        secure: port === 465,
+        auth: {
+          user: process.env.BREVO_SERVER_USER,
+          pass: process.env.BREVO_SERVER_PASSWORD,
         },
         tls: {
           rejectUnauthorized: false,
         },
       });
+    }
+  }
+
+  let lastError: Error | null = null;
+
+  for (const config of configs) {
+    try {
+      console.log(`Attempting to send email via ${config.name}...`);
+      const transporter = nodemailer.createTransport(config);
 
       // Verify connection configuration
       await transporter.verify();
 
       // Attempt to send
       await transporter.sendMail(mailOptions);
-      console.log(`Email successfully sent via port ${port}`);
+      console.log(`Email successfully sent via ${config.name} to ${mailOptions.to}`);
       return; // Success, exit function
     } catch (error: any) {
-      console.warn(`Failed to send email via port ${port}:`, error.message);
-      // Continue to next port
+      console.warn(`Failed to send email via ${config.name}:`, error.message);
+      lastError = error;
+      // Continue to next configuration
     }
   }
 
-  throw new Error(
-    `Failed to send email after trying ports: ${ports.join(", ")}`
-  );
+  throw new Error(`Failed to send email after trying all providers and ports. Last error: ${lastError?.message}`);
 }
 
 export async function sendMail({
@@ -260,6 +290,15 @@ export const sendNewsletter = async (
 export async function sendCustomerOrderConfirmation(order: any) {
   const NGN_RATE = 1500; // Hardcoded rate for email display consistency
 
+  let isGuest = false;
+  try {
+    const User = (await import("@/models/User")).default;
+    const dbUser = await User.findById(order.user);
+    isGuest = dbUser?.isGuest || false;
+  } catch (err) {
+    console.error("Failed to check if user is guest in sendCustomerOrderConfirmation", err);
+  }
+
   const mailOptions = {
     from: `Yuvara <${process.env.EMAIL_FROM}>`,
     to: order.shippingAddress?.email || order.user?.email, // Fallback to user email if shipping email not present
@@ -274,6 +313,17 @@ export async function sendCustomerOrderConfirmation(order: any) {
           <h2 style="color: #333; margin-top: 0;">Thank you for your order!</h2>
           <p style="color: #666;">We've received your order and will notify you once it ships.</p>
           
+          ${isGuest ? `
+          <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #e0e0e0; text-align: center;">
+            <h3 style="margin-top: 0; color: #000;">Complete Your Registration</h3>
+            <p style="color: #666; font-size: 14px;">Create a password to track your order, earn rewards, and secure your account.</p>
+            <a href="${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/auth/signup?email=${encodeURIComponent(order.shippingAddress?.email || '')}" 
+               style="background: #000; color: #fff; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block; margin-top: 10px;">
+              Create Password
+            </a>
+          </div>
+          ` : ''}
+
           <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Order Summary</h3>
             <p><strong>Order ID:</strong> ${order._id}</p>

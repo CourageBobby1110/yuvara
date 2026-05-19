@@ -236,6 +236,58 @@
   }
 }
 
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  width: 100%;
+}
+
+.dividerContent {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.line {
+  flex: 1;
+  height: 1px;
+  background-color: #e5e7eb;
+}
+
+.dividerText {
+  padding: 0 1rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+/* Google Button */
+.googleButton {
+  width: 100%;
+  padding: 1rem;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  color: #111;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.googleButton:hover {
+  background-color: #f9fafb;
+}
+
 .footer {
   margin-top: 2.5rem;
   text-align: center;

@@ -146,13 +146,15 @@ export async function POST(req: Request) {
       coupon.orderId = order._id;
       await coupon.save();
 
-      // Send email notifications
-      try {
-        await sendAdminNewOrderNotification(order);
-        await sendCustomerOrderConfirmation(order);
-      } catch (emailError) {
-        console.error("Failed to send email notification:", emailError);
-      }
+      // Send email notifications asynchronously so we don't block the client
+      (async () => {
+        try {
+          await sendAdminNewOrderNotification(order);
+          await sendCustomerOrderConfirmation(order);
+        } catch (emailError) {
+          console.error("Failed to send email notification asynchronously:", emailError);
+        }
+      })();
 
       return NextResponse.json({ success: true, orderId: order._id });
     }

@@ -207,16 +207,17 @@ export async function POST(req: Request) {
       }
     }
 
-    // Send email notification
-    try {
-      console.log("Sending order confirmation to:", shippingAddress.email);
-      await sendAdminNewOrderNotification(order);
-      await sendCustomerOrderConfirmation(order);
-      console.log("Order confirmation sent successfully");
-    } catch (emailError) {
-      console.error("Failed to send email notification:", emailError);
-      // Don't fail the request if email fails
-    }
+    // Send email notification asynchronously so we don't block the client response
+    (async () => {
+      try {
+        console.log("Sending order confirmation to:", shippingAddress.email);
+        await sendAdminNewOrderNotification(order);
+        await sendCustomerOrderConfirmation(order);
+        console.log("Order confirmation sent successfully");
+      } catch (emailError) {
+        console.error("Failed to send email notification asynchronously:", emailError);
+      }
+    })();
 
     // Generate JWT token for the user so the mobile app can auto-login and retrieve the order instantly
     const UserModel = (await import("@/models/User")).default;

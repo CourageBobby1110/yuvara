@@ -137,13 +137,14 @@ export async function POST(req: NextRequest) {
       token: verificationToken,
     });
 
-    // Send Verification Email
-    try {
-      await sendVerificationEmail(user.email, verificationToken);
-    } catch (emailError) {
-      console.error("Failed to send verification email:", emailError);
-      // We don't fail the signup if email fails, but we should log it
-    }
+    // Send Verification Email asynchronously so we don't block the signup response
+    (async () => {
+      try {
+        await sendVerificationEmail(user.email, verificationToken);
+      } catch (emailError) {
+        console.error("Failed to send verification email asynchronously:", emailError);
+      }
+    })();
 
     // Create JWT token
     const token = jwt.sign(

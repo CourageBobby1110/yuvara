@@ -14,10 +14,23 @@ export async function handleSignOut() {
   }
 }
 
+import dbConnect from "@/lib/db";
+import User from "@/models/User";
 import { AuthError } from "next-auth";
 
 export async function handleSignIn(formData: FormData) {
+  const email = formData.get("email") as string;
+  
   try {
+    if (email) {
+      await dbConnect();
+      const user = await User.findOne({ 
+        email: { $regex: new RegExp(`^${email.trim()}$`, "i") } 
+      });
+      if (user && user.password && !user.emailVerified) {
+        return { error: "Please verify your email before logging in." };
+      }
+    }
     await signIn("credentials", formData);
   } catch (error) {
     if (error instanceof AuthError) {
