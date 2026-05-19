@@ -74,6 +74,10 @@ const UserSchema = new Schema(
       type: Date,
       select: false,
     },
+    fcmTokens: {
+      type: [String],
+      default: [],
+    },
   },
   { timestamps: true }
 );
