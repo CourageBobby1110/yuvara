@@ -63,8 +63,8 @@ export default function FeaturedCollection({
         </div>
 
         <div className={styles.masonryGrid}>
-          {products.map((product) => (
-            <div key={product._id} className={styles.masonryItem}>
+          {products.map((product, index) => (
+            <div key={`${product._id}-${index}`} className={styles.masonryItem}>
               <ProductCard product={product} onQuickAdd={handleQuickAdd} />
             </div>
           ))}

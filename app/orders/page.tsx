@@ -26,6 +26,15 @@ const getStepStatus = (orderStatus: string, step: string) => {
   return "pending";
 };
 
+const isWithin24Hours = (createdAt: string) => {
+  const now = new Date();
+  const orderDate = new Date(createdAt);
+  const timeDiff = now.getTime() - orderDate.getTime();
+  const hoursDiff = timeDiff / (1000 * 3600);
+  return hoursDiff <= 24;
+};
+
+
 export default function UserOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -226,12 +235,18 @@ export default function UserOrdersPage() {
 
                       {(order.status === "pending" ||
                         order.status === "processing") && (
-                        <button
-                          onClick={() => handleCancelOrder(order._id)}
-                          className={styles.cancelButton}
-                        >
-                          Cancel Order
-                        </button>
+                        isWithin24Hours(order.createdAt) ? (
+                          <button
+                            onClick={() => handleCancelOrder(order._id)}
+                            className={styles.cancelButton}
+                          >
+                            Cancel Order
+                          </button>
+                        ) : (
+                          <span style={{ fontSize: "12px", color: "#888888", fontStyle: "italic", alignSelf: "center" }}>
+                            Cancel window closed (24h)
+                          </span>
+                        )
                       )}
                     </div>
                   </div>

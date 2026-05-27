@@ -34,6 +34,16 @@ export async function DELETE(
       );
     }
 
+    // Enforce 24-hour cancellation window
+    const orderDate = new Date(order.createdAt);
+    const hoursSinceCreation = (Date.now() - orderDate.getTime()) / (1000 * 60 * 60);
+    if (hoursSinceCreation > 24) {
+      return NextResponse.json(
+        { error: "Cancellation window has passed (only allowed within 24 hours of placement)" },
+        { status: 400 }
+      );
+    }
+
     // Update status to cancelled
     order.status = "cancelled";
     await order.save();
