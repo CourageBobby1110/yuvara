@@ -4,6 +4,9 @@ import React, { useState } from "react";
 import styles from "./Contact.module.css";
 
 export default function Contact() {
+  const supportPhone = process.env.NEXT_PUBLIC_SUPPORT_PHONE_NUMBER || "+2349112130257";
+  const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@yuvarastore.com";
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -55,7 +58,7 @@ export default function Contact() {
 
       {/* Contact Cards */}
       <div className={styles.contactCards}>
-        <a href="mailto:support@yuvarastore.com" className={styles.contactCard}>
+        <a href={`mailto:${supportEmail}`} className={styles.contactCard}>
           <div className={styles.cardIconWrap}>
             <svg
               className={styles.cardIcon}
@@ -72,7 +75,7 @@ export default function Contact() {
             </svg>
           </div>
           <h3 className={styles.cardTitle}>Email Us</h3>
-          <p className={styles.cardValue}>support@yuvarastore.com</p>
+          <p className={styles.cardValue}>{supportEmail}</p>
           <span className={styles.cardAction}>
             Send an email
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -81,7 +84,7 @@ export default function Contact() {
           </span>
         </a>
 
-        <a href="tel:+2349112130257" className={styles.contactCard}>
+        <a href={`tel:${supportPhone}`} className={styles.contactCard}>
           <div className={styles.cardIconWrap}>
             <svg
               className={styles.cardIcon}
@@ -98,7 +101,7 @@ export default function Contact() {
             </svg>
           </div>
           <h3 className={styles.cardTitle}>Call Us</h3>
-          <p className={styles.cardValue}>+234 911 213 0257</p>
+          <p className={styles.cardValue}>{supportPhone}</p>
           <span className={styles.cardAction}>
             Make a call
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

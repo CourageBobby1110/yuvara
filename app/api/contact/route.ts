@@ -49,3 +49,9 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+export async function GET() {
+  const phoneNumber = process.env.NEXT_PUBLIC_SUPPORT_PHONE_NUMBER || "+2349112130257";
+  const email = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@yuvarastore.com";
+  return NextResponse.json({ phoneNumber, email });
+}
