@@ -33,7 +33,10 @@ export default function AdminProductsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const isWorker = session?.user?.role === "worker";
 
@@ -84,10 +87,7 @@ export default function AdminProductsPage() {
   const handleMarkupToggle = async () => {
     const newActiveState = !markupActive;
     const modifier = newActiveState ? 1.1 : 1 / 1.1;
-    const targetIds =
-      selectedProducts.length > 0
-        ? selectedProducts
-        : filteredProducts.map((p) => p._id);
+    const targetIds = filteredProducts.map((p) => p._id);
 
     if (targetIds.length === 0) {
       toast.error("No products to update");
@@ -144,61 +144,45 @@ export default function AdminProductsPage() {
     fetchSettings();
   }, []);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this product?")) return;
+  const handleDelete = (id: string) => {
+    setDeleteTargetId(id);
+    setDeletePassword("");
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTargetId) return;
+    if (!deletePassword) {
+      toast.error("Password is required");
+      return;
+    }
+    setIsDeleting(true);
     try {
-      const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/products/${deleteTargetId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: deletePassword }),
+      });
+      const data = await res.json();
       if (res.ok) {
-        setProducts(products.filter((p) => p._id !== id));
-        setSelectedProducts((prev) => prev.filter((pid) => pid !== id));
+        toast.success("Product deleted successfully");
+        setProducts(products.filter((p) => p._id !== deleteTargetId));
+        setIsDeleteModalOpen(false);
+        setDeleteTargetId(null);
+        setDeletePassword("");
       } else {
-        alert("Failed to delete product");
+        toast.error(data.error || "Failed to delete product");
       }
     } catch (error) {
       console.error("Error deleting product", error);
-    }
-  };
-
-  const handleBulkDelete = async () => {
-    if (selectedProducts.length === 0) return;
-    if (
-      !confirm(
-        `Are you sure you want to delete ${selectedProducts.length} products?`,
-      )
-    )
-      return;
-
-    try {
-      const res = await fetch("/api/products/bulk-delete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids: selectedProducts }),
-      });
-
-      if (res.ok) {
-        toast.success("Products deleted successfully");
-        setProducts(products.filter((p) => !selectedProducts.includes(p._id)));
-        setSelectedProducts([]);
-      } else {
-        toast.error("Failed to delete products");
-      }
-    } catch (error) {
-      console.error(error);
       toast.error("Something went wrong");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
-  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked)
-      setSelectedProducts(filteredProducts.map((p) => p._id));
-    else setSelectedProducts([]);
-  };
 
-  const handleSelectProduct = (id: string) => {
-    setSelectedProducts((prev) =>
-      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id],
-    );
-  };
+
 
   const filteredProducts = useMemo(() => {
     if (!searchQuery) return products;
@@ -236,6 +220,7 @@ export default function AdminProductsPage() {
               className={styles.searchInput}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              autoComplete="off"
             />
           </div>
 
@@ -253,15 +238,6 @@ export default function AdminProductsPage() {
                   <span className={styles.slider}></span>
                 </label>
               </div>
-            )}
-
-            {!isWorker && selectedProducts.length > 0 && (
-              <button
-                onClick={handleBulkDelete}
-                className={`${styles.actionButton} ${styles.destructiveButton}`}
-              >
-                Delete Selected ({selectedProducts.length})
-              </button>
             )}
 
             <select
@@ -286,16 +262,8 @@ export default function AdminProductsPage() {
       <div className={styles.mobileList}>
         {paginatedProducts.map((product) => (
           <div key={product._id} className={styles.productCard}>
-            {/* Top Section: Checkbox + Image + Details */}
+            {/* Top Section: Image + Details */}
             <div className={styles.cardMain}>
-              <div style={{ display: "flex", alignItems: "flex-start" }}>
-                <input
-                  type="checkbox"
-                  className={styles.cardCheckbox}
-                  checked={selectedProducts.includes(product._id)}
-                  onChange={() => handleSelectProduct(product._id)}
-                />
-              </div>
 
               <div className={styles.productCardImageWrapper}>
                 <Image
@@ -354,18 +322,6 @@ export default function AdminProductsPage() {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th className={styles.th}>
-                <input
-                  type="checkbox"
-                  onChange={handleSelectAll}
-                  checked={
-                    filteredProducts.length > 0 &&
-                    filteredProducts.every((p) =>
-                      selectedProducts.includes(p._id),
-                    )
-                  }
-                />
-              </th>
               <th className={styles.th}>Image</th>
               <th className={styles.th}>Name</th>
               <th className={styles.th}>Category</th>
@@ -377,13 +333,6 @@ export default function AdminProductsPage() {
           <tbody>
             {paginatedProducts.map((product) => (
               <tr key={product._id} className={styles.tr}>
-                <td className={styles.td}>
-                  <input
-                    type="checkbox"
-                    checked={selectedProducts.includes(product._id)}
-                    onChange={() => handleSelectProduct(product._id)}
-                  />
-                </td>
                 <td className={styles.td}>
                   <Image
                     src={product.images[0] || "/placeholder.png"}
@@ -432,30 +381,89 @@ export default function AdminProductsPage() {
           {Math.min(currentPage * itemsPerPage, filteredProducts.length)} of{" "}
           {filteredProducts.length} results
         </div>
-        <div className={styles.pageControls}>
-          <button
-            className={styles.pageBtn}
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-          >
-            <ChevronLeft size={16} />
-          </button>
-          {/* Simplified pagination for now */}
-          <span
-            className={styles.pageBtn}
-            style={{ border: "none", background: "transparent" }}
-          >
-            {currentPage} / {totalPages || 1}
-          </span>
-          <button
-            className={styles.pageBtn}
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages || totalPages === 0}
-          >
-            <ChevronRight size={16} />
-          </button>
+        <div className={styles.paginationControls}>
+          <div className={styles.paginationButtons}>
+            <button
+              className={styles.pageButton}
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <span
+              className={styles.pageButton}
+              style={{ border: "none", background: "transparent", width: "auto", padding: "0 0.5rem" }}
+            >
+              {currentPage} / {totalPages || 1}
+            </span>
+            <button
+              className={styles.pageButton}
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages || totalPages === 0}
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
         </div>
       </div>
+
+      {isDeleteModalOpen && (
+        <div className={styles.modalOverlay}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleConfirmDelete();
+            }}
+            className={styles.modalContent}
+          >
+            <h2 className={styles.modalTitle}>Confirm Deletion</h2>
+            <p className={styles.modalText}>
+              This action cannot be undone. Please enter the administrator deletion password to proceed.
+            </p>
+            
+            {/* Dummy hidden inputs to prevent browser autofill hijacking the main search input */}
+            <input
+              type="text"
+              name="email"
+              autoComplete="username"
+              style={{ display: "none" }}
+              readOnly
+            />
+            
+            <input
+              type="password"
+              name="password"
+              placeholder="Enter password"
+              value={deletePassword}
+              onChange={(e) => setDeletePassword(e.target.value)}
+              className={styles.passwordInput}
+              autoComplete="new-password"
+              autoFocus
+            />
+            <div className={styles.modalActions}>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsDeleteModalOpen(false);
+                  setDeleteTargetId(null);
+                  setDeletePassword("");
+                }}
+                className={styles.cancelBtn}
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className={styles.confirmBtn}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

@@ -81,7 +81,7 @@ export default function Contact() {
           </span>
         </a>
 
-        <a href="tel:+2349138644971" className={styles.contactCard}>
+        <a href="tel:+2349112130257" className={styles.contactCard}>
           <div className={styles.cardIconWrap}>
             <svg
               className={styles.cardIcon}
@@ -98,7 +98,7 @@ export default function Contact() {
             </svg>
           </div>
           <h3 className={styles.cardTitle}>Call Us</h3>
-          <p className={styles.cardValue}>+234 913 864 4971</p>
+          <p className={styles.cardValue}>+234 911 213 0257</p>
           <span className={styles.cardAction}>
             Make a call
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

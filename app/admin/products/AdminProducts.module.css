@@ -491,23 +491,29 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  width: 2.25rem;
+  height: 2.25rem;
   border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--color-text-muted);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border-medium);
   transition: all 0.2s;
+  cursor: pointer;
 }
 
 .pageButton:hover:not(:disabled) {
   background-color: var(--color-bg-secondary);
+  border-color: var(--color-primary);
   color: var(--color-primary);
 }
 
 .pageButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  background-color: var(--color-bg-secondary);
+  border-color: var(--color-border-light);
 }
 
 .activePage {
@@ -610,4 +616,103 @@ input:checked + .slider:before {
     flex: 1;
     justify-content: flex-end;
   }
+}
+
+/* Delete Password Confirmation Modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modalContent {
+  background-color: var(--color-bg-primary);
+  padding: 1.5rem;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--color-border-light);
+}
+
+.modalTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.modalText {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 1.25rem;
+  white-space: normal; /* Override wrap behavior */
+}
+
+.passwordInput {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border-medium);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+}
+
+.passwordInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.1);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.cancelBtn {
+  padding: 0.625rem 1.25rem;
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-medium);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancelBtn:hover {
+  background-color: var(--color-bg-hover);
+}
+
+.confirmBtn {
+  padding: 0.625rem 1.25rem;
+  background-color: #ef4444;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.confirmBtn:hover {
+  background-color: #dc2626;
+}
+
+.confirmBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

@@ -25,6 +25,11 @@ export default function AdminUsersPage() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [updating, setUpdating] = useState<string | null>(null);
 
+  const [roleUpdateTarget, setRoleUpdateTarget] = useState<{ userId: string; newRole: string } | null>(null);
+  const [rolePassword, setRolePassword] = useState("");
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
+  const [isRoleUpdating, setIsRoleUpdating] = useState(false);
+
   const isAdmin = session?.user?.role === "admin";
 
   useEffect(() => {
@@ -45,26 +50,48 @@ export default function AdminUsersPage() {
     }
   };
 
-  const handleRoleUpdate = async (userId: string, newRole: string) => {
+  const handleRoleUpdateClick = (userId: string, newRole: string) => {
     if (!isAdmin) return;
-    setUpdating(userId);
+    setRoleUpdateTarget({ userId, newRole });
+    setRolePassword("");
+    setIsRoleModalOpen(true);
+  };
+
+  const handleConfirmRoleUpdate = async () => {
+    if (!roleUpdateTarget) return;
+    if (!rolePassword) {
+      alert("Password is required");
+      return;
+    }
+    setIsRoleUpdating(true);
+    setUpdating(roleUpdateTarget.userId);
     try {
       const res = await fetch("/api/admin/users", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, role: newRole }),
+        body: JSON.stringify({
+          userId: roleUpdateTarget.userId,
+          role: roleUpdateTarget.newRole,
+          password: rolePassword,
+        }),
       });
 
+      const data = await res.json();
       if (res.ok) {
         setUsers(
-          users.map((u) => (u._id === userId ? { ...u, role: newRole } : u)),
+          users.map((u) => (u._id === roleUpdateTarget.userId ? { ...u, role: roleUpdateTarget.newRole } : u)),
         );
+        setIsRoleModalOpen(false);
+        setRoleUpdateTarget(null);
+        setRolePassword("");
       } else {
-        alert("Failed to update role");
+        alert(data.error || "Failed to update role");
       }
     } catch (error) {
       console.error("Error updating role", error);
+      alert("Something went wrong");
     } finally {
+      setIsRoleUpdating(false);
       setUpdating(null);
     }
   };
@@ -117,7 +144,7 @@ export default function AdminUsersPage() {
 
       {/* Mobile User Cards */}
       <div className={styles.mobileList}>
-        {filteredUsers.map((user) => (
+        {paginatedUsers.map((user) => (
           <div key={user._id} className={styles.userCard}>
             <div className={styles.userCardImageWrapper}>
               {user.image ? (
@@ -142,7 +169,7 @@ export default function AdminUsersPage() {
                 {isAdmin ? (
                   <select
                     value={user.role}
-                    onChange={(e) => handleRoleUpdate(user._id, e.target.value)}
+                    onChange={(e) => handleRoleUpdateClick(user._id, e.target.value)}
                     disabled={
                       updating === user._id || user._id === session?.user?.id
                     }
@@ -211,7 +238,7 @@ export default function AdminUsersPage() {
                     <select
                       value={user.role}
                       onChange={(e) =>
-                        handleRoleUpdate(user._id, e.target.value)
+                        handleRoleUpdateClick(user._id, e.target.value)
                       }
                       disabled={
                         updating === user._id || user._id === session?.user?.id
@@ -291,6 +318,64 @@ export default function AdminUsersPage() {
           </div>
         </div>
       </div>
+
+      {isRoleModalOpen && (
+        <div className={styles.modalOverlay}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleConfirmRoleUpdate();
+            }}
+            className={styles.modalContent}
+          >
+            <h2 className={styles.modalTitle}>Confirm Role Change</h2>
+            <p className={styles.modalText}>
+              Please enter the administrator role update password to modify this user's role.
+            </p>
+            
+            {/* Dummy hidden inputs to prevent browser autofill hijacking the main search input */}
+            <input
+              type="text"
+              name="email"
+              autoComplete="username"
+              style={{ display: "none" }}
+              readOnly
+            />
+            
+            <input
+              type="password"
+              name="password"
+              placeholder="Enter password"
+              value={rolePassword}
+              onChange={(e) => setRolePassword(e.target.value)}
+              className={styles.passwordInput}
+              autoComplete="new-password"
+              autoFocus
+            />
+            <div className={styles.modalActions}>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsRoleModalOpen(false);
+                  setRoleUpdateTarget(null);
+                  setRolePassword("");
+                }}
+                className={styles.cancelBtn}
+                disabled={isRoleUpdating}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className={styles.confirmBtn}
+                disabled={isRoleUpdating}
+              >
+                {isRoleUpdating ? "Updating..." : "Update"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

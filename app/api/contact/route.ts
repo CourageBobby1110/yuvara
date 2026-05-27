@@ -34,18 +34,8 @@ export async function POST(req: NextRequest) {
       status: "unread",
     });
 
-    // Send email notification to admin
-    try {
-      await sendContactFormNotification(
-        name,
-        email,
-        message,
-        contactMessage._id.toString()
-      );
-    } catch (emailError) {
-      console.error("Failed to send email notification:", emailError);
-      // Don't fail the request if email fails
-    }
+    // Email notification sending has been disabled per user request.
+    // The ticket will only be registered in the database for the Admin Dashboard.
 
     return NextResponse.json({
       message: "Thank you for your message! We'll get back to you soon.",

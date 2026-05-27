@@ -36,13 +36,25 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    const { userId, role } = body;
+    const { userId, role, password } = body;
 
     if (!userId || !role) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
       );
+    }
+
+    const envPassword = process.env.ROLE_UPDATE_PASSWORD || process.env.UPDATE_ROLE_PASSWORD;
+    if (!envPassword) {
+      return NextResponse.json(
+        { error: "Role update password is not configured on the server." },
+        { status: 500 }
+      );
+    }
+
+    if (password !== envPassword) {
+      return NextResponse.json({ error: "Incorrect password" }, { status: 403 });
     }
 
     // Validate role

@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     if (!user) {
       // Create user without a password since they use Google Auth
       user = await User.create({
-        email: email.trim(),
+        email: email.trim().toLowerCase(),
         name: name || "Google User",
         image: picture || "",
         emailVerified: new Date(),

@@ -17,7 +17,8 @@ interface Order {
 const ORDER_STEPS = ["placed", "processing", "shipped", "delivered"];
 
 const getStepStatus = (orderStatus: string, step: string) => {
-  const statusIndex = ORDER_STEPS.indexOf(orderStatus.toLowerCase());
+  const normalizedStatus = orderStatus.toLowerCase() === "pending" ? "placed" : orderStatus.toLowerCase();
+  const statusIndex = ORDER_STEPS.indexOf(normalizedStatus);
   const stepIndex = ORDER_STEPS.indexOf(step);
 
   if (statusIndex === -1) return "pending"; // Handle cancelled or unknown
@@ -260,7 +261,11 @@ export default function UserOrdersPage() {
                           className={styles.progressLine}
                           style={{
                             width: `${
-                              (ORDER_STEPS.indexOf(order.status.toLowerCase()) /
+                              (ORDER_STEPS.indexOf(
+                                order.status.toLowerCase() === "pending"
+                                  ? "placed"
+                                  : order.status.toLowerCase()
+                              ) /
                                 (ORDER_STEPS.length - 1)) *
                               100
                             }%`,
