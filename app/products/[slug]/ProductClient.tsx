@@ -77,6 +77,14 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
   const slug = params.slug as string;
   const { formatPrice } = useCurrency();
   const { data: session } = useSession();
+  const [showMobileOverlay, setShowMobileOverlay] = useState(false);
+
+  useEffect(() => {
+    const userAgent = typeof window !== "undefined" ? navigator.userAgent || navigator.vendor || (window as any).opera : "";
+    if (/android|iphone|ipad|ipod|windows phone/i.test(userAgent.toLowerCase())) {
+      setShowMobileOverlay(true);
+    }
+  }, []);
 
   // Sanitize product images on load
   const sanitizedProduct = {
@@ -252,7 +260,24 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
     : "0.0";
 
   return (
-    <main className={styles.container}>
+    <>
+      {showMobileOverlay && (
+        <div className={styles.mobileOverlay}>
+          <div className={styles.overlayCard}>
+            <div className={styles.logoWrapper}>
+              <span className={styles.brandLogo}>YUVARA</span>
+            </div>
+            <h2 className={styles.overlayTitle}>Experience Yuvara on Mobile</h2>
+            <p className={styles.overlayDesc}>
+              To view product details and shop our luxury collection, please install our official mobile application.
+            </p>
+            <a href="/yuvara.apk" className={styles.overlayButton} download>
+              Download & Install App
+            </a>
+          </div>
+        </div>
+      )}
+      <main className={`${styles.container} ${showMobileOverlay ? styles.blurredContent : ""}`}>
       <div className={styles.grid}>
         {/* Media Gallery */}
         <div className={styles.mediaSection}>
@@ -598,6 +623,7 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
         currentProductId={product._id}
         category={product.category}
       />
-    </main>
+      </main>
+    </>
   );
 }
