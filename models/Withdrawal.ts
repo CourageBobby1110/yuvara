@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, models } from "mongoose";
+import { Schema, model, models } from "mongoose";
 
 const WithdrawalSchema = new Schema(
   {
@@ -23,6 +23,10 @@ const WithdrawalSchema = new Schema(
     },
     adminNote: {
       type: String,
+    },
+    isWithdrawAll: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

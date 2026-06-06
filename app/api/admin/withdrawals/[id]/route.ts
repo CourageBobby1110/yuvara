@@ -55,14 +55,24 @@ export async function PUT(
     if (status === "approved") {
       // Logic for approval:
       // 1. Update Withdrawal Status
-      // 2. Increment `withdrawnProfit` in Investor model to cut the money visually and logically from available profit.
+      // 2. If it is a Withdraw All, reset all investor capital/initial/pending/withdrawn amounts to 0, status to "withdrawn", and disable allowWithdrawAll.
+      // Otherwise, increment `withdrawnProfit` in Investor model to cut the money visually and logically from available profit.
 
       withdrawal.status = "approved";
       withdrawal.adminNote = adminNote;
       await withdrawal.save();
 
-      investor.withdrawnProfit =
-        (investor.withdrawnProfit || 0) + withdrawal.amount;
+      if (withdrawal.isWithdrawAll) {
+        investor.activeCapital = 0;
+        investor.initialAmount = 0;
+        investor.pendingTopUp = 0;
+        investor.withdrawnProfit = 0;
+        investor.status = "withdrawn";
+        investor.allowWithdrawAll = false;
+      } else {
+        investor.withdrawnProfit =
+          (investor.withdrawnProfit || 0) + withdrawal.amount;
+      }
       await investor.save();
     } else {
       // Rejection

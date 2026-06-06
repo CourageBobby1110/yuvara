@@ -25,6 +25,7 @@ export async function PUT(
       initialAmount,
       status,
       message, // For adding a new message
+      allowWithdrawAll,
     } = body;
 
     const investor = await Investor.findById(id);
@@ -39,6 +40,7 @@ export async function PUT(
     if (email) investor.email = email;
     if (initialAmount !== undefined) investor.initialAmount = initialAmount;
     if (status) investor.status = status;
+    if (allowWithdrawAll !== undefined) investor.allowWithdrawAll = allowWithdrawAll;
     if (body.customProfitRate !== undefined) {
       investor.customProfitRate =
         body.customProfitRate !== "" ? Number(body.customProfitRate) : null;

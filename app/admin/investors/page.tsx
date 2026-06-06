@@ -16,6 +16,7 @@ interface Investor {
   pendingTopUp: number;
   customProfitRate?: number;
   activeCapital: number;
+  allowWithdrawAll?: boolean;
 }
 
 export default function AdminInvestorsPage() {
@@ -32,6 +33,7 @@ export default function AdminInvestorsPage() {
     initialAmount: 0,
     status: "active",
     customProfitRate: "",
+    allowWithdrawAll: false,
   });
   // Top Up State
   const [isTopUpModalOpen, setIsTopUpModalOpen] = useState(false);
@@ -164,6 +166,7 @@ export default function AdminInvestorsPage() {
         investor.customProfitRate !== null
           ? investor.customProfitRate.toString()
           : "",
+      allowWithdrawAll: !!investor.allowWithdrawAll,
     });
     setIsModalOpen(true);
   };
@@ -177,6 +180,7 @@ export default function AdminInvestorsPage() {
       initialAmount: 0,
       status: "active",
       customProfitRate: "",
+      allowWithdrawAll: false,
     });
   };
 
@@ -361,6 +365,18 @@ export default function AdminInvestorsPage() {
                       : `${globalProfitRate}% (Global)`}
                   </span>
                 </div>
+                <div className={styles.row}>
+                  <span className={styles.label}>Withdraw All</span>
+                  <span
+                    className={styles.value}
+                    style={{
+                      color: investor.allowWithdrawAll ? "#ef4444" : "inherit",
+                      fontWeight: investor.allowWithdrawAll ? "bold" : "normal",
+                    }}
+                  >
+                    {investor.allowWithdrawAll ? "Active" : "Inactive"}
+                  </span>
+                </div>
                 {investor.pendingTopUp > 0 && (
                   <div className={styles.row}>
                     <span
@@ -539,6 +555,40 @@ export default function AdminInvestorsPage() {
                   <option value="completed">Completed</option>
                   <option value="withdrawn">Withdrawn</option>
                 </select>
+              </div>
+
+              <div className={styles.formGroupCheckbox}>
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={formData.allowWithdrawAll}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        allowWithdrawAll: e.target.checked,
+                      })
+                    }
+                    className={styles.checkbox}
+                  />
+                  <span>Activate "Withdraw All" Button for Investor</span>
+                </label>
+              </div>
+
+              <div className={styles.formGroupCheckbox}>
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={formData.allowWithdrawAll}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        allowWithdrawAll: e.target.checked,
+                      })
+                    }
+                    className={styles.checkbox}
+                  />
+                  <span>Activate "Withdraw All" Button for Investor</span>
+                </label>
               </div>
 
               <div className={styles.modalActions}>

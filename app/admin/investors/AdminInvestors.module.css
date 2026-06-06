@@ -657,3 +657,29 @@ select.input:focus {
 .modalContent::-webkit-scrollbar-thumb:hover {
   background: #a0aec0;
 }
+
+.formGroupCheckbox {
+  margin-top: 1rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #2d3748;
+  cursor: pointer;
+}
+
+.checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 6px;
+  border: 2px solid #e2e8f0;
+  cursor: pointer;
+  accent-color: var(--color-luxury-gold, #996515);
+}

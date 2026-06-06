@@ -100,6 +100,10 @@ const InvestorSchema = new Schema(
     termsAcceptedDate: {
       type: Date,
     },
+    allowWithdrawAll: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );
@@ -155,6 +159,7 @@ export interface IInvestor extends mongoose.Document {
   }[];
   termsAccepted: boolean;
   termsAcceptedDate?: Date;
+  allowWithdrawAll?: boolean;
 }
 
 const Investor =

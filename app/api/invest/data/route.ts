@@ -184,6 +184,7 @@ export async function GET(req: Request) {
         rolloverHistory: investor.rolloverHistory.reverse(), // Send history (newest first)
         pendingTopUp: investor.pendingTopUp, // Send pending
         termsAccepted: investor.termsAccepted || false,
+        allowWithdrawAll: investor.allowWithdrawAll || false,
       },
       withdrawals: withdrawals, // Send withdrawals
       growth: {

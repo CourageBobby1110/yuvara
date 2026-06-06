@@ -41,6 +41,7 @@ export async function POST(req: Request) {
       initialAmount,
       status,
       customProfitRate,
+      allowWithdrawAll,
     } = body;
     // Check uniqueness
     const existingEmail = await Investor.findOne({ email });
@@ -69,6 +70,7 @@ export async function POST(req: Request) {
         customProfitRate !== "" && customProfitRate !== undefined
           ? Number(customProfitRate)
           : null,
+      allowWithdrawAll: allowWithdrawAll || false,
       startDate: new Date(),
     });
 

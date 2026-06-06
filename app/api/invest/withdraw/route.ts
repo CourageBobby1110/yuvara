@@ -33,12 +33,12 @@ export async function POST(req: Request) {
       );
     }
 
-    const { amount } = await req.json();
+    const { amount, isWithdrawAll } = await req.json();
 
-    if (!amount || amount <= 0) {
+    if (isWithdrawAll && !investor.allowWithdrawAll) {
       return NextResponse.json(
-        { error: "Invalid withdrawal amount" },
-        { status: 400 }
+        { error: "Withdraw All is not activated for your account." },
+        { status: 403 }
       );
     }
 
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     const isGracePeriod = daysSinceStart >= 30 && daysSinceStart < 37;
 
     // Allow admin testing or override? For now strict.
-    if (!isGracePeriod) {
+    if (!isWithdrawAll && !isGracePeriod) {
       return NextResponse.json(
         {
           error:
@@ -64,43 +64,85 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check Available Profit
-    // The original calculation for `currentGrowth` was based on daily growth over 30 days.
-    // For withdrawal during grace period, we should consider the final profit for the cycle.
-    // The `availableProfit` calculation below is more aligned with the final profit after 30 days.
-
     const withdrawnProfit = investor.withdrawnProfit || 0;
+    let withdrawalAmount = amount;
 
-    // Recalculate available profit to be safe (Logic should match data API)
-    // Assuming activeCapital is up to date (data API lazy updates it, but here we might need a check?
-    // Ideally user hits /data first which triggers update. If they hit /withdraw directly after months...
-    // We should run the same lazy update logic here OR assume FE calls data first.
-    // For safety, let's rely on `availableProfit` calc similar to /data route but simplified for the active cycle.
+    if (isWithdrawAll) {
+      // Calculate total amount: activeCapital + currentGrowth - withdrawnProfit + pendingTopUp
+      const GlobalSettings = require("@/models/GlobalSettings").default;
+      let settings = await GlobalSettings.findOne();
+      if (!settings) {
+        settings = await GlobalSettings.create({ investmentProfitRate: 50 });
+      }
+      const globalRate = settings.investmentProfitRate / 100;
+      const profitRate =
+        investor.customProfitRate !== null &&
+        investor.customProfitRate !== undefined
+          ? investor.customProfitRate / 100
+          : globalRate;
 
-    // IMPORTANT: If user didn't hit data, `activeCapital` might be stale.
-    // Ideally we duplicate the lazy update logic or extract it to a helper.
-    // given context limits, I will rely on the fact that the dashboard calls /data before allowing withdraw.
-    // But smart users might curl.
-    // Minimal check:
-
-    const activeCapital = investor.activeCapital || investor.initialAmount;
-    const currentGrowth = activeCapital * 0.5; // Final profit for the 30 days
-    const availableProfit = Math.max(0, currentGrowth - withdrawnProfit);
-
-    if (amount > availableProfit) {
-      return NextResponse.json(
-        { error: "Insufficient available profit" },
-        { status: 400 }
+      const CYCLE_DURATION_DAYS = 30;
+      const currentDiffTime = Math.abs(now.getTime() - cycleStartDate.getTime());
+      const daysElapsed = Math.min(
+        Math.floor(currentDiffTime / (1000 * 60 * 60 * 24)),
+        CYCLE_DURATION_DAYS,
       );
+
+      const activeCapital = investor.activeCapital || investor.initialAmount;
+      const totalGrowth = activeCapital * profitRate;
+      const growthPerDay = totalGrowth / CYCLE_DURATION_DAYS;
+      const currentGrowth = growthPerDay * daysElapsed;
+      const pendingTopUp = investor.pendingTopUp || 0;
+
+      withdrawalAmount = activeCapital + currentGrowth - withdrawnProfit + pendingTopUp;
+
+      if (withdrawalAmount <= 0) {
+        return NextResponse.json(
+          { error: "No funds available to withdraw" },
+          { status: 400 }
+        );
+      }
+    } else {
+      if (!withdrawalAmount || withdrawalAmount <= 0) {
+        return NextResponse.json(
+          { error: "Invalid withdrawal amount" },
+          { status: 400 }
+        );
+      }
+
+      // Check Available Profit
+      const GlobalSettings = require("@/models/GlobalSettings").default;
+      let settings = await GlobalSettings.findOne();
+      if (!settings) {
+        settings = await GlobalSettings.create({ investmentProfitRate: 50 });
+      }
+      const globalRate = settings.investmentProfitRate / 100;
+      const profitRate =
+        investor.customProfitRate !== null &&
+        investor.customProfitRate !== undefined
+          ? investor.customProfitRate / 100
+          : globalRate;
+
+      const activeCapital = investor.activeCapital || investor.initialAmount;
+      const currentGrowth = activeCapital * profitRate;
+      const availableProfit = Math.max(0, currentGrowth - withdrawnProfit);
+
+      if (withdrawalAmount > availableProfit) {
+        return NextResponse.json(
+          { error: "Insufficient available profit" },
+          { status: 400 }
+        );
+      }
     }
 
     // Create Withdrawal Request
     const Withdrawal = require("@/models/Withdrawal").default; // Dynamic import to avoid circular dep issues if any
     await Withdrawal.create({
       investor: investor._id,
-      amount: amount,
+      amount: withdrawalAmount,
       status: "pending",
       bankDetails: investor.bankDetails,
+      isWithdrawAll: isWithdrawAll || false,
     });
 
     // Send Email notification
@@ -108,7 +150,7 @@ export async function POST(req: Request) {
       await sendWithdrawalRequestEmail(
         investor.name,
         investor.email,
-        amount,
+        withdrawalAmount,
         investor.bankDetails
       );
     } catch (emailError) {

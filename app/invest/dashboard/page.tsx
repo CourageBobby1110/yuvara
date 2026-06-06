@@ -26,6 +26,7 @@ interface InvestorData {
     rolloverHistory: any[];
     pendingTopUp: number;
     termsAccepted: boolean;
+    allowWithdrawAll?: boolean;
   };
   withdrawals: any[];
   growth: {
@@ -212,6 +213,57 @@ export default function InvestmentDashboardPage() {
     }
   };
 
+  const handleWithdrawAll = async () => {
+    if (!data) return;
+    if (!bankDetails.bankName || !bankDetails.accountNumber) {
+      alert("Please save your bank details first.");
+      return;
+    }
+
+    const { investor, growth } = data;
+    const totalAmount =
+      (investor.activeCapital || investor.initialAmount) +
+      growth.totalProfit -
+      (investor.withdrawnProfit || 0) +
+      (investor.pendingTopUp || 0);
+
+    if (
+      !confirm(
+        `Are you sure you want to withdraw ALL funds totaling ${formatAmount(
+          totalAmount
+        )}? This includes your active capital, accumulated profit, current growth, and pending top-ups. This request will terminate your investment upon approval.`
+      )
+    ) {
+      return;
+    }
+
+    setWithdrawLoading(true);
+    setWithdrawMessage("");
+    const token = localStorage.getItem("investorToken");
+
+    try {
+      const res = await fetch("/api/invest/withdraw", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ isWithdrawAll: true }),
+      });
+      const json = await res.json();
+
+      if (!res.ok) throw new Error(json.error || "Withdrawal failed");
+
+      setWithdrawMessage(json.message);
+      // Refresh data to show updated status
+      if (token) fetchData(token);
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setWithdrawLoading(false);
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("investorToken");
     localStorage.removeItem("investorName");
@@ -244,6 +296,12 @@ export default function InvestmentDashboardPage() {
   if (!data) return null;
 
   const { investor, growth } = data;
+
+  const totalWithdrawable =
+    (investor.activeCapital || investor.initialAmount) +
+    growth.totalProfit -
+    (investor.withdrawnProfit || 0) +
+    (investor.pendingTopUp || 0);
 
   const getStatusClass = (status: string) => {
     switch (status) {
@@ -631,6 +689,46 @@ export default function InvestmentDashboardPage() {
                 {withdrawLoading ? "Processing..." : "Request Withdrawal"}
               </button>
             </form>
+
+            {investor.allowWithdrawAll && (
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <h4 className="text-sm font-bold text-red-600 mb-2 uppercase tracking-wide">
+                  Emergency Full Withdrawal
+                </h4>
+                <p className="text-xs text-gray-500 mb-3 leading-relaxed">
+                  You have been authorized to perform a full withdrawal. This will withdraw your entire principal, accrued profits, and any pending top-ups, totaling{" "}
+                  <strong className="text-red-600 font-bold">
+                    {formatAmount(totalWithdrawable)}
+                  </strong>
+                  , and terminate your investment.
+                </p>
+                
+                <div className="bg-red-50 border border-red-100 rounded-lg p-4 mb-4 text-xs text-red-900">
+                  <span className="font-semibold block mb-1 text-red-800">Payout Schedule (3 Tiers):</span>
+                  <p className="mb-2 text-red-700 leading-normal">
+                    The total amount will be disbursed in three equal monthly installments over a 3-month duration:
+                  </p>
+                  <ul className="space-y-1 font-medium text-red-800 pl-2 border-l-2 border-red-200">
+                    <li>• Month 1: <strong>{formatAmount(totalWithdrawable / 3)}</strong></li>
+                    <li>• Month 2: <strong>{formatAmount(totalWithdrawable / 3)}</strong></li>
+                    <li>• Month 3: <strong>{formatAmount(totalWithdrawable / 3)}</strong></li>
+                  </ul>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleWithdrawAll}
+                  disabled={withdrawLoading || totalWithdrawable <= 0}
+                  className={`${
+                    withdrawLoading || totalWithdrawable <= 0
+                      ? styles.withdrawButtonDisabled
+                      : styles.withdrawAllButton
+                  } ${styles.withdrawButton}`}
+                >
+                  {withdrawLoading ? "Processing..." : "Withdraw All Funds"}
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

@@ -444,3 +444,18 @@
     0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
+.withdrawAllButton {
+  background: linear-gradient(135deg, #f43f5e, #be123c);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
+}
+
+.withdrawAllButton:hover {
+  filter: brightness(110%);
+  box-shadow: 0 6px 20px rgba(225, 29, 72, 0.45);
+}
+
+.withdrawAllButton:active {
+  transform: scale(0.98);
+}
+
