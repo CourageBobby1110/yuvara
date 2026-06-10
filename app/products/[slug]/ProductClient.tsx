@@ -82,7 +82,11 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
   useEffect(() => {
     const userAgent = typeof window !== "undefined" ? navigator.userAgent || navigator.vendor || (window as any).opera : "";
     if (/android|iphone|ipad|ipod|windows phone/i.test(userAgent.toLowerCase())) {
-      setShowMobileOverlay(true);
+      const hasShown = localStorage.getItem("download_modal_shown");
+      if (!hasShown) {
+        setShowMobileOverlay(true);
+        localStorage.setItem("download_modal_shown", "true");
+      }
     }
   }, []);
 
@@ -334,6 +338,7 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
                 fill
                 className={styles.mainImage}
                 priority
+                sizes="(max-width: 768px) 100vw, 50vw"
               />
             )}
           </div>
@@ -362,6 +367,7 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
                   alt={`${product.name} ${index + 1}`}
                   fill
                   className={styles.thumbnailImage}
+                  sizes="100px"
                 />
               </button>
             ))}

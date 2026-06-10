@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import FeaturedCollection from "@/components/FeaturedCollection";
 import { Product } from "@/models/Product";
 import { fetchMoreProducts } from "@/app/actions/products";
@@ -20,6 +20,7 @@ export default function ProductGridWithLoadMore({
   const [offset, setOffset] = useState(initialProducts.length);
   const [hasMore, setHasMore] = useState(initialProducts.length >= 200);
   const [loading, setLoading] = useState(false);
+  const loaderRef = useRef<HTMLDivElement | null>(null);
 
   // Time-based seed (changes every 1 hour) - must match Home page
   const currentWindowSeed = Math.floor(Date.now() / (60 * 60 * 1000));
@@ -51,19 +52,56 @@ export default function ProductGridWithLoadMore({
     }
   };
 
+  useEffect(() => {
+    const currentLoader = loaderRef.current;
+    if (!hasMore || !currentLoader) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loading) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(currentLoader);
+
+    return () => {
+      observer.unobserve(currentLoader);
+    };
+  }, [hasMore, loading, offset]);
+
   return (
     <>
       <FeaturedCollection products={products} title="" subtitle="" />
 
       {hasMore && (
-        <div className="flex justify-center mt-12 mb-20">
-          <button
-            onClick={loadMore}
-            disabled={loading}
-            className="px-10 py-4 bg-black text-white text-sm font-bold tracking-widest hover:bg-[#996515] hover:text-white border-2 border-transparent hover:border-[#996515] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed uppercase shadow-lg shadow-black/10"
-          >
-            {loading ? "Loading..." : "Load More"}
-          </button>
+        <div ref={loaderRef} className="w-full flex justify-center items-center h-20 mt-10 mb-20">
+          {loading ? (
+            <svg
+              className="animate-spin h-8 w-8 text-[#bfa15f]"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+          ) : (
+            <div className="h-px w-16 bg-[#bfa15f]/20"></div>
+          )}
         </div>
       )}
     </>

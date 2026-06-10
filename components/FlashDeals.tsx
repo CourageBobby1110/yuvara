@@ -97,6 +97,7 @@ export default function FlashDeals() {
                 alt={deal.name}
                 fill
                 className={styles.image}
+                sizes="(max-width: 640px) 50vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
               />
               <span className={styles.discount}>
                 -

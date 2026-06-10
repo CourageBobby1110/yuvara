@@ -9,14 +9,22 @@ export default function Footer() {
         <div className={styles.topSection}>
           <div className={styles.brandColumn}>
             <div className={styles.logo}>
-              <Image
-                src="/icon.png"
-                alt="YuVara"
-                width={120}
-                height={48}
-                style={{ objectFit: "contain", maxHeight: "3rem" }}
-              />
+              <Link href="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
+                <div style={{ borderRadius: "50%", overflow: "hidden", width: "40px", height: "40px", position: "relative", border: "2px solid #bfa15f", boxShadow: "0 2px 6px rgba(0,0,0,0.08)" }}>
+                  <Image
+                    src="/icon.png"
+                    alt="YuVara Logo"
+                    fill
+                    sizes="40px"
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+                <span style={{ fontSize: "1.4rem", fontWeight: 800, letterSpacing: "-0.5px", color: "#000000", fontFamily: "var(--font-inter), sans-serif" }}>
+                  Yu<span style={{ color: "#bfa15f" }}>Vara</span>
+                </span>
+              </Link>
             </div>
+
             <p className={styles.tagline}>
               Redefining the modern shopping experience with quality, style, and
               innovation.

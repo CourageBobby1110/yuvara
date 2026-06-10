@@ -44,6 +44,7 @@ export default function Hero({ categories, heroImage }: HeroProps) {
             className={styles.heroImage}
             priority
             quality={90}
+            sizes="(max-width: 1024px) 100vw, 75vw"
           />
           <div className={styles.overlay} />
           <div className={styles.textContent}>

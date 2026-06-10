@@ -39,6 +39,7 @@ export default function CategoryGrid({ images }: CategoryGridProps) {
             fill
             className={styles.image}
             style={{ objectFit: "cover" }}
+            sizes="(max-width: 768px) 100vw, 33vw"
           />
           <div className={styles.overlay}>
             <h3 className={styles.title}>{category.title}</h3>

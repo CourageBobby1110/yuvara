@@ -473,6 +473,7 @@ export default function CheckoutPage() {
                         alt={item.name}
                         fill
                         className={styles.image}
+                        sizes="80px"
                       />
                     </div>
                     <div className={styles.itemDetails}>

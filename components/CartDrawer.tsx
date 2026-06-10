@@ -61,6 +61,7 @@ export default function CartDrawer() {
                     alt={item.name}
                     fill
                     style={{ objectFit: "cover" }}
+                    sizes="80px"
                   />
                 </div>
                 <div className={styles.itemDetails}>

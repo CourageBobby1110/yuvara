@@ -121,6 +121,7 @@ export default function QuickAddModal({
               alt={product.name}
               fill
               style={{ objectFit: "cover" }}
+              sizes="(max-width: 768px) 150px, 200px"
             />
           </div>
           <div className={styles.details}>

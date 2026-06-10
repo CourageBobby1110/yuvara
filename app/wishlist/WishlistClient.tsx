@@ -152,6 +152,7 @@ export default function WishlistClient() {
                     alt={item.product.name}
                     fill
                     className={styles.image}
+                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                   />
                   <button
                     onClick={() => handleRemove(item.product._id)}
@@ -173,7 +174,7 @@ export default function WishlistClient() {
 
                 <div className={styles.content}>
                   <Link
-                    href={`/product/${item.product.slug}`}
+                    href={`/products/${item.product.slug}`}
                     className={styles.productLink}
                   >
                     <h3 className={styles.productName}>{item.product.name}</h3>

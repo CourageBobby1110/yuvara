@@ -29,6 +29,7 @@ export default function BrandStory({ image }: BrandStoryProps) {
           alt="Artisan at work"
           fill
           className={styles.image}
+          sizes="(max-width: 768px) 100vw, 50vw"
         />
       </div>
     </section>

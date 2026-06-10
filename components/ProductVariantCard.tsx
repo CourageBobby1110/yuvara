@@ -161,7 +161,7 @@ const ProductVariantCard = memo(function ProductVariantCard({
           <label className={styles.label}>Variant Image</label>
           {variant.image ? (
             <div className={styles.imageWrapper} style={{ width: "80px", height: "80px" }}>
-              <Image src={variant.image} alt="Variant" fill className={styles.image} />
+              <Image src={variant.image} alt="Variant" fill className={styles.image} sizes="80px" />
               <button
                 type="button"
                 onClick={() => updateField("image", "")}
