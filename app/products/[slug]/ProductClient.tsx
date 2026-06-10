@@ -7,7 +7,7 @@ import SimilarProducts from "@/components/SimilarProducts";
 import Image from "next/image";
 import { notFound, useParams } from "next/navigation";
 import { useCurrency } from "@/context/CurrencyContext";
-import { Star } from "lucide-react";
+import { Star, ArrowLeft } from "lucide-react";
 import { useSession } from "next-auth/react";
 import styles from "./Product.module.css";
 import { getValidUrl } from "@/lib/utils";
@@ -262,8 +262,22 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
   return (
     <>
       {showMobileOverlay && (
-        <div className={styles.mobileOverlay}>
+        <div 
+          className={styles.mobileOverlay}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowMobileOverlay(false);
+            }
+          }}
+        >
           <div className={styles.overlayCard}>
+            <button 
+              onClick={() => setShowMobileOverlay(false)} 
+              className={styles.closeButton}
+              aria-label="Close download modal"
+            >
+              &times;
+            </button>
             <div className={styles.logoWrapper}>
               <span className={styles.brandLogo}>YUVARA</span>
             </div>
@@ -271,14 +285,38 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
             <p className={styles.overlayDesc}>
               To view product details and shop our luxury collection, please install our official mobile application.
             </p>
-            <a href="/yuvara.apk" className={styles.overlayButton} download>
-              Download & Install App
-            </a>
+            <div className={styles.actionWrapper}>
+              <a href="/yuvara.apk" className={styles.overlayButton} download>
+                Download & Install App
+              </a>
+              <button 
+                onClick={() => setShowMobileOverlay(false)} 
+                className={styles.secondaryButton}
+              >
+                Continue on Web
+              </button>
+            </div>
           </div>
         </div>
       )}
       <main className={`${styles.container} ${showMobileOverlay ? styles.blurredContent : ""}`}>
-      <div className={styles.grid}>
+        <div className={styles.backButtonWrapper}>
+          <button 
+            onClick={() => {
+              if (typeof window !== "undefined" && window.history.length > 1) {
+                window.history.back();
+              } else {
+                window.location.href = "/";
+              }
+            }} 
+            className={styles.backButton}
+            aria-label="Go back to previous page"
+          >
+            <ArrowLeft size={16} />
+            <span>Back</span>
+          </button>
+        </div>
+        <div className={styles.grid}>
         {/* Media Gallery */}
         <div className={styles.mediaSection}>
           <div className={styles.mainMediaWrapper}>
