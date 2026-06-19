@@ -223,6 +223,7 @@ export default function InvestmentDashboardPage() {
     const { investor, growth } = data;
     const totalAmount =
       (investor.activeCapital || investor.initialAmount) +
+      (growth.accumulatedProfit || 0) +
       growth.totalProfit -
       (investor.withdrawnProfit || 0) +
       (investor.pendingTopUp || 0);
@@ -299,6 +300,7 @@ export default function InvestmentDashboardPage() {
 
   const totalWithdrawable =
     (investor.activeCapital || investor.initialAmount) +
+    (growth.accumulatedProfit || 0) +
     growth.totalProfit -
     (investor.withdrawnProfit || 0) +
     (investor.pendingTopUp || 0);
@@ -354,6 +356,9 @@ export default function InvestmentDashboardPage() {
                 {formatAmount(investor.activeCapital - investor.initialAmount)}
               </div>
             )}
+            <p className="text-xs text-gray-500 italic mt-2">
+              Rolled over profit is excluded as part of principal and is stand alone
+            </p>
           </div>
 
           {/* Pending Top Up Indicator */}
@@ -386,6 +391,9 @@ export default function InvestmentDashboardPage() {
             <div className="text-xs text-gray-500 mt-1">
               Profits rolled over from previous cycles.
             </div>
+            <p className="text-xs text-gray-500 italic mt-2">
+              Withdrawable on a 3-month basis upon request
+            </p>
           </div>
 
           {/* Current Cycle Profit Card */}

@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { SessionProvider, useSession } from "next-auth/react";
-import { CurrencyProvider } from "@/context/CurrencyContext";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { useWishlistStore } from "@/store/wishlist";
@@ -57,20 +56,18 @@ export default function LayoutWrapper({
 
   return (
     <SessionProvider session={session}>
-      <CurrencyProvider>
-        <WishlistInitializer />
-        <ReferralTracker />
-        <CartDrawer />
-        {shouldShowLayout ? (
-          <>
-            <Navbar session={session} />
-            {children}
-            <Footer />
-          </>
-        ) : (
-          <>{children}</>
-        )}
-      </CurrencyProvider>
+      <WishlistInitializer />
+      <ReferralTracker />
+      <CartDrawer />
+      {shouldShowLayout ? (
+        <>
+          <Navbar session={session} />
+          {children}
+          <Footer />
+        </>
+      ) : (
+        <>{children}</>
+      )}
     </SessionProvider>
   );
 }

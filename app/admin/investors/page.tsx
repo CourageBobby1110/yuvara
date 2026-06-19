@@ -17,6 +17,7 @@ interface Investor {
   customProfitRate?: number;
   activeCapital: number;
   allowWithdrawAll?: boolean;
+  accumulatedProfit?: number;
 }
 
 export default function AdminInvestorsPage() {
@@ -574,23 +575,6 @@ export default function AdminInvestorsPage() {
                 </label>
               </div>
 
-              <div className={styles.formGroupCheckbox}>
-                <label className={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={formData.allowWithdrawAll}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        allowWithdrawAll: e.target.checked,
-                      })
-                    }
-                    className={styles.checkbox}
-                  />
-                  <span>Activate "Withdraw All" Button for Investor</span>
-                </label>
-              </div>
-
               <div className={styles.modalActions}>
                 <button
                   type="button"
@@ -641,8 +625,7 @@ export default function AdminInvestorsPage() {
                       <span className="font-bold text-blue-600">
                         ₦
                         {(
-                          (editingInvestor?.activeCapital || 0) -
-                          (editingInvestor?.initialAmount || 0)
+                          editingInvestor?.accumulatedProfit || 0
                         ).toLocaleString()}
                       </span>
                     </div>

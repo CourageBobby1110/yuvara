@@ -67,6 +67,10 @@ const InvestorSchema = new Schema(
       type: Number,
       default: null,
     },
+    accumulatedProfit: {
+      type: Number,
+      default: 0,
+    },
     pendingTopUp: {
       type: Number,
       default: 0,
@@ -118,6 +122,9 @@ InvestorSchema.pre("save", function (next) {
   if (this.isNew && !this.cycleStartDate) {
     this.cycleStartDate = this.startDate;
   }
+  if (this.accumulatedProfit === undefined || this.accumulatedProfit === null) {
+    this.accumulatedProfit = 0;
+  }
   next();
 });
 
@@ -160,6 +167,7 @@ export interface IInvestor extends mongoose.Document {
   termsAccepted: boolean;
   termsAcceptedDate?: Date;
   allowWithdrawAll?: boolean;
+  accumulatedProfit?: number;
 }
 
 const Investor =

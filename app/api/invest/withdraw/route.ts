@@ -94,7 +94,8 @@ export async function POST(req: Request) {
       const currentGrowth = growthPerDay * daysElapsed;
       const pendingTopUp = investor.pendingTopUp || 0;
 
-      withdrawalAmount = activeCapital + currentGrowth - withdrawnProfit + pendingTopUp;
+      const accumulatedProfit = investor.accumulatedProfit || 0;
+      withdrawalAmount = activeCapital + accumulatedProfit + currentGrowth - withdrawnProfit + pendingTopUp;
 
       if (withdrawalAmount <= 0) {
         return NextResponse.json(

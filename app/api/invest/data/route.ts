@@ -91,9 +91,8 @@ export async function GET(req: Request) {
           profitForCycle - withdrawnInCurrentCycle,
         );
 
-        // COMPOUND: Add remaining profit to Active Capital
-        const previousCapital = activeCapital;
-        activeCapital += remainingProfit;
+        // Exclude rolled over profit from compounding with principal (Active Capital)
+        investor.accumulatedProfit = (investor.accumulatedProfit || 0) + remainingProfit;
 
         // MERGE PENDING TOP-UPS
         // If there's any pending top-up, it joins the capital NOW for the new cycle.
@@ -197,7 +196,7 @@ export async function GET(req: Request) {
         gracePeriodDaysRemaining: daysRemainingInGrace,
         totalProfit: currentGrowth,
         availableProfit: availableProfit,
-        accumulatedProfit: Math.max(0, activeCapital - investor.initialAmount),
+        accumulatedProfit: investor.accumulatedProfit || 0,
         profitRate: profitRate * 100, // Send effective rate to frontend
       },
     });
