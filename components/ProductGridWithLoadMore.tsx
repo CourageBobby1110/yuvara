@@ -21,12 +21,14 @@ export default function ProductGridWithLoadMore({
   const [hasMore, setHasMore] = useState(initialProducts.length >= 200);
   const [loading, setLoading] = useState(false);
   const loaderRef = useRef<HTMLDivElement | null>(null);
+  const loadingRef = useRef(false);
 
   // Time-based seed (changes every 1 hour) - must match Home page
   const currentWindowSeed = Math.floor(Date.now() / (60 * 60 * 1000));
 
   const loadMore = async () => {
-    if (loading) return;
+    if (loadingRef.current || loading) return;
+    loadingRef.current = true;
     setLoading(true);
 
     try {
@@ -48,6 +50,7 @@ export default function ProductGridWithLoadMore({
     } catch (error) {
       console.error("Error loading more products:", error);
     } finally {
+      loadingRef.current = false;
       setLoading(false);
     }
   };
@@ -58,7 +61,7 @@ export default function ProductGridWithLoadMore({
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !loading) {
+        if (entries[0].isIntersecting && !loadingRef.current) {
           loadMore();
         }
       },
@@ -70,7 +73,7 @@ export default function ProductGridWithLoadMore({
     return () => {
       observer.unobserve(currentLoader);
     };
-  }, [hasMore, loading, offset]);
+  }, [hasMore, offset]);
 
   return (
     <>
