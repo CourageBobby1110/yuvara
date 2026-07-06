@@ -57,14 +57,16 @@ export default function FeaturedCollection({
   return (
     <section className={styles.section}>
       <div className={styles.container}>
-        <div className={styles.header}>
-          <h2 className={styles.title}>{title}</h2>
-          <p className={styles.subtitle}>{subtitle}</p>
-        </div>
+        {(title || subtitle) && (
+          <div className={styles.header}>
+            {title && <h2 className={styles.title}>{title}</h2>}
+            {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
+          </div>
+        )}
 
         <div className={styles.masonryGrid}>
-          {products.map((product, index) => (
-            <div key={`${product._id}-${index}`} className={styles.masonryItem}>
+          {products.map((product) => (
+            <div key={product._id} className={styles.masonryItem}>
               <ProductCard product={product} onQuickAdd={handleQuickAdd} />
             </div>
           ))}

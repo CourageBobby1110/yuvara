@@ -29,16 +29,7 @@
 .logo {
   display: flex;
   align-items: center;
-  height: 100%;
-  max-height: 3.5rem;
-  overflow: hidden;
-  flex-shrink: 0;
   transition: opacity 0.2s ease;
-}
-
-.logo img {
-  height: 2.75rem;
-  width: auto;
 }
 
 .logo:hover {
@@ -447,11 +438,21 @@
 }
 
 .mobileNavLink {
-  font-size: 1.75rem;
-  font-weight: 800;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
   color: var(--color-text-primary);
-  text-decoration: none;
-  letter-spacing: -0.02em;
+  text-decoration: none !important;
+  padding: 0.75rem 0.5rem !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+}
+
+.mobileNavLink:active {
+  color: var(--color-luxury-gold);
+  padding-left: 0.75rem !important;
 }
 
 .divider {
@@ -465,10 +466,11 @@
   align-items: center !important;
   gap: 1.25rem !important;
   padding: 1.25rem !important;
-  background-color: var(--color-bg-secondary);
+  background-color: #ffffff;
   border: 1px solid var(--color-border-light);
-  border-radius: 1.25rem !important;
+  border-radius: 1rem !important;
   text-decoration: none !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
   transition: all 0.3s ease;
 }
 
@@ -501,59 +503,60 @@
 
 .mobileUserLink {
   display: flex !important;
-  flex-direction: column !important;
+  flex-direction: row !important;
   align-items: center !important;
-  justify-content: center !important;
-  padding: 1.5rem 1rem !important;
-  background-color: white;
+  justify-content: space-between !important;
+  padding: 1rem 1.25rem !important;
+  background-color: #ffffff;
   border: 1px solid var(--color-border-light);
-  border-radius: 1.25rem !important;
-  font-size: 0.75rem !important;
-  font-weight: 700 !important;
+  border-radius: 1rem !important;
+  font-size: 0.9375rem !important;
+  font-weight: 600 !important;
   color: var(--color-text-primary);
   text-decoration: none !important;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
   transition: all 0.2s ease;
-  text-align: center;
+  width: 100%;
 }
 
 .mobileUserLink:active {
   background-color: var(--color-bg-secondary);
-  transform: translateY(2px);
+  transform: translateX(4px);
 }
 
 .mobileSignOut {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  padding: 1.25rem !important;
-  margin-top: 1rem !important;
-  background-color: rgba(239, 68, 68, 0.05);
-  border: 1px solid rgba(239, 68, 68, 0.1);
-  border-radius: 1.25rem !important;
-  color: var(--color-error) !important;
-  font-weight: 700 !important;
-  font-size: 0.875rem !important;
+  padding: 0.875rem 1.5rem !important;
+  margin-top: 1.5rem !important;
+  background-color: transparent !important;
+  border: 1px solid var(--color-border-light) !important;
+  border-radius: 9999px !important;
+  color: var(--color-text-secondary) !important;
+  font-weight: 600 !important;
+  font-size: 0.8125rem !important;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  width: 100%;
 }
 
 .mobileSignOut:active {
-  background-color: rgba(239, 68, 68, 0.1);
+  background-color: rgba(239, 68, 68, 0.05) !important;
+  color: var(--color-error) !important;
+  border-color: rgba(239, 68, 68, 0.2) !important;
 }
 
 .mobileUtility {
   display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  padding: 1rem 1.25rem !important;
+  flex-direction: column !important;
+  gap: 0.75rem !important;
+  padding: 1.25rem !important;
   background-color: var(--color-bg-secondary);
   border: 1px solid var(--color-border-light);
-  border-radius: 1.25rem !important;
-  margin-top: 0.5rem;
+  border-radius: 1rem !important;
+  margin-top: 1.5rem;
 }
 
 .utilityLabel {

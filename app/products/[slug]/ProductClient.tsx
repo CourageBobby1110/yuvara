@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import AddToCart from "@/components/AddToCart";
 import WishlistButton from "@/components/WishlistButton";
 import SimilarProducts from "@/components/SimilarProducts";
 import Image from "next/image";
 import { notFound, useParams } from "next/navigation";
 import { useCurrency } from "@/context/CurrencyContext";
-import { Star, ArrowLeft } from "lucide-react";
+import { Star } from "lucide-react";
 import { useSession } from "next-auth/react";
 import styles from "./Product.module.css";
 import { getValidUrl } from "@/lib/utils";
@@ -77,18 +78,6 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
   const slug = params.slug as string;
   const { formatPrice } = useCurrency();
   const { data: session } = useSession();
-  const [showMobileOverlay, setShowMobileOverlay] = useState(false);
-
-  useEffect(() => {
-    const userAgent = typeof window !== "undefined" ? navigator.userAgent || navigator.vendor || (window as any).opera : "";
-    if (/android|iphone|ipad|ipod|windows phone/i.test(userAgent.toLowerCase())) {
-      const hasShown = localStorage.getItem("download_modal_shown");
-      if (!hasShown) {
-        setShowMobileOverlay(true);
-        localStorage.setItem("download_modal_shown", "true");
-      }
-    }
-  }, []);
 
   // Sanitize product images on load
   const sanitizedProduct = {
@@ -264,63 +253,8 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
     : "0.0";
 
   return (
-    <>
-      {showMobileOverlay && (
-        <div 
-          className={styles.mobileOverlay}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              setShowMobileOverlay(false);
-            }
-          }}
-        >
-          <div className={styles.overlayCard}>
-            <button 
-              onClick={() => setShowMobileOverlay(false)} 
-              className={styles.closeButton}
-              aria-label="Close download modal"
-            >
-              &times;
-            </button>
-            <div className={styles.logoWrapper}>
-              <span className={styles.brandLogo}>YUVARA</span>
-            </div>
-            <h2 className={styles.overlayTitle}>Experience Yuvara on Mobile</h2>
-            <p className={styles.overlayDesc}>
-              To view product details and shop our luxury collection, please install our official mobile application.
-            </p>
-            <div className={styles.actionWrapper}>
-              <a href="/yuvara.apk" className={styles.overlayButton} download>
-                Download & Install App
-              </a>
-              <button 
-                onClick={() => setShowMobileOverlay(false)} 
-                className={styles.secondaryButton}
-              >
-                Continue on Web
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      <main className={`${styles.container} ${showMobileOverlay ? styles.blurredContent : ""}`}>
-        <div className={styles.backButtonWrapper}>
-          <button 
-            onClick={() => {
-              if (typeof window !== "undefined" && window.history.length > 1) {
-                window.history.back();
-              } else {
-                window.location.href = "/";
-              }
-            }} 
-            className={styles.backButton}
-            aria-label="Go back to previous page"
-          >
-            <ArrowLeft size={16} />
-            <span>Back</span>
-          </button>
-        </div>
-        <div className={styles.grid}>
+    <main className={styles.container}>
+      <div className={styles.grid}>
         {/* Media Gallery */}
         <div className={styles.mediaSection}>
           <div className={styles.mainMediaWrapper}>
@@ -404,11 +338,22 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
                       url = urlObj.toString();
                     }
 
+                    const cleanDescription = (product.description || "")
+                      .replace(/<[^>]*>/g, "")
+                      .replace(/\s+/g, " ")
+                      .trim();
+
+                    const excerpt = cleanDescription.length > 120
+                      ? `${cleanDescription.slice(0, 120)}...`
+                      : cleanDescription;
+
+                    const shareText = `Discover ${product.name} on Yuvara.\n${excerpt ? "\n" + excerpt + "\n\n" : ""}Shop now!`;
+
                     if (navigator.share) {
                       navigator
                         .share({
-                          title: product.name,
-                          text: product.description,
+                          title: `Yuvara | ${product.name}`,
+                          text: shareText,
                           url: url,
                         })
                         .catch(console.error);
@@ -612,9 +557,9 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
               ) : (
                 <p className={styles.signInText}>
                   Please{" "}
-                  <a href="/api/auth/signin" className={styles.signInLink}>
+                  <Link href="/auth/signin" className={styles.signInLink}>
                     sign in
-                  </a>{" "}
+                  </Link>{" "}
                   to write a review.
                 </p>
               )}
@@ -667,7 +612,6 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
         currentProductId={product._id}
         category={product.category}
       />
-      </main>
-    </>
+    </main>
   );
 }

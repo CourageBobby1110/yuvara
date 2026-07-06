@@ -103,7 +103,6 @@ export default function Navbar({ session }: NavbarProps) {
             </span>
           </Link>
 
-
           {/* Desktop Menu */}
           <div className={styles.desktopMenu}>
             <Link href="/collections" className={styles.navLink}>
@@ -363,7 +362,10 @@ export default function Navbar({ session }: NavbarProps) {
                 transition={{ delay: 0.1 }}
               >
                 <Link href="/collections" className={styles.mobileNavLink} onClick={() => setIsMenuOpen(false)}>
-                  Collection
+                  <span>Collection</span>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="opacity-40">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+                  </svg>
                 </Link>
               </motion.div>
               
@@ -373,7 +375,10 @@ export default function Navbar({ session }: NavbarProps) {
                 transition={{ delay: 0.15 }}
               >
                 <Link href="/about" className={styles.mobileNavLink} onClick={() => setIsMenuOpen(false)}>
-                  About
+                  <span>About</span>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="opacity-40">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+                  </svg>
                 </Link>
               </motion.div>
 
@@ -408,32 +413,52 @@ export default function Navbar({ session }: NavbarProps) {
                     </div>
                   </Link>
 
-                  <div className="grid grid-cols-2 gap-2 mt-1">
+                  <div className="flex flex-col gap-2.5 mt-1">
                     {(session.user?.role === "admin" || session.user?.role === "worker") && (
                       <Link href="/admin/dashboard" className={styles.mobileUserLink} onClick={() => setIsMenuOpen(false)}>
-                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="mb-2">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                        <div className="flex items-center">
+                          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="mr-3 text-[#996515]">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                          </svg>
+                          <span>Dashboard</span>
+                        </div>
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="ml-auto opacity-40">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
                         </svg>
-                        Dashboard
                       </Link>
                     )}
                     <Link href="/wishlist" className={styles.mobileUserLink} onClick={() => setIsMenuOpen(false)}>
-                      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="mb-2">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      <div className="flex items-center">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="mr-3 text-[#996515]">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                        <span>Favorites</span>
+                      </div>
+                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="ml-auto opacity-40">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
                       </svg>
-                      Favorites
                     </Link>
                     <Link href="/orders" className={styles.mobileUserLink} onClick={() => setIsMenuOpen(false)}>
-                      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="mb-2">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                      <div className="flex items-center">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="mr-3 text-[#996515]">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        <span>Orders</span>
+                      </div>
+                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="ml-auto opacity-40">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
                       </svg>
-                      Orders
                     </Link>
                     <Link href="/dashboard/referrals" className={styles.mobileUserLink} onClick={() => setIsMenuOpen(false)}>
-                      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="mb-2">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                      <div className="flex items-center">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="mr-3 text-[#996515]">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <span>Referrals</span>
+                      </div>
+                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="ml-auto opacity-40">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
                       </svg>
-                      Referrals
                     </Link>
                   </div>
                   
@@ -475,7 +500,7 @@ export default function Navbar({ session }: NavbarProps) {
                 transition={{ delay: 0.4 }}
                 className={styles.mobileUtility}
               >
-                <LanguageSwitcher />
+                <LanguageSwitcher variant="flowing" />
                 <CurrencySelector variant="flowing" />
               </motion.div>
             </div>

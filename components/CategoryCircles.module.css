@@ -2,7 +2,7 @@
   width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 1.5rem 1rem;
+  padding: 1.5rem 1rem 0.5rem 1rem;
   background-color: transparent;
   display: block;
   -webkit-overflow-scrolling: touch;
@@ -106,7 +106,7 @@
 /* Mobile Adjustments */
 @media (max-width: 768px) {
   .container {
-    padding: 1.25rem 0.75rem;
+    padding: 1.25rem 0.75rem 0.25rem 0.75rem;
   }
   
   .scrollTrack {

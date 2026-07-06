@@ -49,12 +49,12 @@ export default async function Home() {
       
       <TrendingMarquee />
 
-      <div style={{ backgroundColor: "#ffffff" }}>
+      <div style={{ backgroundColor: "var(--color-bg-secondary)" }}>
         <CategoryCircles categories={categoriesWithImages} />
       </div>
 
       <div
-        style={{ width: "98%", margin: "0 auto", padding: "0 0.25rem", boxSizing: "border-box" }}
+        style={{ width: "100%", margin: "0 auto", padding: "0 0.25rem", boxSizing: "border-box" }}
       >
         <ProductGridWithLoadMore
           initialProducts={shuffledProducts}

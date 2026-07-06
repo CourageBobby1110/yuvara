@@ -1,13 +1,13 @@
 .section {
-  padding: 2rem 0;
+  padding: 0.5rem 0 2rem 0;
   background-color: #f9fafb00; /* Transparent/Clean background */
 }
 
 .container {
   width: 100%;
-  max-width: 1400px;
+  max-width: 1500px;
   margin: 0 auto;
-  padding: 0 0.5rem; /* Very tight padding for mobile */
+  padding: 0 0.25rem; /* Very tight padding for mobile */
 }
 
 .header {
@@ -33,7 +33,7 @@
 .masonryGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
-  gap: 0.5rem; /* Tight gaps for abundance */
+  gap: 0.25rem; /* Very tight gaps for Temu style */
 }
 
 .masonryItem {
@@ -66,16 +66,16 @@
 /* Responsive adjustments */
 @media (min-width: 640px) {
   .section {
-    padding: 3rem 0;
+    padding: 0.75rem 0 3rem 0;
   }
 
   .container {
-    padding: 0 1.5rem;
+    padding: 0 0.5rem;
   }
 
   .masonryGrid {
     grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
+    gap: 0.375rem;
   }
 
   .title {
@@ -86,7 +86,7 @@
 @media (min-width: 1024px) {
   .masonryGrid {
     grid-template-columns: repeat(5, minmax(0, 1fr)); /* Capped at 5 for better premium look */
-    gap: 1.5rem;
+    gap: 0.5rem;
   }
 
   .title {

@@ -8,6 +8,7 @@ import Footer from "./Footer";
 import { useWishlistStore } from "@/store/wishlist";
 
 import CartDrawer from "./CartDrawer";
+import GoogleOneTap from "./GoogleOneTap";
 
 interface LayoutWrapperProps {
   session: any;
@@ -56,6 +57,7 @@ export default function LayoutWrapper({
 
   return (
     <SessionProvider session={session}>
+      {shouldShowLayout && <GoogleOneTap />}
       <WishlistInitializer />
       <ReferralTracker />
       <CartDrawer />

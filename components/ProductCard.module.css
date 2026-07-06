@@ -2,10 +2,10 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  background-color: #ffffff;
+  background-color: transparent;
   padding: 0;
   border-radius: 0.5rem;
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  border: 1px solid transparent;
   box-shadow: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
@@ -15,9 +15,10 @@
 
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
-    0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  border-color: rgba(0, 0, 0, 0.08);
+  background-color: #ffffff;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05),
+              0 4px 6px rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.06);
 }
 
 .imageLink {
@@ -154,6 +155,28 @@
   background-color: #000000;
   color: #ffffff;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.cartActionButton {
+  background-color: var(--color-luxury-gold);
+  color: #ffffff;
+  border-color: var(--color-luxury-gold);
+}
+
+.cartActionButton svg {
+  color: #ffffff;
+  stroke: #ffffff;
+}
+
+@media (max-width: 640px) {
+  .cartActionButton {
+    background-color: var(--color-luxury-gold) !important;
+    border-color: var(--color-luxury-gold) !important;
+  }
+  .cartActionButton svg {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+  }
 }
 
 .info {

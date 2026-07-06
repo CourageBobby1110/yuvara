@@ -3,12 +3,21 @@ import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import clientPromise from "@/lib/mongodb";
 import CredentialsProvider from "next-auth/providers/credentials";
 import NodemailerProvider from "next-auth/providers/nodemailer";
-import GoogleProvider from "next-auth/providers/google";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 import { authConfig } from "./auth.config";
+
+function generateUserReferralCode(name: string) {
+  const prefix = name
+    .substring(0, 3)
+    .toUpperCase()
+    .replace(/[^A-Z]/g, "X");
+  const random = crypto.randomBytes(3).toString("hex").toUpperCase();
+  return `${prefix}${random}`;
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
@@ -26,20 +35,64 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       from: process.env.EMAIL_FROM,
     }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID || "996596779540-n9qq24oq6orlspb0dirmam4e3efq64mo.apps.googleusercontent.com",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      allowDangerousEmailAccountLinking: true,
-    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        credential: { label: "Credential", type: "text" },
       },
       async authorize(credentials) {
         await dbConnect();
 
+        // 1. Check if it's Google One Tap Login
+        if (credentials?.credential) {
+          try {
+            const tokeninfoRes = await fetch(
+              `https://oauth2.googleapis.com/tokeninfo?id_token=${credentials.credential}`
+            );
+            if (!tokeninfoRes.ok) {
+              console.error("Google One Tap verification failed at Google API");
+              return null;
+            }
+            const payload = await tokeninfoRes.json();
+            if (!payload.email) {
+              console.error("Google token payload did not contain email");
+              return null;
+            }
+
+            const email = payload.email.toLowerCase().trim();
+            let user = await User.findOne({ email });
+
+            if (!user) {
+              const userName = payload.name || email.split("@")[0];
+              const newReferralCode = generateUserReferralCode(userName);
+
+              user = await User.create({
+                email,
+                name: userName,
+                image: payload.picture || "",
+                role: "user",
+                referralCode: newReferralCode,
+                emailVerified: new Date(), // verified by Google
+              });
+            }
+
+            return {
+              id: user._id.toString(),
+              email: user.email,
+              name: user.name,
+              role: user.role,
+              image: user.image,
+              referralCode: user.referralCode,
+            };
+          } catch (err) {
+            console.error("Google One Tap authorize exception:", err);
+            return null;
+          }
+        }
+
+        // 2. Standard credentials login
         if (!credentials?.email || !credentials?.password) {
           return null;
         }

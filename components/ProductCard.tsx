@@ -55,11 +55,22 @@ export default function ProductCard({
       url += `?ref=${session.user.referralCode}`;
     }
 
+    const cleanDescription = (product.description || "")
+      .replace(/<[^>]*>/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    const excerpt = cleanDescription.length > 120
+      ? `${cleanDescription.slice(0, 120)}...`
+      : cleanDescription;
+
+    const shareText = `Discover ${product.name} on Yuvara.\n${excerpt ? "\n" + excerpt + "\n\n" : ""}Shop now!`;
+
     if (navigator.share) {
       navigator
         .share({
-          title: product.name,
-          text: product.description,
+          title: `Yuvara | ${product.name}`,
+          text: shareText,
           url: url,
         })
         .catch(console.error);
@@ -81,10 +92,7 @@ export default function ProductCard({
     }
   };
 
-  const isOutOfStock =
-    product.variants && product.variants.length > 0
-      ? product.variants.every((v) => v.stock <= 0)
-      : product.stock <= 0;
+  const isOutOfStock = !product.variants?.length && product.stock <= 0;
 
   return (
     <div className={styles.card}>
@@ -144,7 +152,7 @@ export default function ProductCard({
           <button
             onClick={handleQuickAddClick}
             disabled={isOutOfStock}
-            className={`${styles.actionButton} ${
+            className={`${styles.actionButton} ${styles.cartActionButton} ${
               isOutOfStock ? styles.actionButtonDisabled : ""
             }`}
             aria-label="Quick Add"
