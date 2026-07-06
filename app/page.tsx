@@ -35,6 +35,14 @@ export default async function Home() {
   // Randomly shuffle the pool using the 1-hour seed
   const shuffledProducts = shuffleArray(productsPool, currentWindowSeed);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "YuVara Nigeria",
+    "alternateName": ["YuVara", "YuVara NG"],
+    "url": "https://yuvara.com.ng",
+  };
+
   return (
     <main
       style={{
@@ -44,6 +52,10 @@ export default async function Home() {
         width: "100%",
       }}
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
       <Hero categories={categoriesOriginal.slice(0, 15)} heroImage={heroImage} />
       

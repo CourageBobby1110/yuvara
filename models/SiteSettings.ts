@@ -30,6 +30,7 @@ const SiteSettingsSchema = new Schema(
     },
     googleTagManagerId: { type: String, default: "" },
     googleAnalyticsId: { type: String, default: "" },
+    googleSiteVerification: { type: String, default: "" },
     klaviyoPublicKey: { type: String, default: "" },
     tiktokPixelId: { type: String, default: "" },
     cjDropshippingApiKey: { type: String, default: "" },
@@ -70,6 +71,7 @@ export interface ISiteSettings {
   brandStoryImage: string;
   googleTagManagerId: string;
   googleAnalyticsId: string;
+  googleSiteVerification?: string;
   klaviyoPublicKey: string;
   tiktokPixelId: string;
   cjDropshippingApiKey: string;

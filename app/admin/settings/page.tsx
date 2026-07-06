@@ -14,6 +14,7 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState({
     googleTagManagerId: "",
     googleAnalyticsId: "",
+    googleSiteVerification: "",
     klaviyoPublicKey: "",
     tiktokPixelId: "",
     lastSyncStatus: "",
@@ -134,6 +135,20 @@ export default function SettingsPage() {
                 onChange={handleChange}
                 className="w-full p-2 border rounded-md focus:ring-2 focus:ring-black focus:outline-none"
                 placeholder="G-XXXXXX"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Google Site Verification Token (from Google Search Console)
+              </label>
+              <input
+                type="text"
+                name="googleSiteVerification"
+                value={settings.googleSiteVerification}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-md focus:ring-2 focus:ring-black focus:outline-none"
+                placeholder="e.g. google-site-verification-id"
               />
             </div>
 
