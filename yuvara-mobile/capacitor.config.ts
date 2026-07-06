@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: "yuvara",
   webDir: "www",
   server: {
-    url: "https://yuvara.netlify.app",
+    url: "https://yuvara.com.ng",
     cleartext: true,
   },
   plugins: {

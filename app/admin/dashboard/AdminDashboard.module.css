@@ -36,26 +36,28 @@
 /* Stats Grid */
 .statsGrid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-  margin-bottom: 3rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
 @media (min-width: 640px) {
   .statsGrid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
   }
 }
 
 @media (min-width: 1024px) {
   .statsGrid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 .statCard {
   background-color: var(--color-bg-primary);
-  padding: 1.5rem;
+  padding: 1.25rem;
   border-radius: 16px;
   border: 1px solid var(--color-border-light);
   box-shadow: var(--shadow-sm);
@@ -63,7 +65,15 @@
   flex-direction: column;
   justify-content: space-between;
   transition: all 0.3s ease;
-  min-height: 140px;
+  min-height: 120px;
+  cursor: pointer;
+}
+
+@media (min-width: 640px) {
+  .statCard {
+    padding: 1.5rem;
+    min-height: 140px;
+  }
 }
 
 .statCard:hover {
@@ -73,7 +83,7 @@
 }
 
 .statLabel {
-  font-size: 0.875rem;
+  font-size: 0.825rem;
   color: var(--color-text-muted);
   font-weight: 600;
   text-transform: uppercase;
@@ -81,12 +91,35 @@
   margin-bottom: 0.5rem;
 }
 
+@media (min-width: 640px) {
+  .statLabel {
+    font-size: 0.875rem;
+  }
+}
+
 .statValue {
-  font-size: 2.25rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: var(--color-text-primary);
-  letter-spacing: -0.03em;
-  line-height: 1;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (min-width: 640px) {
+  .statValue {
+    font-size: 1.875rem;
+    letter-spacing: -0.03em;
+  }
+}
+
+@media (min-width: 1200px) {
+  .statValue {
+    font-size: 2.25rem;
+    letter-spacing: -0.03em;
+  }
 }
 
 /* Recent Orders Section */

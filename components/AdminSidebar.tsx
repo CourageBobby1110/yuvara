@@ -43,8 +43,9 @@ export default function AdminSidebar() {
             <Image
               src="/icon.png"
               alt="YuVara Admin"
-              width={50}
-              height={50}
+              fill
+              sizes="64px"
+              priority
               className={styles.logoImage}
             />
           </Link>

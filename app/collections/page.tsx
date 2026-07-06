@@ -69,7 +69,7 @@ export default async function CollectionsPage({
     minPrice: convertedMinPrice,
     maxPrice: convertedMaxPrice,
     sort,
-    limit: 200,
+    limit: 40,
   });
 
   const categories = await getCategories();

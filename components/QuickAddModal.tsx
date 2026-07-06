@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useCartStore } from "@/store/cart";
+import { X } from "lucide-react";
 import type { Product } from "@/models/Product";
 import { useCurrency } from "@/context/CurrencyContext";
 import styles from "./QuickAddModal.module.css";
@@ -110,8 +111,8 @@ export default function QuickAddModal({
       }}
     >
       <div className={styles.modal}>
-        <button onClick={onClose} className={styles.closeButton}>
-          &times;
+        <button onClick={onClose} className={styles.closeButton} aria-label="Close">
+          <X size={20} />
         </button>
 
         <div className={styles.productInfo}>

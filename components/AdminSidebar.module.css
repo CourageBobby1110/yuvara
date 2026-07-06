@@ -23,11 +23,28 @@
 }
 
 .logo {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  overflow: hidden;
+  width: 64px;
+  height: 64px;
+  border: 2px solid #bfa15f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  position: relative;
+  transition: all 0.3s ease;
+  background-color: #111;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(191, 161, 95, 0.15);
+  border-color: #d4af37;
 }
 
 .logoImage {
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .nav {
@@ -105,15 +122,15 @@
 .hamburger {
   display: none;
   position: fixed;
-  top: 1rem;
-  left: 1rem;
+  top: 0.875rem;
+  left: 0.75rem;
+  width: 2.25rem;
+  height: 2.25rem;
   z-index: 60;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(8px);
+  background: #ffffff;
   border: 1px solid var(--color-border-light);
   color: var(--color-text-primary);
-  padding: 0.75rem;
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
   box-shadow: var(--shadow-sm);
   transition: all 0.2s ease;

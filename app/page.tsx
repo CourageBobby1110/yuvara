@@ -28,8 +28,8 @@ export default async function Home() {
   // Time-based seed (changes every 1 hour)
   const currentWindowSeed = Math.floor(Date.now() / (60 * 60 * 1000));
 
-  // Fetch initial batch of 200 cheapest products
-  const filter = { limit: 200, sort: "price_asc" };
+  // Fetch initial batch of 40 cheapest products
+  const filter = { limit: 40, sort: "price_asc" };
   const productsPool = await getProducts(filter);
 
   // Randomly shuffle the pool using the 1-hour seed

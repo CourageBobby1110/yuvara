@@ -105,7 +105,7 @@ export default function AdminDashboard() {
           <div className={styles.statCard}>
             <p className={styles.statLabel}>Total Products</p>
             <div className={styles.statValueWrapper}>
-              <h3 className={styles.statValue}>{(stats as any).totalProducts}</h3>
+              <h3 className={styles.statValue} title={((stats as any).totalProducts || 0).toString()}>{(stats as any).totalProducts}</h3>
             </div>
           </div>
         ) : (
@@ -113,21 +113,21 @@ export default function AdminDashboard() {
             <div className={styles.statCard}>
               <p className={styles.statLabel}>Total Revenue</p>
               <div className={styles.statValueWrapper}>
-                <h3 className={styles.statValue}>{formatPrice(stats.revenue)}</h3>
+                <h3 className={styles.statValue} title={formatPrice(stats.revenue)}>{formatPrice(stats.revenue)}</h3>
               </div>
             </div>
 
             <div className={styles.statCard}>
               <p className={styles.statLabel}>Active Orders</p>
               <div className={styles.statValueWrapper}>
-                <h3 className={styles.statValue}>{stats.activeOrders}</h3>
+                <h3 className={styles.statValue} title={(stats.activeOrders || 0).toString()}>{stats.activeOrders}</h3>
               </div>
             </div>
 
             <div className={styles.statCard}>
               <p className={styles.statLabel}>Total Customers</p>
               <div className={styles.statValueWrapper}>
-                <h3 className={styles.statValue}>{stats.customers}</h3>
+                <h3 className={styles.statValue} title={(stats.customers || 0).toString()}>{stats.customers}</h3>
               </div>
             </div>
           </>

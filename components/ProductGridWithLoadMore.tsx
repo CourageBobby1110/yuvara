@@ -18,7 +18,7 @@ export default function ProductGridWithLoadMore({
 }: ProductGridWithLoadMoreProps) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [offset, setOffset] = useState(initialProducts.length);
-  const [hasMore, setHasMore] = useState(initialProducts.length >= 200);
+  const [hasMore, setHasMore] = useState(initialProducts.length >= 40);
   const [loading, setLoading] = useState(false);
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const loadingRef = useRef(false);
@@ -32,7 +32,7 @@ export default function ProductGridWithLoadMore({
     setLoading(true);
 
     try {
-      const nextProducts = await fetchMoreProducts(filter, offset, 200);
+      const nextProducts = await fetchMoreProducts(filter, offset, 40);
 
       if (nextProducts.length > 0) {
         // Shuffle the new batch using the same window seed + offset to avoid same patterns
@@ -41,7 +41,7 @@ export default function ProductGridWithLoadMore({
         setProducts((prev) => [...prev, ...shuffledNext]);
         setOffset((prev) => prev + nextProducts.length);
 
-        if (nextProducts.length < 200) {
+        if (nextProducts.length < 40) {
           setHasMore(false);
         }
       } else {

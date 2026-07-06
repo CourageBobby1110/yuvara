@@ -298,7 +298,16 @@
 @media (max-width: 768px) {
   .header {
     height: 4rem;
-    padding: 0 1rem;
+    padding: 0 0.75rem 0 1rem;
+  }
+
+  .rightSection {
+    gap: 0.375rem;
+  }
+
+  .iconButton {
+    width: 2.25rem;
+    height: 2.25rem;
   }
 
   .profileInfo {
@@ -319,15 +328,15 @@
   }
 
   .searchContainer {
-    display: none; /* Consider keeping hidden until needed on mobile */
+    display: none;
   }
 
-  /* If you want mobile search, you'd make it an icon toggle */
-
   .mobileTitle {
-    font-size: 1.125rem;
+    font-size: 1rem;
     font-weight: 700;
-    margin-left: 3rem; /* Space for hamburger */
+    margin-left: 3rem;
     color: var(--color-text-primary);
+    white-space: nowrap;
+    letter-spacing: -0.015em;
   }
 }

@@ -32,6 +32,15 @@ export default function FeaturedCollection({
     return null;
   }
 
+  // Deduplicate products by ID to prevent duplicate key console errors
+  const uniqueProducts = Array.from(
+    new Map(
+      products
+        .filter((p) => p && p._id)
+        .map((p) => [p._id.toString(), p])
+    ).values()
+  );
+
   const handleQuickAdd = (product: Product) => {
     // If product has no variants, add directly
     const hasVariants =
@@ -65,7 +74,7 @@ export default function FeaturedCollection({
         )}
 
         <div className={styles.masonryGrid}>
-          {products.map((product) => (
+          {uniqueProducts.map((product) => (
             <div key={product._id} className={styles.masonryItem}>
               <ProductCard product={product} onQuickAdd={handleQuickAdd} />
             </div>
