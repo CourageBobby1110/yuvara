@@ -11,6 +11,7 @@ import { Toaster } from "sonner";
 import dbConnect from "@/lib/db";
 import SiteSettings from "@/models/SiteSettings";
 import { cache } from "react";
+import Script from "next/script";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -130,6 +131,10 @@ export default async function RootLayout({
             </AuthProvider>
           </CurrencyProvider>
         </LanguageProvider>
+        <Script
+          src="https://accounts.google.com/gsi/client"
+          strategy="beforeInteractive"
+        />
         <GoogleAnalytics gaId={gaId} />
         <GoogleTagManager gtmId={gtmId} />
         <FacebookPixel />

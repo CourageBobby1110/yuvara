@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
-import Script from "next/script";
 
 declare global {
   interface Window {
@@ -23,11 +22,11 @@ export default function GoogleOneTap() {
       return;
     }
 
-    let checkInterval: NodeJS.Timeout | null = null;
     let isCancelled = false;
+    let checkInterval: NodeJS.Timeout | null = null;
 
     const initializeOneTap = () => {
-      if (!window.google || isCancelled) return;
+      if (!window.google?.accounts?.id || isCancelled) return;
 
       try {
         window.google.accounts.id.initialize({
@@ -47,6 +46,8 @@ export default function GoogleOneTap() {
           },
           auto_select: false, // User selects account
           cancel_on_tap_outside: true,
+          itp_support: true, // Enable Intelligent Tracking Prevention support for Edge/Safari
+          context: "signup", // Use signup context to encourage frictionless registration
         });
 
         window.google.accounts.id.prompt((notification: any) => {
@@ -62,7 +63,6 @@ export default function GoogleOneTap() {
       }
     };
 
-    // If script is already loaded, initialize immediately
     if (window.google?.accounts?.id) {
       initializeOneTap();
     } else {
@@ -71,7 +71,7 @@ export default function GoogleOneTap() {
           initializeOneTap();
           if (checkInterval) clearInterval(checkInterval);
         }
-      }, 500);
+      }, 100);
     }
 
     return () => {
@@ -87,10 +87,5 @@ export default function GoogleOneTap() {
     };
   }, [status]);
 
-  return (
-    <Script
-      src="https://accounts.google.com/gsi/client"
-      strategy="afterInteractive"
-    />
-  );
+  return null;
 }
