@@ -50,8 +50,10 @@ export async function generateMetadata(): Promise<Metadata> {
       "Online Shopping",
     ],
     authors: [{ name: "Yuvara Team" }],
-    creator: "Yuvara",
-    publisher: "Yuvara",
+    applicationName: "YuVara Nigeria",
+    other: {
+      "apple-mobile-web-app-title": "YuVara Nigeria",
+    },
     openGraph: {
       type: "website",
       locale: "en_US",
@@ -78,13 +80,14 @@ export async function generateMetadata(): Promise<Metadata> {
       creator: "@yuvara",
     },
     icons: {
-      icon: "/icon.png",
-      shortcut: "/icon.png",
-      apple: "/icon.png",
-      other: {
-        rel: "apple-touch-icon-precomposed",
-        url: "/icon.png",
-      },
+      icon: [
+        { url: "/favicon.ico", sizes: "any" },
+        { url: "/icon.png", type: "image/png", sizes: "192x192" },
+      ],
+      shortcut: "/favicon.ico",
+      apple: [
+        { url: "/icon.png", sizes: "192x192", type: "image/png" },
+      ],
     },
     manifest: "/site.webmanifest",
     verification: verificationGoogle ? {
