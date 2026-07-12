@@ -20,6 +20,7 @@ export default function ProductGridWithLoadMore({
   const [offset, setOffset] = useState(initialProducts.length);
   const [hasMore, setHasMore] = useState(initialProducts.length >= 40);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const loadingRef = useRef(false);
 
@@ -30,6 +31,7 @@ export default function ProductGridWithLoadMore({
     if (loadingRef.current || loading) return;
     loadingRef.current = true;
     setLoading(true);
+    setError(false);
 
     try {
       const nextProducts = await fetchMoreProducts(filter, offset, 40);
@@ -47,8 +49,9 @@ export default function ProductGridWithLoadMore({
       } else {
         setHasMore(false);
       }
-    } catch (error) {
-      console.error("Error loading more products:", error);
+    } catch (err) {
+      console.error("Error loading more products:", err);
+      setError(true);
     } finally {
       loadingRef.current = false;
       setLoading(false);
@@ -57,7 +60,7 @@ export default function ProductGridWithLoadMore({
 
   useEffect(() => {
     const currentLoader = loaderRef.current;
-    if (!hasMore || !currentLoader) return;
+    if (!hasMore || !currentLoader || error) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -73,14 +76,14 @@ export default function ProductGridWithLoadMore({
     return () => {
       observer.unobserve(currentLoader);
     };
-  }, [hasMore, offset]);
+  }, [hasMore, offset, error]);
 
   return (
     <>
       <FeaturedCollection products={products} title="" subtitle="" />
 
       {hasMore && (
-        <div ref={loaderRef} className="w-full flex justify-center items-center h-20 mt-10 mb-20">
+        <div ref={loaderRef} className="w-full flex flex-col justify-center items-center h-auto mt-10 mb-20 gap-4">
           {loading ? (
             <svg
               className="animate-spin h-8 w-8 text-[#bfa15f]"
@@ -102,6 +105,16 @@ export default function ProductGridWithLoadMore({
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               />
             </svg>
+          ) : error ? (
+            <div className="flex flex-col items-center gap-3">
+              <span className="text-sm text-gray-500 font-medium">Failed to load more products.</span>
+              <button
+                onClick={loadMore}
+                className="px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-white bg-black hover:bg-[#bfa15f] transition-all duration-300 rounded-full shadow-sm cursor-pointer"
+              >
+                Try Again
+              </button>
+            </div>
           ) : (
             <div className="h-px w-16 bg-[#bfa15f]/20"></div>
           )}
