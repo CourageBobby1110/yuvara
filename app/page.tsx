@@ -57,6 +57,11 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
+      {/* Visually hidden h1 for search engine site-name recognition and accessibility */}
+      <h1 style={{ position: "absolute", width: "1px", height: "1px", padding: 0, margin: "-1px", overflow: "hidden", clip: "rect(0, 0, 0, 0)", whiteSpace: "nowrap", border: 0 }}>
+        YuVara Nigeria
+      </h1>
+
       <Hero categories={categoriesOriginal.slice(0, 15)} heroImage={heroImage} />
       
       <TrendingMarquee />
