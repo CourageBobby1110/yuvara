@@ -12,7 +12,7 @@ export default function Footer() {
               <Link href="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
                 <div style={{ borderRadius: "50%", overflow: "hidden", width: "40px", height: "40px", position: "relative", border: "2px solid #bfa15f", boxShadow: "0 2px 6px rgba(0,0,0,0.08)" }}>
                   <Image
-                    src="/icon-v2.png"
+                    src="/icon.png"
                     alt="YuVara Logo"
                     fill
                     sizes="40px"

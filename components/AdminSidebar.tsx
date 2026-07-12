@@ -41,7 +41,7 @@ export default function AdminSidebar() {
             onClick={() => setIsOpen(false)}
           >
             <Image
-              src="/icon-v2.png"
+              src="/icon.png"
               alt="YuVara Admin"
               fill
               sizes="64px"

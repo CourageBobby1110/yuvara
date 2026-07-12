@@ -15,7 +15,7 @@ export default function YuvaraLoader({
     <div className={styles.loaderContainer}>
       <div className={styles.logoWrapper} style={{ width: size, height: size }}>
         <Image
-          src="/icon-v2.png"
+          src="/icon.png"
           alt="Loading..."
           fill
           style={{ objectFit: "contain" }}

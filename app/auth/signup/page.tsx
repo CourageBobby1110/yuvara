@@ -92,7 +92,7 @@ export default function SignUpPage() {
                 }}
               >
                 <Image
-                  src="/icon-v2.png"
+                  src="/icon.png"
                   alt="Yuvara"
                   fill
                   style={{ objectFit: "contain" }}
