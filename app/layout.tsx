@@ -64,9 +64,9 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: "YuVara Nigeria",
       images: [
         {
-          url: "/icon.png",
-          width: 1200,
-          height: 630,
+          url: "/icon-v2.png",
+          width: 192,
+          height: 192,
           alt: "Yuvara Logo",
         },
       ],
@@ -76,17 +76,16 @@ export async function generateMetadata(): Promise<Metadata> {
       title: "YuVara Nigeria | Premium Global Online Shopping",
       description:
         "Discover Yuvara's exclusive collection of fashion, electronics, and lifestyle products.",
-      images: ["/icon.png"],
+      images: ["/icon-v2.png"],
       creator: "@yuvara",
     },
     icons: {
       icon: [
-        { url: "/favicon.ico", sizes: "any" },
-        { url: "/icon.png", type: "image/png", sizes: "192x192" },
+        { url: "/icon-v2.png", type: "image/png", sizes: "192x192" },
+        { url: "/icon-v2.svg", type: "image/svg+xml" },
       ],
-      shortcut: "/favicon.ico",
       apple: [
-        { url: "/icon.png", sizes: "192x192", type: "image/png" },
+        { url: "/icon-v2.png", sizes: "192x192", type: "image/png" },
       ],
     },
     manifest: "/site.webmanifest",

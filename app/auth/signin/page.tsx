@@ -53,7 +53,7 @@ export default async function SignInPage({
                 }}
               >
                 <Image
-                  src="/icon.png"
+                  src="/icon-v2.png"
                   alt="Yuvara"
                   fill
                   style={{ objectFit: "contain" }}
