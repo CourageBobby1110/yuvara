@@ -8,9 +8,10 @@ import Link from "next/link";
 import { useCartStore } from "@/store/cart";
 import styles from "./CartDrawer.module.css";
 import { useCurrency } from "@/context/CurrencyContext";
+import { getItemShippingRateUSD } from "@/lib/utils";
 
 export default function CartDrawer() {
-  const { formatPrice } = useCurrency();
+  const { formatPrice, userCountryCode } = useCurrency();
   const { isOpen, closeCart, items, removeItem, updateQuantity, totalPrice } =
     useCartStore();
 
@@ -25,6 +26,14 @@ export default function CartDrawer() {
   if (!mounted) return null;
 
   const currentTotal = totalPrice();
+
+  // Compute shipping-merged subtotal for display
+  const totalShippingUSD = userCountryCode
+    ? items.reduce((sum, item) => {
+        return sum + getItemShippingRateUSD(item, userCountryCode) * item.quantity;
+      }, 0)
+    : 0;
+  const displayTotal = currentTotal + totalShippingUSD;
 
   return (
     <>
@@ -74,7 +83,12 @@ export default function CartDrawer() {
                         {item.selectedColor && `Color: ${item.selectedColor}`}
                       </p>
                     )}
-                    <p className="itemPrice">{formatPrice(item.price)}</p>
+                    <p className="itemPrice">
+                      {formatPrice(
+                        (item.price + (userCountryCode ? getItemShippingRateUSD(item, userCountryCode) : 0))
+                        * item.quantity
+                      )}
+                    </p>
                   </div>
                   <div className={styles.itemControls}>
                     <div className={styles.quantityControls}>
@@ -129,8 +143,19 @@ export default function CartDrawer() {
           <div className={styles.footer}>
             <div className={styles.total}>
               <span>Subtotal</span>
-              <span>{formatPrice(currentTotal)}</span>
+              <span>{formatPrice(displayTotal)}</span>
             </div>
+            {userCountryCode !== null && totalShippingUSD > 0 && (
+              <p style={{
+                fontSize: "0.7rem",
+                color: "#16a34a",
+                textAlign: "center",
+                margin: "4px 0 0",
+                fontWeight: 500,
+              }}>
+                ✓ Free shipping
+              </p>
+            )}
             <Link
               href="/checkout"
               className={styles.checkoutButton}

@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCurrency } from "@/context/CurrencyContext";
+import { getItemShippingRateUSD } from "@/lib/utils";
 import styles from "./Checkout.module.css";
 
 const COUNTRIES = [
@@ -22,7 +23,19 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { data: session, status, update } = useSession();
   const { items, totalPrice } = useCartStore();
-  const { formatPrice, exchangeRates } = useCurrency();
+  const { formatPrice, exchangeRates, userCountryCode } = useCurrency();
+
+  // Shipping is baked into product prices for detected users — so checkout shows Free Shipping
+  const isShippingIncluded = userCountryCode !== null;
+
+  // Total shipping in USD across all cart items (one unit's shipping * quantity per item)
+  const totalShippingUSD = isShippingIncluded && userCountryCode
+    ? items.reduce((sum, item) => {
+        const perUnit = getItemShippingRateUSD(item, userCountryCode);
+        return sum + perUnit * item.quantity;
+      }, 0)
+    : 0;
+
   const [loading, setLoading] = useState(false);
 
   // Coupon State
@@ -190,12 +203,17 @@ export default function CheckoutPage() {
   };
 
   // Update shipping fee when country or items change
+  // If shipping is already baked into product prices (country detected), fee = 0
   useEffect(() => {
+    if (isShippingIncluded) {
+      setSelectedStateFee(0);
+      return;
+    }
     const fee = calculateShippingFee(formData.country);
     // Convert to NGN for selectedStateFee state
     const rateNGN = exchangeRates["NGN"] || 1500;
     setSelectedStateFee(fee * rateNGN);
-  }, [formData.country, items, exchangeRates]);
+  }, [formData.country, items, exchangeRates, isShippingIncluded]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -281,10 +299,9 @@ export default function CheckoutPage() {
   };
 
   const calculateTotal = () => {
-    const subtotal = totalPrice();
+    const subtotal = totalPrice() + totalShippingUSD; // base prices + baked-in shipping
     const rateNGN = exchangeRates["NGN"] || 1500;
-    const isFreeShipping = false;
-    const shippingInUSD = selectedStateFee / rateNGN;
+    const shippingInUSD = selectedStateFee / rateNGN; // 0 when isShippingIncluded
 
     let total = subtotal + shippingInUSD;
 
@@ -316,10 +333,10 @@ export default function CheckoutPage() {
         });
       }
 
-      const totalUSD = totalPrice();
+      const totalUSD = totalPrice() + totalShippingUSD; // include baked-in shipping
       const rateNGN = exchangeRates["NGN"] || 1500;
 
-      // Final calculation in NGN
+      // Final calculation in NGN (selectedStateFee is 0 when isShippingIncluded)
       let amountInNGN = totalUSD * rateNGN;
 
       amountInNGN += selectedStateFee;
@@ -482,7 +499,10 @@ export default function CheckoutPage() {
                         <p className={styles.itemQty}>Qty: {item.quantity}</p>
                       </div>
                       <p className={styles.itemPrice}>
-                        {formatPrice(item.price * item.quantity)}
+                        {formatPrice(
+                          (item.price + (userCountryCode ? getItemShippingRateUSD(item, userCountryCode) : 0))
+                          * item.quantity
+                        )}
                       </p>
                     </div>
                   </div>
@@ -579,20 +599,37 @@ export default function CheckoutPage() {
               <div className={styles.totalsSection}>
                 <div className={styles.totalRow}>
                   <span>Subtotal</span>
-                  <span>{formatPrice(totalPrice())}</span>
+                  <span>{formatPrice(totalPrice() + totalShippingUSD)}</span>
                 </div>
                 <div className={styles.totalRow}>
-                  <span>
-                    Shipping (
-                    {COUNTRIES.find((c) => c.code === formData.country)?.name ||
-                      formData.country}
-                    )
-                  </span>
-                  <span>
-                    {selectedStateFee > 0
-                      ? formatPrice(shippingInUSD)
-                      : "Calculated at next step"}
-                  </span>
+                  <span>Shipping</span>
+                  {isShippingIncluded ? (
+                    <span style={{
+                      color: "#16a34a",
+                      fontWeight: 600,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                    }}>
+                      <span style={{
+                        background: "#dcfce7",
+                        color: "#15803d",
+                        fontSize: "0.65rem",
+                        fontWeight: 700,
+                        padding: "2px 6px",
+                        borderRadius: "999px",
+                        letterSpacing: "0.03em",
+                        textTransform: "uppercase",
+                      }}>FREE</span>
+                      <span style={{ fontSize: "0.75rem", color: "#16a34a" }}>Free shipping</span>
+                    </span>
+                  ) : (
+                    <span>
+                      {selectedStateFee > 0
+                        ? formatPrice(shippingInUSD)
+                        : "Calculated at next step"}
+                    </span>
+                  )}
                 </div>
                 {appliedCoupon && (
                   <div className={styles.discountRow}>

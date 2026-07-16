@@ -10,6 +10,8 @@ interface CurrencyContextType {
   convertPrice: (priceInUSD: number) => number;
   formatPrice: (priceInUSD: number) => string;
   exchangeRates: Record<Currency, number>;
+  /** ISO country code detected from user's IP, e.g. "NG", "US", "GB". Null while loading. */
+  userCountryCode: string | null;
 }
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(
@@ -21,6 +23,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   const [exchangeRates, setExchangeRates] =
     useState<Record<Currency, number>>(DEFAULT_RATES);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [userCountryCode, setUserCountryCode] = useState<string | null>(null);
 
   useEffect(() => {
     // Auto-detect currency based on IP
@@ -30,6 +33,10 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
         const res = await fetch("https://ipapi.co/json/");
         if (!res.ok) throw new Error("Primary IP service failed");
         const data = await res.json();
+
+        if (data.country_code) {
+          setUserCountryCode(data.country_code);
+        }
 
         if (
           data.currency &&
@@ -44,6 +51,9 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
         try {
           const res = await fetch("https://ipwho.is/");
           const data = await res.json();
+          if (data.success && data.country_code) {
+            setUserCountryCode(data.country_code);
+          }
           if (data.success && data.country_code === "NG") {
             setCurrency("NGN");
           }
@@ -78,6 +88,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
         convertPrice,
         formatPrice,
         exchangeRates,
+        userCountryCode,
       }}
     >
       {children}

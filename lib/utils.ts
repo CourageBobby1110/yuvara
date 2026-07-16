@@ -108,3 +108,43 @@ export function shuffleArray<T>(array: T[], seed: number): T[] {
 export function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+/**
+ * Returns the per-unit shipping cost in USD for a product/item and a given country code.
+ * Mirrors the logic in checkout's calculateShippingFee but for a single unit.
+ * Falls back to US rate, then to $10 if nothing is found.
+ */
+export function getItemShippingRateUSD(
+  item: {
+    shippingRates?: { countryCode: string; price: number | string }[];
+    variant?: { shippingRates?: { countryCode: string; price: number | string }[] };
+  },
+  countryCode: string
+): number {
+  if (!countryCode) return 0;
+
+  // 1. Variant-specific shipping rates
+  if (item.variant?.shippingRates && item.variant.shippingRates.length > 0) {
+    const countryRate = item.variant.shippingRates.find(
+      (sr) => sr.countryCode === countryCode
+    );
+    if (countryRate) return Number(countryRate.price);
+
+    const usVariantRate = item.variant.shippingRates.find(
+      (sr) => sr.countryCode === "US"
+    );
+    if (usVariantRate) return Number(usVariantRate.price);
+  }
+
+  // 2. Product-level shipping rates
+  if (item.shippingRates && item.shippingRates.length > 0) {
+    const rate = item.shippingRates.find((r) => r.countryCode === countryCode);
+    if (rate) return Number(rate.price);
+
+    const usRate = item.shippingRates.find((r) => r.countryCode === "US");
+    if (usRate) return Number(usRate.price);
+  }
+
+  // 3. Last resort fallback
+  return 10;
+}

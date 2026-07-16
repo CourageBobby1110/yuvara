@@ -11,7 +11,7 @@ import { useCurrency } from "@/context/CurrencyContext";
 import { Star } from "lucide-react";
 import { useSession } from "next-auth/react";
 import styles from "./Product.module.css";
-import { getValidUrl } from "@/lib/utils";
+import { getValidUrl, getItemShippingRateUSD } from "@/lib/utils";
 
 export interface ProductType {
   _id: string;
@@ -76,7 +76,7 @@ interface ProductClientProps {
 export default function ProductClient({ initialProduct }: ProductClientProps) {
   const params = useParams();
   const slug = params.slug as string;
-  const { formatPrice } = useCurrency();
+  const { formatPrice, userCountryCode } = useCurrency();
   const { data: session } = useSession();
 
   // Sanitize product images on load
@@ -402,11 +402,45 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
             </div>
           </div>
 
-          <div className={styles.price}>
-            {formatPrice(
-              selectedVariant ? selectedVariant.price : product.price,
-            )}
-          </div>
+          {/* Price — bake in shipping for all detected-country users */}
+          {(() => {
+            const basePrice = selectedVariant ? selectedVariant.price : product.price;
+            const shippingUSD = userCountryCode
+              ? getItemShippingRateUSD(
+                  { shippingRates: product.shippingRates, variant: selectedVariant || undefined },
+                  userCountryCode
+                )
+              : 0;
+            const displayPrice = basePrice + shippingUSD;
+            const shippingIncluded = userCountryCode !== null && shippingUSD > 0;
+            return (
+              <>
+                <div className={styles.price}>{formatPrice(displayPrice)}</div>
+                {shippingIncluded && (
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    marginTop: "4px",
+                  }}>
+                    <span style={{
+                      background: "#dcfce7",
+                      color: "#15803d",
+                      fontSize: "0.7rem",
+                      fontWeight: 700,
+                      padding: "2px 8px",
+                      borderRadius: "999px",
+                      letterSpacing: "0.04em",
+                      textTransform: "uppercase",
+                    }}>FREE</span>
+                    <span style={{ fontSize: "0.78rem", color: "#16a34a", fontWeight: 500 }}>
+                      Shipping included
+                    </span>
+                  </div>
+                )}
+              </>
+            );
+          })()}
 
           {product.variants && product.variants.length > 0 && (
             <div className={styles.variants}>

@@ -8,7 +8,7 @@ import { useCurrency } from "@/context/CurrencyContext";
 import WishlistButton from "./WishlistButton";
 import { Share2, Star, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
-import { getProductMainImage, getValidUrl } from "@/lib/utils";
+import { getProductMainImage, getValidUrl, getItemShippingRateUSD } from "@/lib/utils";
 
 import styles from "./ProductCard.module.css";
 
@@ -23,7 +23,7 @@ export default function ProductCard({
   index = 0,
 }: ProductCardProps & { index?: number }) {
   const { data: session } = useSession();
-  const { formatPrice } = useCurrency();
+  const { formatPrice, userCountryCode } = useCurrency();
 
   // Generate a predictable aspect ratio based on index for the masonry/staggered feel
   // We alternate between tall (3/4 - standard), taller (2/3), and slightly shorter (4/5)
@@ -93,6 +93,13 @@ export default function ProductCard({
   };
 
   const isOutOfStock = !product.variants?.length && product.stock <= 0;
+
+  // Compute display price — bake in per-unit shipping if country is known
+  const shippingUSD = userCountryCode
+    ? getItemShippingRateUSD(product as any, userCountryCode)
+    : 0;
+  const displayPrice = product.price + shippingUSD;
+  const shippingIncluded = userCountryCode !== null && shippingUSD > 0;
 
   return (
     <div className={styles.card}>
@@ -196,7 +203,12 @@ export default function ProductCard({
         </Link>
 
         <div className={styles.priceRow}>
-          <p className={styles.price}>{formatPrice(product.price)}</p>
+          <p className={styles.price}>{formatPrice(displayPrice)}</p>
+          {shippingIncluded && (
+            <span className={styles.freeShippingBadge}>
+              ✓ Free shipping
+            </span>
+          )}
         </div>
       </div>
     </div>

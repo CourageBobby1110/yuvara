@@ -7,7 +7,7 @@ import { X } from "lucide-react";
 import type { Product } from "@/models/Product";
 import { useCurrency } from "@/context/CurrencyContext";
 import styles from "./QuickAddModal.module.css";
-import { getValidUrl, getProductMainImage } from "@/lib/utils";
+import { getValidUrl, getProductMainImage, getItemShippingRateUSD } from "@/lib/utils";
 
 interface QuickAddModalProps {
   product: Product | null;
@@ -21,7 +21,7 @@ export default function QuickAddModal({
   onClose,
 }: QuickAddModalProps) {
   const { addItem, openCart } = useCartStore();
-  const { formatPrice } = useCurrency();
+  const { formatPrice, userCountryCode } = useCurrency();
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [selectedVariant, setSelectedVariant] = useState<{
@@ -103,6 +103,13 @@ export default function QuickAddModal({
     ? getValidUrl(selectedVariant.image)
     : getProductMainImage(product);
 
+  // Bake in per-unit shipping if user's country is detected
+  const shippingUSD = userCountryCode
+    ? getItemShippingRateUSD(product as any, userCountryCode)
+    : 0;
+  const displayPrice = currentPrice + shippingUSD;
+  const shippingIncluded = userCountryCode !== null && shippingUSD > 0;
+
   return (
     <div
       className={`${styles.overlay} ${isOpen ? styles.open : ""}`}
@@ -127,7 +134,16 @@ export default function QuickAddModal({
           </div>
           <div className={styles.details}>
             <h3 className={styles.name}>{product.name}</h3>
-            <p className={styles.price}>{formatPrice(currentPrice)}</p>
+            <p className={styles.price}>{formatPrice(displayPrice)}</p>
+            {shippingIncluded && (
+              <span style={{
+                fontSize: "0.65rem",
+                color: "#16a34a",
+                fontWeight: 500,
+              }}>
+                ✓ Free shipping included
+              </span>
+            )}
           </div>
         </div>
 
@@ -227,7 +243,7 @@ export default function QuickAddModal({
           {(selectedVariant && selectedVariant.stock <= 0) ||
           (!selectedVariant && !product.variants && product.stock <= 0)
             ? "Out of Stock"
-            : `Add to Cart - ${formatPrice(currentPrice)}`}
+            : `Add to Cart — ${formatPrice(displayPrice)}${shippingIncluded ? " (Free Shipping)" : ""}`}
         </button>
       </div>
     </div>

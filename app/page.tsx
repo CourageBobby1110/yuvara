@@ -3,19 +3,17 @@ import { auth } from "@/auth";
 import Hero from "@/components/Hero";
 import ProductGridWithLoadMore from "@/components/ProductGridWithLoadMore";
 import TrendingMarquee from "@/components/TrendingMarquee";
+import CategoryCircles from "@/components/CategoryCircles";
 
-import { getProducts, getCategories, getCategoriesWithImages } from "@/lib/products";
+import { getProducts, getCategoriesWithImages } from "@/lib/products";
 import { shuffleArray, getValidUrl } from "@/lib/utils";
 import SiteSettings from "@/models/SiteSettings";
 import dbConnect from "@/lib/db";
-import CategoryCircles from "@/components/CategoryCircles";
 
 export default async function Home() {
   const session = await auth();
   await dbConnect();
 
-  // Fetch data
-  const categoriesOriginal = await getCategories();
   const categoriesWithImagesRaw = await getCategoriesWithImages();
   const categoriesWithImages = categoriesWithImagesRaw.map((cat: any) => ({
     ...cat,
@@ -62,8 +60,8 @@ export default async function Home() {
         YuVara Nigeria
       </h1>
 
-      <Hero categories={categoriesOriginal.slice(0, 15)} heroImage={heroImage} />
-      
+      <Hero heroImage={heroImage} />
+
       <TrendingMarquee />
 
       <div style={{ backgroundColor: "var(--color-bg-secondary)" }}>
@@ -78,7 +76,6 @@ export default async function Home() {
           filter={filter}
         />
       </div>
-
 
     </main>
   );

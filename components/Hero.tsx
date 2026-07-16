@@ -1,38 +1,18 @@
 "use client";
 
-import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import styles from "./Hero.module.css";
 
 interface HeroProps {
-  categories: string[];
   heroImage: string;
 }
 
-export default function Hero({ categories, heroImage }: HeroProps) {
-  const constraintsRef = useRef(null);
+export default function Hero({ heroImage }: HeroProps) {
 
   return (
     <div className={styles.heroContainer}>
-      {/* Desktop Categories Sidebar */}
-      <div className={styles.categoriesSidebar}>
-        <h3 className={styles.categoriesTitle}>Categories</h3>
-        <ul className={styles.categoriesList}>
-          {categories.map((category) => (
-            <li key={category} className={styles.categoryItem}>
-              <Link
-                href={`/collections?category=${encodeURIComponent(category)}`}
-                className={styles.categoryLink}
-                title={category}
-              >
-                {category?.split(/[\/>]/).pop()?.trim() || category}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
 
       {/* Hero Content */}
       <div className={styles.heroContent}>
