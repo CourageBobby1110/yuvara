@@ -1,5 +1,6 @@
 import Link from "next/link";
-import styles from "./NotFound.module.css"; // Ensure this file exists
+import Image from "next/image";
+import styles from "./NotFound.module.css";
 
 export default function NotFound() {
   return (
@@ -8,37 +9,76 @@ export default function NotFound() {
       <div className={styles.glow} aria-hidden="true" />
 
       <main className={styles.content}>
+        {/* Logo */}
+        <div style={{
+          display: "flex",
+          justifyContent: "center",
+          marginBottom: "2rem",
+        }}>
+          <Link href="/" style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            textDecoration: "none",
+          }}>
+            <div style={{
+              borderRadius: "50%",
+              overflow: "hidden",
+              width: "48px",
+              height: "48px",
+              position: "relative",
+              border: "2px solid #bfa15f",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+              flexShrink: 0,
+            }}>
+              <Image
+                src="/icon.png"
+                alt="Yuvara"
+                fill
+                sizes="48px"
+                style={{ objectFit: "cover" }}
+              />
+            </div>
+            <span style={{
+              fontSize: "1.6rem",
+              fontWeight: 800,
+              letterSpacing: "-0.5px",
+              color: "#111827",
+              fontFamily: "var(--font-inter), system-ui, sans-serif",
+            }}>
+              Yu<span style={{ color: "#bfa15f" }}>Vara</span>
+            </span>
+          </Link>
+        </div>
+
         {/* Large 404 Display */}
         <h1 className={styles.errorCode}>404</h1>
 
-        {/* Editorial Title */}
+        {/* Title */}
         <h2 className={styles.title}>Page Not Found</h2>
 
-        {/* Descriptive Text */}
+        {/* Description */}
         <p className={styles.description}>
-          The page you are looking for doesn’t exist or has been moved. Use the
-          links below to find your way back.
+          The page you&apos;re looking for doesn&apos;t exist or has been moved.
+          Let&apos;s get you back on track.
         </p>
 
         {/* Action Buttons */}
         <div className={styles.actions}>
           <Link href="/" className={`${styles.btn} ${styles.btnPrimary}`}>
-            Go Home
+            Back to Home
           </Link>
-          {/* Note: In a comprehensive app, you might use 'router.back()' for a 'Go Back' button, 
-              but for a static 404 page, a link to support or collections is also common. 
-              Here we stick to a clean 'Go Back' that acts as a secondary home link or could be replaced with history.back() logic if client component. */}
           <Link
-            href="/collections/all"
+            href="/collections"
             className={`${styles.btn} ${styles.btnSecondary}`}
           >
-            Shop Now
+            Browse Collections
           </Link>
         </div>
       </main>
 
       {/* Brand Footer */}
-      <footer className={styles.footer}>Yuvara Luxury</footer>
+      <footer className={styles.footer}>Yuvara Store</footer>
     </div>
   );
 }

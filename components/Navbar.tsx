@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { handleSignOut } from "@/app/actions/auth";
 import { useCartStore } from "@/store/cart";
+import CurrencySelector from "@/components/CurrencySelector";
 
 import { useLanguage } from "@/context/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -139,6 +140,7 @@ export default function Navbar({ session }: NavbarProps) {
             </form>
 
             <div className={styles.utilityBar}>
+              <CurrencySelector />
 
               {session?.user ? (
                 <div className={styles.accountWrapper}>
@@ -497,7 +499,7 @@ export default function Navbar({ session }: NavbarProps) {
                 transition={{ delay: 0.4 }}
                 className={styles.mobileUtility}
               >
-
+                <CurrencySelector variant="flowing" />
               </motion.div>
             </div>
 

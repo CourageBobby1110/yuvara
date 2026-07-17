@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import clientPromise from "@/lib/mongodb";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import NodemailerProvider from "next-auth/providers/nodemailer";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
@@ -24,6 +25,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: MongoDBAdapter(clientPromise) as any,
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
+    }),
     NodemailerProvider({
       server: {
         host: process.env.EMAIL_SERVER_HOST,

@@ -6,6 +6,7 @@ import Image from "next/image";
 import styles from "./HeroNavbar.module.css";
 import { handleSignOut } from "@/app/actions/auth";
 import { useCartStore } from "@/store/cart";
+import CurrencySelector from "./CurrencySelector";
 
 
 import { Session } from "next-auth";
@@ -231,7 +232,9 @@ export default function HeroNavbar({ session }: HeroNavbarProps) {
             </Link>
           )}
 
-
+          <div className={styles.currencyWrapper}>
+            <CurrencySelector theme={scrolled ? "light" : "dark"} />
+          </div>
 
           <button className={`${styles.link} relative`} onClick={openCart}>
             Cart
