@@ -56,13 +56,7 @@ export default function InvestmentAgreementPage() {
     <div className="min-h-screen bg-white text-black p-4 md:p-8">
       <div className="max-w-[800px] mx-auto">
         {/* Actions Bar - Hidden when printing */}
-        <div className="flex justify-between items-center mb-8 print:hidden bg-gray-50 p-4 rounded-lg border border-gray-100">
-          <button
-            onClick={() => window.close()}
-            className="text-gray-600 hover:text-gray-900 font-medium text-sm"
-          >
-            ← Close Window
-          </button>
+        <div className="flex justify-center items-center mb-8 print:hidden bg-gray-50 p-4 rounded-lg border border-gray-100">
           <button
             onClick={() => window.print()}
             className="bg-black text-white px-6 py-2 rounded-lg font-semibold hover:bg-gray-800 transition-colors"

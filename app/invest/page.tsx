@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "./Login.module.css";
@@ -9,37 +9,9 @@ export default function InvestmentLoginPage() {
   const [accessPin, setAccessPin] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showInstructions, setShowInstructions] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
-  const [bankDetails, setBankDetails] = useState({
-    bankName: "Kuda Bank",
-    bankAccountNumber: "2052394593",
-    bankAccountName: "Chidi Courage Bobby",
-  });
-
-  // Fetch the dynamic bank details from API
-  useEffect(() => {
-    fetch("/api/admin/settings/investment")
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to load settings");
-        return res.json();
-      })
-      .then((data) => {
-        if (data) {
-          setBankDetails({
-            bankName: data.bankName || "Kuda Bank",
-            bankAccountNumber: data.bankAccountNumber || "2052394593",
-            bankAccountName: data.bankAccountName || "Chidi Courage Bobby",
-          });
-        }
-      })
-      .catch((err) => {
-        console.error("Error loading investment details:", err);
-      });
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -215,69 +187,7 @@ export default function InvestmentLoginPage() {
         </form>
 
         {/* Dynamic New Investor Instructions */}
-        <div className={styles.instructionsContainer}>
-          <button
-            type="button"
-            className={styles.instructionsHeader}
-            onClick={() => setShowInstructions(!showInstructions)}
-          >
-            <span className={styles.instructionsTitle}>How to Invest</span>
-            <svg
-              className={`${styles.instructionsToggleIcon} ${
-                showInstructions ? styles.instructionsToggleIconOpen : ""
-              }`}
-              width="14"
-              height="14"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
 
-          <div
-            className={`${styles.instructionsContent} ${
-              showInstructions ? styles.instructionsContentOpen : ""
-            }`}
-          >
-            <ol className={styles.instructionList}>
-              <li className={styles.instructionStep}>
-                Pay your principal amount into the secure account below:
-                <div className={styles.bankDetailsBox}>
-                  <div className={styles.bankDetailRow}>
-                    <span className={styles.bankLabel}>Bank:</span>
-                    <span className={styles.bankValue}>{bankDetails.bankName}</span>
-                  </div>
-                  <div className={styles.bankDetailRow}>
-                    <span className={styles.bankLabel}>Account Number:</span>
-                    <span className={styles.bankValue}>{bankDetails.bankAccountNumber}</span>
-                  </div>
-                  <div className={styles.bankDetailRow}>
-                    <span className={styles.bankLabel}>Account Name:</span>
-                    <span className={styles.bankValue}>{bankDetails.bankAccountName}</span>
-                  </div>
-                </div>
-                <div className={styles.minimumNote}>
-                  <strong>Note:</strong> The minimum investment is ₦250,000. Any amount sent below this threshold will be fully refunded.
-                </div>
-              </li>
-              <li className={styles.instructionStep}>
-                Send your bank details and proof of transfer to the administrator.
-              </li>
-              <li className={styles.instructionStep}>
-                Head over to our{" "}
-                <Link href="/contact" className={styles.contactLink}>
-                  Contact Page
-                </Link>{" "}
-                and submit your transaction name, payment date, and email address.
-              </li>
-              <li className={styles.instructionStep}>
-                Once verified, we will provide you with your Access Pin and Password to access your funded account.
-              </li>
-            </ol>
-          </div>
-        </div>
 
         <div className={styles.footer}>
           <Link href="/" className={styles.link}>
