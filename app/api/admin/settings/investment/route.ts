@@ -9,7 +9,12 @@ export async function GET(req: Request) {
     // Find or create settings
     let settings = await GlobalSettings.findOne();
     if (!settings) {
-      settings = await GlobalSettings.create({ investmentProfitRate: 50 });
+      settings = await GlobalSettings.create({
+        investmentProfitRate: 50,
+        bankAccountNumber: "2052394593",
+        bankName: "Kuda Bank",
+        bankAccountName: "Chidi Courage Bobby",
+      });
     }
     return NextResponse.json(settings);
   } catch (error) {
@@ -29,9 +34,9 @@ export async function POST(req: Request) {
     }
 
     await dbConnect();
-    const { profitRate } = await req.json();
+    const { profitRate, bankAccountNumber, bankName, bankAccountName } = await req.json();
 
-    if (typeof profitRate !== "number" || profitRate < 0) {
+    if (profitRate !== undefined && (typeof profitRate !== "number" || profitRate < 0)) {
       return NextResponse.json(
         { error: "Invalid profit rate" },
         { status: 400 }
@@ -41,10 +46,16 @@ export async function POST(req: Request) {
     let settings = await GlobalSettings.findOne();
     if (!settings) {
       settings = await GlobalSettings.create({
-        investmentProfitRate: profitRate,
+        investmentProfitRate: profitRate !== undefined ? profitRate : 50,
+        bankAccountNumber: bankAccountNumber || "2052394593",
+        bankName: bankName || "Kuda Bank",
+        bankAccountName: bankAccountName || "Chidi Courage Bobby",
       });
     } else {
-      settings.investmentProfitRate = profitRate;
+      if (profitRate !== undefined) settings.investmentProfitRate = profitRate;
+      if (bankAccountNumber !== undefined) settings.bankAccountNumber = bankAccountNumber;
+      if (bankName !== undefined) settings.bankName = bankName;
+      if (bankAccountName !== undefined) settings.bankAccountName = bankAccountName;
       await settings.save();
     }
 

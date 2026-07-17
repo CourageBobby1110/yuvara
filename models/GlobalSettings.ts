@@ -9,6 +9,18 @@ const GlobalSettingsSchema = new Schema(
       min: 0,
       max: 1000, // Reasonable upper limit
     },
+    bankAccountNumber: {
+      type: String,
+      default: "2052394593",
+    },
+    bankName: {
+      type: String,
+      default: "Kuda Bank",
+    },
+    bankAccountName: {
+      type: String,
+      default: "Chidi Courage Bobby",
+    },
   },
   { timestamps: true }
 );

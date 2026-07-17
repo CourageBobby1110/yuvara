@@ -1,20 +1,45 @@
 .container {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-bg-secondary);
-  padding: 1rem;
+  background-color: #fafaf9; /* Warm off-white/luxury color */
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  box-sizing: border-box;
+}
+
+/* Luxury Background Glow */
+.glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(
+    circle,
+    rgba(191, 161, 95, 0.05) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
 }
 
 .card {
-  max-width: 28rem;
+  max-width: 26rem;
   width: 100%;
-  background-color: var(--color-bg-primary);
-  padding: 2rem;
-  border-radius: 0.5rem;
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--color-border-light);
+  background-color: #ffffff;
+  padding: 2.5rem 2rem;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(191, 161, 95, 0.15); /* Soft gold border */
+  position: relative;
+  z-index: 10;
+  box-sizing: border-box;
 }
 
 .header {
@@ -23,102 +48,335 @@
 }
 
 .title {
-  font-size: 1.875rem;
-  font-weight: 800;
-  color: var(--color-text-primary);
+  font-family: Garamond, Baskerville, "Playfair Display", serif;
+  font-style: italic;
+  font-size: 1.95rem;
+  font-weight: 500;
+  color: #bfa15f; /* Brand gold */
+  margin: 0 0 0.5rem 0;
+  letter-spacing: 0.02em;
 }
 
 .subtitle {
-  margin-top: 0.5rem;
-  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0;
 }
 
 .errorBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   background-color: #fef2f2;
   border: 1px solid #fecaca;
   color: #b91c1c;
-  padding: 0.75rem;
-  border-radius: 0.375rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
   margin-bottom: 1.5rem;
-  text-align: center;
+  font-size: 0.82rem;
+  font-weight: 500;
+  text-align: left;
+}
+
+.errorIcon {
+  flex-shrink: 0;
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.5rem;
 }
 
 .label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #4b5563;
+}
+
+/* Input Wrapper & Icons */
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 1rem;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  transition: color 0.25s ease;
 }
 
 .input {
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid var(--color-border-medium);
-  border-radius: 0.375rem;
-  box-shadow: var(--shadow-sm);
-  font-size: 1rem;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.93rem;
+  color: #111827;
+  background-color: #fcfcfc;
+  outline: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  color: #9ca3af;
+  font-size: 0.88rem;
 }
 
 .input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+  border-color: #bfa15f;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(191, 161, 95, 0.1);
 }
 
+.input:focus + .inputIcon,
+.inputWrapper:focus-within .inputIcon {
+  color: #bfa15f;
+}
+
+/* Password Toggle Button */
+.passwordInput {
+  padding-right: 2.75rem;
+}
+
+.toggleButton {
+  position: absolute;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.toggleButton:hover {
+  color: #4b5563;
+  background-color: #f3f4f6;
+}
+
+/* Submit Button with Spinner */
 .submitButton {
   width: 100%;
   display: flex;
   justify-content: center;
-  padding: 0.75rem 1rem;
+  align-items: center;
+  padding: 0.85rem 1.25rem;
   border: none;
-  border-radius: 0.375rem;
-  box-shadow: var(--shadow-sm);
-  font-size: 0.875rem;
-  font-weight: 500;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   color: #ffffff;
-  background-color: var(--color-primary);
+  background-color: #111827;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.12);
+  box-sizing: border-box;
 }
 
-.submitButton:hover {
-  background-color: var(--color-secondary);
+.submitButton:hover:not(.submitButtonDisabled) {
+  background-color: #bfa15f;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(191, 161, 95, 0.2);
 }
 
-.submitButton:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+.submitButton:active:not(.submitButtonDisabled) {
+  transform: translateY(0);
 }
 
 .submitButtonDisabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
+.spinnerContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Footer & Back Link */
 .footer {
-  margin-top: 1.5rem;
+  margin-top: 2rem;
   text-align: center;
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
+  border-top: 1px solid #f3f4f6;
+  padding-top: 1.5rem;
 }
 
 .link {
-  font-weight: 500;
-  color: var(--color-primary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #4b5563;
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: color 0.2s ease;
 }
 
 .link:hover {
-  text-decoration: underline;
+  color: #bfa15f;
 }
+
+.backIcon {
+  transition: transform 0.2s ease;
+}
+
+.link:hover .backIcon {
+  transform: translateX(-3px);
+}
+
+/* Instructions Accordion Styles */
+.instructionsContainer {
+  margin-top: 1.5rem;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 1rem;
+  text-align: left;
+}
+
+.instructionsHeader {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0.25rem 0;
+  cursor: pointer;
+  outline: none;
+}
+
+.instructionsTitle {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #bfa15f; /* Brand gold */
+}
+
+.instructionsToggleIcon {
+  color: #9ca3af;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.instructionsToggleIconOpen {
+  transform: rotate(180deg);
+  color: #bfa15f;
+}
+
+.instructionsContent {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.instructionsContentOpen {
+  max-height: 500px; /* Safe upper limit for content */
+}
+
+.instructionList {
+  margin: 0.75rem 0 0 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.instructionStep {
+  font-size: 0.82rem;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.bankDetailsBox {
+  background-color: #fafaf9;
+  border: 1px solid rgba(191, 161, 95, 0.15);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.bankDetailRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.78rem;
+}
+
+.bankLabel {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.bankValue {
+  color: #111827;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.contactLink {
+  color: #bfa15f;
+  text-decoration: underline;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.contactLink:hover {
+  color: #a88a4e;
+}
+
+.minimumNote {
+  background-color: #fffbeb; /* Warm amber background */
+  border-left: 3px solid #bfa15f; /* Gold accent border */
+  padding: 0.65rem 0.85rem;
+  font-size: 0.76rem;
+  color: #b45309; /* Deep amber text */
+  margin-top: 0.65rem;
+  border-radius: 0 8px 8px 0;
+  line-height: 1.45;
+  box-sizing: border-box;
+}
+
+

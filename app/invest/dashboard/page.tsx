@@ -282,15 +282,42 @@ export default function InvestmentDashboardPage() {
 
   if (loading)
     return (
-      <div
-        className={styles.container}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <YuvaraLoader text="Loading Dashboard..." />
+      <div className={styles.container}>
+        <header className={styles.header}>
+          <div className={styles.headerContent}>
+            <div className={`${styles.skeletonPulse} ${styles.skeletonTitle}`} />
+            <div className={`${styles.skeletonPulse} ${styles.skeletonUser}`} />
+          </div>
+        </header>
+        <main className={styles.main}>
+          {/* Skeleton cards grid */}
+          <div className={styles.skeletonGrid}>
+            {[1, 2, 3].map((i) => (
+              <div key={i} className={styles.skeletonCard}>
+                <div className={`${styles.skeletonPulse} ${styles.skeletonLabel}`} />
+                <div className={`${styles.skeletonPulse} ${styles.skeletonValue}`} />
+                <div className={`${styles.skeletonPulse} ${styles.skeletonDesc}`} />
+              </div>
+            ))}
+          </div>
+          {/* Skeleton layout detail boxes */}
+          <div className="space-y-6">
+            <div className={styles.skeletonBigCard}>
+              <div className={`${styles.skeletonPulse} ${styles.skeletonLabel}`} style={{ width: "25%" }} />
+              <div className={`${styles.skeletonPulse} ${styles.skeletonValue}`} style={{ width: "90%", height: "1.2rem" }} />
+              <div className={`${styles.skeletonPulse} ${styles.skeletonDesc}`} />
+            </div>
+            <div className={styles.skeletonBigCard} style={{ height: "260px" }}>
+              <div className={`${styles.skeletonPulse} ${styles.skeletonLabel}`} style={{ width: "15%" }} />
+              <div className="space-y-3 mt-4">
+                <div className={`${styles.skeletonPulse} ${styles.skeletonLine}`} />
+                <div className={`${styles.skeletonPulse} ${styles.skeletonLine}`} style={{ width: "85%" }} />
+                <div className={`${styles.skeletonPulse} ${styles.skeletonLine}`} style={{ width: "70%" }} />
+                <div className={`${styles.skeletonPulse} ${styles.skeletonLine}`} style={{ width: "50%" }} />
+              </div>
+            </div>
+          </div>
+        </main>
       </div>
     );
   if (error) return <div className="p-8 text-center text-red-600">{error}</div>;

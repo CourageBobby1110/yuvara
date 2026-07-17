@@ -292,6 +292,15 @@ export default function AdminSidebar() {
               >
                 Hero Settings
               </Link>
+              <Link
+                href="/admin/settings/investment"
+                className={`${styles.link} ${
+                  isActive("/admin/settings/investment") ? styles.active : ""
+                }`}
+                onClick={() => setIsOpen(false)}
+              >
+                Investment Settings
+              </Link>
             </>
           )}
 

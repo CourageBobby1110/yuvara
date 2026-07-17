@@ -299,6 +299,63 @@ export async function sendCustomerOrderConfirmation(order: any) {
     console.error("Failed to check if user is guest in sendCustomerOrderConfirmation", err);
   }
 
+  // Enrich items with shipping rates dynamically from database
+  let enrichedItems: any[] = [];
+  try {
+    const ProductModel = (await import("@/models/Product")).default;
+    const { getItemShippingRateUSD } = await import("@/lib/utils");
+    const countryCode = order.shippingAddress?.country || "NG";
+
+    enrichedItems = await Promise.all(
+      order.items.map(async (item: any) => {
+        let shippingUSD = 0;
+        try {
+          const product = await ProductModel.findById(item.product).lean() as any;
+          if (product) {
+            const selectedVariant = item.cjVid && product.variants
+              ? product.variants.find((v: any) => v.cjVid === item.cjVid)
+              : null;
+            
+            shippingUSD = getItemShippingRateUSD(
+              {
+                shippingRates: product.shippingRates,
+                variant: selectedVariant || undefined,
+              },
+              countryCode
+            );
+          } else {
+            shippingUSD = 10;
+          }
+        } catch (e) {
+          console.error("Error fetching product for confirmation email:", e);
+          shippingUSD = 10; // Fallback
+        }
+        
+        return {
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          image: item.image || "",
+          cjVid: item.cjVid || "",
+          product: item.product,
+          priceWithShipping: (item.price || 0) + shippingUSD,
+        };
+      })
+    );
+  } catch (enrichError) {
+    console.error("Failed to enrich items with shipping for email:", enrichError);
+    // Safe fallback to base prices if enrichment fails
+    enrichedItems = order.items.map((item: any) => ({
+      name: item.name,
+      quantity: item.quantity,
+      price: item.price,
+      image: item.image || "",
+      cjVid: item.cjVid || "",
+      product: item.product,
+      priceWithShipping: item.price || 0,
+    }));
+  }
+
   const mailOptions = {
     from: `Yuvara <${process.env.EMAIL_FROM}>`,
     to: order.shippingAddress?.email || order.user?.email, // Fallback to user email if shipping email not present
@@ -337,23 +394,56 @@ export async function sendCustomerOrderConfirmation(order: any) {
             </p>
           </div>
 
-          <h3>Items Ordered</h3>
-          <ul style="list-style: none; padding: 0;">
-            ${order.items
-              .map(
-                (item: any) => `
-              <li style="border-bottom: 1px solid #eee; padding: 10px 0; display: flex; justify-content: space-between;">
-                <span>${item.name} (x${item.quantity})</span>
-                <span>₦${(
-                  item.price *
-                  item.quantity *
-                  NGN_RATE
-                ).toLocaleString()}</span>
-              </li>
-            `
-              )
-              .join("")}
-          </ul>
+          <h3 style="margin-top: 25px; margin-bottom: 10px; font-size: 16px; color: #111827; text-transform: uppercase; letter-spacing: 0.05em;">Items Ordered</h3>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <thead>
+              <tr style="border-bottom: 2px solid #111827; text-align: left;">
+                <th style="padding: 10px 0; font-size: 13px; font-weight: 700; color: #4b5563; text-transform: uppercase;">Item</th>
+                <th style="padding: 10px; font-size: 13px; font-weight: 700; color: #4b5563; text-transform: uppercase; text-align: center; width: 60px;">Qty</th>
+                <th style="padding: 10px 0; font-size: 13px; font-weight: 700; color: #4b5563; text-transform: uppercase; text-align: right; width: 120px;">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${enrichedItems
+                .map(
+                  (item: any) => `
+                <tr style="border-bottom: 1px solid #eaeaea;">
+                  <td style="padding: 12px 0; font-size: 14px; color: #111827; vertical-align: middle;">
+                    ${item.name}
+                  </td>
+                  <td style="padding: 12px; font-size: 14px; color: #4b5563; text-align: center; vertical-align: middle;">
+                    ${item.quantity}
+                  </td>
+                  <td style="padding: 12px 0; font-size: 14px; font-weight: 600; color: #111827; text-align: right; vertical-align: middle;">
+                    ₦${(
+                      item.priceWithShipping *
+                      item.quantity *
+                      NGN_RATE
+                    ).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </td>
+                </tr>
+              `
+                )
+                .join("")}
+            </tbody>
+          </table>
+
+          <div style="background-color: #fafaf9; padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #f3f4f6;">
+            <table style="width: 100%; font-size: 14px; line-height: 1.6;">
+              <tr>
+                <td style="color: #4b5563;">Subtotal (Shipping Fused)</td>
+                <td style="text-align: right; font-weight: 600; color: #111827;">₦${order.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+              </tr>
+              <tr>
+                <td style="color: #4b5563;">Shipping</td>
+                <td style="text-align: right; font-weight: 700; color: #15803d;">FREE</td>
+              </tr>
+              <tr style="border-top: 1px solid #e5e7eb;">
+                <td style="padding-top: 10px; font-weight: 700; color: #111827; font-size: 15px;">Total Paid</td>
+                <td style="padding-top: 10px; text-align: right; font-weight: 800; color: #111827; font-size: 16px;">₦${order.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+              </tr>
+            </table>
+          </div>
           
           <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">
             <p><strong>Shipping Address:</strong><br>

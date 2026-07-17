@@ -45,44 +45,57 @@ export default function OfflineBanner() {
     <div
       style={{
         position: "fixed",
-        bottom: "1.25rem",
+        bottom: "1.5rem",
         left: "50%",
         transform: "translateX(-50%)",
         zIndex: 99999,
         display: "flex",
         alignItems: "center",
+        justifyContent: "center",
         gap: "10px",
-        padding: "0.75rem 1.25rem",
+        padding: "0.65rem 1.25rem",
         borderRadius: "9999px",
-        background: isOnline ? "#166534" : "#1a1a1a",
-        color: "#fff",
-        fontSize: "0.85rem",
-        fontWeight: 600,
-        boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
-        whiteSpace: "nowrap",
-        animation: "slideUp 0.3s ease",
-        fontFamily: "system-ui, sans-serif",
+        background: isOnline 
+          ? "rgba(22, 101, 52, 0.95)" 
+          : "rgba(18, 18, 18, 0.92)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+        border: isOnline 
+          ? "1px solid rgba(74, 222, 128, 0.2)" 
+          : "1px solid rgba(255, 255, 255, 0.08)",
+        color: "#ffffff",
+        fontSize: "0.78rem",
+        fontWeight: 500,
+        fontStyle: "italic",
+        letterSpacing: "0.03em",
+        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.3)",
+        width: "calc(100% - 2rem)",
+        maxWidth: "400px",
+        boxSizing: "border-box",
+        animation: "slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+        fontFamily: "var(--font-inter), system-ui, sans-serif",
       }}
     >
       {/* Pulsing dot */}
       <span
         style={{
-          width: "8px",
-          height: "8px",
+          width: "6px",
+          height: "6px",
           borderRadius: "50%",
-          background: isOnline ? "#4ade80" : "#ef4444",
+          background: isOnline ? "#4ade80" : "#ff4d4d",
           display: "inline-block",
           flexShrink: 0,
+          boxShadow: isOnline 
+            ? "0 0 8px #4ade80" 
+            : "0 0 8px #ff4d4d",
           animation: !isOnline ? "blink 1.2s infinite" : "none",
         }}
       />
 
       {isOnline ? (
-        "✓ Back online"
+        "Back online"
       ) : (
-        <>
-          No internet connection — please check your network
-        </>
+        "No internet connection. Please check your network"
       )}
 
       <style>{`

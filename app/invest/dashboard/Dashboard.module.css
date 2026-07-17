@@ -459,3 +459,89 @@
   transform: scale(0.98);
 }
 
+/* Skeleton Loading Animations & Classes */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.65;
+    background-color: #f3f4f6;
+  }
+  50% {
+    opacity: 1;
+    background-color: #e5e7eb;
+  }
+}
+
+.skeletonPulse {
+  animation: pulse 1.5s infinite ease-in-out;
+  border-radius: 8px;
+}
+
+.skeletonTitle {
+  width: 200px;
+  height: 1.75rem;
+}
+
+.skeletonUser {
+  width: 120px;
+  height: 1.5rem;
+}
+
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .skeletonGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.skeletonCard {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid #f3f4f6;
+  height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.skeletonLabel {
+  width: 50%;
+  height: 0.75rem;
+}
+
+.skeletonValue {
+  width: 80%;
+  height: 2.25rem;
+}
+
+.skeletonDesc {
+  width: 95%;
+  height: 0.75rem;
+}
+
+.skeletonBigCard {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  border: 1px solid #f3f4f6;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.skeletonLine {
+  height: 0.85rem;
+  width: 100%;
+  border-radius: 4px;
+}
+
+

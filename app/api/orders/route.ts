@@ -43,7 +43,52 @@ export async function GET(req: Request) {
       createdAt: -1,
     });
 
-    return NextResponse.json(orders);
+    // Dynamically enrich items with shipping fees to show fused prices
+    const Product = (await import("@/models/Product")).default;
+    const { getItemShippingRateUSD } = await import("@/lib/utils");
+
+    const enrichedOrders = await Promise.all(
+      orders.map(async (orderObj) => {
+        const order = orderObj.toObject();
+        const countryCode = order.shippingAddress?.country || "NG";
+        
+        const enrichedItems = await Promise.all(
+          order.items.map(async (item: any) => {
+            let shippingUSD = 0;
+            try {
+              const product = await Product.findById(item.product).lean() as any;
+              if (product) {
+                const selectedVariant = item.cjVid && product.variants
+                  ? product.variants.find((v: any) => v.cjVid === item.cjVid)
+                  : null;
+                
+                shippingUSD = getItemShippingRateUSD(
+                  {
+                    shippingRates: product.shippingRates,
+                    variant: selectedVariant || undefined,
+                  },
+                  countryCode
+                );
+              }
+            } catch (e) {
+              console.error("Error fetching product for order page price fusion:", e);
+            }
+
+            return {
+              ...item,
+              price: item.price + shippingUSD, // Fuse shipping price!
+            };
+          })
+        );
+
+        return {
+          ...order,
+          items: enrichedItems,
+        };
+      })
+    );
+
+    return NextResponse.json(enrichedOrders);
   } catch (error) {
     console.error("Error fetching user orders:", error);
     return NextResponse.json(

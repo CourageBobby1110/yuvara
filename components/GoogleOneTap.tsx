@@ -47,6 +47,7 @@ export default function GoogleOneTap() {
           auto_select: false, // User selects account
           cancel_on_tap_outside: true,
           itp_support: true, // Enable Intelligent Tracking Prevention support for Edge/Safari
+          use_fedcm_for_prompt: true, // Enable FedCM for reliable modern browser support on desktop/mobile
           context: "signup", // Use signup context to encourage frictionless registration
         });
 

@@ -5,6 +5,7 @@ import { useCartStore } from "@/store/cart";
 import type { Product } from "@/models/Product";
 
 import { useCurrency } from "@/context/CurrencyContext";
+import { getItemShippingRateUSD } from "@/lib/utils";
 
 interface AddToCartProps {
   product: Product;
@@ -31,7 +32,7 @@ export default function AddToCart({
   selectedVariant,
 }: AddToCartProps) {
   const { addItem, openCart } = useCartStore();
-  const { formatPrice } = useCurrency();
+  const { formatPrice, userCountryCode } = useCurrency();
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [selectedColor, setSelectedColor] = useState<string>("");
 
@@ -117,6 +118,19 @@ export default function AddToCart({
     openCart();
   };
 
+  const basePrice = selectedVariant ? selectedVariant.price : product.price;
+  const shippingUSD = userCountryCode
+    ? getItemShippingRateUSD(
+        {
+          shippingRates: product.shippingRates,
+          variant: selectedVariant || undefined,
+        },
+        userCountryCode
+      )
+    : 0;
+  const displayPrice = basePrice + shippingUSD;
+  const shippingIncluded = userCountryCode !== null && shippingUSD > 0;
+
   return (
     <div className="flex flex-col gap-4">
       {availableSizes.length > 0 &&
@@ -176,9 +190,9 @@ export default function AddToCart({
       >
         {isOutOfStock
           ? "Out of Stock"
-          : `Add to Cart - ${formatPrice(
-              selectedVariant ? selectedVariant.price : product.price
-            )}`}
+          : `Add to Cart ${formatPrice(displayPrice)}${
+              shippingIncluded ? " (Free Shipping)" : ""
+            }`}
       </button>
     </div>
   );

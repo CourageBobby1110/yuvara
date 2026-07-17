@@ -23,6 +23,41 @@ export default async function Home() {
   const settings = await SiteSettings.findOne().lean();
   const heroImage = settings?.heroImageUrl || "/hero-shoe-minimalist.png";
 
+  // Fetch latest products to extract high-definition images for the Hero carousel
+  const carouselFilter = { limit: 80, sort: "created_desc" };
+  const latestProducts = await getProducts(carouselFilter);
+
+  const productImages: string[] = [];
+  latestProducts.forEach((p: any) => {
+    // Collect main image if valid
+    const mainImg = getValidUrl(p.images?.[0] || p.image);
+    if (mainImg && !productImages.includes(mainImg) && !mainImg.includes("placeholder")) {
+      productImages.push(mainImg);
+    }
+    // Collect variant images if valid
+    if (p.variants) {
+      p.variants.forEach((v: any) => {
+        const varImg = getValidUrl(v.image);
+        if (varImg && !productImages.includes(varImg) && !varImg.includes("placeholder")) {
+          productImages.push(varImg);
+        }
+      });
+    }
+  });
+
+  // Time-based seed changing every 7 days (7 * 24 * 60 * 60 * 1000 ms)
+  const sevenDaySeed = Math.floor(Date.now() / (7 * 24 * 60 * 60 * 1000));
+  const shuffledImages = shuffleArray(productImages, sevenDaySeed);
+  const carouselImages = shuffledImages.slice(0, 10); // Pick 10 high-quality images
+
+  const fallbackImages = [
+    heroImage,
+    "/hero-shoe-minimalist.png",
+    "/hero-shoe.png",
+  ].filter((img): img is string => typeof img === "string" && !!img);
+
+  const finalCarouselImages = carouselImages.length > 0 ? carouselImages : fallbackImages;
+
   // Time-based seed (changes every 1 hour)
   const currentWindowSeed = Math.floor(Date.now() / (60 * 60 * 1000));
 
@@ -60,7 +95,7 @@ export default async function Home() {
         YuVara Nigeria
       </h1>
 
-      <Hero heroImage={heroImage} />
+      <Hero carouselImages={finalCarouselImages} />
 
       <TrendingMarquee />
 
