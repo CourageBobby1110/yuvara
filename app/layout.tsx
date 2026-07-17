@@ -99,6 +99,7 @@ import KlaviyoScript from "@/components/KlaviyoScript";
 import TikTokPixel from "@/components/TikTokPixel";
 import ReferralHandler from "@/components/ReferralHandler";
 import CapacitorHandler from "@/components/CapacitorHandler";
+import OfflineBanner from "@/components/OfflineBanner";
 
 export default async function RootLayout({
   children,
@@ -128,6 +129,7 @@ export default async function RootLayout({
             <AuthProvider session={session}>
               <LayoutWrapper session={session}>{children}</LayoutWrapper>
               <Toaster position="bottom-right" />
+              <OfflineBanner />
             </AuthProvider>
           </CurrencyProvider>
         </LanguageProvider>
