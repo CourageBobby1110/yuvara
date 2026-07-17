@@ -1,5 +1,12 @@
 import nodemailer from "nodemailer";
 
+// Formats absolute URLs safely, handling missing NEXTAUTH_URL or trailing slashes
+function getFormattedUrl(path: string): string {
+  const base = (process.env.NEXTAUTH_URL || "http://localhost:3000").replace(/\/+$/, "");
+  const cleanPath = path.replace(/^\/+/, "");
+  return `${base}/${cleanPath}`;
+}
+
 // Helper to send mail reliably with fallback
 async function sendMailWithRetry(mailOptions: any) {
   const configs: any[] = [];
@@ -165,9 +172,7 @@ export async function sendNewProductNotification(product: any, users: any[]) {
           </div>
           
           <div style="text-align: center; margin-top: 30px;">
-            <a href="${process.env.NEXTAUTH_URL}/products/${
-      product.slug
-    }" style="background: #000; color: #fff; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold;">Shop Now</a>
+            <a href="${getFormattedUrl(`/products/${product.slug}`)}" style="background: #000; color: #fff; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold;">Shop Now</a>
           </div>
         </div>
         
@@ -221,9 +226,7 @@ export async function sendTargetedProductNotification(
           </div>
           
           <div style="text-align: center; margin-top: 30px;">
-            <a href="${process.env.NEXTAUTH_URL}/products/${
-      product.slug
-    }" style="background: #000; color: #fff; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold;">View Product</a>
+            <a href="${getFormattedUrl(`/products/${product.slug}`)}" style="background: #000; color: #fff; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold;">View Product</a>
           </div>
         </div>
         
