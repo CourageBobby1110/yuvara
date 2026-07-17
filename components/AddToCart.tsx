@@ -188,11 +188,16 @@ export default function AddToCart({
             : "bg-black text-white hover:bg-gray-800"
         }`}
       >
-        {isOutOfStock
-          ? "Out of Stock"
-          : `Add to Cart ${formatPrice(displayPrice)}${
-              shippingIncluded ? " (Free Shipping)" : ""
-            }`}
+        {isOutOfStock ? (
+          "Out of Stock"
+        ) : (
+          <>
+            Add to Cart {formatPrice(displayPrice)}
+            {shippingIncluded && (
+              <span className="hidden sm:inline"> (Free Shipping)</span>
+            )}
+          </>
+        )}
       </button>
     </div>
   );
