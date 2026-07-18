@@ -178,33 +178,3 @@
     font-size: 0.7rem;
   }
 }
-
-/* Premium Social Proof Badge */
-.socialProof {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 0.8rem;
-  line-height: 1;
-}
-
-.stars {
-  color: #bfa15f; /* Gold stars */
-  font-size: 0.8rem;
-  letter-spacing: 2px;
-  display: inline-flex;
-  align-items: center;
-  transform: translateY(0.5px); /* Optical baseline alignment nudge */
-  line-height: 1;
-}
-
-.ratingText {
-  font-size: 0.72rem;
-  color: #6b7280;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  display: inline-flex;
-  align-items: center;
-  line-height: 1;
-}

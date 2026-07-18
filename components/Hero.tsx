@@ -29,16 +29,6 @@ export default function Hero({ carouselImages }: HeroProps) {
       {/* Left Text / Editorial Section (Desktop only) */}
       <div className={styles.leftSection}>
         <div className={styles.textInner}>
-          <motion.div
-            initial={{ y: 15, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.05, duration: 0.6 }}
-            className={styles.socialProof}
-          >
-            <span className={styles.stars}>★★★★★</span>
-            <span className={styles.ratingText}>4.9/5 from 2,300+ global reviews</span>
-          </motion.div>
-
           <motion.span
             initial={{ y: 15, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
