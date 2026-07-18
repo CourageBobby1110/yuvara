@@ -1,0 +1,346 @@
+.pageWrapper {
+  background-color: #ffffff;
+  min-height: 100vh;
+  color: #111827;
+  font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+.heroSection {
+  position: relative;
+  padding: clamp(3rem, 10vw, 6rem) 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.heroGrid {
+  display: flex;
+  flex-direction: row;
+  gap: 3rem;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.leftContent {
+  flex: 1 1 450px;
+  max-width: 100%;
+}
+
+.androidBadge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: rgba(153, 101, 21, 0.08);
+  border-radius: 2rem;
+  color: #996515;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 1.5rem;
+}
+
+.mainTitle {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  color: #000000;
+  letter-spacing: -0.02em;
+}
+
+.gradientText {
+  background: linear-gradient(135deg, #b8860b, #996515);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+}
+
+.description {
+  font-size: clamp(1rem, 3vw, 1.15rem);
+  line-height: 1.6;
+  color: #4b5563;
+  margin-bottom: 2.5rem;
+  max-width: 550px;
+}
+
+.ctaGroup {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.downloadBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background-color: #000000;
+  color: #ffffff;
+  padding: 1.1rem 2.2rem;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+  border: 1px solid #996515;
+  cursor: pointer;
+}
+
+.downloadBtn:hover {
+  background-color: #1a1a1a;
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px -5px rgba(153, 101, 21, 0.2);
+}
+
+.btnMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.rightMockup {
+  flex: 1 1 350px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+}
+
+.glowBackground {
+  position: absolute;
+  width: 120%;
+  height: 120%;
+  top: -10%;
+  left: -10%;
+  background: radial-gradient(circle, rgba(153, 101, 21, 0.06) 0%, transparent 70%);
+  zIndex: 0;
+}
+
+.mockupImage {
+  filter: drop-shadow(0 25px 40px rgba(0, 0, 0, 0.12));
+  max-width: 100%;
+  height: auto;
+  z-index: 1;
+}
+
+/* ============================================
+   FEATURES SECTION
+   ============================================ */
+.featuresSection {
+  background-color: #f9fafb;
+  padding: clamp(3rem, 8vw, 5rem) 1.5rem;
+}
+
+.featuresGrid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.featureCard {
+  background-color: #ffffff;
+  padding: 2.5rem 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+  border: 1px solid #e5e7eb;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.featureCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08);
+}
+
+.featureIcon {
+  color: #996515;
+  margin-bottom: 1.25rem;
+  display: flex;
+}
+
+.featureTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: #111827;
+}
+
+.featureDesc {
+  color: #4b5563;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* ============================================
+   INSTALLATION GUIDE
+   ============================================ */
+.guideSection {
+  padding: clamp(3rem, 8vw, 6rem) 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.guideTitle {
+  text-align: center;
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  font-weight: 800;
+  margin-bottom: clamp(2.5rem, 6vw, 4rem);
+  color: #111827;
+}
+
+.guideGrid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.guideCard {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.75rem;
+  background-color: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  transition: transform 0.2s ease;
+}
+
+.guideCard:hover {
+  transform: scale(1.01);
+}
+
+.guideStep {
+  font-size: 2.25rem;
+  font-weight: 900;
+  color: rgba(153, 101, 21, 0.2);
+  font-family: Georgia, serif;
+  line-height: 1;
+}
+
+.guideStepTitle {
+  font-size: 1rem;
+  font-weight: 750;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #111827;
+}
+
+.guideStepText {
+  color: #4b5563;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* ============================================
+   BOTTOM CTA SECTION
+   ============================================ */
+.ctaSection {
+  background-color: #000000;
+  padding: clamp(4rem, 10vw, 6rem) 1.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.ctaBgGlow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle at 50% 50%, rgba(153, 101, 21, 0.15) 0%, transparent 60%);
+  z-index: 0;
+}
+
+.ctaContent {
+  position: relative;
+  z-index: 1;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.ctaTitle {
+  color: #ffffff;
+  font-size: clamp(2rem, 5vw, 2.5rem);
+  font-weight: 800;
+  margin-bottom: 1.25rem;
+}
+
+.ctaSubtitle {
+  color: #9ca3af;
+  margin-bottom: 2.5rem;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.installNowBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background-color: #996515;
+  color: #ffffff;
+  padding: 1.1rem 2.8rem;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(153, 101, 21, 0.3);
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.installNowBtn:hover {
+  background-color: #b8860b;
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(153, 101, 21, 0.4);
+}
+
+/* ============================================
+   RESPONSIVE OVERRIDES
+   ============================================ */
+@media (max-width: 640px) {
+  .heroSection {
+    padding: 3rem 1.25rem;
+  }
+  .heroGrid {
+    gap: 2rem;
+  }
+  .leftContent {
+    flex: 1 1 100%;
+    text-align: center;
+  }
+  .ctaGroup {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  .downloadBtn {
+    width: 100%;
+  }
+  .btnMeta {
+    justify-content: center;
+  }
+  .guideCard {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+}

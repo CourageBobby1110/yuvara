@@ -41,7 +41,47 @@ export default function ReferralDashboard() {
     }
   };
 
-  if (loading) return <div className={styles.loading}>Loading...</div>;
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.contentWrapper}>
+          <div className={styles.header}>
+            <div className={`${styles.skeleton} ${styles.skeletonTitle}`} />
+            <div className={`${styles.skeleton} ${styles.skeletonSubtitle}`} />
+          </div>
+
+          <div className={styles.grid}>
+            {/* Stats Card Skeleton */}
+            <div className={styles.skeletonCard} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+              <div className={styles.skeleton} style={{ height: "1.25rem", width: "40%" }} />
+              <div className={styles.skeleton} style={{ height: "0.75rem", width: "100%", marginTop: "1rem" }} />
+              <div className={styles.skeleton} style={{ height: "1.5rem", width: "50%", marginTop: "1.5rem" }} />
+            </div>
+
+            {/* Rewards Card Skeleton */}
+            <div className={styles.skeletonCard} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+              <div className={styles.skeleton} style={{ height: "1.25rem", width: "35%" }} />
+              <div className={styles.skeleton} style={{ height: "2.5rem", width: "100%", marginTop: "0.5rem" }} />
+              <div className={styles.skeleton} style={{ height: "2.5rem", width: "100%" }} />
+            </div>
+          </div>
+
+          {/* Table Section Skeleton */}
+          <div className={styles.tableSection}>
+            <div className={styles.skeleton} style={{ height: "1.5rem", width: "30%", marginBottom: "1.5rem" }} />
+            {[1, 2, 3].map((n) => (
+              <div key={n} className={styles.skeletonRow}>
+                <div className={`${styles.skeleton} ${styles.skeletonCircle}`} />
+                <div className={styles.skeleton} style={{ height: "1rem", width: "20%" }} />
+                <div className={styles.skeleton} style={{ height: "1rem", width: "25%", marginLeft: "auto" }} />
+                <div className={styles.skeleton} style={{ height: "1rem", width: "15%", marginLeft: "auto" }} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
   if (!data) return <div className={styles.error}>Failed to load data.</div>;
 
   const progress = Math.min(100, (data.referralCount / 20) * 100);

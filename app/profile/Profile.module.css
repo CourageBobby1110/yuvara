@@ -136,3 +136,56 @@
   transform: none;
   background-color: var(--color-text-muted);
 }
+
+/* ============================================
+   SKELETON LOADING ANIMATION
+   ============================================ */
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+    background-color: #f3f4f6;
+  }
+  50% {
+    opacity: 0.4;
+    background-color: #e5e7eb;
+  }
+}
+
+.skeleton {
+  animation: skeleton-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  border-radius: 6px;
+  background-color: #e5e7eb;
+}
+
+.skeletonTitle {
+  height: 2.5rem;
+  width: 200px;
+  margin: 0 auto 3rem;
+}
+
+.skeletonAvatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+}
+
+.skeletonLabel {
+  height: 1rem;
+  width: 60px;
+  margin-bottom: 0.5rem;
+}
+
+.skeletonInput {
+  height: 3rem;
+  width: 100%;
+  border-radius: 12px;
+  background-color: #e5e7eb;
+}
+
+.skeletonButton {
+  height: 3.5rem;
+  width: 100%;
+  border-radius: 12px;
+  background-color: #e5e7eb;
+}

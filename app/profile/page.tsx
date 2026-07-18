@@ -80,7 +80,38 @@ export default function ProfilePage() {
   if (status === "loading") {
     return (
       <div className={styles.container}>
-        <div style={{ textAlign: "center", padding: "2rem" }}>Loading...</div>
+        <div className={`${styles.skeleton} ${styles.skeletonTitle}`} />
+
+        <div className={styles.form}>
+          {/* Avatar Section Skeleton */}
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>
+              <div className={styles.skeleton} style={{ height: "1.25rem", width: "120px" }} />
+            </div>
+            <div className={styles.avatarGrid}>
+              {[1, 2, 3, 4, 5, 6].map((n) => (
+                <div key={n} className={`${styles.skeleton} ${styles.skeletonAvatar}`} />
+              ))}
+            </div>
+          </div>
+
+          {/* Personal Info Section Skeleton */}
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>
+              <div className={styles.skeleton} style={{ height: "1.25rem", width: "180px" }} />
+            </div>
+            <div className={styles.inputGroup}>
+              <div className={`${styles.skeleton} ${styles.skeletonLabel}`} style={{ width: "50px" }} />
+              <div className={`${styles.skeleton} ${styles.skeletonInput}`} />
+            </div>
+            <div className={styles.inputGroup}>
+              <div className={`${styles.skeleton} ${styles.skeletonLabel}`} style={{ width: "40px" }} />
+              <div className={`${styles.skeleton} ${styles.skeletonInput}`} />
+            </div>
+          </div>
+
+          <div className={`${styles.skeleton} ${styles.skeletonButton}`} />
+        </div>
       </div>
     );
   }

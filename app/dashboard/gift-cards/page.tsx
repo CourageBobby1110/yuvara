@@ -59,7 +59,30 @@ export default function UserGiftCardsPage() {
   if (status === "loading" || loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>Loading your gift cards...</div>
+        <div className={styles.header}>
+          <div className={`${styles.skeleton} ${styles.skeletonTitle}`} />
+          <div className={`${styles.skeleton} ${styles.skeletonSubtitle}`} />
+        </div>
+
+        {/* Tabs skeleton */}
+        <div className={styles.tabs} style={{ borderBottom: "none" }}>
+          <div className={`${styles.skeleton} ${styles.skeletonTab}`} style={{ width: "90px" }} />
+          <div className={`${styles.skeleton} ${styles.skeletonTab}`} style={{ width: "80px" }} />
+          <div className={`${styles.skeleton} ${styles.skeletonTab}`} style={{ width: "80px" }} />
+        </div>
+
+        {/* Grid skeleton */}
+        <div className={styles.grid}>
+          {[1, 2, 3].map((n) => (
+            <div key={n} className={styles.skeletonCard} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+              <div className={styles.skeleton} style={{ height: "1.5rem", width: "40%" }} />
+              <div className={styles.skeleton} style={{ height: "2.5rem", width: "70%", marginTop: "1rem" }} />
+              <div className={styles.skeleton} style={{ height: "1rem", width: "30%" }} />
+              <div className={styles.skeleton} style={{ height: "0.5rem", width: "100%", marginTop: "1rem" }} />
+              <div className={styles.skeleton} style={{ height: "2.5rem", width: "100%", marginTop: "auto" }} />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
