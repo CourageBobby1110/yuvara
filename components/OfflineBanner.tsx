@@ -53,8 +53,7 @@ export default function OfflineBanner() {
         alignItems: "center",
         justifyContent: "center",
         gap: "10px",
-        padding: "0.65rem 1.25rem",
-        borderRadius: "9999px",
+        borderRadius: "8px",
         background: isOnline 
           ? "rgba(22, 101, 52, 0.95)" 
           : "rgba(18, 18, 18, 0.92)",
@@ -69,11 +68,12 @@ export default function OfflineBanner() {
         letterSpacing: "0.03em",
         boxShadow: "0 10px 30px rgba(0, 0, 0, 0.3)",
         whiteSpace: "nowrap",
-        width: "auto",
-        maxWidth: "95%",
+        width: "calc(100% - 2rem)",
+        maxWidth: "350px",
         boxSizing: "border-box",
         animation: "slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
         fontFamily: "var(--font-inter), system-ui, sans-serif",
+        overflow: "hidden",
       }}
     >
       {/* Pulsing dot */}
@@ -92,11 +92,19 @@ export default function OfflineBanner() {
         }}
       />
 
-      {isOnline ? (
-        "Back online"
-      ) : (
-        "No internet connection. Please check your network"
-      )}
+      <span
+        style={{
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {isOnline ? (
+          "Back online"
+        ) : (
+          "No internet connection. Please check your network"
+        )}
+      </span>
 
       <style>{`
         @keyframes slideUp {
