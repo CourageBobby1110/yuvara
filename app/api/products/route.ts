@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Product from "@/models/Product";
 import { auth } from "@/auth";
+import { getCachedData, setCachedData } from "@/lib/server-cache";
 
 import { getProducts } from "@/lib/products";
 import { determineCategory } from "@/lib/categories";
@@ -10,6 +11,12 @@ import { sendNewProductNotification } from "@/lib/mail";
 
 export async function GET(req: Request) {
   try {
+    const cacheKey = `products-query:${req.url}`;
+    const cached = getCachedData(cacheKey);
+    if (cached) {
+      return NextResponse.json(cached);
+    }
+
     const { searchParams } = new URL(req.url);
     const slug = searchParams.get("slug");
 
@@ -23,6 +30,7 @@ export async function GET(req: Request) {
           { status: 404 },
         );
       }
+      setCachedData(cacheKey, product, 60);
       return NextResponse.json(product);
     }
 
@@ -56,6 +64,7 @@ export async function GET(req: Request) {
       isFeatured,
     });
 
+    setCachedData(cacheKey, products, 60);
     return NextResponse.json(products);
   } catch (error) {
     console.error("Error fetching products:", error);

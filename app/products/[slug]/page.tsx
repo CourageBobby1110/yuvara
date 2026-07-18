@@ -4,6 +4,9 @@ import ProductClient from "./ProductClient";
 import { getProductBySlug } from "@/lib/products";
 import { getValidUrl } from "@/lib/utils";
 
+// Cache this page at the Netlify Edge for 1 hour
+export const revalidate = 3600;
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
