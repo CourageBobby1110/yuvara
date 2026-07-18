@@ -43,6 +43,62 @@ function ReferralTracker() {
   return null;
 }
 
+function PageViewTracker() {
+  const pathname = usePathname();
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    // 1. Generate/retrieve unique guest ID in localStorage
+    let guestId = localStorage.getItem("guest_id");
+    if (!guestId) {
+      guestId =
+        "guest_" +
+        Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15);
+      localStorage.setItem("guest_id", guestId);
+    }
+
+    // 2. Identify if user is admin client-side
+    const userEmail = session?.user?.email || "";
+    const userRole = session?.user?.role || "";
+    const isAdmin =
+      userRole === "admin" ||
+      userRole === "worker" ||
+      userEmail.toLowerCase().includes("admin");
+
+    // Don't track admin panel pages or admin users
+    const isAdminPage = pathname?.startsWith("/admin");
+    if (isAdmin || isAdminPage) {
+      return;
+    }
+
+    const logPageView = async () => {
+      try {
+        await fetch("/api/tracking/activity", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            action: "page_view",
+            email: userEmail || null,
+            metadata: {
+              pathname: pathname || "/",
+              guestId,
+            },
+          }),
+        });
+      } catch (err) {
+        console.error("Failed to log page view:", err);
+      }
+    };
+
+    logPageView();
+  }, [pathname, session]);
+
+  return null;
+}
+
 export default function LayoutWrapper({
   session,
   children,
@@ -60,6 +116,7 @@ export default function LayoutWrapper({
       {shouldShowLayout && <GoogleOneTap />}
       <WishlistInitializer />
       <ReferralTracker />
+      <PageViewTracker />
       <CartDrawer />
       {shouldShowLayout ? (
         <>
