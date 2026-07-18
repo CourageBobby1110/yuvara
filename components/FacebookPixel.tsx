@@ -3,15 +3,24 @@
 import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import Script from "next/script";
+import { useSession } from "next-auth/react";
 
 const FB_PIXEL_ID = process.env.NEXT_PUBLIC_FB_PIXEL_ID;
 
 export default function FacebookPixel() {
+  const { data: session } = useSession();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const userEmail = session?.user?.email || "";
+  const userRole = session?.user?.role || "";
+  const isAdmin =
+    userRole === "admin" ||
+    userRole === "worker" ||
+    userEmail.toLowerCase().includes("admin");
+
   useEffect(() => {
-    if (FB_PIXEL_ID) {
+    if (FB_PIXEL_ID && !isAdmin) {
       import("react-facebook-pixel")
         .then((x) => x.default)
         .then((ReactPixel) => {
@@ -19,9 +28,9 @@ export default function FacebookPixel() {
           ReactPixel.pageView();
         });
     }
-  }, [pathname, searchParams]);
+  }, [pathname, searchParams, isAdmin]);
 
-  if (!FB_PIXEL_ID) return null;
+  if (!FB_PIXEL_ID || isAdmin) return null;
 
   return (
     <>

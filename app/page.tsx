@@ -92,7 +92,7 @@ export default async function Home() {
 
       {/* Visually hidden h1 for search engine site-name recognition and accessibility */}
       <h1 style={{ position: "absolute", width: "1px", height: "1px", padding: 0, margin: "-1px", overflow: "hidden", clip: "rect(0, 0, 0, 0)", whiteSpace: "nowrap", border: 0 }}>
-        YuVara Nigeria
+        YuVara
       </h1>
 
       <Hero carouselImages={finalCarouselImages} />

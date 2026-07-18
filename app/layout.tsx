@@ -33,13 +33,13 @@ export async function generateMetadata(): Promise<Metadata> {
       process.env.NEXTAUTH_URL || process.env.URL || "https://yuvara.com.ng"
     ),
     title: {
-      default: "YuVara Nigeria | Premium Global Online Shopping",
-      template: "%s | YuVara Nigeria",
+      default: "YuVara | Premium Global Online Shopping",
+      template: "%s | YuVara",
     },
     description:
       "Discover Yuvara's exclusive collection of fashion, electronics, and lifestyle products. Experience premium quality, global shipping, and exceptional service.",
     keywords: [
-      "YuVara Nigeria",
+      "YuVara",
       "Yuvara",
       "Premium Shopping",
       "Fashion",
@@ -56,10 +56,10 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
       locale: "en_US",
       url: "/",
-      title: "YuVara Nigeria | Premium Global Online Shopping",
+      title: "YuVara | Premium Global Online Shopping",
       description:
         "Discover Yuvara's exclusive collection of fashion, electronics, and lifestyle products. Experience premium quality and global shipping.",
-      siteName: "YuVara Nigeria",
+      siteName: "YuVara",
       images: [
         {
           url: "/icon.png",
@@ -71,7 +71,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: "YuVara Nigeria | Premium Global Online Shopping",
+      title: "YuVara | Premium Global Online Shopping",
       description:
         "Discover Yuvara's exclusive collection of fashion, electronics, and lifestyle products.",
       images: ["/icon.png"],
@@ -100,6 +100,7 @@ import TikTokPixel from "@/components/TikTokPixel";
 import ReferralHandler from "@/components/ReferralHandler";
 import CapacitorHandler from "@/components/CapacitorHandler";
 import OfflineBanner from "@/components/OfflineBanner";
+import AnalyticsBlocker from "@/components/AnalyticsBlocker";
 
 export default async function RootLayout({
   children,
@@ -118,6 +119,13 @@ export default async function RootLayout({
   const tiktokId =
     settings?.tiktokPixelId || process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID;
 
+  const userEmail = session?.user?.email || "";
+  const userRole = session?.user?.role || "";
+  const isAdmin =
+    userRole === "admin" ||
+    userRole === "worker" ||
+    userEmail.toLowerCase().includes("admin");
+
   return (
     <html lang="en">
       <body
@@ -127,6 +135,7 @@ export default async function RootLayout({
         <LanguageProvider>
           <CurrencyProvider>
             <AuthProvider session={session}>
+              <AnalyticsBlocker gaId={gaId} />
               <LayoutWrapper session={session}>{children}</LayoutWrapper>
               <Toaster position="bottom-right" />
               <OfflineBanner />
@@ -137,11 +146,11 @@ export default async function RootLayout({
           src="https://accounts.google.com/gsi/client"
           strategy="beforeInteractive"
         />
-        <GoogleAnalytics gaId={gaId} />
-        <GoogleTagManager gtmId={gtmId} />
-        <FacebookPixel />
-        <KlaviyoScript id={klaviyoId} />
-        <TikTokPixel id={tiktokId} />
+        {!isAdmin && <GoogleAnalytics gaId={gaId} />}
+        {!isAdmin && <GoogleTagManager gtmId={gtmId} />}
+        {!isAdmin && <FacebookPixel />}
+        {!isAdmin && <KlaviyoScript id={klaviyoId} />}
+        {!isAdmin && <TikTokPixel id={tiktokId} />}
         <ReferralHandler />
         <CapacitorHandler />
       </body>

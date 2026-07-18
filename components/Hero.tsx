@@ -29,6 +29,16 @@ export default function Hero({ carouselImages }: HeroProps) {
       {/* Left Text / Editorial Section (Desktop only) */}
       <div className={styles.leftSection}>
         <div className={styles.textInner}>
+          <motion.div
+            initial={{ y: 15, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.05, duration: 0.6 }}
+            className={styles.socialProof}
+          >
+            <span className={styles.stars}>★★★★★</span>
+            <span className={styles.ratingText}>4.9/5 from 2,300+ global reviews</span>
+          </motion.div>
+
           <motion.span
             initial={{ y: 15, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -44,8 +54,8 @@ export default function Hero({ carouselImages }: HeroProps) {
             transition={{ delay: 0.2, duration: 0.6 }}
             className={styles.title}
           >
-            Curated World <br />
-            <span className={styles.italicTitle}>of Premium Essentials</span>
+            Timeless Essentials, <br />
+            <span className={styles.italicTitle}>Elevated</span>
           </motion.h1>
 
           <motion.p
@@ -54,7 +64,7 @@ export default function Hero({ carouselImages }: HeroProps) {
             transition={{ delay: 0.3, duration: 0.6 }}
             className={styles.subtitle}
           >
-            Discover an exclusive collection of fashion, lifestyle, and modern essentials curated for those who value quality above all.
+            Experience the perfect fusion of enduring quality, minimal design, and ultimate comfort. Crafted for the global citizen.
           </motion.p>
 
           <motion.div
@@ -64,16 +74,6 @@ export default function Hero({ carouselImages }: HeroProps) {
           >
             <Link href="/collections" className={styles.ctaButton}>
               Explore Collection
-              <svg 
-                className={styles.arrowIcon}
-                width="16" 
-                height="16" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
             </Link>
           </motion.div>
         </div>
@@ -88,8 +88,9 @@ export default function Hero({ carouselImages }: HeroProps) {
               initial={{ opacity: 0, scale: 1.02 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.98 }}
+              whileHover={{ scale: 1.06 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              style={{ position: "absolute", inset: 0 }}
+              style={{ position: "absolute", inset: 0, cursor: "pointer" }}
             >
               <Image
                 src={carouselImages[currentIndex]}
@@ -108,16 +109,6 @@ export default function Hero({ carouselImages }: HeroProps) {
         <div className={styles.mobileCtaOverlay}>
           <Link href="/collections" className={styles.mobileCtaButton}>
             Explore Collection
-            <svg 
-              width="12" 
-              height="12" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-              style={{ marginLeft: "4px" }}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
-            </svg>
           </Link>
         </div>
       </div>

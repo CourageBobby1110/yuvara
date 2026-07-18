@@ -3,19 +3,28 @@
 import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 export default function TikTokPixel({ id }: { id?: string }) {
+  const { data: session } = useSession();
   const pixelId = id || process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID;
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const userEmail = session?.user?.email || "";
+  const userRole = session?.user?.role || "";
+  const isAdmin =
+    userRole === "admin" ||
+    userRole === "worker" ||
+    userEmail.toLowerCase().includes("admin");
+
   useEffect(() => {
-    if (pixelId && (window as any).ttq) {
+    if (pixelId && (window as any).ttq && !isAdmin) {
       (window as any).ttq.page();
     }
-  }, [pathname, searchParams, pixelId]);
+  }, [pathname, searchParams, pixelId, isAdmin]);
 
-  if (!pixelId) return null;
+  if (!pixelId || isAdmin) return null;
 
   return (
     <Script

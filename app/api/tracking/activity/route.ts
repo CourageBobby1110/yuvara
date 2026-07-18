@@ -8,6 +8,20 @@ export async function POST(req: Request) {
     const session = await auth();
     const { action, email, metadata } = await req.json();
 
+    const userEmail = session?.user?.email || email || "";
+    const userRole = session?.user?.role || "";
+    const isAdmin =
+      userRole === "admin" ||
+      userRole === "worker" ||
+      userEmail.toLowerCase().includes("admin");
+
+    if (isAdmin) {
+      return NextResponse.json({
+        success: true,
+        message: "Activity tracking skipped for admins/workers",
+      });
+    }
+
     await dbConnect();
 
     const activity = await UserActivity.create({

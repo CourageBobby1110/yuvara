@@ -132,7 +132,7 @@ export default function Navbar({ session }: NavbarProps) {
               </div>
               <input
                 type="text"
-                placeholder="Search premium products..."
+                placeholder="Search premium tees, knits..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={styles.searchInput}
@@ -330,7 +330,7 @@ export default function Navbar({ session }: NavbarProps) {
             <form onSubmit={handleSearch} className={styles.mobileSearchForm}>
               <input
                 type="text"
-                placeholder="Search products..."
+                placeholder="Search premium tees, knits..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={styles.mobileSearchInput}

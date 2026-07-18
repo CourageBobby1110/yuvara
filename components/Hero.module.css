@@ -81,19 +81,13 @@
 }
 
 .ctaButton:hover {
-  background-color: transparent;
-  color: #111827;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  background-color: #bfa15f;
+  border-color: #bfa15f;
+  color: #ffffff;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(191, 161, 95, 0.25);
 }
 
-.arrowIcon {
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.ctaButton:hover .arrowIcon {
-  transform: translateX(4px);
-}
 
 /* Right Section - Image showcase */
 .rightSection {
@@ -183,4 +177,34 @@
     padding: 0.6rem 1.2rem;
     font-size: 0.7rem;
   }
+}
+
+/* Premium Social Proof Badge */
+.socialProof {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.8rem;
+  line-height: 1;
+}
+
+.stars {
+  color: #bfa15f; /* Gold stars */
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  display: inline-flex;
+  align-items: center;
+  transform: translateY(0.5px); /* Optical baseline alignment nudge */
+  line-height: 1;
+}
+
+.ratingText {
+  font-size: 0.72rem;
+  color: #6b7280;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
 }
