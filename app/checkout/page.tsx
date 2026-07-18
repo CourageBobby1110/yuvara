@@ -464,6 +464,14 @@ export default function CheckoutPage() {
     ? appliedGiftCard.amountToUse / rateNGN
     : 0;
 
+  const isFormValid =
+    formData.street.trim() !== "" &&
+    formData.city.trim() !== "" &&
+    formData.country.trim() !== "" &&
+    formData.state.trim() !== "" &&
+    formData.email.trim() !== "" &&
+    formData.phone.trim() !== "";
+
   return (
     <div className={styles.container}>
       <div className={styles.contentWrapper}>
@@ -729,7 +737,6 @@ export default function CheckoutPage() {
                     <input
                       type="text"
                       name="zip"
-                      required
                       value={formData.zip}
                       onChange={handleChange}
                       className={styles.input}
@@ -789,7 +796,7 @@ export default function CheckoutPage() {
                 <div className={styles.submitSection}>
                   <button
                     type="submit"
-                    disabled={loading}
+                    disabled={!isFormValid || loading}
                     className={styles.submitButton}
                   >
                     {loading ? (
