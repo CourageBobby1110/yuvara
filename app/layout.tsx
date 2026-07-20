@@ -25,7 +25,7 @@ const getSettings = cache(async () => {
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = (await getSettings()) as any;
+  const settings = (await getSettings()) as { googleSiteVerification?: string } | null;
   const verificationGoogle = settings?.googleSiteVerification || process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "";
 
   return {
@@ -108,16 +108,18 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await auth();
-  const settings = (await getSettings()) as any;
+  const settings = (await getSettings()) as {
+    googleAnalyticsId?: string;
+    googleTagManagerId?: string;
+    klaviyoPublicKey?: string;
+    tiktokPixelId?: string;
+  } | null;
 
-  const gaId =
-    settings?.googleAnalyticsId || process.env.NEXT_PUBLIC_GA_ID || "";
-  const gtmId =
-    settings?.googleTagManagerId || process.env.NEXT_PUBLIC_GTM_ID || "";
-  const klaviyoId =
-    settings?.klaviyoPublicKey || process.env.NEXT_PUBLIC_KLAVIYO_PUBLIC_KEY;
-  const tiktokId =
-    settings?.tiktokPixelId || process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID;
+  // Get GA ID - prefer database value, fallback to env variable
+  const gaId = settings?.googleAnalyticsId || process.env.NEXT_PUBLIC_GA_ID || "";
+  const gtmId = settings?.googleTagManagerId || process.env.NEXT_PUBLIC_GTM_ID || "";
+  const klaviyoId = settings?.klaviyoPublicKey || process.env.NEXT_PUBLIC_KLAVIYO_PUBLIC_KEY;
+  const tiktokId = settings?.tiktokPixelId || process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID;
 
   const userEmail = session?.user?.email || "";
   const userRole = session?.user?.role || "";
@@ -146,8 +148,8 @@ export default async function RootLayout({
           src="https://accounts.google.com/gsi/client"
           strategy="beforeInteractive"
         />
-        {!isAdmin && <GoogleAnalytics gaId={gaId} />}
-        {!isAdmin && <GoogleTagManager gtmId={gtmId} />}
+        {!isAdmin && gaId && <GoogleAnalytics gaId={gaId} />}
+        {!isAdmin && gtmId && <GoogleTagManager gtmId={gtmId} />}
         {!isAdmin && <FacebookPixel />}
         {!isAdmin && <KlaviyoScript id={klaviyoId} />}
         {!isAdmin && <TikTokPixel id={tiktokId} />}
