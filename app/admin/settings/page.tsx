@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import AdminSkeleton from "@/components/AdminSkeleton";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import styles from "./Settings.module.css";
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -104,204 +105,170 @@ export default function SettingsPage() {
   if (loading) return <AdminSkeleton variant="form" />;
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Store Settings</h1>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Store Settings</h1>
+        <p className={styles.subtitle}>Manage your store integrations and configuration</p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h2 className="text-lg font-semibold mb-4">Marketing Integrations</h2>
-          <div className="grid gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Google Tag Manager ID (GTM-XXXXXX)
-              </label>
-              <input
-                type="text"
-                name="googleTagManagerId"
-                value={settings.googleTagManagerId}
-                onChange={handleChange}
-                className="w-full p-2 border rounded-md focus:ring-2 focus:ring-black focus:outline-none"
-                placeholder="GTM-XXXXXX"
-              />
-            </div>
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <div className={styles.card}>
+          <h2 className={styles.cardTitle}>Marketing Integrations</h2>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Google Analytics ID (G-XXXXXX)
-              </label>
-              <input
-                type="text"
-                name="googleAnalyticsId"
-                value={settings.googleAnalyticsId}
-                onChange={handleChange}
-                className="w-full p-2 border rounded-md focus:ring-2 focus:ring-black focus:outline-none"
-                placeholder="G-XXXXXX"
-              />
-            </div>
+          <div className={styles.field}>
+            <label className={styles.label}>Google Tag Manager ID</label>
+            <input
+              type="text"
+              name="googleTagManagerId"
+              value={settings.googleTagManagerId}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="GTM-XXXXXX"
+            />
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Google Site Verification Token (from Google Search Console)
-              </label>
-              <input
-                type="text"
-                name="googleSiteVerification"
-                value={settings.googleSiteVerification}
-                onChange={handleChange}
-                className="w-full p-2 border rounded-md focus:ring-2 focus:ring-black focus:outline-none"
-                placeholder="e.g. google-site-verification-id"
-              />
-            </div>
+          <div className={styles.field}>
+            <label className={styles.label}>Google Analytics ID</label>
+            <input
+              type="text"
+              name="googleAnalyticsId"
+              value={settings.googleAnalyticsId}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="G-XXXXXX"
+            />
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Klaviyo Public API Key (Company ID)
-              </label>
-              <input
-                type="text"
-                name="klaviyoPublicKey"
-                value={settings.klaviyoPublicKey}
-                onChange={handleChange}
-                className="w-full p-2 border rounded-md focus:ring-2 focus:ring-black focus:outline-none"
-                placeholder="e.g. XyZ123"
-              />
-            </div>
+          <div className={styles.field}>
+            <label className={styles.label}>Google Site Verification Token</label>
+            <input
+              type="text"
+              name="googleSiteVerification"
+              value={settings.googleSiteVerification}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="google-site-verification-id"
+            />
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                TikTok Pixel ID
-              </label>
-              <input
-                type="text"
-                name="tiktokPixelId"
-                value={settings.tiktokPixelId}
-                onChange={handleChange}
-                className="w-full p-2 border rounded-md focus:ring-2 focus:ring-black focus:outline-none"
-                placeholder="e.g. C1234567890"
-              />
-            </div>
+          <div className={styles.field}>
+            <label className={styles.label}>Klaviyo Public API Key</label>
+            <input
+              type="text"
+              name="klaviyoPublicKey"
+              value={settings.klaviyoPublicKey}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="XyZ123"
+            />
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Facebook Pixel ID
-              </label>
-              <input
-                type="text"
-                name="facebookPixelId"
-                value={settings.facebookPixelId}
-                onChange={handleChange}
-                className="w-full p-2 border rounded-md focus:ring-2 focus:ring-black focus:outline-none"
-                placeholder="e.g. 1234567890123456"
-              />
-            </div>
+          <div className={styles.field}>
+            <label className={styles.label}>TikTok Pixel ID</label>
+            <input
+              type="text"
+              name="tiktokPixelId"
+              value={settings.tiktokPixelId}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="C1234567890"
+            />
+          </div>
+
+          <div className={styles.field}>
+            <label className={styles.label}>Facebook Pixel ID</label>
+            <input
+              type="text"
+              name="facebookPixelId"
+              value={settings.facebookPixelId}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="1234567890123456"
+            />
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h2 className="text-lg font-semibold mb-4">
-            Dropshipping Integrations
-          </h2>
-          <div className="grid gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                CJ Dropshipping Configuration
-              </label>
-              <div className="p-4 bg-gray-50 rounded-md border border-gray-200">
-                <p className="text-sm text-gray-600 mb-3">
-                  CJ Dropshipping settings have moved to a dedicated page to
-                  support secure authentication.
-                </p>
-                <a
-                  href="/admin/dropshipping/settings"
-                  className="text-sm text-blue-600 hover:text-blue-800 font-medium hover:underline"
-                >
-                  Go to CJ Dropshipping Settings &rarr;
-                </a>
-              </div>
-            </div>
+        <div className={styles.card}>
+          <h2 className={styles.cardTitle}>Dropshipping Integrations</h2>
 
-            <div className="border-t pt-6 mt-2">
-              <h3 className="font-medium text-gray-900 mb-4">
-                Doba Integration
-              </h3>
-              <div className="grid gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Doba App Key
-                  </label>
-                  <input
-                    type="text"
-                    name="dobaAppKey"
-                    value={(settings as any).dobaAppKey || ""}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded-md focus:ring-2 focus:ring-black focus:outline-none"
-                    placeholder="Enter your Doba App Key"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Doba App Secret
-                  </label>
-                  <input
-                    type="password"
-                    name="dobaAppSecret"
-                    value={(settings as any).dobaAppSecret || ""}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded-md focus:ring-2 focus:ring-black focus:outline-none"
-                    placeholder="Enter your Doba App Secret"
-                  />
-                </div>
-              </div>
+          <div className={styles.field}>
+            <label className={styles.label}>CJ Dropshipping Configuration</label>
+            <div className={styles.infoBox}>
+              <p className={styles.infoText}>
+                CJ Dropshipping settings have moved to a dedicated page to support secure authentication.
+              </p>
+              <a href="/admin/dropshipping/settings" className={styles.infoLink}>
+                Go to CJ Dropshipping Settings &rarr;
+              </a>
+            </div>
+          </div>
+
+          <hr className={styles.separator} />
+
+          <h3 className={styles.sectionTitle}>Doba Integration</h3>
+
+          <div className={styles.fieldGroup}>
+            <div className={styles.field}>
+              <label className={styles.label}>Doba App Key</label>
+              <input
+                type="text"
+                name="dobaAppKey"
+                value={(settings as any).dobaAppKey || ""}
+                onChange={handleChange}
+                className={styles.input}
+                placeholder="Enter your Doba App Key"
+              />
+            </div>
+            <div className={styles.field}>
+              <label className={styles.label}>Doba App Secret</label>
+              <input
+                type="password"
+                name="dobaAppSecret"
+                value={(settings as any).dobaAppSecret || ""}
+                onChange={handleChange}
+                className={styles.input}
+                placeholder="Enter your Doba App Secret"
+              />
             </div>
           </div>
         </div>
 
         {userRole === "admin" && (
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 pb-10">
-            <h2 className="text-lg font-semibold mb-4 text-purple-700">
-              Bulk Background Synchronizer
-            </h2>
-            <div className="p-5 bg-purple-50 rounded-md border border-purple-100 flex flex-col md:flex-row justify-between items-center gap-4">
-              <div>
-                 <p className="text-sm font-medium text-gray-900">
-                   Current State: <span className="font-bold text-black">{(settings as any).lastSyncStatus || "Idle"}</span>
-                 </p>
-                 <p className="text-sm text-gray-700 mt-1">
-                   Items Synced Today: <span className="font-bold">{(settings as any).productsSyncedToday || 0}</span>
-                 </p>
+          <div className={styles.syncCard}>
+            <h2 className={styles.syncTitle}>Bulk Background Synchronizer</h2>
+            <div className={styles.syncBody}>
+              <div className={styles.syncInfo}>
+                <p className={styles.syncLabel}>
+                  Current State: <span className={styles.syncValue}>{(settings as any).lastSyncStatus || "Idle"}</span>
+                </p>
+                <p className={styles.syncLabel}>
+                  Items Synced Today: <span className={styles.syncValue}>{(settings as any).productsSyncedToday || 0}</span>
+                </p>
               </div>
-              <div className="flex gap-2">
+              <div className={styles.syncActions}>
                 {(settings as any).lastSyncStatus === "Running" && (
-                  <button
-                    type="button"
-                    onClick={handleStopBulkSync}
-                    className="bg-red-600 outline-none hover:bg-red-700 text-white font-medium py-2 px-6 rounded-md shadow-sm transition-colors whitespace-nowrap"
-                  >
+                  <button type="button" onClick={handleStopBulkSync} className={styles.btnDanger}>
                     Stop Syncing
                   </button>
                 )}
                 <button
-                   type="button"
-                   onClick={handleTriggerBulkSync}
-                   disabled={(settings as any).lastSyncStatus === "Running"}
-                   className="bg-purple-600 outline-none hover:bg-purple-700 disabled:opacity-50 text-white font-medium py-2 px-6 rounded-md shadow-sm transition-colors whitespace-nowrap"
-                 >
-                   {(settings as any).lastSyncStatus === "Running" ? "Synchronizing..." : "Start Syncing"}
-                 </button>
-               </div>
+                  type="button"
+                  onClick={handleTriggerBulkSync}
+                  disabled={(settings as any).lastSyncStatus === "Running"}
+                  className={styles.btnPurple}
+                >
+                  {(settings as any).lastSyncStatus === "Running" ? "Synchronizing..." : "Start Syncing"}
+                </button>
+              </div>
             </div>
-            <p className="mt-3 text-xs text-gray-500 max-w-2xl">
-              This module asynchronously iterates through unsynced products safely. It mimics sequential fetching to prevent CJ API rate limits (429 errors). If a limit is detected, it automatically suspends the runner and sets the status to "Rate limit reached".
+            <p className={styles.syncNote}>
+              This module asynchronously iterates through unsynced products safely. It mimics sequential fetching to prevent CJ API rate limits (429 errors). If a limit is detected, it automatically suspends the runner and sets the status to &quot;Rate limit reached&quot;.
             </p>
           </div>
         )}
 
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={saving}
-            className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800 disabled:opacity-50"
-          >
+        <div className={styles.footer}>
+          <button type="submit" disabled={saving} className={styles.btnSave}>
             {saving ? "Saving..." : "Save Settings"}
           </button>
         </div>
