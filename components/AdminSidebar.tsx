@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import styles from "./AdminSidebar.module.css";
 import { handleSignOut } from "@/app/actions/auth";
+import { ExternalLink } from "lucide-react";
 
 export default function AdminSidebar() {
   const pathname = usePathname();
@@ -64,6 +65,16 @@ export default function AdminSidebar() {
             onClick={() => setIsOpen(false)}
           >
             Overview
+          </Link>
+
+          <Link
+            href="/"
+            className={styles.link}
+            onClick={() => setIsOpen(false)}
+            target="_blank"
+          >
+            Go Home
+            <ExternalLink size={14} style={{ opacity: 0.5 }} />
           </Link>
 
           {!isWorker && (
@@ -167,6 +178,15 @@ export default function AdminSidebar() {
                 Coupons
               </Link>
               <Link
+                href="/admin/gift-cards"
+                className={`${styles.link} ${
+                  isActive("/admin/gift-cards") ? styles.active : ""
+                }`}
+                onClick={() => setIsOpen(false)}
+              >
+                Gift Cards
+              </Link>
+              <Link
                 href="/admin/users"
                 className={`${styles.link} ${
                   isActive("/admin/users") ? styles.active : ""
@@ -257,24 +277,6 @@ export default function AdminSidebar() {
                 Favorites
               </Link>
               <Link
-                href="/admin/gift-cards"
-                className={`${styles.link} ${
-                  isActive("/admin/gift-cards") ? styles.active : ""
-                }`}
-                onClick={() => setIsOpen(false)}
-              >
-                Gift Cards
-              </Link>
-              <Link
-                href="/admin/hero"
-                className={`${styles.link} ${
-                  isActive("/admin/hero") ? styles.active : ""
-                }`}
-                onClick={() => setIsOpen(false)}
-              >
-                Hero Image
-              </Link>
-              <Link
                 href="/admin/homepage"
                 className={`${styles.link} ${
                   isActive("/admin/homepage") ? styles.active : ""
@@ -282,15 +284,6 @@ export default function AdminSidebar() {
                 onClick={() => setIsOpen(false)}
               >
                 Homepage
-              </Link>
-              <Link
-                href="/admin/settings/hero"
-                className={`${styles.link} ${
-                  isActive("/admin/settings/hero") ? styles.active : ""
-                }`}
-                onClick={() => setIsOpen(false)}
-              >
-                Hero Settings
               </Link>
               <Link
                 href="/admin/settings/investment"
