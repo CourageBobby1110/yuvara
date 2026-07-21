@@ -107,14 +107,25 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
-  const settings = (await getSettings()) as {
-    googleAnalyticsId?: string;
-    googleTagManagerId?: string;
-    klaviyoPublicKey?: string;
-    tiktokPixelId?: string;
-    facebookPixelId?: string;
-  } | null;
+  let session = null;
+  try {
+    session = await auth();
+  } catch (e: any) {
+    if (e?.digest === "DYNAMIC_SERVER_USAGE") throw e;
+    console.error("[Layout] auth() error:", e);
+  }
+  let settings = null;
+  try {
+    settings = (await getSettings()) as {
+      googleAnalyticsId?: string;
+      googleTagManagerId?: string;
+      klaviyoPublicKey?: string;
+      tiktokPixelId?: string;
+      facebookPixelId?: string;
+    } | null;
+  } catch (e) {
+    console.error("[Layout] getSettings() error:", e);
+  }
 
   // Get GA ID - prefer database value, fallback to env variable
   const gaId = settings?.googleAnalyticsId || process.env.NEXT_PUBLIC_GA_ID || "";
@@ -140,6 +151,13 @@ export default async function RootLayout({
               <LayoutWrapper session={session}>{children}</LayoutWrapper>
               <Toaster position="bottom-right" />
               <OfflineBanner />
+              {(!isAdmin || forceAnalytics) && gaId && <GoogleAnalytics gaId={gaId} />}
+              {(!isAdmin || forceAnalytics) && gtmId && <GoogleTagManager gtmId={gtmId} />}
+              {!isAdmin && <Suspense><FacebookPixel id={fbPixelId} /></Suspense>}
+              {!isAdmin && <KlaviyoScript id={klaviyoId} />}
+              {!isAdmin && <Suspense><TikTokPixel id={tiktokId} /></Suspense>}
+              <Suspense><ReferralHandler /></Suspense>
+              <CapacitorHandler />
             </AuthProvider>
           </CurrencyProvider>
         </LanguageProvider>
@@ -147,13 +165,6 @@ export default async function RootLayout({
           src="https://accounts.google.com/gsi/client"
           strategy="beforeInteractive"
         />
-        {(!isAdmin || forceAnalytics) && gaId && <GoogleAnalytics gaId={gaId} />}
-        {(!isAdmin || forceAnalytics) && gtmId && <GoogleTagManager gtmId={gtmId} />}
-        {!isAdmin && <Suspense><FacebookPixel id={fbPixelId} /></Suspense>}
-        {!isAdmin && <KlaviyoScript id={klaviyoId} />}
-        {!isAdmin && <Suspense><TikTokPixel id={tiktokId} /></Suspense>}
-        <Suspense><ReferralHandler /></Suspense>
-        <CapacitorHandler />
       </body>
     </html>
   );

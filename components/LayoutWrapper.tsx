@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { SessionProvider, useSession } from "next-auth/react";
 import Navbar from "./Navbar";
@@ -115,7 +115,7 @@ export default function LayoutWrapper({
     <SessionProvider session={session}>
       {shouldShowLayout && <GoogleOneTap />}
       <WishlistInitializer />
-      <ReferralTracker />
+      <Suspense><ReferralTracker /></Suspense>
       <PageViewTracker />
       <CartDrawer />
       {shouldShowLayout ? (
