@@ -3,9 +3,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import styles from "./AdminSidebar.module.css";
-import { handleSignOut } from "@/app/actions/auth";
 import { ExternalLink } from "lucide-react";
 
 export default function AdminSidebar() {
@@ -311,7 +310,7 @@ export default function AdminSidebar() {
           </Link>
         </nav>
 
-        <button onClick={() => handleSignOut()} className={styles.logoutButton}>
+        <button onClick={() => { signOut({ redirect: false }); window.location.href = "https://accounts.google.com/Logout?continue=" + encodeURIComponent(window.location.origin + "/auth/signin"); }} className={styles.logoutButton}>
           Sign Out
         </button>
       </aside>

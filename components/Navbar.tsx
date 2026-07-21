@@ -248,8 +248,9 @@ export default function Navbar({ session }: NavbarProps) {
                         </Link>
                         <button
                           onClick={() => {
-                            signOut({ callbackUrl: "/auth/signin" });
+                            signOut({ redirect: false });
                             setIsAccountDropdownOpen(false);
+                            window.location.href = "https://accounts.google.com/Logout?continue=" + encodeURIComponent(window.location.origin + "/auth/signin");
                           }}
                           className={`${styles.dropdownLink} ${styles.signOutLink}`}
                         >
@@ -463,8 +464,9 @@ export default function Navbar({ session }: NavbarProps) {
                   
                   <button
                     onClick={() => {
-                      signOut({ callbackUrl: "/auth/signin" });
+                      signOut({ redirect: false });
                       setIsMenuOpen(false);
+                      window.location.href = "https://accounts.google.com/Logout?continue=" + encodeURIComponent(window.location.origin + "/auth/signin");
                     }}
                     className={styles.mobileSignOut}
                   >

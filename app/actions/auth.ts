@@ -4,7 +4,7 @@ import { signOut, signIn } from "@/auth";
 
 export async function handleSignOut() {
   try {
-    await signOut({ redirectTo: "/auth/signin" });
+    await signOut({ redirect: false });
   } catch (error) {
     if ((error as Error).message.includes("NEXT_REDIRECT")) {
       throw error;

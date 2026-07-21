@@ -208,8 +208,9 @@ export default function HeroNavbar({ session }: HeroNavbarProps) {
                     </Link>
                     <button
                       onClick={() => {
-                        signOut({ callbackUrl: "/auth/signin" });
+                        signOut({ redirect: false });
                         setIsAccountDropdownOpen(false);
+                        window.location.href = "https://accounts.google.com/Logout?continue=" + encodeURIComponent(window.location.origin + "/auth/signin");
                       }}
                       className={`${styles.dropdownLink} ${styles.signOutLink}`}
                     >
