@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import styles from "./AdminGiftCards.module.css";
-import AdminLoader from "@/components/AdminLoader";
+import AdminSkeleton from "@/components/AdminSkeleton";
+import { Search, Plus, Trash2, Power, PowerOff, Gift, X } from "lucide-react";
 
 interface GiftCard {
   _id: string;
@@ -38,7 +38,6 @@ export default function AdminGiftCardsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  // Create modal state
   const [newCard, setNewCard] = useState({
     code: "",
     amount: "",
@@ -122,7 +121,6 @@ export default function AdminGiftCardsPage() {
           message: "",
         });
         fetchGiftCards();
-        alert("Gift card created successfully!");
       } else {
         const data = await res.json();
         alert(data.error || "Failed to create gift card");
@@ -143,7 +141,6 @@ export default function AdminGiftCardsPage() {
 
       if (res.ok) {
         fetchGiftCards();
-        alert("Gift card deleted successfully");
       } else {
         alert("Failed to delete gift card");
       }
@@ -153,29 +150,71 @@ export default function AdminGiftCardsPage() {
     }
   };
 
-  if (loading) return <AdminLoader />;
+  if (loading) return <AdminSkeleton variant="table" />;
+
+  const activeCount = giftCards.filter((c) => c.status === "active").length;
+  const usedCount = giftCards.filter((c) => c.status === "used").length;
+  const totalValue = giftCards.reduce((sum, c) => sum + c.currentBalance, 0);
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Gift Cards</h1>
+        <div className={styles.headerLeft}>
+          <h1 className={styles.title}>Gift Cards</h1>
+          <p className={styles.subtitle}>Manage and track all gift cards</p>
+        </div>
         <button
           onClick={() => setShowCreateModal(true)}
           className={styles.createButton}
         >
+          <Plus size={18} />
           Create Gift Card
         </button>
       </div>
 
+      {/* Stats */}
+      <div className={styles.statsRow}>
+        <div className={styles.statCard}>
+          <div className={styles.statIcon}>
+            <Gift size={20} />
+          </div>
+          <div className={styles.statInfo}>
+            <span className={styles.statValue}>{giftCards.length}</span>
+            <span className={styles.statLabel}>Total Cards</span>
+          </div>
+        </div>
+        <div className={styles.statCard}>
+          <div className={`${styles.statIcon} ${styles.statIconActive}`}>
+            <Power size={20} />
+          </div>
+          <div className={styles.statInfo}>
+            <span className={styles.statValue}>{activeCount}</span>
+            <span className={styles.statLabel}>Active</span>
+          </div>
+        </div>
+        <div className={styles.statCard}>
+          <div className={`${styles.statIcon} ${styles.statIconUsed}`}>
+            <Gift size={20} />
+          </div>
+          <div className={styles.statInfo}>
+            <span className={styles.statValue}>{usedCount}</span>
+            <span className={styles.statLabel}>Used</span>
+          </div>
+        </div>
+      </div>
+
       {/* Filters */}
       <div className={styles.filters}>
-        <input
-          type="text"
-          placeholder="Search by code, email, or name..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className={styles.searchInput}
-        />
+        <div className={styles.searchWrapper}>
+          <Search size={18} className={styles.searchIcon} />
+          <input
+            type="text"
+            placeholder="Search by code, email, or name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className={styles.searchInput}
+          />
+        </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
@@ -192,64 +231,106 @@ export default function AdminGiftCardsPage() {
       {/* Mobile Cards */}
       <div className={styles.mobileList}>
         {giftCards.length === 0 ? (
-          <div className={styles.emptyState}>No gift cards found.</div>
+          <div className={styles.emptyState}>
+            <Gift size={48} className={styles.emptyIcon} />
+            <p>No gift cards found.</p>
+          </div>
         ) : (
-          giftCards.map((card) => (
-            <div key={card._id} className={styles.giftCardCard}>
-              <div className={styles.cardHeader}>
-                <div className={styles.cardCode}>{card.code}</div>
-                <span
-                  className={`${styles.statusBadge} ${styles[card.status]}`}
-                >
-                  {card.status}
-                </span>
-              </div>
+          giftCards.map((card) => {
+            const usedPercent =
+              card.initialBalance > 0
+                ? ((card.initialBalance - card.currentBalance) /
+                    card.initialBalance) *
+                  100
+                : 0;
 
-              <div className={styles.cardDetails}>
-                <div className={styles.cardDetail}>
-                  <div className={styles.detailLabel}>Balance</div>
-                  <div className={styles.detailValue}>
-                    ₦{card.currentBalance.toLocaleString()} / ₦
-                    {card.initialBalance.toLocaleString()}
+            return (
+              <div key={card._id} className={styles.giftCardCard}>
+                <div className={styles.cardTop}>
+                  <div className={styles.cardCodeSection}>
+                    <Gift size={16} className={styles.cardGiftIcon} />
+                    <code className={styles.cardCode}>{card.code}</code>
+                  </div>
+                  <span
+                    className={`${styles.statusBadge} ${styles[card.status]}`}
+                  >
+                    {card.status}
+                  </span>
+                </div>
+
+                <div className={styles.balanceSection}>
+                  <div className={styles.balanceHeader}>
+                    <span className={styles.balanceLabel}>Balance</span>
+                    <span className={styles.balanceAmount}>
+                      &#8358;{card.currentBalance.toLocaleString()}
+                      <span className={styles.balanceInitial}>
+                        /&#8358;{card.initialBalance.toLocaleString()}
+                      </span>
+                    </span>
+                  </div>
+                  <div className={styles.progressBar}>
+                    <div
+                      className={styles.progressFill}
+                      style={{ width: `${100 - usedPercent}%` }}
+                    />
                   </div>
                 </div>
-                {card.recipientEmail && (
-                  <div className={styles.cardDetail}>
-                    <div className={styles.detailLabel}>Recipient</div>
-                    <div className={styles.detailValue}>
-                      {card.recipientName || card.recipientEmail}
-                    </div>
-                  </div>
-                )}
-                <div className={styles.cardDetail}>
-                  <div className={styles.detailValue}>
-                    {new Date(card.purchaseDate).toLocaleDateString()}
-                  </div>
-                </div>
-                {card.purchasedBy && (
-                  <div className={styles.cardDetail}>
-                    <div className={styles.detailLabel}>Purchased By</div>
-                    <div className={styles.detailValue}>
-                      {card.purchasedBy.name} ({card.purchasedBy.email})
-                    </div>
-                  </div>
-                )}
-              </div>
 
-              <div className={styles.cardActions}>
-                <button
-                  onClick={() => handleToggleActive(card)}
-                  className={`${styles.actionButton} ${
-                    card.isActive
-                      ? styles.deactivateButton
-                      : styles.activateButton
-                  }`}
-                >
-                  {card.isActive ? "Deactivate" : "Activate"}
-                </button>
+                <div className={styles.cardDetails}>
+                  {card.recipientEmail && (
+                    <div className={styles.cardDetail}>
+                      <span className={styles.detailLabel}>Recipient</span>
+                      <span className={styles.detailValue}>
+                        {card.recipientName || card.recipientEmail}
+                      </span>
+                    </div>
+                  )}
+                  <div className={styles.cardDetail}>
+                    <span className={styles.detailLabel}>Purchased</span>
+                    <span className={styles.detailValue}>
+                      {new Date(card.purchaseDate).toLocaleDateString()}
+                    </span>
+                  </div>
+                  {card.purchasedBy && (
+                    <div className={styles.cardDetail}>
+                      <span className={styles.detailLabel}>By</span>
+                      <span className={styles.detailValue}>
+                        {card.purchasedBy.name}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <div className={styles.cardActions}>
+                  <button
+                    onClick={() => handleToggleActive(card)}
+                    className={`${styles.actionButton} ${
+                      card.isActive
+                        ? styles.deactivateButton
+                        : styles.activateButton
+                    }`}
+                  >
+                    {card.isActive ? (
+                      <>
+                        <PowerOff size={14} /> Deactivate
+                      </>
+                    ) : (
+                      <>
+                        <Power size={14} /> Activate
+                      </>
+                    )}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(card._id)}
+                    className={styles.deleteButton}
+                    title="Delete Gift Card"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
@@ -264,7 +345,7 @@ export default function AdminGiftCardsPage() {
               <th className={styles.th}>Recipient</th>
               <th className={styles.th}>Purchased By</th>
               <th className={styles.th}>Status</th>
-              <th className={styles.th}>Purchased</th>
+              <th className={styles.th}>Date</th>
               <th className={styles.th}>Actions</th>
             </tr>
           </thead>
@@ -272,16 +353,22 @@ export default function AdminGiftCardsPage() {
             {giftCards.map((card) => (
               <tr key={card._id} className={styles.tr}>
                 <td className={styles.td}>
-                  <code>{card.code}</code>
+                  <code className={styles.tableCode}>{card.code}</code>
                 </td>
                 <td className={styles.td}>
-                  ₦{card.currentBalance.toLocaleString()}
+                  <span className={styles.tableBalance}>
+                    &#8358;{card.currentBalance.toLocaleString()}
+                  </span>
                 </td>
                 <td className={styles.td}>
-                  ₦{card.initialBalance.toLocaleString()}
+                  <span className={styles.tableInitial}>
+                    &#8358;{card.initialBalance.toLocaleString()}
+                  </span>
                 </td>
                 <td className={styles.td}>
-                  {card.recipientName || card.recipientEmail || "-"}
+                  {card.recipientName || card.recipientEmail || (
+                    <span className={styles.noData}>-</span>
+                  )}
                 </td>
                 <td className={styles.td}>
                   {card.purchasedBy ? (
@@ -308,7 +395,7 @@ export default function AdminGiftCardsPage() {
                     {card.status}
                   </span>
                 </td>
-                <td className={styles.td}>
+                <td className={`${styles.td} ${styles.dateCell}`}>
                   {new Date(card.purchaseDate).toLocaleDateString()}
                 </td>
                 <td className={styles.td}>
@@ -328,20 +415,7 @@ export default function AdminGiftCardsPage() {
                       className={styles.deleteButton}
                       title="Delete Gift Card"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-4 h-4"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-                        />
-                      </svg>
+                      <Trash2 size={14} />
                     </button>
                   </div>
                 </td>
@@ -349,6 +423,12 @@ export default function AdminGiftCardsPage() {
             ))}
           </tbody>
         </table>
+        {giftCards.length === 0 && (
+          <div className={styles.emptyState}>
+            <Gift size={48} className={styles.emptyIcon} />
+            <p>No gift cards found.</p>
+          </div>
+        )}
       </div>
 
       {/* Pagination */}
@@ -381,59 +461,89 @@ export default function AdminGiftCardsPage() {
           onClick={() => setShowCreateModal(false)}
         >
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <h2 className={styles.modalTitle}>Create Gift Card</h2>
+            <div className={styles.modalHeader}>
+              <h2 className={styles.modalTitle}>Create Gift Card</h2>
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className={styles.modalClose}
+              >
+                <X size={20} />
+              </button>
+            </div>
             <form onSubmit={handleCreateGiftCard} className={styles.form}>
+              <div className={styles.formRow}>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Code *</label>
+                  <input
+                    type="text"
+                    value={newCard.code}
+                    onChange={(e) =>
+                      setNewCard({
+                        ...newCard,
+                        code: e.target.value.toUpperCase(),
+                      })
+                    }
+                    placeholder="XXXX-XXXX-XXXX-XXXX"
+                    required
+                    className={styles.input}
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Amount (&#8358;) *</label>
+                  <input
+                    type="number"
+                    value={newCard.amount}
+                    onChange={(e) =>
+                      setNewCard({ ...newCard, amount: e.target.value })
+                    }
+                    placeholder="10000"
+                    required
+                    min="1000"
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+              <div className={styles.formRow}>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Recipient Email</label>
+                  <input
+                    type="email"
+                    value={newCard.recipientEmail}
+                    onChange={(e) =>
+                      setNewCard({
+                        ...newCard,
+                        recipientEmail: e.target.value,
+                      })
+                    }
+                    placeholder="recipient@example.com"
+                    className={styles.input}
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Recipient Name</label>
+                  <input
+                    type="text"
+                    value={newCard.recipientName}
+                    onChange={(e) =>
+                      setNewCard({
+                        ...newCard,
+                        recipientName: e.target.value,
+                      })
+                    }
+                    placeholder="John Doe"
+                    className={styles.input}
+                  />
+                </div>
+              </div>
               <div className={styles.formGroup}>
-                <label className={styles.label}>Code *</label>
+                <label className={styles.label}>Message</label>
                 <input
                   type="text"
-                  value={newCard.code}
+                  value={newCard.message}
                   onChange={(e) =>
-                    setNewCard({
-                      ...newCard,
-                      code: e.target.value.toUpperCase(),
-                    })
+                    setNewCard({ ...newCard, message: e.target.value })
                   }
-                  placeholder="XXXX-XXXX-XXXX-XXXX"
-                  required
-                  className={styles.input}
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Amount (₦) *</label>
-                <input
-                  type="number"
-                  value={newCard.amount}
-                  onChange={(e) =>
-                    setNewCard({ ...newCard, amount: e.target.value })
-                  }
-                  placeholder="10000"
-                  required
-                  min="1000"
-                  className={styles.input}
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Recipient Email</label>
-                <input
-                  type="email"
-                  value={newCard.recipientEmail}
-                  onChange={(e) =>
-                    setNewCard({ ...newCard, recipientEmail: e.target.value })
-                  }
-                  placeholder="recipient@example.com"
-                  className={styles.input}
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Recipient Name</label>
-                <input
-                  type="text"
-                  value={newCard.recipientName}
-                  onChange={(e) =>
-                    setNewCard({ ...newCard, recipientName: e.target.value })
-                  }
-                  placeholder="John Doe"
+                  placeholder="Happy Birthday!"
                   className={styles.input}
                 />
               </div>
@@ -446,7 +556,8 @@ export default function AdminGiftCardsPage() {
                   Cancel
                 </button>
                 <button type="submit" className={styles.submitButton}>
-                  Create
+                  <Plus size={18} />
+                  Create Gift Card
                 </button>
               </div>
             </form>

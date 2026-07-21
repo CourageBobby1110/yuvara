@@ -5,18 +5,17 @@ import { useEffect } from "react";
 
 interface AnalyticsBlockerProps {
   gaId?: string;
+  forceAnalytics?: boolean;
 }
 
-export default function AnalyticsBlocker({ gaId }: AnalyticsBlockerProps) {
+export default function AnalyticsBlocker({ gaId, forceAnalytics }: AnalyticsBlockerProps) {
   const { data: session } = useSession();
 
   useEffect(() => {
-    const userEmail = session?.user?.email || "";
+    if (forceAnalytics) return;
+
     const userRole = session?.user?.role || "";
-    const isAdmin =
-      userRole === "admin" ||
-      userRole === "worker" ||
-      userEmail.toLowerCase().includes("admin");
+    const isAdmin = userRole === "admin" || userRole === "worker";
 
     if (isAdmin) {
       // 1. Opt-out Google Analytics
@@ -73,7 +72,7 @@ export default function AnalyticsBlocker({ gaId }: AnalyticsBlockerProps) {
         };
       }
     }
-  }, [session, gaId]);
+  }, [session, gaId, forceAnalytics]);
 
   return null;
 }

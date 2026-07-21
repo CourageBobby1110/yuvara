@@ -6,7 +6,7 @@ import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
 import { Camera, Save, CheckCircle } from "lucide-react";
 import styles from "./WorkerSettings.module.css";
-import AdminLoader from "@/components/AdminLoader";
+import AdminSkeleton from "@/components/AdminSkeleton";
 
 export default function WorkerSettingsPage() {
   const { data: session, update } = useSession();
@@ -24,7 +24,7 @@ export default function WorkerSettingsPage() {
     }
   }, [session]);
 
-  if (!session) return <AdminLoader />;
+  if (!session) return <AdminSkeleton variant="form" />;
 
   const handleUpdateProfile = async (imageUrl?: string) => {
     // If we have a new image, show it immediately

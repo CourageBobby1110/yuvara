@@ -8,74 +8,51 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
-  BarChart,
-  Bar,
 } from "recharts";
-import styles from "./Analytics.module.css"; // We'll create this CSS module
+import styles from "./Analytics.module.css";
+import { BarChart3, Globe, AlertTriangle } from "lucide-react";
+import AdminSkeleton from "@/components/AdminSkeleton";
 
-function AnalyticsSkeleton() {
+function AnalyticsSkeletonLoader() {
   return (
     <div className={styles.container}>
-      <div className={`${styles.title} ${styles.shimmer} h-8 w-48 rounded`} style={{ backgroundColor: "#e5e7eb" }}></div>
-
-      <div className={styles.grid}>
-        {/* Main Chart Card Skeleton */}
-        <div className={styles.card} style={{ gridColumn: "1 / -1" }}>
-          <div className="flex justify-between items-center mb-6">
-            <div className={`${styles.shimmer} h-6 w-80 rounded`} style={{ backgroundColor: "#e5e7eb" }}></div>
-            <div className="flex gap-4">
-              <div className={`${styles.shimmer} h-4 w-20 rounded`} style={{ backgroundColor: "#e5e7eb" }}></div>
-              <div className={`${styles.shimmer} h-4 w-24 rounded`} style={{ backgroundColor: "#e5e7eb" }}></div>
-            </div>
+      <div className={styles.header}>
+        <div className={styles.skeletonTitle} />
+      </div>
+      <div className={styles.skeletonStats}>
+        {[1, 2, 3].map((i) => (
+          <div key={i} className={styles.skeletonStatCard}>
+            <div className={styles.skeletonLine} />
+            <div className={styles.skeletonLineShort} />
           </div>
-          {/* Mock Chart lines */}
-          <div className="h-80 w-full flex flex-col justify-between pt-4">
-            <div className="flex justify-between items-end h-64 gap-4 px-2">
-              <div className={`${styles.shimmer} w-full h-[30%] rounded-t`} style={{ backgroundColor: "#f3f4f6" }}></div>
-              <div className={`${styles.shimmer} w-full h-[50%] rounded-t`} style={{ backgroundColor: "#f3f4f6" }}></div>
-              <div className={`${styles.shimmer} w-full h-[40%] rounded-t`} style={{ backgroundColor: "#f3f4f6" }}></div>
-              <div className={`${styles.shimmer} w-full h-[70%] rounded-t`} style={{ backgroundColor: "#f3f4f6" }}></div>
-              <div className={`${styles.shimmer} w-full h-[60%] rounded-t`} style={{ backgroundColor: "#f3f4f6" }}></div>
-              <div className={`${styles.shimmer} w-full h-[85%] rounded-t`} style={{ backgroundColor: "#f3f4f6" }}></div>
-              <div className={`${styles.shimmer} w-full h-[95%] rounded-t`} style={{ backgroundColor: "#f3f4f6" }}></div>
-            </div>
-            <div className="border-t border-gray-200 pt-3 flex justify-between px-2">
-              <div className={`${styles.shimmer} h-3 w-10 rounded`} style={{ backgroundColor: "#e5e7eb" }}></div>
-              <div className={`${styles.shimmer} h-3 w-10 rounded`} style={{ backgroundColor: "#e5e7eb" }}></div>
-              <div className={`${styles.shimmer} h-3 w-10 rounded`} style={{ backgroundColor: "#e5e7eb" }}></div>
-              <div className={`${styles.shimmer} h-3 w-10 rounded`} style={{ backgroundColor: "#e5e7eb" }}></div>
-              <div className={`${styles.shimmer} h-3 w-10 rounded`} style={{ backgroundColor: "#e5e7eb" }}></div>
-              <div className={`${styles.shimmer} h-3 w-10 rounded`} style={{ backgroundColor: "#e5e7eb" }}></div>
-              <div className={`${styles.shimmer} h-3 w-10 rounded`} style={{ backgroundColor: "#e5e7eb" }}></div>
-            </div>
-          </div>
+        ))}
+      </div>
+      <div className={styles.skeletonChartCard}>
+        <div className={styles.skeletonLineMed} />
+        <div className={styles.skeletonChartArea}>
+          {[30, 55, 40, 70, 60, 85, 95].map((h, i) => (
+            <div key={i} className={styles.skeletonBar} style={{ height: `${h}%` }} />
+          ))}
         </div>
-
-        {/* Google Analytics Card Skeleton */}
-        <div className={styles.card}>
-          <div className={`${styles.shimmer} h-6 w-64 rounded mb-6`} style={{ backgroundColor: "#e5e7eb" }}></div>
-          <div className="h-80 w-full flex items-center justify-center">
-            <div className={`${styles.shimmer} w-full h-full rounded`} style={{ backgroundColor: "#f3f4f6" }}></div>
-          </div>
-        </div>
-
-        {/* Facebook Pixel Card Skeleton */}
-        <div className={styles.card}>
-          <div className={`${styles.shimmer} h-6 w-56 rounded mb-6`} style={{ backgroundColor: "#e5e7eb" }}></div>
-          <div className="h-80 w-full flex flex-col gap-4">
-            <div className="flex justify-between border-b pb-2">
-              <div className={`${styles.shimmer} h-4 w-24 rounded`} style={{ backgroundColor: "#e5e7eb" }}></div>
-              <div className={`${styles.shimmer} h-4 w-12 rounded`} style={{ backgroundColor: "#e5e7eb" }}></div>
-            </div>
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="flex justify-between py-1">
-                <div className={`${styles.shimmer} h-4 w-32 rounded`} style={{ backgroundColor: "#f3f4f6" }}></div>
-                <div className={`${styles.shimmer} h-4 w-8 rounded`} style={{ backgroundColor: "#f3f4f6" }}></div>
-              </div>
+      </div>
+      <div className={styles.skeletonGrid}>
+        <div className={styles.skeletonChartCard}>
+          <div className={styles.skeletonLineMed} />
+          <div className={styles.skeletonChartArea}>
+            {[40, 60, 35, 75, 50, 80].map((h, i) => (
+              <div key={i} className={styles.skeletonBar} style={{ height: `${h}%` }} />
             ))}
           </div>
+        </div>
+        <div className={styles.skeletonChartCard}>
+          <div className={styles.skeletonLineMed} />
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className={styles.skeletonRow}>
+              <div className={styles.skeletonLine} />
+              <div className={styles.skeletonLineShort} />
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -107,176 +84,256 @@ export default function AnalyticsPage() {
     fetchData();
   }, []);
 
-  if (loading) {
-    return <AnalyticsSkeleton />;
-  }
+  if (loading) return <AnalyticsSkeletonLoader />;
 
-  // Process Internal Traffic Data
   const internalChartData = data?.internal || [];
-
-  // Process Google Data for Chart
   const googleChartData =
     data?.google?.rows?.map((row: any) => ({
       date: row.dimensionValues[0].value,
       activeUsers: parseInt(row.metricValues[0].value),
-      eventCount: parseInt(row.metricValues[1].value),
       sessions: parseInt(row.metricValues[2].value),
     })) || [];
-
-  // Process Facebook Data
   const fbEvents = data?.facebook?.data || [];
+
+  const totalPageViews = internalChartData.reduce(
+    (sum: number, d: any) => sum + (d.pageViews || 0),
+    0
+  );
+  const totalVisitors = internalChartData.reduce(
+    (sum: number, d: any) => sum + (d.visitors || 0),
+    0
+  );
+  const avgDaily = internalChartData.length
+    ? Math.round(totalPageViews / internalChartData.length)
+    : 0;
+
+  const formatDate = (tick: string) => {
+    const parts = tick.split("-");
+    if (parts.length === 3) {
+      const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      return `${months[parseInt(parts[1]) - 1]} ${parts[2]}`;
+    }
+    return tick;
+  };
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Analytics Dashboard</h1>
+      <div className={styles.header}>
+        <div>
+          <h1 className={styles.title}>Analytics</h1>
+          <p className={styles.subtitle}>Traffic and engagement overview</p>
+        </div>
+      </div>
 
       {errors.length > 0 && (
-        <div className="bg-amber-50 border border-amber-300 text-amber-800 px-4 py-3 rounded mb-6 text-sm">
-          <p className="font-bold">Integration Notices:</p>
-          <ul className="list-disc pl-5">
-            {errors.map((err, idx) => (
-              <li key={idx}>{err}</li>
-            ))}
-          </ul>
+        <div className={styles.errorBanner}>
+          <AlertTriangle size={16} />
+          <div>
+            <p className={styles.errorTitle}>Integration Notices</p>
+            <ul className={styles.errorList}>
+              {errors.map((err, idx) => (
+                <li key={idx}>{err}</li>
+              ))}
+            </ul>
+          </div>
         </div>
       )}
 
-      <div className={styles.grid}>
-        {/* Internal Website Traffic Section (Primary Graph) */}
-        <div className={styles.card} style={{ gridColumn: "1 / -1" }}>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className={styles.cardTitle}>Website Traffic (Internal Database - Last 7 Days)</h2>
-            <div className="flex gap-4 text-xs font-semibold text-gray-500">
-              <span className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-full bg-[#bfa15f]"></span> Page Views
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-full bg-[#111827]"></span> Unique Visitors
-              </span>
+      {/* Quick Stats */}
+      {internalChartData.length > 0 && (
+        <div className={styles.statsRow}>
+          <div className={styles.statCard}>
+            <div className={styles.statIcon}>
+              <BarChart3 size={20} />
+            </div>
+            <div className={styles.statInfo}>
+              <span className={styles.statValue}>{totalPageViews.toLocaleString()}</span>
+              <span className={styles.statLabel}>Page Views</span>
             </div>
           </div>
-          {internalChartData.length > 0 ? (
-            <div className="h-80 w-full mt-6">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={internalChartData} margin={{ left: -10, right: 10, top: 10, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-                  <XAxis 
-                    dataKey="date" 
-                    tickFormatter={(tick) => {
-                      const parts = tick.split("-");
-                      if (parts.length === 3) {
-                        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                        return `${monthNames[parseInt(parts[1]) - 1]} ${parts[2]}`;
-                      }
-                      return tick;
-                    }}
-                    stroke="#9ca3af"
-                    fontSize={11}
-                    dy={10}
-                  />
-                  <YAxis stroke="#9ca3af" fontSize={11} dx={-5} />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: "#111827", 
-                      borderRadius: "8px", 
-                      border: "none", 
-                      color: "#fff",
-                      fontSize: "12px",
-                      boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)"
-                    }}
-                    labelFormatter={(label) => {
-                      const parts = label.split("-");
-                      if (parts.length === 3) {
-                        const date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-                        return date.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-                      }
-                      return label;
-                    }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="pageViews"
-                    stroke="#bfa15f"
-                    strokeWidth={3}
-                    dot={{ r: 4, strokeWidth: 1 }}
-                    activeDot={{ r: 6 }}
-                    name="Page Views"
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="visitors"
-                    stroke="#111827"
-                    strokeWidth={2}
-                    dot={{ r: 3, strokeWidth: 1 }}
-                    activeDot={{ r: 5 }}
-                    name="Unique Visitors"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+          <div className={styles.statCard}>
+            <div className={`${styles.statIcon} ${styles.statIconActive}`}>
+              <Globe size={20} />
             </div>
-          ) : (
-            <p className="text-gray-500 py-8 text-center">No traffic data logged yet.</p>
-          )}
+            <div className={styles.statInfo}>
+              <span className={styles.statValue}>{totalVisitors.toLocaleString()}</span>
+              <span className={styles.statLabel}>Unique Visitors</span>
+            </div>
+          </div>
+          <div className={styles.statCard}>
+            <div className={styles.statIcon}>
+              <BarChart3 size={20} />
+            </div>
+            <div className={styles.statInfo}>
+              <span className={styles.statValue}>{avgDaily.toLocaleString()}</span>
+              <span className={styles.statLabel}>Avg. Daily</span>
+            </div>
+          </div>
         </div>
+      )}
 
-        {/* Google Analytics Section */}
+      {/* Internal Traffic Chart */}
+      <div className={styles.card}>
+        <div className={styles.cardHeader}>
+          <h2 className={styles.cardTitle}>Website Traffic</h2>
+          <div className={styles.legend}>
+            <span className={styles.legendItem}>
+              <span className={`${styles.legendDot} ${styles.legendDotGold}`} />
+              Page Views
+            </span>
+            <span className={styles.legendItem}>
+              <span className={`${styles.legendDot} ${styles.legendDotDark}`} />
+              Visitors
+            </span>
+          </div>
+        </div>
+        {internalChartData.length > 0 ? (
+          <div className={styles.chartContainer}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={internalChartData} margin={{ left: -10, right: 10, top: 10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+                <XAxis
+                  dataKey="date"
+                  tickFormatter={formatDate}
+                  stroke="#9ca3af"
+                  fontSize={11}
+                  dy={10}
+                />
+                <YAxis stroke="#9ca3af" fontSize={11} dx={-5} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#111827",
+                    borderRadius: "8px",
+                    border: "none",
+                    color: "#fff",
+                    fontSize: "12px",
+                  }}
+                  labelFormatter={(label) => {
+                    const parts = label.split("-");
+                    if (parts.length === 3) {
+                      const date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                      return date.toLocaleDateString(undefined, {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric",
+                      });
+                    }
+                    return label;
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="pageViews"
+                  stroke="#bfa15f"
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 5 }}
+                  name="Page Views"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="visitors"
+                  stroke="#111827"
+                  strokeWidth={2}
+                  dot={{ r: 2 }}
+                  activeDot={{ r: 4 }}
+                  name="Unique Visitors"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        ) : (
+          <div className={styles.emptyState}>
+            <BarChart3 size={40} className={styles.emptyIcon} />
+            <p>No traffic data logged yet.</p>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Grid: Google + Facebook */}
+      <div className={styles.bottomGrid}>
         <div className={styles.card}>
-          <h2 className={styles.cardTitle}>Google Analytics (Last 7 Days)</h2>
+          <div className={styles.cardHeader}>
+            <h2 className={styles.cardTitle}>Google Analytics</h2>
+            <span className={styles.badge}>Last 7 Days</span>
+          </div>
           {googleChartData.length > 0 ? (
-            <div className="h-80">
+            <div className={styles.chartContainer}>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={googleChartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+                  <XAxis
+                    dataKey="date"
+                    tickFormatter={formatDate}
+                    stroke="#9ca3af"
+                    fontSize={11}
+                  />
+                  <YAxis stroke="#9ca3af" fontSize={11} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#111827",
+                      borderRadius: "8px",
+                      border: "none",
+                      color: "#fff",
+                      fontSize: "12px",
+                    }}
+                  />
                   <Line
                     type="monotone"
                     dataKey="activeUsers"
                     stroke="#8884d8"
+                    strokeWidth={2}
+                    dot={{ r: 3 }}
                     name="Active Users"
                   />
                   <Line
                     type="monotone"
                     dataKey="sessions"
                     stroke="#82ca9d"
+                    strokeWidth={2}
+                    dot={{ r: 3 }}
                     name="Sessions"
                   />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           ) : (
-            <p className="text-gray-500 py-8 text-center text-sm">No Google Analytics data available.</p>
+            <div className={styles.emptyState}>
+              <Globe size={32} className={styles.emptyIcon} />
+              <p>No Google Analytics data available.</p>
+            </div>
           )}
         </div>
 
-        {/* Facebook Pixel Section */}
         <div className={styles.card}>
-          <h2 className={styles.cardTitle}>Facebook Pixel Events</h2>
+          <div className={styles.cardHeader}>
+            <h2 className={styles.cardTitle}>Facebook Pixel</h2>
+            <span className={styles.badge}>Events</span>
+          </div>
           {fbEvents.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-sm text-left">
-                <thead className="bg-gray-50">
+            <div className={styles.tableWrapper}>
+              <table className={styles.table}>
+                <thead>
                   <tr>
-                    <th className="px-4 py-2">Event</th>
-                    <th className="px-4 py-2">Count</th>
+                    <th className={styles.th}>Event</th>
+                    <th className={`${styles.th} ${styles.thRight}`}>Count</th>
                   </tr>
                 </thead>
                 <tbody>
                   {fbEvents.map((event: any, idx: number) => (
-                    <tr key={idx} className="border-b">
-                      <td className="px-4 py-2 font-medium">
-                        {event.aggregation}
-                      </td>
-                      <td className="px-4 py-2">{event.value}</td>
+                    <tr key={idx} className={styles.tr}>
+                      <td className={styles.td}>{event.aggregation}</td>
+                      <td className={`${styles.td} ${styles.tdBold}`}>{event.value}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           ) : (
-            <p className="text-gray-500 py-8 text-center text-sm">No Facebook Pixel data available.</p>
+            <div className={styles.emptyState}>
+              <BarChart3 size={32} className={styles.emptyIcon} />
+              <p>No Facebook Pixel data available.</p>
+            </div>
           )}
         </div>
       </div>

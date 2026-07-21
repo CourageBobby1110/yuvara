@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import styles from "./Shipping.module.css";
-import AdminLoader from "@/components/AdminLoader";
+import AdminSkeleton from "@/components/AdminSkeleton";
 
 interface ShippingRate {
   _id: string;
@@ -187,7 +187,7 @@ export default function AdminShippingPage() {
         {/* Mobile List View */}
         <div className={styles.mobileList}>
           {loading ? (
-            <AdminLoader />
+            <div className={styles.emptyState}>Loading rates...</div>
           ) : rates.length === 0 ? (
             <div className={styles.emptyState}>
               No rates found for {selectedCountry}. Add one above.
@@ -259,8 +259,8 @@ export default function AdminShippingPage() {
               <tbody className={styles.tableBody}>
                 {loading ? (
                   <tr>
-                    <td colSpan={3}>
-                      <AdminLoader />
+                    <td colSpan={3} className={styles.emptyState}>
+                      Loading rates...
                     </td>
                   </tr>
                 ) : rates.length === 0 ? (

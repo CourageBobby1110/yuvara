@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import AdminLoader from "@/components/AdminLoader";
+import AdminSkeleton from "@/components/AdminSkeleton";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 
@@ -17,6 +17,7 @@ export default function SettingsPage() {
     googleSiteVerification: "",
     klaviyoPublicKey: "",
     tiktokPixelId: "",
+    facebookPixelId: "",
     lastSyncStatus: "",
     productsSyncedToday: 0,
   });
@@ -100,7 +101,7 @@ export default function SettingsPage() {
     }
   };
 
-  if (loading) return <AdminLoader />;
+  if (loading) return <AdminSkeleton variant="form" />;
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -177,6 +178,20 @@ export default function SettingsPage() {
                 onChange={handleChange}
                 className="w-full p-2 border rounded-md focus:ring-2 focus:ring-black focus:outline-none"
                 placeholder="e.g. C1234567890"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Facebook Pixel ID
+              </label>
+              <input
+                type="text"
+                name="facebookPixelId"
+                value={settings.facebookPixelId}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-md focus:ring-2 focus:ring-black focus:outline-none"
+                placeholder="e.g. 1234567890123456"
               />
             </div>
           </div>

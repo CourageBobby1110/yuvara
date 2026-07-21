@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { useCurrency } from "@/context/CurrencyContext";
+import AdminSkeleton from "@/components/AdminSkeleton";
 
 interface FavoriteItem {
   _id: string;
@@ -56,7 +57,7 @@ export default function AdminFavoritesPage() {
   const handleSendEmail = async (item: FavoriteItem) => {
     if (!confirm(`Send promotional email to ${item.user.name}?`)) return;
 
-    const rateNGN = 1500; // Default rate if context not available, but we can try to get it from context if exposed
+    const rateNGN = 1500;
     const priceInNGN = item.product.price * rateNGN;
 
     setSendingEmail(item._id);
@@ -89,11 +90,7 @@ export default function AdminFavoritesPage() {
   };
 
   if (loading) {
-    return (
-      <div className={styles.loaderContainer}>
-        <div className={styles.loader}></div>
-      </div>
-    );
+    return <AdminSkeleton variant="table" />;
   }
 
   return (

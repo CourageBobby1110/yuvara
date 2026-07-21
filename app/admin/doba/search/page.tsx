@@ -5,12 +5,14 @@ import {
   Search,
   Download,
   Loader2,
-  ExternalLink,
   AlertCircle,
+  Package,
+  Settings,
 } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import Link from "next/link";
+import styles from "./DobaSearch.module.css";
 
 export default function DobaSearchPage() {
   const [query, setQuery] = useState("");
@@ -72,121 +74,113 @@ export default function DobaSearchPage() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Doba Dropshipping
-          </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">
-            Search and import products from Doba
-          </p>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <div className={styles.headerLeft}>
+          <h1 className={styles.title}>Doba Dropshipping</h1>
+          <p className={styles.subtitle}>Search and import products from Doba</p>
         </div>
-        <Link
-          href="/admin/settings"
-          className="text-sm text-blue-600 hover:underline"
-        >
+        <Link href="/admin/settings" className={styles.settingsLink}>
+          <Settings size={14} />
           Configure API Keys
         </Link>
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
-        <form onSubmit={handleSearch} className="flex gap-4">
-          <div className="relative flex-1">
-            <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-              size={20}
-            />
+      <div className={styles.card}>
+        <form onSubmit={handleSearch} className={styles.searchForm}>
+          <div className={styles.searchInputWrapper}>
+            <Search size={18} className={styles.searchIcon} />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search products on Doba..."
-              className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+              className={styles.searchInput}
             />
           </div>
           <button
             type="submit"
-            disabled={loading}
-            className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 disabled:opacity-50"
+            disabled={loading || !query.trim()}
+            className={styles.searchButton}
           >
             {loading ? (
-              <Loader2 className="animate-spin" size={20} />
+              <Loader2 size={18} className={styles.spinnerIcon} />
             ) : (
-              "Search"
+              <>
+                <Search size={18} />
+                <span className={styles.searchButtonText}>Search</span>
+              </>
             )}
           </button>
         </form>
       </div>
 
-      {/* Results */}
+      {/* Error */}
       {error && (
-        <div className="p-4 bg-red-50 text-red-600 rounded-lg mb-6 flex items-center gap-2">
-          <AlertCircle size={20} />
-          {error}
+        <div className={styles.errorBanner}>
+          <AlertCircle size={18} />
+          <span>{error}</span>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {/* Results */}
+      <div className={styles.productGrid}>
         {products.map((product) => (
-          <div
-            key={product.id}
-            className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow"
-          >
-            <div className="relative aspect-square">
+          <div key={product.id} className={styles.productCard}>
+            <div className={styles.imageWrapper}>
               <Image
                 src={product.image}
                 alt={product.title}
                 fill
-                className="object-cover"
+                className={styles.productImage}
               />
             </div>
-            <div className="p-4">
-              <h3 className="font-medium text-gray-900 dark:text-white line-clamp-2 mb-2 h-12">
-                {product.title}
-              </h3>
 
-              <div className="flex items-end justify-between mb-4">
-                <div>
-                  <p className="text-xs text-gray-500">Cost</p>
-                  <p className="text-lg font-bold text-blue-600">
-                    ${product.price}
-                  </p>
+            <div className={styles.productInfo}>
+              <h3 className={styles.productName}>{product.title}</h3>
+
+              <div className={styles.priceRow}>
+                <div className={styles.priceBlock}>
+                  <span className={styles.priceLabel}>Cost</span>
+                  <span className={styles.price}>${product.price}</span>
                 </div>
                 {product.shipping > 0 && (
-                  <div className="text-right">
-                    <p className="text-xs text-gray-500">Shipping</p>
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      ${product.shipping}
-                    </p>
+                  <div className={styles.priceBlock}>
+                    <span className={styles.priceLabel}>Shipping</span>
+                    <span className={styles.priceSecondary}>${product.shipping}</span>
                   </div>
                 )}
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
-                <div className="text-xs text-gray-500">
+              <div className={styles.cardFooter}>
+                <span className={styles.stockInfo}>
                   Stock: {product.inventory}
-                </div>
+                </span>
                 <button
                   onClick={() => handleImport(product)}
                   disabled={importing === product.id}
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
+                  className={styles.importButton}
                 >
                   {importing === product.id ? (
-                    <Loader2 className="animate-spin" size={16} />
+                    <Loader2 size={14} className={styles.spinnerIcon} />
                   ) : (
-                    <>
-                      <Download size={16} />
-                      Import
-                    </>
+                    <Download size={14} />
                   )}
+                  Import
                 </button>
               </div>
             </div>
           </div>
         ))}
       </div>
+
+      {!loading && products.length === 0 && !error && (
+        <div className={styles.emptyState}>
+          <Package size={40} />
+          <p>Search for products to start importing from Doba</p>
+        </div>
+      )}
     </div>
   );
 }

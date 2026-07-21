@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     // Email content
     const subject = `Quick question about your wishlist item: ${productName}`;
     const text = `Hi ${userName},\n\nWe noticed you have your eye on the ${productName}.\n\nIt's a fantastic choice. Why not make it yours today?\n\nPrice: ₦${productPrice.toLocaleString()}\n\nShop Now: ${
-      process.env.NEXT_PUBLIC_APP_URL
+      process.env.NEXT_PUBLIC_SITE_URL
     }/products/${productSlug}\n\n\n© ${new Date().getFullYear()} Yuvara. All rights reserved.`;
     const html = `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
         </p>
         <div style="text-align: center; margin-top: 30px;">
           <a href="${
-            process.env.NEXT_PUBLIC_APP_URL
+            process.env.NEXT_PUBLIC_SITE_URL
           }/products/${productSlug}" style="background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">
             Shop Now
           </a>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import styles from "./HomepageAdmin.module.css";
-import AdminLoader from "@/components/AdminLoader";
+import AdminSkeleton from "@/components/AdminSkeleton";
 import { useRouter } from "next/navigation";
 
 export default function HomepageAdminPage() {
@@ -145,7 +145,7 @@ export default function HomepageAdminPage() {
     }
   };
 
-  if (loading) return <AdminLoader />;
+  if (loading) return <AdminSkeleton variant="form" />;
 
   return (
     <div className={styles.container}>

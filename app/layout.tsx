@@ -113,6 +113,7 @@ export default async function RootLayout({
     googleTagManagerId?: string;
     klaviyoPublicKey?: string;
     tiktokPixelId?: string;
+    facebookPixelId?: string;
   } | null;
 
   // Get GA ID - prefer database value, fallback to env variable
@@ -120,13 +121,11 @@ export default async function RootLayout({
   const gtmId = settings?.googleTagManagerId || process.env.NEXT_PUBLIC_GTM_ID || "";
   const klaviyoId = settings?.klaviyoPublicKey || process.env.NEXT_PUBLIC_KLAVIYO_PUBLIC_KEY;
   const tiktokId = settings?.tiktokPixelId || process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID;
+  const fbPixelId = settings?.facebookPixelId || process.env.NEXT_PUBLIC_FB_PIXEL_ID || "";
 
-  const userEmail = session?.user?.email || "";
   const userRole = session?.user?.role || "";
-  const isAdmin =
-    userRole === "admin" ||
-    userRole === "worker" ||
-    userEmail.toLowerCase().includes("admin");
+  const isAdmin = userRole === "admin" || userRole === "worker";
+  const forceAnalytics = process.env.NEXT_PUBLIC_FORCE_ANALYTICS === "true";
 
   return (
     <html lang="en">
@@ -137,7 +136,7 @@ export default async function RootLayout({
         <LanguageProvider>
           <CurrencyProvider>
             <AuthProvider session={session}>
-              <AnalyticsBlocker gaId={gaId} />
+              <AnalyticsBlocker gaId={gaId} forceAnalytics={forceAnalytics} />
               <LayoutWrapper session={session}>{children}</LayoutWrapper>
               <Toaster position="bottom-right" />
               <OfflineBanner />
@@ -148,9 +147,9 @@ export default async function RootLayout({
           src="https://accounts.google.com/gsi/client"
           strategy="beforeInteractive"
         />
-        {!isAdmin && gaId && <GoogleAnalytics gaId={gaId} />}
-        {!isAdmin && gtmId && <GoogleTagManager gtmId={gtmId} />}
-        {!isAdmin && <FacebookPixel />}
+        {(!isAdmin || forceAnalytics) && gaId && <GoogleAnalytics gaId={gaId} />}
+        {(!isAdmin || forceAnalytics) && gtmId && <GoogleTagManager gtmId={gtmId} />}
+        {!isAdmin && <FacebookPixel id={fbPixelId} />}
         {!isAdmin && <KlaviyoScript id={klaviyoId} />}
         {!isAdmin && <TikTokPixel id={tiktokId} />}
         <ReferralHandler />

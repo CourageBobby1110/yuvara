@@ -5,14 +5,16 @@ import {
   Search,
   Settings,
   Package,
-  ShoppingBag,
   ExternalLink,
   RefreshCw,
   Loader2,
+  ArrowRight,
+  Zap,
 } from "lucide-react";
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
+import styles from "./Dropshipping.module.css";
 
 export default function DropshippingDashboard() {
   const [syncing, setSyncing] = useState(false);
@@ -30,127 +32,106 @@ export default function DropshippingDashboard() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
-      <div className="mb-10 flex items-end justify-between">
-        <div>
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white tracking-tight">
-            Dropshipping Center
-          </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-3 text-lg">
-            Seamlessly find, import, and sell products from global suppliers.
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <div className={styles.headerLeft}>
+          <h1 className={styles.title}>Dropshipping Center</h1>
+          <p className={styles.subtitle}>
+            Find, import, and sell products from global suppliers.
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className={styles.headerActions}>
           <button
             onClick={handleSync}
             disabled={syncing}
-            className="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+            className={styles.syncButton}
           >
             {syncing ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 size={16} className={styles.spinnerIcon} />
             ) : (
-              <RefreshCw className="mr-2 h-4 w-4" />
+              <RefreshCw size={16} />
             )}
-            {syncing ? "Syncing..." : "Sync Prices"}
-          </button>
-          <div className="hidden md:block">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-              Powered by CJ Dropshipping
+            <span className={styles.syncLabel}>
+              {syncing ? "Syncing..." : "Sync Prices"}
             </span>
-          </div>
+          </button>
+          <span className={styles.poweredBy}>
+            <Zap size={12} />
+            CJ Dropshipping
+          </span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className={styles.cardGrid}>
         {/* Search Card */}
-        <Link
-          href="/admin/dropshipping/search"
-          className="group relative overflow-hidden p-8 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all shadow-sm hover:shadow-xl"
-        >
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Search className="h-32 w-32 text-blue-600" />
+        <Link href="/admin/dropshipping/search" className={styles.dashCard}>
+          <div className={styles.cardIconWrapper} style={{ backgroundColor: "#eff6ff" }}>
+            <Search size={24} style={{ color: "#2563eb" }} />
           </div>
-          <div className="relative z-10">
-            <div className="h-14 w-14 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-              <Search className="h-7 w-7 text-blue-600 dark:text-blue-400" />
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-              Find Products
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
-              Search millions of products from CJ Dropshipping. Filter by
-              category, price, and warehouse location.
+          <div className={styles.cardContent}>
+            <h3 className={styles.cardTitle}>Find Products</h3>
+            <p className={styles.cardDescription}>
+              Search millions of products. Filter by category, price, and warehouse.
             </p>
-            <div className="mt-6 flex items-center text-blue-600 dark:text-blue-400 font-medium">
-              Start Searching <ExternalLink className="ml-2 h-4 w-4" />
-            </div>
+          </div>
+          <div className={styles.cardFooter}>
+            <span className={styles.cardLink} style={{ color: "#2563eb" }}>
+              Start Searching
+            </span>
+            <ArrowRight size={14} style={{ color: "#2563eb" }} />
           </div>
         </Link>
 
         {/* Imported Products Card */}
-        <Link
-          href="/admin/products?source=dropshipping"
-          className="group relative overflow-hidden p-8 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-all shadow-sm hover:shadow-xl"
-        >
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Package className="h-32 w-32 text-purple-600" />
+        <Link href="/admin/products?source=dropshipping" className={styles.dashCard}>
+          <div className={styles.cardIconWrapper} style={{ backgroundColor: "#faf5ff" }}>
+            <Package size={24} style={{ color: "#9333ea" }} />
           </div>
-          <div className="relative z-10">
-            <div className="h-14 w-14 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-              <Package className="h-7 w-7 text-purple-600 dark:text-purple-400" />
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-              Imported Products
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
-              View and manage the products you've already imported. Update
-              prices and sync inventory.
+          <div className={styles.cardContent}>
+            <h3 className={styles.cardTitle}>Imported Products</h3>
+            <p className={styles.cardDescription}>
+              View and manage imported products. Update prices and sync inventory.
             </p>
-            <div className="mt-6 flex items-center text-purple-600 dark:text-purple-400 font-medium">
-              Manage Inventory <ExternalLink className="ml-2 h-4 w-4" />
-            </div>
+          </div>
+          <div className={styles.cardFooter}>
+            <span className={styles.cardLink} style={{ color: "#9333ea" }}>
+              Manage Inventory
+            </span>
+            <ArrowRight size={14} style={{ color: "#9333ea" }} />
           </div>
         </Link>
 
         {/* Settings Card */}
-        <Link
-          href="/admin/dropshipping/settings"
-          className="group relative overflow-hidden p-8 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-gray-500 dark:hover:border-gray-500 transition-all shadow-sm hover:shadow-xl"
-        >
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Settings className="h-32 w-32 text-gray-600" />
+        <Link href="/admin/dropshipping/settings" className={styles.dashCard}>
+          <div className={styles.cardIconWrapper} style={{ backgroundColor: "#f9fafb" }}>
+            <Settings size={24} style={{ color: "#6b7280" }} />
           </div>
-          <div className="relative z-10">
-            <div className="h-14 w-14 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-              <Settings className="h-7 w-7 text-gray-600 dark:text-gray-400" />
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-              Configuration
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
-              Connect your CJ Dropshipping account, set global pricing rules,
-              and configure auto-sync.
+          <div className={styles.cardContent}>
+            <h3 className={styles.cardTitle}>Configuration</h3>
+            <p className={styles.cardDescription}>
+              Connect your CJ account, set pricing rules, and configure auto-sync.
             </p>
-            <div className="mt-6 flex items-center text-gray-600 dark:text-gray-400 font-medium">
-              Configure <ExternalLink className="ml-2 h-4 w-4" />
-            </div>
+          </div>
+          <div className={styles.cardFooter}>
+            <span className={styles.cardLink} style={{ color: "#6b7280" }}>
+              Configure
+            </span>
+            <ArrowRight size={14} style={{ color: "#6b7280" }} />
           </div>
         </Link>
       </div>
 
-      <div className="mt-12 bg-blue-50 dark:bg-blue-900/10 rounded-2xl p-8 border border-blue-100 dark:border-blue-900/20">
-        <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">
-          Getting Started
-        </h3>
-        <p className="text-blue-700 dark:text-blue-300 mb-4">
-          To start importing products, you'll need to connect your CJ
-          Dropshipping account. Go to Settings to enter your API credentials.
-        </p>
-        <Link
-          href="/admin/dropshipping/settings"
-          className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
-        >
+      {/* Getting Started */}
+      <div className={styles.infoBanner}>
+        <div className={styles.infoContent}>
+          <h3 className={styles.infoTitle}>Getting Started</h3>
+          <p className={styles.infoText}>
+            Connect your CJ Dropshipping account in Settings to start importing products.
+          </p>
+        </div>
+        <Link href="/admin/dropshipping/settings" className={styles.infoButton}>
           Setup API Connection
+          <ExternalLink size={14} />
         </Link>
       </div>
     </div>

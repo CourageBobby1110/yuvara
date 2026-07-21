@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import styles from "./AdminOrders.module.css";
 import { useCurrency } from "@/context/CurrencyContext";
-import AdminLoader from "@/components/AdminLoader";
+import AdminSkeleton from "@/components/AdminSkeleton";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Order {
@@ -78,7 +78,7 @@ export default function AdminOrdersPage() {
     setCurrentPage(1);
   }, [searchQuery, itemsPerPage]);
 
-  if (loading) return <AdminLoader />;
+  if (loading) return <AdminSkeleton variant="table" />;
 
   return (
     <div className={styles.container}>

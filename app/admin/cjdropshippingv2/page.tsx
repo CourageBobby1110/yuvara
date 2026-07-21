@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import axios from "axios";
-import { Search, Loader2 } from "lucide-react";
+import { Search, Loader2, Package, Download } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -59,15 +59,15 @@ export default function CJExactSearchPage() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>CJ Exact Search (V2)</h1>
+        <h1 className={styles.title}>CJ Exact Search</h1>
         <p className={styles.subtitle}>
-          Find exact items by pasting a product URL or PID. Seamlessly import
-          high-quality products into your catalog.
+          Find exact items by pasting a product URL or PID.
         </p>
       </div>
 
       <form onSubmit={handleSearch} className={styles.searchForm}>
         <div className={styles.searchWrapper}>
+          <Search size={18} className={styles.searchIcon} />
           <input
             type="text"
             value={query}
@@ -82,9 +82,9 @@ export default function CJExactSearchPage() {
             title="Search"
           >
             {loading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
+              <Loader2 size={18} className={styles.spinnerIcon} />
             ) : (
-              <Search className="w-5 h-5" />
+              <Search size={18} />
             )}
           </button>
         </div>
@@ -127,16 +127,24 @@ export default function CJExactSearchPage() {
             >
               {importing === product.pid ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Importing...</span>
+                  <Loader2 size={16} className={styles.spinnerIcon} />
+                  Importing...
                 </>
               ) : (
                 <>
-                  <span>Import Product</span>
+                  <Download size={16} />
+                  Import Product
                 </>
               )}
             </button>
           </div>
+        </div>
+      )}
+
+      {!product && !loading && (
+        <div className={styles.emptyState}>
+          <Package size={40} />
+          <p>Paste a CJ Dropshipping URL or PID above to find a product</p>
         </div>
       )}
     </div>

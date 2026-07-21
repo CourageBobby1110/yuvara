@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useCurrency } from "@/context/CurrencyContext";
-import AdminLoader from "@/components/AdminLoader";
+import AdminSkeleton from "@/components/AdminSkeleton";
 import styles from "./Affiliates.module.css";
 import { toast } from "sonner";
 
@@ -121,7 +121,7 @@ export default function AdminAffiliatesPage() {
     }
   };
 
-  if (loading) return <AdminLoader />;
+  if (loading) return <AdminSkeleton variant="cards" />;
 
   return (
     <div className={styles.container}>

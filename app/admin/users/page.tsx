@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import styles from "./AdminUsers.module.css";
-import AdminLoader from "@/components/AdminLoader";
+import AdminSkeleton from "@/components/AdminSkeleton";
 import { useCurrency } from "@/context/CurrencyContext";
 import {
   Search,
@@ -209,7 +209,7 @@ export default function AdminUsersPage() {
     }
   };
 
-  if (loading) return <AdminLoader />;
+  if (loading) return <AdminSkeleton variant="table" />;
 
   return (
     <div className={styles.container}>

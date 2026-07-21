@@ -33,6 +33,7 @@ const SiteSettingsSchema = new Schema(
     googleSiteVerification: { type: String, default: "" },
     klaviyoPublicKey: { type: String, default: "" },
     tiktokPixelId: { type: String, default: "" },
+    facebookPixelId: { type: String, default: "" },
     cjDropshippingApiKey: { type: String, default: "" },
     cjDropshippingUserId: { type: String, default: "" },
     cjAccessToken: { type: String, default: "" },
@@ -74,6 +75,7 @@ export interface ISiteSettings {
   googleSiteVerification?: string;
   klaviyoPublicKey: string;
   tiktokPixelId: string;
+  facebookPixelId: string;
   cjDropshippingApiKey: string;
   cjDropshippingUserId: string;
   cjAccessToken: string;

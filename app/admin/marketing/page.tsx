@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import styles from "./AdminMarketing.module.css";
-import AdminLoader from "@/components/AdminLoader";
+import AdminSkeleton from "@/components/AdminSkeleton";
 
 interface User {
   _id: string;
@@ -100,7 +100,7 @@ export default function MarketingPage() {
     }
   };
 
-  if (loading) return <AdminLoader />;
+  if (loading) return <AdminSkeleton variant="cards" />;
 
   return (
     <div className={styles.container}>

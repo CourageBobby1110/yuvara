@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Save, HelpCircle } from "lucide-react";
-import AdminLoader from "@/components/AdminLoader";
+import AdminSkeleton from "@/components/AdminSkeleton";
 
 export default function InvestmentSettingsPage() {
   const [profitRate, setProfitRate] = useState<number>(50);
@@ -65,7 +65,7 @@ export default function InvestmentSettingsPage() {
     }
   };
 
-  if (loading) return <AdminLoader />;
+  if (loading) return <AdminSkeleton variant="form" />;
 
   return (
     <div className="p-6 max-w-2xl mx-auto">

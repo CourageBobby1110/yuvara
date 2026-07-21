@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./AdminInvestors.module.css";
-import YuvaraLoader from "@/components/YuvaraLoader";
+import AdminSkeleton from "@/components/AdminSkeleton";
 
 interface Investor {
   _id: string;
@@ -317,11 +317,7 @@ export default function AdminInvestorsPage() {
       </div>
 
       {loading ? (
-        <div
-          style={{ display: "flex", justifyContent: "center", padding: "2rem" }}
-        >
-          <YuvaraLoader text="Loading Investors..." />
-        </div>
+        <AdminSkeleton variant="cards" />
       ) : (
         <div className={styles.grid}>
           {investors.map((investor) => (

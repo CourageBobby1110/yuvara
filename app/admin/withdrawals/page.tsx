@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import styles from "./AdminWithdrawals.module.css";
-import YuvaraLoader from "@/components/YuvaraLoader";
+import AdminSkeleton from "@/components/AdminSkeleton";
 import { useCurrency } from "@/context/CurrencyContext";
 
 interface Withdrawal {
@@ -92,11 +92,7 @@ export default function AdminWithdrawalsPage() {
       </div>
 
       {loading ? (
-        <div
-          style={{ display: "flex", justifyContent: "center", padding: "4rem" }}
-        >
-          <YuvaraLoader text="Loading Requests..." />
-        </div>
+        <AdminSkeleton variant="cards" />
       ) : (
         <div className={styles.grid}>
           {withdrawals.length === 0 ? (

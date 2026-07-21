@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import styles from "./Messages.module.css";
-import AdminLoader from "@/components/AdminLoader";
+import AdminSkeleton from "@/components/AdminSkeleton";
 
 interface ContactMessage {
   _id: string;
@@ -85,7 +85,7 @@ export default function AdminMessagesPage() {
   };
 
   if (loading) {
-    return <AdminLoader />;
+    return <AdminSkeleton variant="table" />;
   }
 
   return (

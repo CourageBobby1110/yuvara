@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import styles from "./WhatsApp.module.css";
-import AdminLoader from "@/components/AdminLoader";
+import AdminSkeleton from "@/components/AdminSkeleton";
+import { Send, MessageCircle, Users, ShoppingCart, Clock, ChevronDown, ChevronUp } from "lucide-react";
 
 interface WhatsAppSession {
   _id: string;
@@ -121,18 +122,12 @@ export default function AdminWhatsAppPage() {
       const data = await res.json();
 
       if (res.ok) {
-        setToast({
-          message: `✅ ${data.message}`,
-          type: "success",
-        });
+        setToast({ message: data.message, type: "success" });
       } else {
-        setToast({
-          message: `❌ ${data.error || "Failed to send promotions"}`,
-          type: "error",
-        });
+        setToast({ message: data.error || "Failed to send promotions", type: "error" });
       }
     } catch (error) {
-      setToast({ message: "❌ Network error", type: "error" });
+      setToast({ message: "Network error", type: "error" });
     } finally {
       setPromoSending(false);
     }
@@ -168,7 +163,7 @@ export default function AdminWhatsAppPage() {
   };
 
   if (loading) {
-    return <AdminLoader />;
+    return <AdminSkeleton variant="cards" />;
   }
 
   return (
@@ -186,7 +181,14 @@ export default function AdminWhatsAppPage() {
           onClick={triggerPromo}
           disabled={promoSending}
         >
-          {promoSending ? "📨 Sending..." : "📣 Send Promotions"}
+          {promoSending ? (
+            <>Sending...</>
+          ) : (
+            <>
+              <Send size={16} />
+              Send Promotions
+            </>
+          )}
         </button>
       </div>
 
@@ -194,20 +196,40 @@ export default function AdminWhatsAppPage() {
       {stats && (
         <div className={styles.statsGrid}>
           <div className={styles.statCard}>
-            <div className={styles.statValue}>{stats.totalSessions}</div>
-            <div className={styles.statLabel}>Total Conversations</div>
+            <div className={styles.statIcon}>
+              <MessageCircle size={20} />
+            </div>
+            <div className={styles.statInfo}>
+              <span className={styles.statValue}>{stats.totalSessions}</span>
+              <span className={styles.statLabel}>Total Conversations</span>
+            </div>
           </div>
           <div className={styles.statCard}>
-            <div className={styles.statValue}>{stats.activeLast24h}</div>
-            <div className={styles.statLabel}>Active (24h)</div>
+            <div className={`${styles.statIcon} ${styles.statIconActive}`}>
+              <Clock size={20} />
+            </div>
+            <div className={styles.statInfo}>
+              <span className={styles.statValue}>{stats.activeLast24h}</span>
+              <span className={styles.statLabel}>Active (24h)</span>
+            </div>
           </div>
           <div className={styles.statCard}>
-            <div className={styles.statValue}>{stats.registeredUsers}</div>
-            <div className={styles.statLabel}>Registered Users</div>
+            <div className={styles.statIcon}>
+              <Users size={20} />
+            </div>
+            <div className={styles.statInfo}>
+              <span className={styles.statValue}>{stats.registeredUsers}</span>
+              <span className={styles.statLabel}>Registered</span>
+            </div>
           </div>
           <div className={styles.statCard}>
-            <div className={styles.statValue}>{stats.withItemsInCart}</div>
-            <div className={styles.statLabel}>Items in Cart</div>
+            <div className={styles.statIcon}>
+              <ShoppingCart size={20} />
+            </div>
+            <div className={styles.statInfo}>
+              <span className={styles.statValue}>{stats.withItemsInCart}</span>
+              <span className={styles.statLabel}>In Cart</span>
+            </div>
           </div>
         </div>
       )}
@@ -234,26 +256,24 @@ export default function AdminWhatsAppPage() {
       {/* Session List */}
       {filteredSessions.length === 0 ? (
         <div className={styles.empty}>
-          No WhatsApp conversations yet. Once users message the bot, conversations will appear here.
+          <MessageCircle size={32} />
+          <p>No WhatsApp conversations yet.</p>
         </div>
       ) : (
         <div className={styles.sessionList}>
           {filteredSessions.map((s) => (
             <div key={s._id} className={styles.sessionCard}>
-              {/* Session Header */}
               <div
                 className={styles.sessionHeader}
                 onClick={() => fetchChat(s.phone)}
               >
                 <div className={styles.avatar}>{getInitials(s.name)}</div>
                 <div className={styles.sessionInfo}>
-                  <div className={styles.sessionName}>
-                    {s.name || "Unknown"}
-                  </div>
+                  <div className={styles.sessionName}>{s.name || "Unknown"}</div>
                   <div className={styles.sessionPhone}>{s.phone}</div>
                   {s.lastMessage && (
                     <div className={styles.sessionPreview}>
-                      {s.lastMessageRole === "assistant" ? "🤖 " : "👤 "}
+                      {s.lastMessageRole === "assistant" ? "Bot: " : "User: "}
                       {s.lastMessage}
                     </div>
                   )}
@@ -275,15 +295,13 @@ export default function AdminWhatsAppPage() {
                     )}
                     {s.cart && s.cart.length > 0 && (
                       <span className={`${styles.badge} ${styles.badgeCart}`}>
-                        🛒 {s.cart.length}
-                      </span>
-                    )}
-                    {s.state !== "idle" && (
-                      <span className={`${styles.badge} ${styles.badgeState}`}>
-                        {s.state}
+                        Cart ({s.cart.length})
                       </span>
                     )}
                   </div>
+                  <span className={styles.expandIcon}>
+                    {expandedPhone === s.phone ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </span>
                 </div>
               </div>
 
@@ -306,7 +324,7 @@ export default function AdminWhatsAppPage() {
                         >
                           {msg.content}
                           <div className={styles.chatTimestamp}>
-                            {msg.role === "user" ? "👤 Customer" : "🤖 Bot"}
+                            {msg.role === "user" ? "Customer" : "Bot"}
                             {msg.timestamp &&
                               ` · ${new Date(msg.timestamp).toLocaleTimeString()}`}
                           </div>

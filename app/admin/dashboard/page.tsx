@@ -1,5 +1,5 @@
 "use client";
-import AdminLoader from "@/components/AdminLoader";
+import AdminSkeleton from "@/components/AdminSkeleton";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -81,9 +81,9 @@ export default function AdminDashboard() {
     }
   };
 
-  if (status === "loading" || loading) return <AdminLoader />;
+  if (status === "loading" || loading) return <AdminSkeleton variant="dashboard" />;
 
-  if (!session) return <AdminLoader />;
+  if (!session) return <AdminSkeleton variant="dashboard" />;
 
   const isWorker = session?.user?.role === "worker";
 

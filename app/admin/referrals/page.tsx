@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import styles from "./AdminReferrals.module.css";
-import AdminLoader from "@/components/AdminLoader";
+import AdminSkeleton from "@/components/AdminSkeleton";
+import { Plus } from "lucide-react";
 
 interface ReferralBatch {
   _id: string;
@@ -63,21 +63,24 @@ export default function AdminReferralsPage() {
     }
   };
 
-  if (loading) return <AdminLoader />;
+  if (loading) return <AdminSkeleton variant="table" />;
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-8">Referral Campaigns</h1>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Referral Campaigns</h1>
+        <p className={styles.subtitle}>Manage referral campaigns and winners</p>
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className={styles.grid}>
         {/* Create Form */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-fit">
-          <h2 className="text-lg font-semibold mb-4">Create New Batch</h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Campaign Name
-              </label>
+        <div className={styles.card}>
+          <div className={styles.cardHeader}>
+            <h2 className={styles.cardTitle}>Create New Batch</h2>
+          </div>
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.field}>
+              <label className={styles.label}>Campaign Name</label>
               <input
                 type="text"
                 required
@@ -85,15 +88,13 @@ export default function AdminReferralsPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
-                className="w-full rounded-lg border-gray-200 focus:border-black focus:ring-black"
+                className={styles.input}
                 placeholder="e.g., November Giveaway"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Start Date
-                </label>
+            <div className={styles.dateRow}>
+              <div className={styles.field}>
+                <label className={styles.label}>Start Date</label>
                 <input
                   type="date"
                   required
@@ -101,13 +102,11 @@ export default function AdminReferralsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, startDate: e.target.value })
                   }
-                  className="w-full rounded-lg border-gray-200 focus:border-black focus:ring-black"
+                  className={styles.input}
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  End Date
-                </label>
+              <div className={styles.field}>
+                <label className={styles.label}>End Date</label>
                 <input
                   type="date"
                   required
@@ -115,14 +114,12 @@ export default function AdminReferralsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, endDate: e.target.value })
                   }
-                  className="w-full rounded-lg border-gray-200 focus:border-black focus:ring-black"
+                  className={styles.input}
                 />
               </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Max Winners
-              </label>
+            <div className={styles.field}>
+              <label className={styles.label}>Max Winners</label>
               <input
                 type="number"
                 required
@@ -134,72 +131,68 @@ export default function AdminReferralsPage() {
                     maxWinners: parseInt(e.target.value),
                   })
                 }
-                className="w-full rounded-lg border-gray-200 focus:border-black focus:ring-black"
+                className={styles.input}
               />
             </div>
             <button
               type="submit"
               disabled={isCreating}
-              className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-800 disabled:opacity-50"
+              className={styles.submitButton}
             >
+              <Plus size={16} />
               {isCreating ? "Creating..." : "Create Campaign"}
             </button>
           </form>
         </div>
 
         {/* List */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Active & Past Campaigns</h2>
-          {batches.map((batch) => (
-            <div
-              key={batch._id}
-              className="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
-            >
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="font-bold text-lg">{batch.name}</h3>
-                  <p className="text-sm text-gray-500">
-                    {new Date(batch.startDate).toLocaleDateString()} -{" "}
-                    {new Date(batch.endDate).toLocaleDateString()}
-                  </p>
-                </div>
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    batch.isActive
-                      ? "bg-green-100 text-green-800"
-                      : "bg-gray-100 text-gray-800"
-                  }`}
-                >
-                  {batch.isActive ? "Active" : "Inactive"}
-                </span>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Winners Claimed</span>
-                  <span className="font-medium">
-                    {batch.currentWinners} / {batch.maxWinners}
+        <div className={styles.listSection}>
+          <h2 className={styles.sectionTitle}>Active & Past Campaigns</h2>
+          <div className={styles.campaignList}>
+            {batches.map((batch) => (
+              <div key={batch._id} className={styles.card}>
+                <div className={styles.batchHeader}>
+                  <div className={styles.batchInfo}>
+                    <h3 className={styles.batchName}>{batch.name}</h3>
+                    <p className={styles.batchDates}>
+                      {new Date(batch.startDate).toLocaleDateString()} -{" "}
+                      {new Date(batch.endDate).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <span
+                    className={`${styles.badge} ${
+                      batch.isActive ? styles.badgeActive : styles.badgeInactive
+                    }`}
+                  >
+                    {batch.isActive ? "Active" : "Inactive"}
                   </span>
                 </div>
-                <div className="w-full bg-gray-100 rounded-full h-2">
-                  <div
-                    className="bg-black h-2 rounded-full transition-all duration-500"
-                    style={{
-                      width: `${Math.min(
-                        100,
-                        (batch.currentWinners / batch.maxWinners) * 100
-                      )}%`,
-                    }}
-                  />
+
+                <div className={styles.progressSection}>
+                  <div className={styles.progressInfo}>
+                    <span className={styles.progressLabel}>Winners Claimed</span>
+                    <span className={styles.progressValue}>
+                      {batch.currentWinners} / {batch.maxWinners}
+                    </span>
+                  </div>
+                  <div className={styles.progressBar}>
+                    <div
+                      className={styles.progressFill}
+                      style={{
+                        width: `${Math.min(
+                          100,
+                          (batch.currentWinners / batch.maxWinners) * 100
+                        )}%`,
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-          {batches.length === 0 && (
-            <p className="text-gray-500 text-center py-8">
-              No campaigns found.
-            </p>
-          )}
+            ))}
+            {batches.length === 0 && (
+              <div className={styles.emptyState}>No campaigns found.</div>
+            )}
+          </div>
         </div>
       </div>
     </div>

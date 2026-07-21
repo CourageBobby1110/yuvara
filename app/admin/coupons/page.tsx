@@ -3,7 +3,20 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import styles from "./AdminCoupons.module.css";
-import AdminLoader from "@/components/AdminLoader";
+import AdminSkeleton from "@/components/AdminSkeleton";
+import {
+  Plus,
+  Search,
+  Trash2,
+  Power,
+  PowerOff,
+  Pencil,
+  Tag,
+  X,
+  Check,
+  Percent,
+  Clock,
+} from "lucide-react";
 
 interface Coupon {
   _id: string;
@@ -21,6 +34,7 @@ interface Coupon {
 export default function AdminCouponsPage() {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState<number>(0);
   const [editMinPrice, setEditMinPrice] = useState<number>(0);
@@ -101,9 +115,7 @@ export default function AdminCouponsPage() {
   };
 
   const handleDelete = async (couponId: string) => {
-    if (!confirm("Are you sure you want to delete this coupon?")) {
-      return;
-    }
+    if (!confirm("Are you sure you want to delete this coupon?")) return;
 
     try {
       const res = await fetch(`/api/admin/coupons?id=${couponId}`, {
@@ -121,28 +133,93 @@ export default function AdminCouponsPage() {
     }
   };
 
-  if (loading) return <AdminLoader />;
+  if (loading) return <AdminSkeleton variant="table" />;
+
+  const filteredCoupons = coupons.filter(
+    (c) =>
+      c.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      c.discountType.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const activeCount = coupons.filter((c) => c.isActive).length;
+  const expiredCount = coupons.filter(
+    (c) => c.expirationDate && new Date(c.expirationDate) < new Date()
+  ).length;
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Coupons</h1>
-        <Link href="/admin/coupons/new" className={styles.addButton}>
-          Create New Coupon
+        <div className={styles.headerLeft}>
+          <h1 className={styles.title}>Coupons</h1>
+          <p className={styles.subtitle}>Create and manage discount coupons</p>
+        </div>
+        <Link href="/admin/coupons/new" className={styles.createButton}>
+          <Plus size={18} />
+          Create Coupon
         </Link>
       </div>
 
-      {/* Mobile Coupon Cards */}
+      <div className={styles.statsRow}>
+        <div className={styles.statCard}>
+          <div className={styles.statIcon}>
+            <Tag size={20} />
+          </div>
+          <div className={styles.statInfo}>
+            <span className={styles.statValue}>{coupons.length}</span>
+            <span className={styles.statLabel}>Total</span>
+          </div>
+        </div>
+        <div className={styles.statCard}>
+          <div className={`${styles.statIcon} ${styles.statIconActive}`}>
+            <Percent size={20} />
+          </div>
+          <div className={styles.statInfo}>
+            <span className={styles.statValue}>{activeCount}</span>
+            <span className={styles.statLabel}>Active</span>
+          </div>
+        </div>
+        <div className={styles.statCard}>
+          <div className={`${styles.statIcon} ${styles.statIconExpired}`}>
+            <Clock size={20} />
+          </div>
+          <div className={styles.statInfo}>
+            <span className={styles.statValue}>{expiredCount}</span>
+            <span className={styles.statLabel}>Expired</span>
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.filters}>
+        <div className={styles.searchWrapper}>
+          <Search size={18} className={styles.searchIcon} />
+          <input
+            type="text"
+            placeholder="Search coupons..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className={styles.searchInput}
+          />
+        </div>
+      </div>
+
       <div className={styles.mobileList}>
-        {coupons.length === 0 ? (
+        {filteredCoupons.length === 0 ? (
           <div className={styles.emptyState}>
-            No coupons found. Create one to get started.
+            <Tag size={48} className={styles.emptyIcon} />
+            <p>No coupons found.</p>
+            <Link href="/admin/coupons/new" className={styles.emptyAction}>
+              <Plus size={16} />
+              Create your first coupon
+            </Link>
           </div>
         ) : (
-          coupons.map((coupon) => (
+          filteredCoupons.map((coupon) => (
             <div key={coupon._id} className={styles.couponCard}>
-              <div className={styles.couponCardHeader}>
-                <div className={styles.couponCode}>{coupon.code}</div>
+              <div className={styles.cardTop}>
+                <div className={styles.cardCodeSection}>
+                  <Tag size={16} className={styles.cardTagIcon} />
+                  <code className={styles.couponCode}>{coupon.code}</code>
+                </div>
                 <span
                   className={`${styles.statusBadge} ${
                     coupon.isActive ? styles.active : styles.inactive
@@ -152,96 +229,111 @@ export default function AdminCouponsPage() {
                 </span>
               </div>
 
-              <div className={styles.couponCardDetails}>
-                <div className={styles.couponCardDetail}>
-                  <div className={styles.detailLabel}>Discount</div>
-                  <div className={styles.detailValue}>
-                    {editingId === coupon._id ? (
-                      <input
-                        type="number"
-                        value={editValue}
-                        onChange={(e) => setEditValue(Number(e.target.value))}
-                        className={styles.editInput}
-                      />
-                    ) : coupon.discountType === "percentage" ? (
-                      `${coupon.value}%`
-                    ) : (
-                      `₦${coupon.value.toLocaleString()}`
-                    )}
+              <div className={styles.discountBanner}>
+                {editingId === coupon._id ? (
+                  <div className={styles.editInline}>
+                    <input
+                      type="number"
+                      value={editValue}
+                      onChange={(e) => setEditValue(Number(e.target.value))}
+                      className={styles.editInput}
+                    />
+                    <span className={styles.editSuffix}>
+                      {coupon.discountType === "percentage" ? "%" : "\u20A6"}
+                    </span>
                   </div>
-                </div>
-                <div className={styles.couponCardDetail}>
-                  <div className={styles.detailLabel}>Usage</div>
-                  <div className={styles.detailValue}>
+                ) : (
+                  <>
+                    <span className={styles.discountValue}>
+                      {coupon.discountType === "percentage"
+                        ? `${coupon.value}%`
+                        : `\u20A6${coupon.value.toLocaleString()}`}
+                    </span>
+                    <span className={styles.discountType}>
+                      {coupon.discountType === "percentage"
+                        ? "Percentage off"
+                        : "Fixed amount"}
+                    </span>
+                  </>
+                )}
+              </div>
+
+              <div className={styles.cardDetails}>
+                <div className={styles.cardDetail}>
+                  <span className={styles.detailLabel}>Usage</span>
+                  <span className={styles.detailValue}>
                     {coupon.usedCount} /{" "}
-                    {coupon.usageLimit === null ? "∞" : coupon.usageLimit}
-                  </div>
+                    {coupon.usageLimit === null ? "\u221E" : coupon.usageLimit}
+                  </span>
                 </div>
-                <div className={styles.couponCardDetail}>
-                  <div className={styles.detailLabel}>Expires</div>
-                  <div className={styles.detailValue}>
+                <div className={styles.cardDetail}>
+                  <span className={styles.detailLabel}>Expires</span>
+                  <span className={styles.detailValue}>
                     {coupon.expirationDate
                       ? new Date(coupon.expirationDate).toLocaleDateString()
                       : "Never"}
-                  </div>
+                  </span>
                 </div>
-
-                <div className={styles.couponCardDetail}>
-                  <div className={styles.detailLabel}>Price Range</div>
-                  <div className={styles.detailValue}>
+                <div className={styles.cardDetail}>
+                  <span className={styles.detailLabel}>Min. Order</span>
+                  <span className={styles.detailValue}>
                     {editingId === coupon._id ? (
-                      <div className="flex gap-2">
-                        <input
-                          type="number"
-                          value={editMinPrice}
-                          onChange={(e) =>
-                            setEditMinPrice(Number(e.target.value))
-                          }
-                          className={styles.editInput}
-                          placeholder="Min"
-                        />
-                        <input
-                          type="number"
-                          value={editMaxPrice || ""}
-                          onChange={(e) =>
-                            setEditMaxPrice(
-                              e.target.value
-                                ? Number(e.target.value)
-                                : undefined
-                            )
-                          }
-                          className={styles.editInput}
-                          placeholder="Max"
-                        />
-                      </div>
+                      <input
+                        type="number"
+                        value={editMinPrice}
+                        onChange={(e) =>
+                          setEditMinPrice(Number(e.target.value))
+                        }
+                        className={styles.editInputSmall}
+                        placeholder="Min"
+                      />
+                    ) : coupon.minPrice > 0 ? (
+                      `\u20A6${coupon.minPrice.toLocaleString()}`
                     ) : (
-                      <>
-                        {coupon.minPrice > 0
-                          ? `Min: ₦${coupon.minPrice.toLocaleString()}`
-                          : "No Min"}
-                        {coupon.maxPrice
-                          ? ` - Max: ₦${coupon.maxPrice.toLocaleString()}`
-                          : ""}
-                      </>
+                      "No minimum"
                     )}
-                  </div>
+                  </span>
+                </div>
+                <div className={styles.cardDetail}>
+                  <span className={styles.detailLabel}>Max. Order</span>
+                  <span className={styles.detailValue}>
+                    {editingId === coupon._id ? (
+                      <input
+                        type="number"
+                        value={editMaxPrice || ""}
+                        onChange={(e) =>
+                          setEditMaxPrice(
+                            e.target.value
+                              ? Number(e.target.value)
+                              : undefined
+                          )
+                        }
+                        className={styles.editInputSmall}
+                        placeholder="Max"
+                      />
+                    ) : coupon.maxPrice ? (
+                      `\u20A6${coupon.maxPrice.toLocaleString()}`
+                    ) : (
+                      "No maximum"
+                    )}
+                  </span>
                 </div>
               </div>
 
-              <div className={styles.actionButtons}>
+              <div className={styles.cardActions}>
                 {editingId === coupon._id ? (
                   <>
                     <button
                       onClick={() => handleSaveEdit(coupon)}
                       className={`${styles.actionButton} ${styles.saveButton}`}
                     >
-                      Save
+                      <Check size={14} /> Save
                     </button>
                     <button
                       onClick={() => setEditingId(null)}
                       className={`${styles.actionButton} ${styles.cancelButton}`}
                     >
-                      Cancel
+                      <X size={14} /> Cancel
                     </button>
                   </>
                 ) : (
@@ -250,19 +342,31 @@ export default function AdminCouponsPage() {
                       onClick={() => handleEdit(coupon)}
                       className={`${styles.actionButton} ${styles.editButton}`}
                     >
-                      Edit Value
+                      <Pencil size={14} /> Edit
                     </button>
                     <button
                       onClick={() => handleToggleActive(coupon)}
-                      className={`${styles.actionButton} ${styles.toggleButton}`}
+                      className={`${styles.actionButton} ${
+                        coupon.isActive
+                          ? styles.deactivateButton
+                          : styles.activateButton
+                      }`}
                     >
-                      {coupon.isActive ? "Deactivate" : "Activate"}
+                      {coupon.isActive ? (
+                        <>
+                          <PowerOff size={14} /> Deactivate
+                        </>
+                      ) : (
+                        <>
+                          <Power size={14} /> Activate
+                        </>
+                      )}
                     </button>
                     <button
                       onClick={() => handleDelete(coupon._id)}
                       className={`${styles.actionButton} ${styles.deleteButton}`}
                     >
-                      Delete
+                      <Trash2 size={14} />
                     </button>
                   </>
                 )}
@@ -272,7 +376,6 @@ export default function AdminCouponsPage() {
         )}
       </div>
 
-      {/* Desktop Table */}
       <div className={styles.desktopTableWrapper}>
         <table className={styles.table}>
           <thead>
@@ -287,35 +390,53 @@ export default function AdminCouponsPage() {
             </tr>
           </thead>
           <tbody>
-            {coupons.length === 0 ? (
+            {filteredCoupons.length === 0 ? (
               <tr>
-                <td colSpan={6} className={styles.emptyState}>
-                  No coupons found. Create one to get started.
+                <td colSpan={7} className={styles.emptyState}>
+                  <div className={styles.emptyContent}>
+                    <Tag size={40} className={styles.emptyIcon} />
+                    <p>No coupons found.</p>
+                  </div>
                 </td>
               </tr>
             ) : (
-              coupons.map((coupon) => (
+              filteredCoupons.map((coupon) => (
                 <tr key={coupon._id} className={styles.tr}>
-                  <td className={`${styles.td} ${styles.couponCode}`}>
-                    {coupon.code}
+                  <td className={styles.td}>
+                    <code className={styles.tableCode}>{coupon.code}</code>
                   </td>
                   <td className={styles.td}>
                     {editingId === coupon._id ? (
-                      <input
-                        type="number"
-                        value={editValue}
-                        onChange={(e) => setEditValue(Number(e.target.value))}
-                        className={styles.editInput}
-                      />
-                    ) : coupon.discountType === "percentage" ? (
-                      `${coupon.value}%`
+                      <div className={styles.editInline}>
+                        <input
+                          type="number"
+                          value={editValue}
+                          onChange={(e) =>
+                            setEditValue(Number(e.target.value))
+                          }
+                          className={styles.editInput}
+                        />
+                        <span className={styles.editSuffix}>
+                          {coupon.discountType === "percentage"
+                            ? "%"
+                            : "\u20A6"}
+                        </span>
+                      </div>
                     ) : (
-                      `₦${coupon.value.toLocaleString()}`
+                      <span className={styles.discountDisplay}>
+                        {coupon.discountType === "percentage"
+                          ? `${coupon.value}%`
+                          : `\u20A6${coupon.value.toLocaleString()}`}
+                      </span>
                     )}
                   </td>
                   <td className={styles.td}>
-                    {coupon.usedCount} /{" "}
-                    {coupon.usageLimit === null ? "∞" : coupon.usageLimit}
+                    <span className={styles.usageText}>
+                      {coupon.usedCount} /{" "}
+                      {coupon.usageLimit === null
+                        ? "\u221E"
+                        : coupon.usageLimit}
+                    </span>
                   </td>
                   <td className={styles.td}>
                     <span
@@ -328,16 +449,17 @@ export default function AdminCouponsPage() {
                   </td>
                   <td className={styles.td}>
                     {editingId === coupon._id ? (
-                      <div className="flex flex-col gap-1">
+                      <div className={styles.editGroup}>
                         <input
                           type="number"
                           value={editMinPrice}
                           onChange={(e) =>
                             setEditMinPrice(Number(e.target.value))
                           }
-                          className={styles.editInput}
+                          className={styles.editInputSmall}
                           placeholder="Min"
                         />
+                        <span className={styles.editDash}>-</span>
                         <input
                           type="number"
                           value={editMaxPrice || ""}
@@ -348,41 +470,41 @@ export default function AdminCouponsPage() {
                                 : undefined
                             )
                           }
-                          className={styles.editInput}
+                          className={styles.editInputSmall}
                           placeholder="Max"
                         />
                       </div>
                     ) : (
-                      <div className="text-sm">
-                        <div>
-                          Min: ₦{coupon.minPrice?.toLocaleString() || 0}
-                        </div>
-                        {coupon.maxPrice && (
-                          <div>Max: ₦{coupon.maxPrice.toLocaleString()}</div>
-                        )}
-                      </div>
+                      <span className={styles.priceRangeText}>
+                        {coupon.minPrice > 0
+                          ? `\u20A6${coupon.minPrice.toLocaleString()}`
+                          : "\u20A60"}
+                        {coupon.maxPrice
+                          ? ` - \u20A6${coupon.maxPrice.toLocaleString()}`
+                          : ""}
+                      </span>
                     )}
                   </td>
-                  <td className={styles.td}>
+                  <td className={`${styles.td} ${styles.dateCell}`}>
                     {coupon.expirationDate
                       ? new Date(coupon.expirationDate).toLocaleDateString()
                       : "Never"}
                   </td>
                   <td className={styles.td}>
-                    <div className={styles.actionButtons}>
+                    <div className={styles.tableActions}>
                       {editingId === coupon._id ? (
                         <>
                           <button
                             onClick={() => handleSaveEdit(coupon)}
                             className={`${styles.actionButton} ${styles.saveButton}`}
                           >
-                            Save
+                            <Check size={14} /> Save
                           </button>
                           <button
                             onClick={() => setEditingId(null)}
                             className={`${styles.actionButton} ${styles.cancelButton}`}
                           >
-                            Cancel
+                            <X size={14} /> Cancel
                           </button>
                         </>
                       ) : (
@@ -390,20 +512,33 @@ export default function AdminCouponsPage() {
                           <button
                             onClick={() => handleEdit(coupon)}
                             className={`${styles.actionButton} ${styles.editButton}`}
+                            title="Edit"
                           >
-                            Edit
+                            <Pencil size={14} />
                           </button>
                           <button
                             onClick={() => handleToggleActive(coupon)}
-                            className={`${styles.actionButton} ${styles.toggleButton}`}
+                            className={`${styles.actionButton} ${
+                              coupon.isActive
+                                ? styles.deactivateButton
+                                : styles.activateButton
+                            }`}
+                            title={
+                              coupon.isActive ? "Deactivate" : "Activate"
+                            }
                           >
-                            {coupon.isActive ? "Deactivate" : "Activate"}
+                            {coupon.isActive ? (
+                              <PowerOff size={14} />
+                            ) : (
+                              <Power size={14} />
+                            )}
                           </button>
                           <button
                             onClick={() => handleDelete(coupon._id)}
                             className={`${styles.actionButton} ${styles.deleteButton}`}
+                            title="Delete"
                           >
-                            Delete
+                            <Trash2 size={14} />
                           </button>
                         </>
                       )}

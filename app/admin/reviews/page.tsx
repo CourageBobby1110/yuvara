@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import AdminLoader from "@/components/AdminLoader";
+import AdminSkeleton from "@/components/AdminSkeleton";
 import styles from "./AdminReviews.module.css";
 import { Star, Trash2 } from "lucide-react";
 
@@ -59,7 +59,7 @@ export default function AdminReviewsPage() {
     }
   };
 
-  if (loading) return <AdminLoader />;
+  if (loading) return <AdminSkeleton variant="table" />;
 
   return (
     <div className={styles.container}>

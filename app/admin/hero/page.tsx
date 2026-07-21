@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import styles from "./HeroAdmin.module.css";
-import AdminLoader from "@/components/AdminLoader";
+import AdminSkeleton from "@/components/AdminSkeleton";
 
 // Placeholder presets since generation failed
 const PRESETS = [
@@ -82,7 +82,7 @@ export default function HeroAdminPage() {
     reader.readAsDataURL(file);
   };
 
-  if (loading) return <AdminLoader />;
+  if (loading) return <AdminSkeleton variant="form" />;
 
   return (
     <div className={styles.container}>
