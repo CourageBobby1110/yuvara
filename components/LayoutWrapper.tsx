@@ -2,7 +2,7 @@
 
 import { useEffect, Suspense } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { SessionProvider, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { useWishlistStore } from "@/store/wishlist";
@@ -112,7 +112,7 @@ export default function LayoutWrapper({
   const shouldShowLayout = !isAdminPage && !isAuthPage;
 
   return (
-    <SessionProvider session={session}>
+      <>
       {shouldShowLayout && <GoogleOneTap />}
       <WishlistInitializer />
       <Suspense><ReferralTracker /></Suspense>
@@ -127,6 +127,6 @@ export default function LayoutWrapper({
       ) : (
         <>{children}</>
       )}
-    </SessionProvider>
+    </>
   );
 }
