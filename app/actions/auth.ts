@@ -1,19 +1,6 @@
 "use server";
 
-import { signOut, signIn } from "@/auth";
-
-export async function handleSignOut() {
-  try {
-    await signOut({ redirect: false });
-  } catch (error) {
-    if ((error as Error).message.includes("NEXT_REDIRECT")) {
-      throw error;
-    }
-    console.error("Sign out error:", error);
-    throw error;
-  }
-}
-
+import { signIn } from "@/auth";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import { AuthError } from "next-auth";

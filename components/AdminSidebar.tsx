@@ -310,7 +310,7 @@ export default function AdminSidebar() {
           </Link>
         </nav>
 
-        <button onClick={() => { signOut({ redirect: false }); window.location.href = "https://accounts.google.com/Logout?continue=" + encodeURIComponent(window.location.origin + "/auth/signin"); }} className={styles.logoutButton}>
+        <button onClick={() => signOut({ callbackUrl: "/auth/signin" })} className={styles.logoutButton}>
           Sign Out
         </button>
       </aside>
