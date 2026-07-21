@@ -10,7 +10,7 @@ import { CurrencyProvider } from "@/context/CurrencyContext";
 import { Toaster } from "sonner";
 import dbConnect from "@/lib/db";
 import SiteSettings from "@/models/SiteSettings";
-import { cache } from "react";
+import { cache, Suspense } from "react";
 import Script from "next/script";
 
 const inter = Inter({
@@ -149,10 +149,10 @@ export default async function RootLayout({
         />
         {(!isAdmin || forceAnalytics) && gaId && <GoogleAnalytics gaId={gaId} />}
         {(!isAdmin || forceAnalytics) && gtmId && <GoogleTagManager gtmId={gtmId} />}
-        {!isAdmin && <FacebookPixel id={fbPixelId} />}
+        {!isAdmin && <Suspense><FacebookPixel id={fbPixelId} /></Suspense>}
         {!isAdmin && <KlaviyoScript id={klaviyoId} />}
-        {!isAdmin && <TikTokPixel id={tiktokId} />}
-        <ReferralHandler />
+        {!isAdmin && <Suspense><TikTokPixel id={tiktokId} /></Suspense>}
+        <Suspense><ReferralHandler /></Suspense>
         <CapacitorHandler />
       </body>
     </html>
