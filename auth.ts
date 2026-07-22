@@ -193,10 +193,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token = await authConfig.callbacks.jwt({ token, user, trigger } as any);
       }
 
-      // On a fresh sign-in, resolve the DB user by the account's email so the
-      // session ALWAYS matches the identity that was just used to sign in.
-      const signInEmail = (user?.email || (token.email as string) || "").toLowerCase();
-      if (trigger === "signIn" && signInEmail) {
+      // The presence of `user` means this is a FRESH sign-in. Resolve the DB
+      // user by that account's email so the session ALWAYS matches whoever
+      // just signed in — never a stale account from an old cookie.
+      const signInEmail = (user?.email || "").toLowerCase();
+      if (user && signInEmail) {
         try {
           await dbConnect();
           const dbUser = (await User.findOne({

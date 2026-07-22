@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { handleSignOut } from "@/app/actions/auth";
+import { useSession, signOut } from "next-auth/react";
 import { useCartStore } from "@/store/cart";
 import CurrencySelector from "@/components/CurrencySelector";
 
@@ -251,7 +250,7 @@ export default function Navbar({ session: initialSession }: NavbarProps) {
                         </Link>
                         <button
                           onClick={() => {
-                            handleSignOut();
+                            signOut({ callbackUrl: "/auth/signin" });
                             setIsAccountDropdownOpen(false);
                           }}
                           className={`${styles.dropdownLink} ${styles.signOutLink}`}
@@ -466,7 +465,7 @@ export default function Navbar({ session: initialSession }: NavbarProps) {
                   
                   <button
                     onClick={() => {
-                      handleSignOut();
+                      signOut({ callbackUrl: "/auth/signin" });
                       setIsMenuOpen(false);
                     }}
                     className={styles.mobileSignOut}
