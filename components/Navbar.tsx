@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useCartStore } from "@/store/cart";
 import CurrencySelector from "@/components/CurrencySelector";
 
@@ -16,7 +16,9 @@ interface NavbarProps {
   session: any;
 }
 
-export default function Navbar({ session }: NavbarProps) {
+export default function Navbar({ session: initialSession }: NavbarProps) {
+  const { data: liveSession } = useSession();
+  const session = liveSession ?? initialSession;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
   const [itemCount, setItemCount] = useState(0);

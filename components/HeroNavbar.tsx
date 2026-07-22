@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./HeroNavbar.module.css";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useCartStore } from "@/store/cart";
 import CurrencySelector from "./CurrencySelector";
 
@@ -15,7 +15,9 @@ interface HeroNavbarProps {
   session: Session | null;
 }
 
-export default function HeroNavbar({ session }: HeroNavbarProps) {
+export default function HeroNavbar({ session: initialSession }: HeroNavbarProps) {
+  const { data: liveSession } = useSession();
+  const session = liveSession ?? initialSession;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
   const { totalItems, openCart } = useCartStore();
