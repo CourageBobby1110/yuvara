@@ -7,13 +7,18 @@ export const BLOCK_ONE_TAP_KEY = "yuvara_block_onetap";
 
 /**
  * Perform a clean hard sign-out:
- * 1. Disables Google One Tap auto-select.
- * 2. Invokes NextAuth's native client signOut() via 200 OK POST request.
- * 3. Hits fallback custom /api/signout for domain cookie deletion.
- * 4. Forces full window navigation to clear React context & router cache.
+ * 1. Disable Google GSI auto-select & cancel any pending prompt.
+ * 2. Set One-Tap block flag.
+ * 3. Clear sessionStorage.
+ * 4. NextAuth client signOut (clears SessionProvider state, POST to
+ *    /api/auth/signout to remove the session cookie on the current host).
+ * 5. Hit the fallback /api/signout which scrubs auth cookies across every
+ *    domain variant (apex, www, .apex) so sign-out works regardless of
+ *    which host the user is on (production www vs apex).
+ * 6. Hard-navigate to `targetUrl` to flush React context and router cache.
  */
 export async function hardSignOut(targetUrl: string = "/auth/signin") {
-  // 1. Disable Google GSI auto-select immediately
+  // 1. Disable Google GSI
   try {
     if (typeof window !== "undefined" && window.google?.accounts?.id) {
       window.google.accounts.id.disableAutoSelect();
@@ -23,7 +28,7 @@ export async function hardSignOut(targetUrl: string = "/auth/signin") {
     /* ignore */
   }
 
-  // 2. Block Google One Tap immediately
+  // 2. Block One Tap
   try {
     localStorage.setItem(BLOCK_ONE_TAP_KEY, "1");
   } catch {
@@ -37,14 +42,14 @@ export async function hardSignOut(targetUrl: string = "/auth/signin") {
     /* ignore */
   }
 
-  // 4. Call NextAuth built-in client signout via POST request to /api/auth/signout
+  // 4. Native NextAuth signout
   try {
     await nextAuthSignOut({ redirect: false });
   } catch (err) {
     console.error("NextAuth signOut error:", err);
   }
 
-  // 5. Call custom signout endpoint as additional cleanup fallback
+  // 5. Fallback cookie scrub (cross-domain safety net)
   try {
     await fetch("/api/signout", {
       method: "POST",
@@ -55,6 +60,6 @@ export async function hardSignOut(targetUrl: string = "/auth/signin") {
     /* ignore */
   }
 
-  // 6. Force full browser window navigation to clear React context & Next.js router cache
+  // 6. Full page navigation
   window.location.href = targetUrl;
 }

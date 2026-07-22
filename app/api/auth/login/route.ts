@@ -3,11 +3,13 @@ import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { getAuthSecret } from "@/lib/auth-helpers";
 
+/** Mobile app — credentials sign-in. Returns a JWT (not a session cookie). */
 export async function POST(req: Request) {
   try {
     await dbConnect();
-    let { email, password } = await req.json();
+    const { email, password } = await req.json();
 
     if (!email || !password) {
       return NextResponse.json(
@@ -16,17 +18,13 @@ export async function POST(req: Request) {
       );
     }
 
-    email = email.trim();
-
-    const user = await User.findOne({ 
-      email: { $regex: new RegExp(`^${email}$`, "i") } 
+    const normalized = (email as string).toLowerCase().trim();
+    const user = await User.findOne({
+      email: { $regex: new RegExp(`^${normalized}$`, "i") },
     }).select("+password");
 
     if (!user || !user.password) {
-      return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
     if (!user.emailVerified) {
@@ -36,19 +34,15 @@ export async function POST(req: Request) {
       );
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-
+    const isMatch = await bcrypt.compare(password as string, user.password);
     if (!isMatch) {
-      return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    // Create JWT token
+    const secret = getAuthSecret();
     const token = jwt.sign(
       { id: user._id, role: user.role },
-      process.env.NEXTAUTH_SECRET || "fallback_secret",
+      secret,
       { expiresIn: "30d" }
     );
 

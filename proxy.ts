@@ -1,40 +1,50 @@
 import NextAuth from "next-auth";
-import { authConfig } from "./auth.config";
 import { NextResponse } from "next/server";
+import { authConfig } from "./auth.config";
 
+/**
+ * Middleware (Next.js 16 "proxy").
+ *
+ * Runs on the edge-safe authConfig only — no database access here.
+ * Responsibilities:
+ *  - /admin/*   → require a session; require admin/worker role.
+ *  - /auth/signin & /auth/signup → bounce already-authenticated users home.
+ *  - everything else (incl. /api/auth/*) → pass through untouched.
+ */
 const { auth } = NextAuth(authConfig);
 
 export const proxy = auth((req) => {
-  const isLoggedIn = !!req.auth;
-  const isAuthPage = req.nextUrl.pathname.startsWith("/auth");
-  const isAdminPage = req.nextUrl.pathname.startsWith("/admin");
-  const isApiAuthRoute = req.nextUrl.pathname.startsWith("/api/auth");
+  const { pathname } = req.nextUrl;
+  const isLoggedIn = !!req.auth?.user;
+  const role = req.auth?.user?.role;
 
-  if (isApiAuthRoute) {
-    return null;
-  }
-
-  if (isAuthPage) {
-    return null;
-  }
-
-  if (isAdminPage) {
+  // ── Admin area ───────────────────────────────────────────────────────
+  if (pathname.startsWith("/admin")) {
     if (!isLoggedIn) {
-      return NextResponse.redirect(new URL("/auth/signin", req.nextUrl));
+      const signInUrl = new URL("/auth/signin", req.nextUrl.origin);
+      signInUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(signInUrl);
     }
-    const role = (req.auth?.user as any)?.role;
-    const isMainSettingsPage = req.nextUrl.pathname.startsWith("/admin/settings");
-
-    if (role === "worker" && isMainSettingsPage) {
-      return NextResponse.redirect(new URL("/admin/worker-settings", req.nextUrl));
-    }
-
     if (role !== "admin" && role !== "worker") {
-      return NextResponse.redirect(new URL("/", req.nextUrl));
+      return NextResponse.redirect(new URL("/", req.nextUrl.origin));
     }
+    if (role === "worker" && pathname.startsWith("/admin/settings")) {
+      return NextResponse.redirect(
+        new URL("/admin/worker-settings", req.nextUrl.origin)
+      );
+    }
+    return NextResponse.next();
   }
 
-  return null;
+  // ── Auth pages: already signed-in users go home ──────────────────────
+  if (
+    isLoggedIn &&
+    (pathname === "/auth/signin" || pathname === "/auth/signup")
+  ) {
+    return NextResponse.redirect(new URL("/", req.nextUrl.origin));
+  }
+
+  return NextResponse.next();
 });
 
 export default proxy;

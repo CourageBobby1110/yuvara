@@ -9,6 +9,13 @@
   node_bundler = "esbuild"
   external_node_modules = ["mongodb", "mongoose"]
 
+# Redirect www → apex (single canonical host = single cookie domain)
+[[redirects]]
+  from = "https://www.yuvara.com.ng/*"
+  to = "https://yuvara.com.ng/:splat"
+  status = 301
+  force = true
+
 # Force all routes to use Node.js runtime instead of Edge
 [[edge_functions]]
   path = "/*"

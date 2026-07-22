@@ -11,8 +11,6 @@ declare global {
 }
 
 const GSI_URL = "https://accounts.google.com/gsi/client";
-const POLL_TIMEOUT_MS = 30_000;
-const POLL_INTERVAL_MS = 100;
 
 function isOneTapBlocked(): boolean {
   try {
@@ -22,25 +20,21 @@ function isOneTapBlocked(): boolean {
   }
 }
 
-/**
- * Dynamically load the Google GSI script. Returns a promise that resolves
- * when `window.google?.accounts?.id` becomes available.
- */
 function loadGsiScript(): Promise<void> {
   return new Promise((resolve, reject) => {
     if (typeof window === "undefined") return reject(new Error("not browser"));
-
     if (window.google?.accounts?.id) return resolve();
 
-    const existing = document.querySelector<HTMLScriptElement>(`script[src="${GSI_URL}"]`);
+    const existing = document.querySelector<HTMLScriptElement>(
+      `script[src="${GSI_URL}"]`
+    );
     if (existing) {
-      // Wait for it to finish loading
       const check = setInterval(() => {
         if (window.google?.accounts?.id) {
           clearInterval(check);
           resolve();
         }
-      }, POLL_INTERVAL_MS);
+      }, 100);
       return;
     }
 
@@ -54,7 +48,7 @@ function loadGsiScript(): Promise<void> {
           clearInterval(check);
           resolve();
         }
-      }, POLL_INTERVAL_MS);
+      }, 100);
     };
     script.onerror = () => reject(new Error("Failed to load GSI script"));
     document.head.appendChild(script);
@@ -65,17 +59,23 @@ export default function GoogleOneTap() {
   const { status } = useSession();
   const initAttempted = useRef(false);
 
-  // Clean up leftover Google GSI redirect parameters if present on homepage
+  // Clean up leftover Google GSI redirect parameters
   useEffect(() => {
     if (typeof window !== "undefined") {
       const url = new URL(window.location.href);
-      if (url.searchParams.has("iss") || (url.searchParams.has("code") && url.searchParams.has("prompt"))) {
+      if (
+        url.searchParams.has("iss") ||
+        (url.searchParams.has("code") && url.searchParams.has("prompt"))
+      ) {
         url.searchParams.delete("iss");
         url.searchParams.delete("code");
         url.searchParams.delete("prompt");
         url.searchParams.delete("scope");
         url.searchParams.delete("authuser");
-        const cleanUrl = url.pathname + (url.searchParams.toString() ? "?" + url.searchParams.toString() : "") + url.hash;
+        const cleanUrl =
+          url.pathname +
+          (url.searchParams.toString() ? "?" + url.searchParams.toString() : "") +
+          url.hash;
         window.history.replaceState({}, document.title, cleanUrl);
       }
     }
@@ -90,11 +90,12 @@ export default function GoogleOneTap() {
           window.google.accounts.id.disableAutoSelect();
           window.google.accounts.id.cancel();
         }
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
       return;
     }
 
-    // Only attempt initialization once per unauthenticated session
     if (initAttempted.current) return;
     initAttempted.current = true;
 
@@ -119,16 +120,17 @@ export default function GoogleOneTap() {
           client_id: clientId,
           ux_mode: "popup",
           callback: async (response: any) => {
-            if (isCancelled) return;
-            if (isOneTapBlocked()) return;
+            if (isCancelled || isOneTapBlocked()) return;
             try {
-              await signIn("credentials", {
+              const result = await signIn("google-one-tap", {
                 credential: response.credential,
-                redirect: true,
-                callbackUrl: "/",
+                redirect: false,
               });
+              if (result?.ok) {
+                window.location.href = "/";
+              }
             } catch (error) {
-              console.error("Google One Tap login failed:", error);
+              console.error("Google One Tap sign-in failed:", error);
             }
           },
           auto_select: false,
@@ -148,21 +150,21 @@ export default function GoogleOneTap() {
 
     initializeOneTap();
 
-    // Safety timeout — stop waiting after 30 seconds
     timeout = setTimeout(() => {
       isCancelled = true;
-    }, POLL_TIMEOUT_MS);
+    }, 30_000);
 
     return () => {
       isCancelled = true;
       if (timeout) clearTimeout(timeout);
       try {
         window.google?.accounts?.id?.cancel();
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     };
   }, [status]);
 
-  // Reset the ref when user becomes authenticated or the block is lifted
   useEffect(() => {
     if (status === "authenticated") {
       initAttempted.current = false;

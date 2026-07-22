@@ -10,13 +10,13 @@ interface GoogleSignInButtonProps {
 
 export default function GoogleSignInButton({ callbackUrl }: GoogleSignInButtonProps) {
   function handleGoogleSignIn() {
-    // User is intentionally signing in — allow One Tap again later
+    // User is intentionally signing in — allow One Tap again later.
     try {
       localStorage.removeItem(BLOCK_ONE_TAP_KEY);
     } catch {
       /* ignore */
     }
-    void signIn("google", { callbackUrl, prompt: "select_account" });
+    void signIn("google", { callbackUrl });
   }
 
   return (

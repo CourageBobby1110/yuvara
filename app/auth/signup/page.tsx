@@ -118,7 +118,7 @@ function SignUpForm() {
               } catch {
                 /* ignore */
               }
-              void signIn("google", { callbackUrl, prompt: "select_account" });
+              void signIn("google", { callbackUrl });
             }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

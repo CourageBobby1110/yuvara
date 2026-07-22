@@ -1,17 +1,12 @@
 import { NextResponse } from "next/server";
-import dbConnect from "@/lib/db";
-import User from "@/models/User";
-import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
+import jwt from "jsonwebtoken";
+import { getAuthSecret, findOrCreateGoogleUser } from "@/lib/auth-helpers";
 
-// Use the web client ID for verifying tokens sent by Flutter's Google Sign-In
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || "996596779540-n9qq24oq6orlspb0dirmam4e3efq64mo.apps.googleusercontent.com");
-
+/** Mobile app (Flutter) — Google ID token sign-in. Returns a JWT. */
 export async function POST(req: Request) {
   try {
-    await dbConnect();
     const { idToken } = await req.json();
-
     if (!idToken) {
       return NextResponse.json(
         { error: "idToken is required" },
@@ -19,10 +14,18 @@ export async function POST(req: Request) {
       );
     }
 
-    // Verify the Google ID token
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      return NextResponse.json(
+        { error: "Google client not configured" },
+        { status: 500 }
+      );
+    }
+
+    const client = new OAuth2Client(clientId);
     const ticket = await client.verifyIdToken({
       idToken,
-      audience: process.env.GOOGLE_CLIENT_ID || "996596779540-n9qq24oq6orlspb0dirmam4e3efq64mo.apps.googleusercontent.com",
+      audience: clientId,
     });
 
     const payload = ticket.getPayload();
@@ -33,48 +36,37 @@ export async function POST(req: Request) {
       );
     }
 
-    const { email, name, picture } = payload;
-
-    // Check if user exists in the database
-    let user = await User.findOne({ 
-      email: { $regex: new RegExp(`^${email.trim()}$`, "i") } 
+    const dbUser = await findOrCreateGoogleUser({
+      email: payload.email,
+      name: payload.name,
+      picture: payload.picture,
     });
-
-    // If user does not exist, create a new one
-    if (!user) {
-      // Create user without a password since they use Google Auth
-      user = await User.create({
-        email: email.trim().toLowerCase(),
-        name: name || "Google User",
-        image: picture || "",
-        emailVerified: new Date(),
-        role: "user",
-      });
-    } else if (!user.image && picture) {
-      // Update missing picture
-      user.image = picture;
-      await user.save();
+    if (!dbUser) {
+      return NextResponse.json(
+        { error: "Could not resolve user" },
+        { status: 401 }
+      );
     }
 
-    // Create JWT token for mobile app session
+    const secret = getAuthSecret();
     const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.NEXTAUTH_SECRET || "fallback_secret",
+      { id: dbUser._id, role: dbUser.role },
+      secret,
       { expiresIn: "30d" }
     );
 
     return NextResponse.json({
       token,
       user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        image: user.image,
+        id: dbUser._id,
+        name: dbUser.name,
+        email: dbUser.email,
+        role: dbUser.role,
+        image: dbUser.image,
       },
     });
   } catch (error) {
-    console.error("Google Auth error:", error);
+    console.error("Mobile Google auth error:", error);
     return NextResponse.json(
       { error: "Authentication failed. The token might be invalid or expired." },
       { status: 401 }

@@ -8,15 +8,7 @@ import { sendVerificationEmail } from "@/lib/mail";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
-
-function generateUserReferralCode(name: string) {
-  const prefix = name
-    .substring(0, 3)
-    .toUpperCase()
-    .replace(/[^A-Z]/g, "X");
-  const random = crypto.randomBytes(3).toString("hex").toUpperCase();
-  return `${prefix}${random}`;
-}
+import { generateReferralCode, getAuthSecret } from "@/lib/auth-helpers";
 
 export async function POST(req: NextRequest) {
   try {
@@ -48,7 +40,7 @@ export async function POST(req: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
     const userName = name || email.split("@")[0];
-    const newReferralCode = generateUserReferralCode(userName);
+    const newReferralCode = generateReferralCode(userName);
 
     let referredBy = null;
 
@@ -149,7 +141,7 @@ export async function POST(req: NextRequest) {
     // Create JWT token
     const token = jwt.sign(
       { id: user._id, role: user.role || "user" },
-      process.env.NEXTAUTH_SECRET || "fallback_secret",
+      getAuthSecret(),
       { expiresIn: "30d" }
     );
 
