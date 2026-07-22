@@ -29,7 +29,8 @@ export async function hardSignOut() {
 
   // Navigate to the force-signout endpoint which:
   // 1. Clears ALL auth cookies server-side
-  // 2. Redirects back to the current page
+  // 2. Redirects back to the current page (just the path, no query params to avoid encoding issues)
   // 3. The fresh page load has no cookies → user is signed out
-  window.location.href = `/api/auth/force-signout?callbackUrl=${encodeURIComponent(window.location.href)}`;
+  const returnTo = window.location.pathname; // just the path, avoids ?callbackUrl nesting
+  window.location.href = `/api/auth/force-signout?callbackUrl=${encodeURIComponent(returnTo)}`;
 }
