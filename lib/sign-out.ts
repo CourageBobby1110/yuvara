@@ -1,70 +1,35 @@
 "use client";
 
-import { signOut } from "next-auth/react";
-
 /** localStorage key — blocks Google One Tap until the user explicitly signs in again */
 export const BLOCK_ONE_TAP_KEY = "yuvara_block_onetap";
 
 /**
- * Server-side cookie deletion — HttpOnly cookies can ONLY be cleared from the
- * server.  This runs BEFORE `signOut()` so that by the time useSession
- * background-revalidates, the stale __Secure- cookie is already gone.
+ * Sign out using a server-side redirect that clears cookies during navigation.
  *
- * Root cause: next-auth v5 beta.30 may not clear __Secure-authjs.session-token
- * on HTTPS (production), which causes useSession to restore the old session.
- */
-async function clearServerCookies(): Promise<void> {
-  try {
-    await fetch("/api/auth/clear-session", {
-      method: "POST",
-      credentials: "include",
-      cache: "no-store",
-    });
-  } catch {
-    /* ignore */
-  }
-}
-
-/**
- * Sign out in place (no redirect to login):
- * 1. Block Google One Tap so it cannot silently re-login the old account
- * 2. Clear HttpOnly cookies on the server FIRST (before signOut triggers revalidation)
- * 3. Clear NextAuth session (navbar updates immediately)
- * 4. Stay on the current page — account stays gone, including after refresh
+ * This is the most reliable approach because:
+ * 1. Set-Cookie headers in the redirect response are processed by the browser
+ *    BEFORE the new page loads — no race with useSession revalidation.
+ * 2. The new page has zero auth cookies → useSession immediately returns null.
+ * 3. Google One Tap reads the localStorage flag on the new page and stays
+ *    suppressed.
+ *
+ * Root cause of "account comes back after sign-out":
+ *   On HTTPS (production), next-auth's built-in signOut may fail to clear
+ *   __Secure-authjs.session-token. A client-side fetch to clear cookies
+ *   has a race condition where useSession revalidates before the Set-Cookie
+ *   response is processed by the browser.
  */
 export async function hardSignOut() {
+  // Block Google One Tap immediately
   try {
-    // PERMANENT until next intentional sign-in — this is what stops the bounce-back
     localStorage.setItem(BLOCK_ONE_TAP_KEY, "1");
-    sessionStorage.setItem("yuvara_just_signed_out", String(Date.now()));
-
-    if (typeof window !== "undefined" && window.google?.accounts?.id) {
-      window.google.accounts.id.disableAutoSelect();
-      window.google.accounts.id.cancel();
-    }
   } catch {
     /* ignore */
   }
 
-  // 1. Clear server cookies FIRST so useSession revalidation finds nothing
-  await clearServerCookies();
-
-  // 2. NextAuth session → null (navbar shows Sign In immediately)
-  try {
-    await signOut({ redirect: false });
-  } catch {
-    /* continue */
-  }
-
-  // 3. Cancel One Tap again
-  try {
-    if (window.google?.accounts?.id) {
-      window.google.accounts.id.disableAutoSelect();
-      window.google.accounts.id.cancel();
-    }
-  } catch {
-    /* ignore */
-  }
-
-  // NO reload, NO redirect — stay put. Session is gone. One Tap is blocked.
+  // Navigate to the force-signout endpoint which:
+  // 1. Clears ALL auth cookies server-side
+  // 2. Redirects back to the current page
+  // 3. The fresh page load has no cookies → user is signed out
+  window.location.href = `/api/auth/force-signout?callbackUrl=${encodeURIComponent(window.location.href)}`;
 }
