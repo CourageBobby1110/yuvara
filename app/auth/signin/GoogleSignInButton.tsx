@@ -16,7 +16,7 @@ export default function GoogleSignInButton({ callbackUrl }: GoogleSignInButtonPr
     } catch {
       /* ignore */
     }
-    void signIn("google", { callbackUrl, redirect: true }, { prompt: "select_account" });
+    void signIn("google", { callbackUrl, prompt: "select_account" });
   }
 
   return (
