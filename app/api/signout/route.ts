@@ -1,17 +1,17 @@
+import { signOut } from "@/auth";
+
 /**
- * /api/signout — cookie-scrubbing safety net.
+ * /api/signout — clears all auth cookies so sign-out works everywhere.
  *
- * Expires every known NextAuth / Auth.js cookie name across all reasonable
- * host/domain variants so that cross-www/apex sign-out scenarios work.
- *
- * Does NOT call the server-side `signOut()`; that already happens inside
- * the browser via next-auth/react `signOut()`. This endpoint just nukes
- * leftover cookies from different cookie domains that the client-side
- * call can't reach (www vs apex etc.).
+ * Uses TWO mechanisms for reliability:
+ *   1. Calls NextAuth's internal `signOut()` (the proper way to clear the
+ *      current host's session cookie).
+ *   2. Manually expires every known cookie name across domain variants
+ *      (apex, www, .apex) as a safety net for cross-www/apex scenarios.
  */
 
 const AUTH_COOKIE_NAMES = [
-  // Auth.js v5 naming
+  // Auth.js v5
   "authjs.session-token",
   "__Secure-authjs.session-token",
   "__Host-authjs.session-token",
@@ -19,7 +19,7 @@ const AUTH_COOKIE_NAMES = [
   "__Host-authjs.csrf-token",
   "authjs.callback-url",
   "__Secure-authjs.callback-url",
-  // Legacy next-auth v4 naming
+  // Legacy next-auth v4 (some cookies may still linger)
   "next-auth.session-token",
   "__Secure-next-auth.session-token",
   "next-auth.csrf-token",
@@ -28,19 +28,8 @@ const AUTH_COOKIE_NAMES = [
   "__Secure-next-auth.callback-url",
 ];
 
-function isAuthCookie(name: string): boolean {
-  const l = name.toLowerCase();
-  return (
-    AUTH_COOKIE_NAMES.includes(name) ||
-    l.includes("authjs") ||
-    l.includes("next-auth") ||
-    l.includes("session") ||
-    l.includes("csrf") ||
-    l.includes("callback-url")
-  );
-}
-
-function generateExpireCookies(name: string, host: string): string[] {
+/** Generate Set-Cookie strings that expire `name` for the given host. */
+function expireCookie(name: string, host: string): string[] {
   const expired =
     "Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/";
   const results: string[] = [
@@ -48,14 +37,16 @@ function generateExpireCookies(name: string, host: string): string[] {
     `${name}=; ${expired}; SameSite=Lax; Secure`,
   ];
 
+  // For production hosts, also expire with Domain so subdomain / sibling
+  // cookies (e.g. www vs apex) get nuked too.
   if (host && !host.includes("localhost") && !host.includes("127.0.0.1")) {
-    const cleanHost = host.split(":")[0];
+    const clean = host.split(":")[0];
     results.push(
-      `${name}=; ${expired}; Domain=${cleanHost}; SameSite=Lax`,
-      `${name}=; ${expired}; Domain=${cleanHost}; SameSite=Lax; Secure`
+      `${name}=; ${expired}; Domain=${clean}; SameSite=Lax`,
+      `${name}=; ${expired}; Domain=${clean}; SameSite=Lax; Secure`
     );
-    if (cleanHost.startsWith("www.")) {
-      const root = cleanHost.replace(/^www\./, "");
+    if (clean.startsWith("www.")) {
+      const root = clean.replace(/^www\./, "");
       results.push(
         `${name}=; ${expired}; Domain=${root}; SameSite=Lax`,
         `${name}=; ${expired}; Domain=${root}; SameSite=Lax; Secure`,
@@ -64,8 +55,8 @@ function generateExpireCookies(name: string, host: string): string[] {
       );
     } else {
       results.push(
-        `${name}=; ${expired}; Domain=.${cleanHost}; SameSite=Lax`,
-        `${name}=; ${expired}; Domain=.${cleanHost}; SameSite=Lax; Secure`
+        `${name}=; ${expired}; Domain=.${clean}; SameSite=Lax`,
+        `${name}=; ${expired}; Domain=.${clean}; SameSite=Lax; Secure`
       );
     }
   }
@@ -74,48 +65,62 @@ function generateExpireCookies(name: string, host: string): string[] {
 }
 
 async function handleSignOut(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const to = searchParams.get("callbackUrl") || "/auth/signin";
+  const host = request.headers.get("host") || "";
+
+  const headers = new Headers({
+    "Content-Type": "application/json",
+    "Cache-Control":
+      "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+    Pragma: "no-cache",
+    Expires: "0",
+  });
+
+  // ── Mechanism 1: NextAuth's own signOut (handles the current host) ──
   try {
-    const { searchParams } = new URL(request.url);
-    const to = searchParams.get("callbackUrl") || "/auth/signin";
-    const host = request.headers.get("host") || "";
+    await signOut({ redirect: false });
+  } catch (e) {
+    // signOut() may throw "DYNAMIC_SERVER_USAGE" or similar in certain
+    // runtimes — ignore and fall through to the manual scrub below.
+    console.error("[/api/signout] signOut() threw:", e);
+  }
 
-    const headers = new Headers({
-      "Content-Type": "application/json",
-      "Cache-Control":
-        "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
-      Pragma: "no-cache",
-      Expires: "0",
-    });
-
-    const cookiesToClear = new Set<string>(AUTH_COOKIE_NAMES);
-    const cookieHeader = request.headers.get("cookie") || "";
-    for (const pair of cookieHeader.split(";")) {
-      const name = pair.split("=")[0]?.trim();
-      if (name && isAuthCookie(name)) {
-        cookiesToClear.add(name);
-      }
-    }
-
-    for (const name of cookiesToClear) {
-      for (const cookieStr of generateExpireCookies(name, host)) {
-        headers.append("Set-Cookie", cookieStr);
-      }
-    }
-
+  // ── Mechanism 2: manual cookie scrubbing (cross-domain safety net) ──
+  const toClear = new Set<string>(AUTH_COOKIE_NAMES);
+  const cookieHeader = request.headers.get("cookie") || "";
+  for (const pair of cookieHeader.split(";")) {
+    const name = pair.split("=")[0]?.trim();
+    if (!name) continue;
+    const lower = name.toLowerCase();
     if (
-      request.method === "POST" ||
-      request.headers.get("accept")?.includes("application/json")
+      lower.includes("authjs") ||
+      lower.includes("next-auth") ||
+      lower.includes("session") ||
+      lower.includes("csrf") ||
+      lower.includes("callback-url")
     ) {
-      return new Response(JSON.stringify({ success: true, redirect: to }), {
-        status: 200,
-        headers,
-      });
+      toClear.add(name);
     }
+  }
 
-    headers.set("Location", to);
-    return new Response(null, { status: 302, headers });
+  for (const name of toClear) {
+    for (const cookieStr of expireCookie(name, host)) {
+      headers.append("Set-Cookie", cookieStr);
+    }
+  }
+
+  return new Response(JSON.stringify({ success: true, redirect: to }), {
+    status: 200,
+    headers,
+  });
+}
+
+export async function GET(request: Request) {
+  try {
+    return await handleSignOut(request);
   } catch (err) {
-    console.error("Signout route error:", err);
+    console.error("[/api/signout] GET error:", err);
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
@@ -123,5 +128,14 @@ async function handleSignOut(request: Request) {
   }
 }
 
-export const GET = handleSignOut;
-export const POST = handleSignOut;
+export async function POST(request: Request) {
+  try {
+    return await handleSignOut(request);
+  } catch (err) {
+    console.error("[/api/signout] POST error:", err);
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
