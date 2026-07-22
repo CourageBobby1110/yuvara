@@ -150,9 +150,11 @@ export default async function RootLayout({
         <LanguageProvider>
           <CurrencyProvider>
             <AuthProvider
-              session={session}
+              // Do not pass a sticky server session — always trust live /api/auth/session
+              // so sign-out immediately clears the navbar and stays clear after refresh.
               refetchOnWindowFocus
               refetchWhenOffline={false}
+              refetchInterval={0}
             >
               <AnalyticsBlocker gaId={gaId} forceAnalytics={forceAnalytics} />
               <LayoutWrapper>{children}</LayoutWrapper>
