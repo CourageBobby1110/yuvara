@@ -103,31 +103,51 @@ export default function AdminDashboard() {
       <div className={styles.statsGrid}>
         {isWorker ? (
           <div className={styles.statCard}>
-            <p className={styles.statLabel}>Total Products</p>
-            <div className={styles.statValueWrapper}>
-              <h3 className={styles.statValue} title={((stats as any).totalProducts || 0).toString()}>{(stats as any).totalProducts}</h3>
+            <div className={`${styles.statIcon} ${styles.statIconProducts}`}>
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+            </div>
+            <div className={styles.statInfo}>
+              <p className={styles.statLabel}>Total Products</p>
+              <div className={styles.statValueWrapper}>
+                <h3 className={styles.statValue}>{(stats as any).totalProducts}</h3>
+              </div>
             </div>
           </div>
         ) : (
           <>
             <div className={styles.statCard}>
-              <p className={styles.statLabel}>Total Revenue</p>
-              <div className={styles.statValueWrapper}>
-                <h3 className={styles.statValue} title={formatPrice(stats.revenue)}>{formatPrice(stats.revenue)}</h3>
+              <div className={`${styles.statIcon} ${styles.statIconRevenue}`}>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+              </div>
+              <div className={styles.statInfo}>
+                <p className={styles.statLabel}>Total Revenue</p>
+                <div className={styles.statValueWrapper}>
+                  <h3 className={styles.statValue}>{formatPrice(stats.revenue)}</h3>
+                </div>
               </div>
             </div>
 
             <div className={styles.statCard}>
-              <p className={styles.statLabel}>Active Orders</p>
-              <div className={styles.statValueWrapper}>
-                <h3 className={styles.statValue} title={(stats.activeOrders || 0).toString()}>{stats.activeOrders}</h3>
+              <div className={`${styles.statIcon} ${styles.statIconOrders}`}>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+              </div>
+              <div className={styles.statInfo}>
+                <p className={styles.statLabel}>Active Orders</p>
+                <div className={styles.statValueWrapper}>
+                  <h3 className={styles.statValue}>{stats.activeOrders}</h3>
+                </div>
               </div>
             </div>
 
             <div className={styles.statCard}>
-              <p className={styles.statLabel}>Total Customers</p>
-              <div className={styles.statValueWrapper}>
-                <h3 className={styles.statValue} title={(stats.customers || 0).toString()}>{stats.customers}</h3>
+              <div className={`${styles.statIcon} ${styles.statIconCustomers}`}>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+              </div>
+              <div className={styles.statInfo}>
+                <p className={styles.statLabel}>Total Customers</p>
+                <div className={styles.statValueWrapper}>
+                  <h3 className={styles.statValue}>{stats.customers}</h3>
+                </div>
               </div>
             </div>
           </>

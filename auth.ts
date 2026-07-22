@@ -218,13 +218,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // Subsequent requests: refresh from DB by id.
         try {
           await dbConnect();
-          const dbUser = await User.findById(token.id).lean() as any;
+          const dbUser = (await User.findById(token.id).lean()) as any;
           if (dbUser) {
             token.emailVerified = dbUser.emailVerified;
             token.referralCode = dbUser.referralCode;
             token.role = dbUser.role;
             token.image = dbUser.image || "";
             token.name = dbUser.name || "";
+          } else {
+            // User was deleted or non-existent in DB — clear session
+            delete token.id;
+            delete token.role;
+            delete token.email;
+            delete token.name;
           }
         } catch (error) {
           console.error("JWT sync error:", error);
