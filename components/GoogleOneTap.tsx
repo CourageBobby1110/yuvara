@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
+import { BLOCK_ONE_TAP_KEY } from "@/lib/sign-out";
 
 declare global {
   interface Window {
@@ -9,51 +10,59 @@ declare global {
   }
 }
 
+function isOneTapBlocked(): boolean {
+  try {
+    return localStorage.getItem(BLOCK_ONE_TAP_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Google One Tap — DISABLED after sign-out until the user clicks
+ * "Sign in with Google" (which clears BLOCK_ONE_TAP_KEY).
+ *
+ * Root cause of "account clears then comes back": after signOut,
+ * status becomes unauthenticated → this effect ran → One Tap
+ * silently signed the same Google account back in.
+ */
 export default function GoogleOneTap() {
   const { status } = useSession();
 
   useEffect(() => {
-    // Only prompt if user is NOT authenticated
     if (status === "loading" || status === "authenticated") return;
 
-    // Skip One Tap right after an intentional sign-out (prevents old account reappearing)
-    try {
-      const justSignedOut = sessionStorage.getItem("yuvara_just_signed_out");
-      if (justSignedOut) {
-        const ts = Number(justSignedOut);
-        // Suppress One Tap for 2 minutes after sign-out
-        if (Date.now() - ts < 2 * 60 * 1000) {
-          if (window.google?.accounts?.id) {
-            window.google.accounts.id.disableAutoSelect();
-            window.google.accounts.id.cancel();
-          }
-          return;
+    // After intentional sign-out: never auto-prompt or auto-login
+    if (isOneTapBlocked()) {
+      try {
+        if (window.google?.accounts?.id) {
+          window.google.accounts.id.disableAutoSelect();
+          window.google.accounts.id.cancel();
         }
-        sessionStorage.removeItem("yuvara_just_signed_out");
+      } catch {
+        /* ignore */
       }
-    } catch {
-      /* ignore */
-    }
-
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    if (!clientId) {
-      console.warn("Google One Tap: NEXT_PUBLIC_GOOGLE_CLIENT_ID environment variable is missing.");
       return;
     }
 
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (!clientId) return;
+
     let isCancelled = false;
-    let checkInterval: NodeJS.Timeout | null = null;
+    let checkInterval: ReturnType<typeof setInterval> | null = null;
 
     const initializeOneTap = () => {
       if (!window.google?.accounts?.id || isCancelled) return;
+      if (isOneTapBlocked()) return;
 
       try {
         window.google.accounts.id.initialize({
           client_id: clientId,
           callback: async (response: any) => {
             if (isCancelled) return;
+            // Last line of defense — never re-login after sign-out
+            if (isOneTapBlocked()) return;
             try {
-              // Sign in using our credentials provider in auth.ts
               await signIn("credentials", {
                 credential: response.credential,
                 redirect: true,
@@ -63,21 +72,15 @@ export default function GoogleOneTap() {
               console.error("Google One Tap login failed:", error);
             }
           },
-          auto_select: false, // User selects account
+          auto_select: false,
           cancel_on_tap_outside: true,
-          itp_support: true, // Enable Intelligent Tracking Prevention support for Edge/Safari
-          use_fedcm_for_prompt: true, // Enable FedCM for reliable modern browser support on desktop/mobile
-          context: "signup", // Use signup context to encourage frictionless registration
+          itp_support: true,
+          // FedCM can auto-restore the previous account — keep it off after our issues
+          use_fedcm_for_prompt: false,
+          context: "signin",
         });
 
-        window.google.accounts.id.prompt((notification: any) => {
-          if (isCancelled) return;
-          if (notification.isNotDisplayed()) {
-            console.log("One Tap not displayed:", notification.getNotDisplayedReason());
-          } else if (notification.isSkippedMoment()) {
-            console.log("One Tap skipped:", notification.getSkippedReason());
-          }
-        });
+        window.google.accounts.id.prompt();
       } catch (err) {
         console.error("Failed to initialize Google One Tap:", err);
       }
@@ -97,12 +100,10 @@ export default function GoogleOneTap() {
     return () => {
       isCancelled = true;
       if (checkInterval) clearInterval(checkInterval);
-      if (window.google?.accounts?.id) {
-        try {
-          window.google.accounts.id.cancel();
-        } catch (e) {
-          // Safe fallback
-        }
+      try {
+        window.google?.accounts?.id?.cancel();
+      } catch {
+        /* ignore */
       }
     };
   }, [status]);

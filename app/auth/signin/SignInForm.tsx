@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { handleSignIn } from "@/app/actions/auth";
+import { BLOCK_ONE_TAP_KEY } from "@/lib/sign-out";
 import styles from "./SignInForm.module.css";
 
 export default function SignInForm({ callbackUrl }: { callbackUrl: string }) {
@@ -21,6 +22,11 @@ export default function SignInForm({ callbackUrl }: { callbackUrl: string }) {
         formData.append("redirectTo", callbackUrl);
         
         try {
+          try {
+            localStorage.removeItem(BLOCK_ONE_TAP_KEY);
+          } catch {
+            /* ignore */
+          }
           const res = await handleSignIn(formData);
           if (res?.error) {
             setError(res.error);

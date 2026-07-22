@@ -1,6 +1,7 @@
 "use client";
 
 import { signIn } from "next-auth/react";
+import { BLOCK_ONE_TAP_KEY } from "@/lib/sign-out";
 import styles from "./SignIn.module.css";
 
 interface GoogleSignInButtonProps {
@@ -9,6 +10,12 @@ interface GoogleSignInButtonProps {
 
 export default function GoogleSignInButton({ callbackUrl }: GoogleSignInButtonProps) {
   function handleGoogleSignIn() {
+    // User is intentionally signing in — allow One Tap again later
+    try {
+      localStorage.removeItem(BLOCK_ONE_TAP_KEY);
+    } catch {
+      /* ignore */
+    }
     void signIn("google", { callbackUrl, redirect: true }, { prompt: "select_account" });
   }
 
