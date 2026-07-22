@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import SignInForm from "./SignInForm";
 import GoogleSignInButton from "./GoogleSignInButton";
+import ReturnToStoreButton from "./ReturnToStoreButton";
 import styles from "./SignIn.module.css";
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -120,9 +121,7 @@ export default async function SignInPage({
                 Sign up
               </Link>
             </p>
-            <Link href="/" className={styles.returnLink}>
-              Return to Store
-            </Link>
+            <ReturnToStoreButton />
           </div>
         </div>
       </div>
