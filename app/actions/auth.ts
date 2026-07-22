@@ -1,6 +1,6 @@
 "use server";
 
-import { signIn } from "@/auth";
+import { signIn, signOut } from "@/auth";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import { AuthError } from "next-auth";
@@ -35,4 +35,8 @@ export async function handleSignIn(formData: FormData) {
     console.error("Sign in error:", error);
     throw error;
   }
+}
+
+export async function handleSignOut() {
+  await signOut({ redirectTo: "/auth/signin" });
 }

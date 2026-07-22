@@ -3,6 +3,8 @@ import Image from "next/image";
 import SignInForm from "./SignInForm";
 import GoogleSignInButton from "./GoogleSignInButton";
 import styles from "./SignIn.module.css";
+import { auth, signOut } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function SignInPage({
   searchParams,
@@ -15,6 +17,14 @@ export default async function SignInPage({
       ? resolvedSearchParams.callbackUrl
       : "/";
   const registered = resolvedSearchParams.registered === "true";
+
+  // Clear any leftover session to ensure clean sign-in
+  const session = await auth();
+  const forceClear = resolvedSearchParams._sc === "1";
+  if (session?.user && !forceClear) {
+    await signOut();
+    redirect("/auth/signin?_sc=1");
+  }
 
   return (
     <div className={styles.container}>

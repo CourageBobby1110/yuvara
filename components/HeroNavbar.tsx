@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./HeroNavbar.module.css";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { handleSignOut } from "@/app/actions/auth";
 import { useCartStore } from "@/store/cart";
 import CurrencySelector from "./CurrencySelector";
 
@@ -210,7 +211,7 @@ export default function HeroNavbar({ session: initialSession }: HeroNavbarProps)
                     </Link>
                     <button
                       onClick={() => {
-                        signOut({ callbackUrl: "/auth/signin" });
+                        handleSignOut();
                         setIsAccountDropdownOpen(false);
                       }}
                       className={`${styles.dropdownLink} ${styles.signOutLink}`}

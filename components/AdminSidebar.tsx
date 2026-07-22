@@ -3,7 +3,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { handleSignOut } from "@/app/actions/auth";
 import styles from "./AdminSidebar.module.css";
 import { ExternalLink } from "lucide-react";
 
@@ -310,7 +311,7 @@ export default function AdminSidebar() {
           </Link>
         </nav>
 
-        <button onClick={() => signOut({ callbackUrl: "/auth/signin" })} className={styles.logoutButton}>
+        <button onClick={() => handleSignOut()} className={styles.logoutButton}>
           Sign Out
         </button>
       </aside>
