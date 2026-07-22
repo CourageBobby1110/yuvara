@@ -3,8 +3,16 @@ import Image from "next/image";
 import SignInForm from "./SignInForm";
 import GoogleSignInButton from "./GoogleSignInButton";
 import styles from "./SignIn.module.css";
-import { auth, signOut } from "@/auth";
-import { redirect } from "next/navigation";
+
+const ERROR_MESSAGES: Record<string, string> = {
+  OAuthAccountNotLinked:
+    "This Google account isn't linked to an existing profile. Please sign in with the account you originally used.",
+  OAuthSignin: "Couldn't start Google sign-in. Please try again.",
+  OAuthCallback: "Couldn't complete Google sign-in. Please try again.",
+  AccessDenied: "Sign-in was denied. Please try again.",
+  CredentialsSignin: "Invalid email or password.",
+  Default: "Something went wrong during sign-in. Please try again.",
+};
 
 export default async function SignInPage({
   searchParams,
@@ -17,14 +25,13 @@ export default async function SignInPage({
       ? resolvedSearchParams.callbackUrl
       : "/";
   const registered = resolvedSearchParams.registered === "true";
-
-  // Clear any leftover session to ensure clean sign-in
-  const session = await auth();
-  const forceClear = resolvedSearchParams._sc === "1";
-  if (session?.user && !forceClear) {
-    await signOut();
-    redirect("/auth/signin?_sc=1");
-  }
+  const errorParam =
+    typeof resolvedSearchParams.error === "string"
+      ? resolvedSearchParams.error
+      : null;
+  const errorMessage = errorParam
+    ? ERROR_MESSAGES[errorParam] ?? ERROR_MESSAGES.Default
+    : null;
 
   return (
     <div className={styles.container}>
@@ -80,6 +87,12 @@ export default async function SignInPage({
           {registered && (
             <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 text-center text-sm" role="alert">
               Account created! We've sent a verification link to your email. Please verify your email before signing in.
+            </div>
+          )}
+
+          {errorMessage && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 text-center text-sm" role="alert">
+              {errorMessage}
             </div>
           )}
 

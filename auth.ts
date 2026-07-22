@@ -1,9 +1,6 @@
 import NextAuth from "next-auth";
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import clientPromise from "@/lib/mongodb";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import NodemailerProvider from "next-auth/providers/nodemailer";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
@@ -20,10 +17,55 @@ function generateUserReferralCode(name: string) {
   return `${prefix}${random}`;
 }
 
+// Find or create a user from a Google profile using Mongoose directly.
+// This unifies Google OAuth with the rest of the app (One Tap, credentials)
+// and avoids the MongoDB adapter's account-linking bugs entirely.
+async function findOrCreateGoogleUser(profile: {
+  email?: string | null;
+  name?: string | null;
+  picture?: string | null;
+}) {
+  const email = (profile.email || "").toLowerCase().trim();
+  if (!email) return null;
+
+  await dbConnect();
+  let dbUser = await User.findOne({
+    email: { $regex: new RegExp(`^${email}$`, "i") },
+  });
+
+  if (!dbUser) {
+    dbUser = await User.create({
+      email,
+      name: profile.name || email.split("@")[0],
+      image: profile.picture || "",
+      role: "user",
+      emailVerified: new Date(),
+      referralCode: generateUserReferralCode(profile.name || email),
+    });
+  } else {
+    // Keep the identity in sync with the Google account that just signed in.
+    let changed = false;
+    if (profile.name && dbUser.name !== profile.name) {
+      dbUser.name = profile.name;
+      changed = true;
+    }
+    if (profile.picture && dbUser.image !== profile.picture) {
+      dbUser.image = profile.picture;
+      changed = true;
+    }
+    if (!dbUser.emailVerified) {
+      dbUser.emailVerified = new Date();
+      changed = true;
+    }
+    if (changed) await dbUser.save();
+  }
+
+  return dbUser;
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
   ...authConfig,
-  adapter: MongoDBAdapter(clientPromise) as any,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -34,17 +76,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           prompt: "select_account",
         },
       },
-    }),
-    NodemailerProvider({
-      server: {
-        host: process.env.EMAIL_SERVER_HOST,
-        port: Number(process.env.EMAIL_SERVER_PORT),
-        auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
-        },
-      },
-      from: process.env.EMAIL_FROM,
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -140,21 +171,50 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     ...authConfig.callbacks,
-    async signIn({ user, account }) {
-      // After email verification, redirect to homepage
-      if (account?.provider === "nodemailer") {
-        return "/";
+    async signIn({ user, account, profile }) {
+      // Google OAuth: resolve the user by email via Mongoose and attach the
+      // DB identity so the JWT/session always reflect the account just used.
+      if (account?.provider === "google") {
+        const dbUser = await findOrCreateGoogleUser(profile ?? {});
+        if (!dbUser) return false;
+        user.id = dbUser._id.toString();
+        user.name = dbUser.name;
+        user.image = dbUser.image;
+        (user as any).role = dbUser.role;
+        (user as any).emailVerified = dbUser.emailVerified;
+        (user as any).referralCode = dbUser.referralCode;
+        return true;
       }
       return true;
     },
-    async jwt({ token, user, trigger }) {
-      // Run the edge-safe jwt callback first
+    async jwt({ token, user, trigger, account }) {
+      // Base config first (copies user fields onto the token on sign-in).
       if (authConfig.callbacks?.jwt) {
         token = await authConfig.callbacks.jwt({ token, user, trigger } as any);
       }
 
-      // Always sync with DB if token.id is present to ensure latest roles and profile data
-      if (token.id) {
+      // On a fresh sign-in, resolve the DB user by the account's email so the
+      // session ALWAYS matches the identity that was just used to sign in.
+      const signInEmail = (user?.email || (token.email as string) || "").toLowerCase();
+      if (trigger === "signIn" && signInEmail) {
+        try {
+          await dbConnect();
+          const dbUser = (await User.findOne({
+            email: { $regex: new RegExp(`^${signInEmail}$`, "i") },
+          }).lean()) as any;
+          if (dbUser) {
+            token.id = dbUser._id.toString();
+            token.role = dbUser.role;
+            token.name = dbUser.name || "";
+            token.image = dbUser.image || "";
+            token.emailVerified = dbUser.emailVerified;
+            token.referralCode = dbUser.referralCode;
+          }
+        } catch (error) {
+          console.error("JWT sign-in resolve error:", error);
+        }
+      } else if (token.id) {
+        // Subsequent requests: refresh from DB by id.
         try {
           await dbConnect();
           const dbUser = await User.findById(token.id).lean() as any;
