@@ -65,6 +65,22 @@ export default function GoogleOneTap() {
   const { status } = useSession();
   const initAttempted = useRef(false);
 
+  // Clean up leftover Google GSI redirect parameters if present on homepage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      if (url.searchParams.has("iss") || (url.searchParams.has("code") && url.searchParams.has("prompt"))) {
+        url.searchParams.delete("iss");
+        url.searchParams.delete("code");
+        url.searchParams.delete("prompt");
+        url.searchParams.delete("scope");
+        url.searchParams.delete("authuser");
+        const cleanUrl = url.pathname + (url.searchParams.toString() ? "?" + url.searchParams.toString() : "") + url.hash;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     if (status === "loading" || status === "authenticated") return;
 
@@ -101,6 +117,7 @@ export default function GoogleOneTap() {
       try {
         window.google.accounts.id.initialize({
           client_id: clientId,
+          ux_mode: "popup",
           callback: async (response: any) => {
             if (isCancelled) return;
             if (isOneTapBlocked()) return;
