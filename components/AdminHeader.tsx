@@ -5,7 +5,7 @@ import { Search, Bell, Settings, LogOut, Loader2, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import styles from "./AdminHeader.module.css";
 
 interface SearchResult {
