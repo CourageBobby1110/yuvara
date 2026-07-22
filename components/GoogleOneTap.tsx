@@ -16,6 +16,25 @@ export default function GoogleOneTap() {
     // Only prompt if user is NOT authenticated
     if (status === "loading" || status === "authenticated") return;
 
+    // Skip One Tap right after an intentional sign-out (prevents old account reappearing)
+    try {
+      const justSignedOut = sessionStorage.getItem("yuvara_just_signed_out");
+      if (justSignedOut) {
+        const ts = Number(justSignedOut);
+        // Suppress One Tap for 2 minutes after sign-out
+        if (Date.now() - ts < 2 * 60 * 1000) {
+          if (window.google?.accounts?.id) {
+            window.google.accounts.id.disableAutoSelect();
+            window.google.accounts.id.cancel();
+          }
+          return;
+        }
+        sessionStorage.removeItem("yuvara_just_signed_out");
+      }
+    } catch {
+      /* ignore */
+    }
+
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     if (!clientId) {
       console.warn("Google One Tap: NEXT_PUBLIC_GOOGLE_CLIENT_ID environment variable is missing.");

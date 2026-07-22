@@ -11,7 +11,6 @@ import CartDrawer from "./CartDrawer";
 import GoogleOneTap from "./GoogleOneTap";
 
 interface LayoutWrapperProps {
-  session: any;
   children: React.ReactNode;
 }
 
@@ -100,7 +99,6 @@ function PageViewTracker() {
 }
 
 export default function LayoutWrapper({
-  session,
   children,
 }: LayoutWrapperProps) {
   const pathname = usePathname();
@@ -120,7 +118,7 @@ export default function LayoutWrapper({
       <CartDrawer />
       {shouldShowLayout ? (
         <>
-          <Navbar session={session} />
+          <Navbar />
           {children}
           <Footer />
         </>

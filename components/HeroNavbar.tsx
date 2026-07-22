@@ -4,20 +4,14 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./HeroNavbar.module.css";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { hardSignOut } from "@/lib/sign-out";
 import { useCartStore } from "@/store/cart";
 import CurrencySelector from "./CurrencySelector";
 
-
-import { Session } from "next-auth";
-
-interface HeroNavbarProps {
-  session: Session | null;
-}
-
-export default function HeroNavbar({ session: initialSession }: HeroNavbarProps) {
-  const { data: liveSession } = useSession();
-  const session = liveSession ?? initialSession;
+export default function HeroNavbar() {
+  // Live client session only — never a server prop that can go stale after sign-out
+  const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
   const { totalItems, openCart } = useCartStore();
@@ -210,7 +204,7 @@ export default function HeroNavbar({ session: initialSession }: HeroNavbarProps)
                     </Link>
                     <button
                       onClick={() => {
-                        signOut({ callbackUrl: "/auth/signin" });
+                        void hardSignOut();
                         setIsAccountDropdownOpen(false);
                       }}
                       className={`${styles.dropdownLink} ${styles.signOutLink}`}

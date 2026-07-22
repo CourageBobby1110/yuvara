@@ -13,6 +13,9 @@ import SiteSettings from "@/models/SiteSettings";
 import { cache, Suspense } from "react";
 import Script from "next/script";
 
+// Always re-read cookies/session — never serve a cached layout with a stale user
+export const dynamic = "force-dynamic";
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
@@ -146,9 +149,13 @@ export default async function RootLayout({
       >
         <LanguageProvider>
           <CurrencyProvider>
-            <AuthProvider session={session}>
+            <AuthProvider
+              session={session}
+              refetchOnWindowFocus
+              refetchWhenOffline={false}
+            >
               <AnalyticsBlocker gaId={gaId} forceAnalytics={forceAnalytics} />
-              <LayoutWrapper session={session}>{children}</LayoutWrapper>
+              <LayoutWrapper>{children}</LayoutWrapper>
               <Toaster position="bottom-right" />
               <OfflineBanner />
               {(!isAdmin || forceAnalytics) && gaId && <GoogleAnalytics gaId={gaId} />}

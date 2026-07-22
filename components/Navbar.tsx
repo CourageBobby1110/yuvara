@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { hardSignOut } from "@/lib/sign-out";
 import { useCartStore } from "@/store/cart";
 import CurrencySelector from "@/components/CurrencySelector";
 
@@ -12,13 +13,9 @@ import { useLanguage } from "@/context/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./Navbar.module.css";
 
-interface NavbarProps {
-  session: any;
-}
-
-export default function Navbar({ session: initialSession }: NavbarProps) {
-  const { data: liveSession } = useSession();
-  const session = liveSession ?? initialSession;
+export default function Navbar() {
+  // Live client session only — never a server prop that can go stale after sign-out
+  const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
   const [itemCount, setItemCount] = useState(0);
@@ -250,7 +247,7 @@ export default function Navbar({ session: initialSession }: NavbarProps) {
                         </Link>
                         <button
                           onClick={() => {
-                            signOut({ callbackUrl: "/auth/signin" });
+                            void hardSignOut();
                             setIsAccountDropdownOpen(false);
                           }}
                           className={`${styles.dropdownLink} ${styles.signOutLink}`}
@@ -465,7 +462,7 @@ export default function Navbar({ session: initialSession }: NavbarProps) {
                   
                   <button
                     onClick={() => {
-                      signOut({ callbackUrl: "/auth/signin" });
+                      void hardSignOut();
                       setIsMenuOpen(false);
                     }}
                     className={styles.mobileSignOut}
