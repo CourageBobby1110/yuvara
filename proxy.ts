@@ -37,6 +37,8 @@ export const proxy = auth((req) => {
   return null;
 });
 
+export default proxy;
+
 export const config = {
   matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };
