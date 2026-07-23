@@ -7,21 +7,24 @@ export const BLOCK_ONE_TAP_KEY = "yuvara_block_onetap";
  * Perform a clean hard sign-out that works on localhost AND production.
  *
  * Strategy:
- *   1. Synchronously disable Google GSI and block One Tap.
- *   2. Clear sessionStorage.
- *   3. POST to our own `/api/signout` (no CSRF required, always works) —
- *      it returns Set-Cookie headers that expire every known auth cookie
- *      across every domain variant (apex, www, .www).
- *   4. Short delay to guarantee the browser has processed the Set-Cookie
- *      headers before the page unloads.
- *   5. Full `window.location.href` navigation to flush React/Next.js cache.
+ *   1. Disable Google GSI and cancel any pending One Tap prompt.
+ *   2. Set the One-Tap block flag in localStorage so the user isn't
+ *      immediately re-authenticated by GSI on the next page load.
+ *   3. Clear sessionStorage.
+ *   4. Navigate directly to `/api/signout?callbackUrl=<targetUrl>`.
  *
- * We deliberately do NOT call next-auth/react `signOut()` here:
- *   - It requires a CSRF token fetch that can fail in production (host
- *     header mismatches behind Netlify/CDN proxies).
- *   - The SessionProvider state update it performs is irrelevant because
- *     step 5 destroys the React app anyway.
- *   - Our `/api/signout` clears the *exact* same cookies.
+ *      ⚠️  This is a FULL-PAGE NAVIGATION, NOT a fetch call.
+ *      The browser sends a GET to `/api/signout`, our server returns a 302
+ *      redirect + Set-Cookie headers that expire every known auth cookie
+ *      across all domain variants.
+ *
+ *      Key advantages over the old fetch‑based approach:
+ *        - CDNs (Netlify) forward Set-Cookie on navigation responses — they
+ *          DO strip them from `fetch` responses in many configurations.
+ *        - The 302 redirect guarantees the browser processes the expire
+ *          cookies BEFORE landing on the sign‑in page.
+ *        - No CSRF token required.
+ *        - No race condition between cookie‑clearing and `window.location.href`.
  */
 export async function hardSignOut(targetUrl: string = "/auth/signin") {
   // ── 1. Disable Google GSI & cancel pending prompts ───────────────────
@@ -48,23 +51,9 @@ export async function hardSignOut(targetUrl: string = "/auth/signin") {
     /* ignore */
   }
 
-  // ── 4. Cookie scrub (primary mechanism, no CSRF needed) ─────────────
-  try {
-    await fetch("/api/signout", {
-      method: "POST",
-      cache: "no-store",
-      credentials: "include",
-      headers: { Accept: "application/json" },
-    });
-  } catch {
-    /* ignore */
-  }
-
-  // ── 5. Wait for the browser to process Set-Cookie headers ───────────
-  // Without this delay the navigation can outrun the cookie store update,
-  // causing the sign-in page to see the old session cookie.
-  await new Promise((resolve) => setTimeout(resolve, 400));
-
-  // ── 6. Destroy React app & force a clean server-rendered page ──────
-  window.location.href = targetUrl;
+  // ── 4. Full-page navigation: GET → /api/signout → 302 + Set-Cookie → targetUrl ───
+  // The browser processes the Set-Cookie during the redirect, so the cookie
+  // is guaranteed to be gone when /auth/signin loads.
+  const params = new URLSearchParams({ callbackUrl: targetUrl });
+  window.location.href = `/api/signout?${params}`;
 }

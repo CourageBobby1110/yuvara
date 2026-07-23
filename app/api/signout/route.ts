@@ -1,17 +1,22 @@
 import { signOut } from "@/auth";
 
 /**
- * /api/signout — clears all auth cookies so sign-out works everywhere.
+ * /api/signout — two modes:
  *
- * Uses TWO mechanisms for reliability:
- *   1. Calls NextAuth's internal `signOut()` (the proper way to clear the
- *      current host's session cookie).
- *   2. Manually expires every known cookie name across domain variants
- *      (apex, www, .apex) as a safety net for cross-www/apex scenarios.
+ *   GET  (browser navigation via `window.location.href`)
+ *     → 302 redirect + Set-Cookie expire headers.
+ *        The browser processes the Set-Cookie during the redirect, so the
+ *        cookie is guaranteed to be gone when the sign-in page loads.
+ *
+ *   POST (client `fetch`)
+ *     → 200 JSON + Set-Cookie expire headers.
+ *
+ * In both modes: calls NextAuth's `signOut()` first (handles the current
+ * host), then manually expires every known cookie name across domain
+ * variants (apex, www, .www) as a safety net.
  */
 
 const AUTH_COOKIE_NAMES = [
-  // Auth.js v5
   "authjs.session-token",
   "__Secure-authjs.session-token",
   "__Host-authjs.session-token",
@@ -19,7 +24,6 @@ const AUTH_COOKIE_NAMES = [
   "__Host-authjs.csrf-token",
   "authjs.callback-url",
   "__Secure-authjs.callback-url",
-  // Legacy next-auth v4 (some cookies may still linger)
   "next-auth.session-token",
   "__Secure-next-auth.session-token",
   "next-auth.csrf-token",
@@ -28,7 +32,6 @@ const AUTH_COOKIE_NAMES = [
   "__Secure-next-auth.callback-url",
 ];
 
-/** Generate Set-Cookie strings that expire `name` for the given host. */
 function expireCookie(name: string, host: string): string[] {
   const expired =
     "Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/";
@@ -37,8 +40,6 @@ function expireCookie(name: string, host: string): string[] {
     `${name}=; ${expired}; SameSite=Lax; Secure`,
   ];
 
-  // For production hosts, also expire with Domain so subdomain / sibling
-  // cookies (e.g. www vs apex) get nuked too.
   if (host && !host.includes("localhost") && !host.includes("127.0.0.1")) {
     const clean = host.split(":")[0];
     results.push(
@@ -64,29 +65,32 @@ function expireCookie(name: string, host: string): string[] {
   return results;
 }
 
-async function handleSignOut(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const to = searchParams.get("callbackUrl") || "/auth/signin";
-  const host = request.headers.get("host") || "";
+async function signOutHandler(request: Request) {
+  let to = "/auth/signin";
+  let host = "";
+  try {
+    const url = new URL(request.url);
+    to = url.searchParams.get("callbackUrl") || to;
+    host = request.headers.get("host") || "";
+  } catch {
+    // request.url might be malformed in edge cases — use defaults
+  }
 
   const headers = new Headers({
-    "Content-Type": "application/json",
     "Cache-Control":
       "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
     Pragma: "no-cache",
     Expires: "0",
   });
 
-  // ── Mechanism 1: NextAuth's own signOut (handles the current host) ──
+  // ── Mechanism 1: NextAuth's own signOut (handles current host) ──────
   try {
     await signOut({ redirect: false });
-  } catch (e) {
-    // signOut() may throw "DYNAMIC_SERVER_USAGE" or similar in certain
-    // runtimes — ignore and fall through to the manual scrub below.
-    console.error("[/api/signout] signOut() threw:", e);
+  } catch {
+    // signOut() may throw in non-Server-Action contexts — fall through
   }
 
-  // ── Mechanism 2: manual cookie scrubbing (cross-domain safety net) ──
+  // ── Mechanism 2: manual cookie scrub (cross-domain safety net) ──────
   const toClear = new Set<string>(AUTH_COOKIE_NAMES);
   const cookieHeader = request.headers.get("cookie") || "";
   for (const pair of cookieHeader.split(";")) {
@@ -110,6 +114,13 @@ async function handleSignOut(request: Request) {
     }
   }
 
+  // GET → 302 redirect (browser navigation); POST → JSON
+  if (request.method === "GET") {
+    headers.set("Location", to);
+    return new Response(null, { status: 302, headers });
+  }
+
+  headers.set("Content-Type", "application/json");
   return new Response(JSON.stringify({ success: true, redirect: to }), {
     status: 200,
     headers,
@@ -118,22 +129,23 @@ async function handleSignOut(request: Request) {
 
 export async function GET(request: Request) {
   try {
-    return await handleSignOut(request);
+    return await signOutHandler(request);
   } catch (err) {
     console.error("[/api/signout] GET error:", err);
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
+    // Even on error, redirect so the user doesn't see a blank/error page.
+    return new Response(null, {
+      status: 302,
+      headers: { Location: "/auth/signin" },
     });
   }
 }
 
 export async function POST(request: Request) {
   try {
-    return await handleSignOut(request);
+    return await signOutHandler(request);
   } catch (err) {
     console.error("[/api/signout] POST error:", err);
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
+    return new Response(JSON.stringify({ success: false }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
