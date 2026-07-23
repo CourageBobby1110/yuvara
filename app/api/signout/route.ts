@@ -35,12 +35,14 @@ const AUTH_COOKIE_NAMES = [
 function expireCookie(name: string, host: string): string[] {
   const expired =
     "Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/";
+  const isHostPrefixed = name.startsWith("__Host-");
   const results: string[] = [
     `${name}=; ${expired}; SameSite=Lax`,
     `${name}=; ${expired}; SameSite=Lax; Secure`,
   ];
 
-  if (host && !host.includes("localhost") && !host.includes("127.0.0.1")) {
+  // __Host- prefixed cookies MUST NOT specify a Domain attribute according to IETF RFC 6265
+  if (!isHostPrefixed && host && !host.includes("localhost") && !host.includes("127.0.0.1")) {
     const clean = host.split(":")[0];
     results.push(
       `${name}=; ${expired}; Domain=${clean}; SameSite=Lax`,
