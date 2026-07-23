@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { hardSignOut } from "@/lib/sign-out";
+import { hardSignOut, switchAccount } from "@/lib/sign-out";
 import styles from "./AdminSidebar.module.css";
 import { ExternalLink } from "lucide-react";
 
@@ -311,9 +311,14 @@ export default function AdminSidebar() {
           </Link>
         </nav>
 
-        <button onClick={() => void hardSignOut()} className={styles.logoutButton}>
-          Sign Out
-        </button>
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "auto" }}>
+          <button onClick={() => void switchAccount()} className={styles.logoutButton} style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)" }}>
+            Switch Account
+          </button>
+          <button onClick={() => void hardSignOut()} className={styles.logoutButton}>
+            Sign Out
+          </button>
+        </div>
       </aside>
     </>
   );

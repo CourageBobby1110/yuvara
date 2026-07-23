@@ -82,7 +82,7 @@ export const proxy = auth((req) => {
   // ── Signout at the edge ─────────────────────────────────────────────
   // The CDN sets the cookie directly — it cannot strip its own Set-Cookie.
   if (pathname === "/api/signout") {
-    const callbackUrl = searchParams.get("callbackUrl") || "/auth/signin";
+    const callbackUrl = searchParams.get("callbackUrl") || "/auth/signin?switch=1";
     const host = req.headers.get("host") || "";
     const response = NextResponse.redirect(
       new URL(callbackUrl, req.nextUrl.origin)
@@ -120,9 +120,11 @@ export const proxy = auth((req) => {
     return NextResponse.next();
   }
 
-  // ── Auth pages: already signed-in users go home ──────────────────────
+  // ── Auth pages: already signed-in users go home (UNLESS switching account) ──────
+  const isSwitching = searchParams.get("switch") === "1" || searchParams.get("logout") === "1";
   if (
     isLoggedIn &&
+    !isSwitching &&
     (pathname === "/auth/signin" || pathname === "/auth/signup")
   ) {
     return NextResponse.redirect(new URL("/", req.nextUrl.origin));

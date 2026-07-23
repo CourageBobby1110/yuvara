@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { hardSignOut } from "@/lib/sign-out";
+import { hardSignOut, switchAccount } from "@/lib/sign-out";
 import { useCartStore } from "@/store/cart";
 import CurrencySelector from "@/components/CurrencySelector";
 
@@ -247,6 +247,18 @@ export default function Navbar() {
                         </Link>
                         <button
                           onClick={() => {
+                            void switchAccount();
+                            setIsAccountDropdownOpen(false);
+                          }}
+                          className={styles.dropdownLink}
+                        >
+                          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                          </svg>
+                          Switch Account
+                        </button>
+                        <button
+                          onClick={() => {
                             void hardSignOut();
                             setIsAccountDropdownOpen(false);
                           }}
@@ -460,6 +472,22 @@ export default function Navbar() {
                     </Link>
                   </div>
                   
+                  <button
+                    onClick={() => {
+                      void switchAccount();
+                      setIsMenuOpen(false);
+                    }}
+                    className={styles.mobileUserLink}
+                    style={{ background: "none", border: "none", width: "100%", textAlign: "left" }}
+                  >
+                    <div className="flex items-center">
+                      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="mr-3 text-[#996515]">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                      </svg>
+                      <span>Switch Account</span>
+                    </div>
+                  </button>
+
                   <button
                     onClick={() => {
                       void hardSignOut();

@@ -1,7 +1,23 @@
 "use client";
 
+import { signIn } from "next-auth/react";
+
 /** localStorage key — blocks Google One Tap until the user explicitly signs in again */
 export const BLOCK_ONE_TAP_KEY = "yuvara_block_onetap";
+
+/**
+ * Switch account helper — triggers Google's account chooser directly or redirects to sign-in with switch=1
+ */
+export async function switchAccount(callbackUrl: string = "/") {
+  try {
+    localStorage.setItem(BLOCK_ONE_TAP_KEY, "1");
+    sessionStorage.clear();
+  } catch {
+    /* ignore */
+  }
+  // Triggers OAuth loop with Google's prompt=select_account
+  await signIn("google", { callbackUrl });
+}
 
 /**
  * Perform a clean hard sign-out that works on localhost AND production.
@@ -26,12 +42,12 @@ export const BLOCK_ONE_TAP_KEY = "yuvara_block_onetap";
  *        - No CSRF token required.
  *        - No race condition between cookie‑clearing and `window.location.href`.
  */
-export async function hardSignOut(targetUrl: string = "/auth/signin") {
+export async function hardSignOut(targetUrl: string = "/auth/signin?switch=1") {
   // ── 1. Disable Google GSI & cancel pending prompts ───────────────────
   try {
-    if (typeof window !== "undefined" && window.google?.accounts?.id) {
-      window.google.accounts.id.disableAutoSelect();
-      window.google.accounts.id.cancel();
+    if (typeof window !== "undefined" && (window as any).google?.accounts?.id) {
+      (window as any).google.accounts.id.disableAutoSelect();
+      (window as any).google.accounts.id.cancel();
     }
   } catch {
     /* ignore */
