@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCurrency } from "@/context/CurrencyContext";
 import { getItemShippingRateUSD } from "@/lib/utils";
+import { trackFBEvent } from "@/lib/fb-pixel";
 import styles from "./Checkout.module.css";
 
 const COUNTRIES = [
@@ -70,11 +71,20 @@ export default function CheckoutPage() {
 
   const [availableCountries, setAvailableCountries] = useState(COUNTRIES);
 
-  // Force session update on mount
+  // Force session update & track InitiateCheckout on mount
   useEffect(() => {
     useCartStore.persist.rehydrate();
     update();
     fetchUserProfile();
+
+    if (items.length > 0) {
+      trackFBEvent("InitiateCheckout", {
+        content_ids: items.map((i) => i.id),
+        value: totalPrice(),
+        currency: "USD",
+        num_items: items.reduce((sum, i) => sum + i.quantity, 0),
+      });
+    }
   }, []);
 
   // Calculate available countries based on cart items
@@ -322,6 +332,12 @@ export default function CheckoutPage() {
     e.preventDefault();
 
     setLoading(true);
+
+    trackFBEvent("AddPaymentInfo", {
+      content_ids: items.map((i) => i.id),
+      value: calculateTotal(),
+      currency: "USD",
+    });
 
     try {
       // Save address if checked

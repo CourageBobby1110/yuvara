@@ -1,11 +1,19 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { trackFBEvent } from "@/lib/fb-pixel";
 import styles from "./Success.module.css";
 
 export default function OrderSuccessPage() {
   const { data: session } = useSession();
+
+  useEffect(() => {
+    trackFBEvent("Purchase", {
+      currency: "USD",
+    });
+  }, []);
 
   return (
     <div className={styles.container}>

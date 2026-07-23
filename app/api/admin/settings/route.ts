@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import SiteSettings from "@/models/SiteSettings";
 import { auth } from "@/auth";
+import { revalidatePath } from "next/cache";
 
 export async function GET() {
   try {
@@ -36,6 +37,12 @@ export async function PUT(req: Request) {
       new: true,
       upsert: true,
     });
+
+    try {
+      revalidatePath("/", "layout");
+    } catch {
+      /* ignore revalidate errors in non-SSG contexts */
+    }
 
     return NextResponse.json(settings);
   } catch (error) {

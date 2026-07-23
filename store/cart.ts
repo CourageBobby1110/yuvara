@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { trackFBEvent, trackFBCustom } from "@/lib/fb-pixel";
 
 export interface CartItem {
   id: string;
@@ -61,6 +62,14 @@ export const useCartStore = create<CartStore>()(
       isOpen: false,
 
       addItem: (item) => {
+        trackFBEvent("AddToCart", {
+          content_ids: [item.id],
+          content_name: item.name,
+          content_type: "product",
+          value: item.price,
+          currency: "USD",
+        });
+
         const currentItems = get().items;
         const existingItemIndex = currentItems.findIndex(
           (i) =>
@@ -82,6 +91,10 @@ export const useCartStore = create<CartStore>()(
       },
 
       removeItem: (id, selectedSize, selectedColor) => {
+        trackFBCustom("RemoveFromCart", {
+          content_ids: [id],
+        });
+
         set({
           items: get().items.filter(
             (item) =>

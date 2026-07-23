@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { BLOCK_ONE_TAP_KEY } from "@/lib/sign-out";
+import { trackFBEvent } from "@/lib/fb-pixel";
 import styles from "./SignUp.module.css";
 
 function SignUpForm() {
@@ -43,6 +44,10 @@ function SignUpForm() {
         setLoading(false);
         return;
       }
+
+      trackFBEvent("CompleteRegistration", {
+        content_name: name,
+      });
 
       // Redirect to signin page after successful signup, preserving callbackUrl
       router.push(

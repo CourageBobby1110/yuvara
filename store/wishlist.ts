@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { toast } from "sonner";
+import { trackFBEvent } from "@/lib/fb-pixel";
 
 interface WishlistState {
   items: Set<string>; // Set of product IDs
@@ -52,9 +53,13 @@ export const useWishlistStore = create<WishlistState>()(
           return { items: newItems };
         });
 
-        // Show toast immediately
+        // Show toast immediately & track FB event
         if (isAdded) {
           toast.success("Added to wishlist");
+          trackFBEvent("AddToWishlist", {
+            content_ids: [productId],
+            content_type: "product",
+          });
         } else {
           toast.info("Removed from wishlist");
         }

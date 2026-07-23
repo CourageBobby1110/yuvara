@@ -1,27 +1,35 @@
 export function trackFBEvent(
   eventName: string,
-  params?: Record<string, string | number | boolean>
+  params?: Record<string, any>
 ) {
   if (typeof window === "undefined") return;
   if (typeof window.fbq !== "function") return;
 
-  if (params) {
-    window.fbq("track", eventName, params);
-  } else {
-    window.fbq("track", eventName);
+  try {
+    if (params) {
+      window.fbq("track", eventName, params);
+    } else {
+      window.fbq("track", eventName);
+    }
+  } catch (e) {
+    console.error("[FB Pixel] Event tracking error:", e);
   }
 }
 
 export function trackFBCustom(
   eventName: string,
-  params?: Record<string, string | number | boolean>
+  params?: Record<string, any>
 ) {
   if (typeof window === "undefined") return;
   if (typeof window.fbq !== "function") return;
 
-  if (params) {
-    window.fbq("trackCustom", eventName, params);
-  } else {
-    window.fbq("trackCustom", eventName);
+  try {
+    if (params) {
+      window.fbq("trackCustom", eventName, params);
+    } else {
+      window.fbq("trackCustom", eventName);
+    }
+  } catch (e) {
+    console.error("[FB Pixel] Custom event tracking error:", e);
   }
 }

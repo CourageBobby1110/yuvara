@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { hardSignOut, switchAccount } from "@/lib/sign-out";
 import { useCartStore } from "@/store/cart";
+import { trackFBEvent } from "@/lib/fb-pixel";
 import CurrencySelector from "@/components/CurrencySelector";
 
 import { useLanguage } from "@/context/LanguageContext";
@@ -75,6 +76,7 @@ export default function Navbar() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
+      trackFBEvent("Search", { search_string: searchQuery.trim() });
       router.push(`/collections?search=${encodeURIComponent(searchQuery)}`);
       setIsMobileSearchOpen(false);
       setIsMenuOpen(false);

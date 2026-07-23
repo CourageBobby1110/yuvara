@@ -12,6 +12,7 @@ import { Star } from "lucide-react";
 import { useSession } from "next-auth/react";
 import styles from "./Product.module.css";
 import { getValidUrl, getItemShippingRateUSD } from "@/lib/utils";
+import { trackFBEvent } from "@/lib/fb-pixel";
 
 export interface ProductType {
   _id: string;
@@ -134,6 +135,15 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
   const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
+    // Meta Pixel "ViewContent" tracking
+    trackFBEvent("ViewContent", {
+      content_ids: [product._id],
+      content_name: product.name,
+      content_type: "product",
+      value: product.price,
+      currency: "USD",
+    });
+
     // Klaviyo "Viewed Product" tracking
     const klaviyo = (window as any).klaviyo || [];
     if (klaviyo) {
