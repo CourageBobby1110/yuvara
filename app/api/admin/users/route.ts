@@ -82,3 +82,60 @@ export async function PUT(req: Request) {
     );
   }
 }
+
+export async function DELETE(req: Request) {
+  try {
+    const session = await auth();
+
+    // Only admins can delete users
+    if (!session || session.user?.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const { userId, password } = body;
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    if (userId === session.user?.id) {
+      return NextResponse.json(
+        { error: "You cannot delete your own admin account." },
+        { status: 400 }
+      );
+    }
+
+    const envPassword = process.env.USER_DELETE_PASSWORD || process.env.DELETE_USER_PASSWORD;
+    if (!envPassword) {
+      console.error("[DELETE /api/admin/users] USER_DELETE_PASSWORD is not set in process.env");
+      return NextResponse.json(
+        { error: "User delete password is not configured on the server." },
+        { status: 500 }
+      );
+    }
+
+    if ((password || "").trim() !== envPassword.trim()) {
+      console.warn("[DELETE /api/admin/users] Password mismatch");
+      return NextResponse.json({ error: "Incorrect password" }, { status: 403 });
+    }
+
+    await dbConnect();
+    const deletedUser = await User.findByIdAndDelete(userId);
+
+    if (!deletedUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    return NextResponse.json(
+      { error: "Failed to delete user" },
+      { status: 500 }
+    );
+  }
+}

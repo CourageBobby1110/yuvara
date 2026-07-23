@@ -931,3 +931,33 @@
 .whatsappBtn:hover {
   background-color: #20ba5a;
 }
+
+.deleteActionBtn {
+  background-color: #dc2626;
+  color: #fff;
+}
+
+.deleteActionBtn:hover {
+  background-color: #b91c1c;
+}
+
+.deleteConfirmBtn {
+  padding: 0.625rem 1.25rem;
+  background-color: #dc2626;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.deleteConfirmBtn:hover {
+  background-color: #b91c1c;
+}
+
+.deleteConfirmBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

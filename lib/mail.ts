@@ -532,11 +532,11 @@ export async function sendOrderStatusUpdate(order: any) {
 }
 
 export async function sendPasswordResetEmail(email: string, token: string) {
-  const baseUrl = process.env.NEXTAUTH_URL;
-  if (!baseUrl) {
-    console.error("NEXTAUTH_URL is not defined in environment variables");
-    throw new Error("Configuration error: NEXTAUTH_URL is missing");
-  }
+  const baseUrl = (
+    process.env.NEXTAUTH_URL ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "http://localhost:3000"
+  ).replace(/\/+$/, "");
 
   const resetUrl = `${baseUrl}/auth/reset-password?token=${token}&email=${encodeURIComponent(
     email
@@ -722,11 +722,11 @@ export async function sendGiftCardEmail(giftCard: any) {
 }
 
 export async function sendVerificationEmail(email: string, token: string) {
-  const baseUrl = process.env.NEXTAUTH_URL;
-  if (!baseUrl) {
-    console.error("NEXTAUTH_URL is not defined in environment variables");
-    throw new Error("Configuration error: NEXTAUTH_URL is missing");
-  }
+  const baseUrl = (
+    process.env.NEXTAUTH_URL ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "http://localhost:3000"
+  ).replace(/\/+$/, "");
 
   const verifyUrl = `${baseUrl}/verify-email?token=${token}`;
   console.log(

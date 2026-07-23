@@ -22,7 +22,8 @@ import {
   UserCheck,
   Calendar,
   Layers,
-  ArrowRight
+  ArrowRight,
+  Trash2
 } from "lucide-react";
 
 interface User {
@@ -67,6 +68,12 @@ export default function AdminUsersPage() {
   const [rolePassword, setRolePassword] = useState("");
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
   const [isRoleUpdating, setIsRoleUpdating] = useState(false);
+
+  // Delete User states
+  const [userDeleteTarget, setUserDeleteTarget] = useState<{ userId: string; userName: string } | null>(null);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const isAdmin = session?.user?.role === "admin";
 
@@ -141,6 +148,57 @@ export default function AdminUsersPage() {
     } finally {
       setIsRoleUpdating(false);
       setUpdating(null);
+    }
+  };
+
+  const handleDeleteUserClick = (user: User, e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+    }
+    if (!isAdmin) return;
+    if (user._id === session?.user?.id) {
+      alert("You cannot delete your own admin account.");
+      return;
+    }
+    setUserDeleteTarget({ userId: user._id, userName: user.name || user.email });
+    setDeletePassword("");
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDeleteUser = async () => {
+    if (!userDeleteTarget) return;
+    if (!deletePassword) {
+      alert("Password is required to delete a user.");
+      return;
+    }
+    setIsDeleting(true);
+    try {
+      const res = await fetch("/api/admin/users", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: userDeleteTarget.userId,
+          password: deletePassword,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setUsers((prev) => prev.filter((u) => u._id !== userDeleteTarget.userId));
+        if (selectedUser && selectedUser._id === userDeleteTarget.userId) {
+          setSelectedUser(null);
+        }
+        setIsDeleteModalOpen(false);
+        setUserDeleteTarget(null);
+        setDeletePassword("");
+      } else {
+        alert(data.error || "Failed to delete user");
+      }
+    } catch (error) {
+      console.error("Error deleting user", error);
+      alert("Something went wrong while deleting user.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -356,6 +414,7 @@ export default function AdminUsersPage() {
               <th className={styles.th}>Email Address</th>
               <th className={styles.th}>Role / Status</th>
               <th className={styles.th}>Joined Date</th>
+              <th className={styles.th} style={{ textAlign: "right" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -394,11 +453,24 @@ export default function AdminUsersPage() {
                 <td className={`${styles.td} ${styles.date}`}>
                   {new Date(user.createdAt).toLocaleDateString()}
                 </td>
+                <td className={styles.td} style={{ textAlign: "right" }} onClick={(e) => e.stopPropagation()}>
+                  {isAdmin && user._id !== session?.user?.id && (
+                    <button
+                      type="button"
+                      className={styles.deleteActionBtn}
+                      style={{ padding: "6px 10px", borderRadius: "6px", display: "inline-flex", alignItems: "center", gap: "4px" }}
+                      title="Delete User"
+                      onClick={(e) => handleDeleteUserClick(user, e)}
+                    >
+                      <Trash2 size={14} /> Delete
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
             {paginatedUsers.length === 0 && (
               <tr>
-                <td colSpan={4} className={styles.emptyState}>
+                <td colSpan={5} className={styles.emptyState}>
                   No customers found.
                 </td>
               </tr>
@@ -642,6 +714,15 @@ export default function AdminUsersPage() {
                 >
                   <Mail size={16} /> Send Email
                 </a>
+                {isAdmin && selectedUser._id !== session?.user?.id && (
+                  <button
+                    type="button"
+                    className={`${styles.actionBtn} ${styles.deleteActionBtn}`}
+                    onClick={(e) => handleDeleteUserClick(selectedUser, e)}
+                  >
+                    <Trash2 size={16} /> Delete Account
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -702,6 +783,66 @@ export default function AdminUsersPage() {
                 disabled={isRoleUpdating}
               >
                 {isRoleUpdating ? "Updating..." : "Update"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Delete User password verification modal */}
+      {isDeleteModalOpen && (
+        <div className={styles.modalOverlay}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleConfirmDeleteUser();
+            }}
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className={styles.modalTitle} style={{ color: "#dc2626" }}>Delete User Account</h2>
+            <p className={styles.modalText}>
+              Are you sure you want to permanently delete <strong>{userDeleteTarget?.userName}</strong>? This action cannot be undone. Enter the administrator user deletion password to proceed.
+            </p>
+            
+            {/* Dummy hidden inputs */}
+            <input
+              type="text"
+              name="email"
+              autoComplete="username"
+              style={{ display: "none" }}
+              readOnly
+            />
+            
+            <input
+              type="password"
+              name="password"
+              placeholder="Enter deletion password"
+              value={deletePassword}
+              onChange={(e) => setDeletePassword(e.target.value)}
+              className={styles.passwordInput}
+              autoComplete="new-password"
+              autoFocus
+            />
+            <div className={styles.modalActions}>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsDeleteModalOpen(false);
+                  setUserDeleteTarget(null);
+                  setDeletePassword("");
+                }}
+                className={styles.cancelBtn}
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className={styles.deleteConfirmBtn}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Deleting..." : "Delete User"}
               </button>
             </div>
           </form>
