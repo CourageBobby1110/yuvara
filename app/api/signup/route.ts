@@ -103,6 +103,9 @@ export async function POST(req: NextRequest) {
       existingUser.password = hashedPassword;
       existingUser.name = userName;
       existingUser.isGuest = false;
+      if (!existingUser.emailVerified) {
+        existingUser.emailVerified = new Date();
+      }
       if (!existingUser.referralCode) {
         existingUser.referralCode = newReferralCode;
       }
@@ -117,6 +120,7 @@ export async function POST(req: NextRequest) {
         password: hashedPassword,
         name: userName,
         role: "user",
+        emailVerified: new Date(),
         referralCode: newReferralCode,
         referredBy: referredBy,
       });

@@ -16,16 +16,6 @@ export async function handleSignIn(formData: FormData) {
   const email = (formData.get("email") as string | null)?.toLowerCase().trim();
 
   try {
-    if (email) {
-      await dbConnect();
-      const user = await User.findOne({
-        email: { $regex: new RegExp(`^${email}$`, "i") },
-      });
-      if (user && user.password && !user.emailVerified) {
-        return { error: "Please verify your email before logging in." };
-      }
-    }
-
     await signIn("credentials", formData);
     return null;
   } catch (error) {

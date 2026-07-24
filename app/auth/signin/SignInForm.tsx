@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { handleSignIn } from "@/app/actions/auth";
+import { signIn } from "next-auth/react";
 import { BLOCK_ONE_TAP_KEY } from "@/lib/sign-out";
 import styles from "./SignInForm.module.css";
 
@@ -19,7 +19,8 @@ export default function SignInForm({ callbackUrl }: { callbackUrl: string }) {
         setError("");
         
         const formData = new FormData(e.currentTarget);
-        formData.append("redirectTo", callbackUrl);
+        const email = formData.get("email") as string;
+        const password = formData.get("password") as string;
         
         try {
           try {
@@ -27,13 +28,21 @@ export default function SignInForm({ callbackUrl }: { callbackUrl: string }) {
           } catch {
             /* ignore */
           }
-          const res = await handleSignIn(formData);
+          const res = await signIn("credentials", {
+            email,
+            password,
+            redirect: false,
+          });
+
           if (res?.error) {
-            setError(res.error);
+            setError("Invalid email or password.");
             setLoading(false);
+          } else {
+            window.location.href = callbackUrl || "/";
           }
         } catch (e) {
           console.error(e);
+          setError("Something went wrong. Please try again.");
           setLoading(false);
         }
       }}

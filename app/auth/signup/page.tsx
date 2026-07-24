@@ -49,12 +49,22 @@ function SignUpForm() {
         content_name: name,
       });
 
-      // Redirect to signin page after successful signup, preserving callbackUrl
-      router.push(
-        `/auth/signin?registered=true&callbackUrl=${encodeURIComponent(
-          callbackUrl,
-        )}`,
-      );
+      // Auto sign in user immediately upon successful registration
+      const signInRes = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (signInRes?.ok && !signInRes?.error) {
+        window.location.href = callbackUrl || "/";
+      } else {
+        router.push(
+          `/auth/signin?registered=true&callbackUrl=${encodeURIComponent(
+            callbackUrl,
+          )}`,
+        );
+      }
     } catch (err) {
       setError("Failed to create account");
       setLoading(false);

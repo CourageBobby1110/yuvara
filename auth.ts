@@ -65,9 +65,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         );
         if (!isMatch) return null;
 
-        // Defense in depth — the sign-in form surfaces a friendly message
-        // via a pre-check; direct POSTs to the callback simply fail.
-        if (!user.emailVerified) return null;
+        // Auto-verify credential logins if emailVerified was not set previously
+        if (!user.emailVerified) {
+          user.emailVerified = new Date();
+          await user.save();
+        }
 
         return serializeAuthUser(user);
       },
