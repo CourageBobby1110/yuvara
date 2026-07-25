@@ -54,6 +54,7 @@ export default function FeaturedCollection({
         price: product.price,
         image: getProductMainImage(product),
         slug: product.slug,
+        shippingRates: product.shippingRates,
       });
       openCart();
     } else {

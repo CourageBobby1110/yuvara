@@ -134,6 +134,8 @@ export function getItemShippingRateUSD(
       (sr) => sr.countryCode === "US"
     );
     if (usVariantRate) return Number(usVariantRate.price);
+
+    return Number(item.variant.shippingRates[0].price);
   }
 
   // 2. Product-level shipping rates
@@ -143,6 +145,8 @@ export function getItemShippingRateUSD(
 
     const usRate = item.shippingRates.find((r) => r.countryCode === "US");
     if (usRate) return Number(usRate.price);
+
+    return Number(item.shippingRates[0].price);
   }
 
   // 3. Last resort fallback

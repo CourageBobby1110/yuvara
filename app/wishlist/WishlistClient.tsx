@@ -20,6 +20,13 @@ interface WishlistItem {
     sizes: string[];
     colors: string[];
     stock: number;
+    shippingRates?: {
+      countryCode: string;
+      countryName: string;
+      price: number;
+      method?: string;
+      deliveryTime?: string;
+    }[];
   };
   selectedSize?: string;
   selectedColor?: string;
@@ -89,6 +96,7 @@ export default function WishlistClient() {
       slug: item.product.slug,
       selectedSize: item.selectedSize,
       selectedColor: item.selectedColor,
+      shippingRates: item.product.shippingRates,
     });
     alert("Added to cart!");
   };

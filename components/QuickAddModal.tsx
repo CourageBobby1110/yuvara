@@ -92,6 +92,14 @@ export default function QuickAddModal({
       slug: product.slug,
       selectedSize,
       selectedColor: colorToUse,
+      cjVid: (selectedVariant as any)?.cjVid,
+      shippingRates: product.shippingRates,
+      variant: selectedVariant
+        ? {
+            shippingFee: (selectedVariant as any).shippingFee,
+            shippingRates: (selectedVariant as any).shippingRates,
+          }
+        : undefined,
     });
 
     onClose();
