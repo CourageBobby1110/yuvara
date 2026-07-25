@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cart";
 import { useSession } from "next-auth/react";
@@ -38,6 +38,7 @@ export default function CheckoutPage() {
     : 0;
 
   const [loading, setLoading] = useState(false);
+  const checkoutTracked = useRef(false);
 
   // Coupon State
   const [couponCode, setCouponCode] = useState("");
@@ -71,13 +72,16 @@ export default function CheckoutPage() {
 
   const [availableCountries, setAvailableCountries] = useState(COUNTRIES);
 
-  // Force session update & track InitiateCheckout on mount
+  // Force session update & track InitiateCheckout after cart rehydrates
   useEffect(() => {
     useCartStore.persist.rehydrate();
     update();
     fetchUserProfile();
+  }, []);
 
-    if (items.length > 0) {
+  useEffect(() => {
+    if (items.length > 0 && !checkoutTracked.current) {
+      checkoutTracked.current = true;
       const userData = {
         email: session?.user?.email || undefined,
         firstName: session?.user?.name?.split(" ")[0] || undefined,
@@ -96,7 +100,7 @@ export default function CheckoutPage() {
         userData
       );
     }
-  }, []);
+  }, [items, session]);
 
   // Calculate available countries based on cart items
   useEffect(() => {

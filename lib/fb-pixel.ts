@@ -2,6 +2,40 @@ export function generateEventId(): string {
   return `evt_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 }
 
+const pendingEvents: { method: string; args: any[] }[] = [];
+let replayScheduled = false;
+
+function scheduleReplay() {
+  if (replayScheduled) return;
+  replayScheduled = true;
+  const check = () => {
+    if (typeof window !== "undefined" && typeof window.fbq === "function") {
+      for (const ev of pendingEvents) {
+        try {
+          (window.fbq as any)(...ev.args);
+        } catch {}
+      }
+      pendingEvents.length = 0;
+      replayScheduled = false;
+      return;
+    }
+    requestAnimationFrame(check);
+  };
+  requestAnimationFrame(check);
+}
+
+function firePixel(method: string, args: any[]) {
+  if (typeof window === "undefined") return;
+  if (typeof window.fbq === "function") {
+    try {
+      (window.fbq as any)(...args);
+    } catch {}
+  } else {
+    pendingEvents.push({ method, args });
+    scheduleReplay();
+  }
+}
+
 /**
  * Initializes and retrieves Meta _fbc and _fbp cookies according to
  * Meta Parameter Builder Library best practices.
@@ -109,20 +143,9 @@ export function trackFBEvent(
 ): string {
   const eventId = providedEventId || generateEventId();
 
-  // 1. Browser Pixel tracking
-  if (typeof window !== "undefined" && typeof window.fbq === "function") {
-    try {
-      if (params) {
-        window.fbq("track", eventName, params, { eventID: eventId });
-      } else {
-        window.fbq("track", eventName, {}, { eventID: eventId });
-      }
-    } catch (e) {
-      console.error("[FB Pixel] Event tracking error:", e);
-    }
-  }
+  const pixelParams = params || {};
+  firePixel("track", ["track", eventName, pixelParams, { eventID: eventId }]);
 
-  // 2. Server-side Conversions API (CAPI) tracking
   sendMetaCapiEvent(eventName, eventId, params, userData);
 
   return eventId;
@@ -136,20 +159,9 @@ export function trackFBCustom(
 ): string {
   const eventId = providedEventId || generateEventId();
 
-  // 1. Browser Pixel tracking
-  if (typeof window !== "undefined" && typeof window.fbq === "function") {
-    try {
-      if (params) {
-        window.fbq("trackCustom", eventName, params, { eventID: eventId });
-      } else {
-        window.fbq("trackCustom", eventName, {}, { eventID: eventId });
-      }
-    } catch (e) {
-      console.error("[FB Pixel] Custom event tracking error:", e);
-    }
-  }
+  const pixelParams = params || {};
+  firePixel("trackCustom", ["trackCustom", eventName, pixelParams, { eventID: eventId }]);
 
-  // 2. Server-side Conversions API (CAPI) tracking
   sendMetaCapiEvent(eventName, eventId, params, userData);
 
   return eventId;
