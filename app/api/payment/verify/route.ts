@@ -207,7 +207,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // Send email notification asynchronously so we don't block the client response
+    // Send email notification & Meta CAPI Purchase event asynchronously so we don't block client response
     (async () => {
       try {
         console.log("Sending order confirmation to:", shippingAddress.email);
@@ -216,6 +216,55 @@ export async function POST(req: Request) {
         console.log("Order confirmation sent successfully");
       } catch (emailError) {
         console.error("Failed to send email notification asynchronously:", emailError);
+      }
+
+      try {
+        const pixelId =
+          process.env.NEXT_PUBLIC_FB_PIXEL_ID || process.env.META_PIXEL_ID;
+        const accessToken =
+          process.env.FB_ACCESS_TOKEN || process.env.META_ACCESS_TOKEN;
+
+        if (pixelId && accessToken) {
+          const eventId = `purchase_${order._id}_${reference}`;
+          const contentIds = cartItems.map((item: any) => item.id || item._id);
+          const contents = cartItems.map((item: any) => ({
+            id: item.id || item._id,
+            quantity: item.quantity || 1,
+            item_price: item.price || 0,
+          }));
+
+          const appUrl = process.env.NEXTAUTH_URL || "https://yuvara.com.ng";
+
+          await fetch(`${appUrl}/api/meta-capi`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              eventName: "Purchase",
+              eventId,
+              eventSourceUrl: `${appUrl}/checkout/success`,
+              customData: {
+                content_ids: contentIds,
+                contents,
+                content_type: "product",
+                value: total,
+                currency: "USD",
+                num_items: contents.reduce((sum: number, i: any) => sum + i.quantity, 0),
+                order_id: order._id.toString(),
+              },
+              userData: {
+                email: shippingAddress.email,
+                phone: shippingAddress.phone,
+                city: shippingAddress.city,
+                state: shippingAddress.state,
+                zip: shippingAddress.zip,
+                country: shippingAddress.country,
+                userId: userId ? userId.toString() : undefined,
+              },
+            }),
+          });
+        }
+      } catch (capiError) {
+        console.error("Failed to send server-side Meta CAPI Purchase event:", capiError);
       }
     })();
 

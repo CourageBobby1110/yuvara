@@ -68,6 +68,7 @@ export const useCartStore = create<CartStore>()(
           content_type: "product",
           value: item.price,
           currency: "USD",
+          contents: [{ id: item.id, quantity: 1, item_price: item.price }],
         });
 
         const currentItems = get().items;

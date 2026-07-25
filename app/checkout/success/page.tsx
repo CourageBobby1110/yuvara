@@ -1,19 +1,39 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { trackFBEvent } from "@/lib/fb-pixel";
 import styles from "./Success.module.css";
 
-export default function OrderSuccessPage() {
+function SuccessContent() {
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const reference = searchParams.get("reference") || searchParams.get("trxref") || "";
 
   useEffect(() => {
-    trackFBEvent("Purchase", {
-      currency: "USD",
-    });
-  }, []);
+    const userData = session?.user
+      ? {
+          email: session.user.email || undefined,
+          firstName: session.user.name?.split(" ")[0] || undefined,
+          lastName: session.user.name?.split(" ").slice(1).join(" ") || undefined,
+          userId: session.user.id || undefined,
+        }
+      : undefined;
+
+    const eventId = reference ? `purchase_client_${reference}` : undefined;
+
+    trackFBEvent(
+      "Purchase",
+      {
+        currency: "USD",
+        transaction_id: reference || undefined,
+      },
+      userData,
+      eventId
+    );
+  }, [session, reference]);
 
   return (
     <div className={styles.container}>
@@ -57,5 +77,13 @@ export default function OrderSuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function OrderSuccessPage() {
+  return (
+    <Suspense fallback={<div className={styles.container}>Loading order details...</div>}>
+      <SuccessContent />
+    </Suspense>
   );
 }

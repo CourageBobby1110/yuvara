@@ -135,14 +135,28 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
   const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
-    // Meta Pixel "ViewContent" tracking
-    trackFBEvent("ViewContent", {
-      content_ids: [product._id],
-      content_name: product.name,
-      content_type: "product",
-      value: product.price,
-      currency: "USD",
-    });
+    const userData = session?.user
+      ? {
+          email: session.user.email || undefined,
+          firstName: session.user.name?.split(" ")[0] || undefined,
+          lastName: session.user.name?.split(" ").slice(1).join(" ") || undefined,
+          userId: session.user.id || undefined,
+        }
+      : undefined;
+
+    // Meta Pixel & CAPI "ViewContent" tracking
+    trackFBEvent(
+      "ViewContent",
+      {
+        content_ids: [product._id],
+        content_name: product.name,
+        content_category: product.category,
+        content_type: "product",
+        value: product.price,
+        currency: "USD",
+      },
+      userData
+    );
 
     // Klaviyo "Viewed Product" tracking
     const klaviyo = (window as any).klaviyo || [];

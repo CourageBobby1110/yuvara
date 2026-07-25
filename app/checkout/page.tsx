@@ -78,12 +78,23 @@ export default function CheckoutPage() {
     fetchUserProfile();
 
     if (items.length > 0) {
-      trackFBEvent("InitiateCheckout", {
-        content_ids: items.map((i) => i.id),
-        value: totalPrice(),
-        currency: "USD",
-        num_items: items.reduce((sum, i) => sum + i.quantity, 0),
-      });
+      const userData = {
+        email: session?.user?.email || undefined,
+        firstName: session?.user?.name?.split(" ")[0] || undefined,
+        lastName: session?.user?.name?.split(" ").slice(1).join(" ") || undefined,
+        userId: session?.user?.id || undefined,
+      };
+
+      trackFBEvent(
+        "InitiateCheckout",
+        {
+          content_ids: items.map((i) => i.id),
+          value: totalPrice(),
+          currency: "USD",
+          num_items: items.reduce((sum, i) => sum + i.quantity, 0),
+        },
+        userData
+      );
     }
   }, []);
 
@@ -333,11 +344,25 @@ export default function CheckoutPage() {
 
     setLoading(true);
 
-    trackFBEvent("AddPaymentInfo", {
-      content_ids: items.map((i) => i.id),
-      value: calculateTotal(),
-      currency: "USD",
-    });
+    const userData = {
+      email: session?.user?.email || formData.email || undefined,
+      phone: formData.phone || undefined,
+      city: formData.city || undefined,
+      state: formData.state || undefined,
+      zip: formData.zip || undefined,
+      country: formData.country || undefined,
+      userId: session?.user?.id || undefined,
+    };
+
+    trackFBEvent(
+      "AddPaymentInfo",
+      {
+        content_ids: items.map((i) => i.id),
+        value: calculateTotal(),
+        currency: "USD",
+      },
+      userData
+    );
 
     try {
       // Save address if checked

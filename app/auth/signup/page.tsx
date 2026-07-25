@@ -45,9 +45,18 @@ function SignUpForm() {
         return;
       }
 
-      trackFBEvent("CompleteRegistration", {
-        content_name: name,
-      });
+      trackFBEvent(
+        "CompleteRegistration",
+        {
+          content_name: name,
+          status: "success",
+        },
+        {
+          email,
+          firstName: name.split(" ")[0] || undefined,
+          lastName: name.split(" ").slice(1).join(" ") || undefined,
+        }
+      );
 
       // Auto sign in user immediately upon successful registration
       const signInRes = await signIn("credentials", {

@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import Script from "next/script";
 import { useSession } from "next-auth/react";
+import { trackFBEvent } from "@/lib/fb-pixel";
 
 interface FacebookPixelProps {
   id?: string;
@@ -22,10 +23,18 @@ export default function FacebookPixel({ id }: FacebookPixelProps) {
   useEffect(() => {
     if (!pixelId || isAdmin) return;
 
-    if (typeof window !== "undefined" && typeof window.fbq === "function") {
-      window.fbq("track", "PageView");
-    }
-  }, [pathname, searchParams, isAdmin, pixelId]);
+    const userData = session?.user
+      ? {
+          email: session.user.email || undefined,
+          firstName: session.user.name?.split(" ")[0] || undefined,
+          lastName: session.user.name?.split(" ").slice(1).join(" ") || undefined,
+          userId: session.user.id || undefined,
+        }
+      : undefined;
+
+    // Track PageView on route change via hybrid Pixel + CAPI
+    trackFBEvent("PageView", {}, userData);
+  }, [pathname, searchParams, isAdmin, pixelId, session]);
 
   if (!pixelId || isAdmin) return null;
 
@@ -44,7 +53,6 @@ export default function FacebookPixel({ id }: FacebookPixelProps) {
           s.parentNode.insertBefore(t,s)}(window, document,'script',
           'https://connect.facebook.net/en_US/fbevents.js');
           fbq('init', '${pixelId}');
-          fbq('track', 'PageView');
         `,
       }}
     />
