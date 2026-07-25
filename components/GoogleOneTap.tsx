@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { signIn, useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import { BLOCK_ONE_TAP_KEY } from "@/lib/sign-out";
 
 declare global {
@@ -57,6 +58,7 @@ function loadGsiScript(): Promise<void> {
 
 export default function GoogleOneTap() {
   const { status } = useSession();
+  const pathname = usePathname();
   const initAttempted = useRef(false);
 
   // Clean up leftover Google GSI redirect parameters
@@ -80,6 +82,11 @@ export default function GoogleOneTap() {
       }
     }
   }, []);
+
+  // Reset init flag on route change so One Tap re-triggers on every page
+  useEffect(() => {
+    initAttempted.current = false;
+  }, [pathname]);
 
   useEffect(() => {
     if (status === "loading" || status === "authenticated") return;
@@ -163,7 +170,7 @@ export default function GoogleOneTap() {
         /* ignore */
       }
     };
-  }, [status]);
+  }, [status, pathname]);
 
   useEffect(() => {
     if (status === "authenticated") {
