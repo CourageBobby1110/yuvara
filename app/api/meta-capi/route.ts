@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 
+/**
+ * Normalizes and hashes values according to Meta Parameter Builder Library rules.
+ * Values are normalized first, then SHA-256 hashed.
+ */
 function hashSha256(val?: string | null): string | undefined {
   if (!val || typeof val !== "string") return undefined;
   const cleaned = val.trim().toLowerCase();
@@ -12,10 +16,48 @@ function hashSha256(val?: string | null): string | undefined {
 
 function hashPhone(phone?: string | null): string | undefined {
   if (!phone || typeof phone !== "string") return undefined;
-  // Keep only numbers
+  // Keep digits only per Parameter Builder standard
   const digitsOnly = phone.replace(/\D/g, "");
   if (!digitsOnly) return undefined;
   return hashSha256(digitsOnly);
+}
+
+function hashZip(zip?: string | null): string | undefined {
+  if (!zip || typeof zip !== "string") return undefined;
+  // Strip spaces and hyphens
+  const cleaned = zip.trim().toLowerCase().replace(/[\s-]/g, "");
+  if (!cleaned) return undefined;
+  return hashSha256(cleaned);
+}
+
+function hashCity(city?: string | null): string | undefined {
+  if (!city || typeof city !== "string") return undefined;
+  // Strip spaces and punctuation
+  const cleaned = city.trim().toLowerCase().replace(/[\s\d\p{P}]/gu, "");
+  if (!cleaned) return undefined;
+  return hashSha256(cleaned);
+}
+
+/**
+ * Extracts client IP prioritizing IPv6 addresses per Meta Parameter Builder best practice.
+ */
+function extractBestIp(reqHeaders: Headers): string | undefined {
+  const cfIp = reqHeaders.get("cf-connecting-ip");
+  const forwardedFor = reqHeaders.get("x-forwarded-for");
+  const realIp = reqHeaders.get("x-real-ip");
+
+  const candidates: string[] = [];
+
+  if (cfIp) candidates.push(...cfIp.split(",").map((s) => s.trim()));
+  if (forwardedFor) candidates.push(...forwardedFor.split(",").map((s) => s.trim()));
+  if (realIp) candidates.push(...realIp.split(",").map((s) => s.trim()));
+
+  // 1. Look for IPv6 candidate first (contains ':')
+  const ipv6 = candidates.find((ip) => ip.includes(":"));
+  if (ipv6) return ipv6;
+
+  // 2. Fall back to first IPv4 candidate
+  return candidates[0] || undefined;
 }
 
 export async function POST(req: Request) {
@@ -44,14 +86,10 @@ export async function POST(req: Request) {
 
     // Extract headers and cookies for attribution match
     const reqHeaders = new Headers(req.headers);
-    const forwardedFor = reqHeaders.get("x-forwarded-for");
-    const realIp = reqHeaders.get("x-real-ip");
-    const clientIp = forwardedFor
-      ? forwardedFor.split(",")[0].trim()
-      : realIp || undefined;
+    const clientIp = extractBestIp(reqHeaders);
     const userAgent = reqHeaders.get("user-agent") || undefined;
 
-    // Parse cookies from Cookie header
+    // Parse cookies from Cookie header preserving case sensitivity for _fbc
     const cookieHeader = reqHeaders.get("cookie") || "";
     let fbp = userData.fbp;
     let fbc = userData.fbc;
@@ -61,23 +99,23 @@ export async function POST(req: Request) {
       for (const cookie of cookiesArr) {
         const [k, v] = cookie.trim().split("=");
         if (k === "_fbp" && !fbp) fbp = v;
-        if (k === "_fbc" && !fbc) fbc = v;
+        if (k === "_fbc" && !fbc) fbc = v; // Preserving case
       }
     }
 
-    // Prepare normalized user data with SHA-256 hashing
+    // Prepare normalized user data per Meta Parameter Builder standards
     const normalizedUserData: Record<string, any> = {
       client_ip_address: clientIp,
       client_user_agent: userAgent,
       fbp: fbp || undefined,
-      fbc: fbc || undefined,
+      fbc: fbc || undefined, // Case-sensitive Meta Click ID
       em: userData.email ? [hashSha256(userData.email)] : undefined,
       ph: userData.phone ? [hashPhone(userData.phone)] : undefined,
       fn: userData.firstName ? [hashSha256(userData.firstName)] : undefined,
       ln: userData.lastName ? [hashSha256(userData.lastName)] : undefined,
-      ct: userData.city ? [hashSha256(userData.city)] : undefined,
+      ct: userData.city ? [hashCity(userData.city)] : undefined,
       st: userData.state ? [hashSha256(userData.state)] : undefined,
-      zp: userData.zip ? [hashSha256(userData.zip)] : undefined,
+      zp: userData.zip ? [hashZip(userData.zip)] : undefined,
       country: userData.country ? [hashSha256(userData.country)] : undefined,
       external_id: userData.userId ? [hashSha256(userData.userId)] : undefined,
     };
@@ -92,7 +130,7 @@ export async function POST(req: Request) {
     if (!pixelId || !accessToken) {
       if (process.env.NODE_ENV === "development") {
         console.warn(
-          "[Meta CAPI] Skipped sending event. NEXT_PUBLIC_FB_PIXEL_ID or FB_ACCESS_TOKEN is missing in environment variables.",
+          "[Meta CAPI Parameter Builder] Skipped sending event. NEXT_PUBLIC_FB_PIXEL_ID or FB_ACCESS_TOKEN is missing in environment variables.",
           { eventName, eventId }
         );
       }
@@ -103,7 +141,7 @@ export async function POST(req: Request) {
       });
     }
 
-    // Construct Meta CAPI Payload
+    // Construct Meta CAPI Payload with Parameter Builder partner agent attribution tag
     const capiEvent: Record<string, any> = {
       event_name: eventName,
       event_time: Math.floor(Date.now() / 1000),
@@ -112,6 +150,7 @@ export async function POST(req: Request) {
       event_source_url: eventSourceUrl || undefined,
       user_data: normalizedUserData,
       custom_data: customData,
+      partner_agent: "param_builder_nodejs_v1.0",
     };
 
     const testEventCode =
@@ -135,7 +174,7 @@ export async function POST(req: Request) {
     const capiResult = await capiResponse.json();
 
     if (!capiResponse.ok) {
-      console.error("[Meta CAPI Error]", capiResult);
+      console.error("[Meta CAPI Parameter Builder Error]", capiResult);
       return NextResponse.json(
         { error: "Failed to send Meta CAPI event", details: capiResult },
         { status: capiResponse.status }

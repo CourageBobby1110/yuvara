@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import Script from "next/script";
 import { useSession } from "next-auth/react";
-import { trackFBEvent } from "@/lib/fb-pixel";
+import { trackFBEvent, initMetaCookies } from "@/lib/fb-pixel";
 
 interface FacebookPixelProps {
   id?: string;
@@ -21,6 +21,9 @@ export default function FacebookPixel({ id }: FacebookPixelProps) {
   const pixelId = id || process.env.NEXT_PUBLIC_FB_PIXEL_ID || "";
 
   useEffect(() => {
+    // Capture _fbc (from fbclid query param preserving case) and _fbp as early as possible
+    initMetaCookies();
+
     if (!pixelId || isAdmin) return;
 
     const userData = session?.user
