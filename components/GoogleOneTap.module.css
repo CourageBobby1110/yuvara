@@ -1,0 +1,104 @@
+.widget {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 9999;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.08);
+  padding: 14px 16px 16px;
+  max-width: 320px;
+  width: calc(100vw - 32px);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.closeBtn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #aaa;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+}
+
+.closeBtn:hover {
+  color: #333;
+}
+
+.message {
+  margin: 0 0 10px 0;
+  font-size: 13px;
+  color: #444;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.3;
+  padding-right: 16px;
+}
+
+.buttonWrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Make the Google rendered button responsive */
+.buttonWrap :global(div) {
+  max-width: 100% !important;
+}
+
+.buttonWrap :global(div > iframe),
+.buttonWrap :global(div > div) {
+  max-width: 100% !important;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile: full-width bottom banner style */
+@media (max-width: 480px) {
+  .widget {
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 16px 16px 0 0;
+    padding: 12px 14px 14px;
+    box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.1);
+    animation: slideUpMobile 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .message {
+    font-size: 12.5px;
+  }
+
+  @keyframes slideUpMobile {
+    from {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
