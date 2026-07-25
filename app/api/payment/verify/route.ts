@@ -225,7 +225,7 @@ export async function POST(req: Request) {
           process.env.FB_ACCESS_TOKEN || process.env.META_ACCESS_TOKEN;
 
         if (pixelId && accessToken) {
-          const eventId = `purchase_${order._id}_${reference}`;
+          const eventId = `purchase_${reference}`;
           const contentIds = cartItems.map((item: any) => item.id || item._id);
           const contents = cartItems.map((item: any) => ({
             id: item.id || item._id,

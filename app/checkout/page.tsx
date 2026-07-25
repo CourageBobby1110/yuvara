@@ -424,6 +424,13 @@ export default function CheckoutPage() {
         const data = await res.json();
 
         if (res.ok) {
+          localStorage.setItem(
+            "yuvara_purchase_value",
+            JSON.stringify({
+              value: 0,
+              currency: "USD",
+            })
+          );
           useCartStore.getState().clearCart();
           router.push("/checkout/success");
         } else {
@@ -455,7 +462,16 @@ export default function CheckoutPage() {
           JSON.stringify(orderDetails)
         );
 
-        // 3. Redirect to Paystack
+        // 3. Store purchase value for Meta Pixel on success page
+        localStorage.setItem(
+          "yuvara_purchase_value",
+          JSON.stringify({
+            value: calculateTotal(),
+            currency: "USD",
+          })
+        );
+
+        // 4. Redirect to Paystack
         window.location.href = data.authorizationUrl;
       }
     } catch (error: any) {

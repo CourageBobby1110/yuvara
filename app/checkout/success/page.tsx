@@ -22,17 +22,37 @@ function SuccessContent() {
         }
       : undefined;
 
-    const eventId = reference ? `purchase_client_${reference}` : undefined;
+    let purchaseValue = 0;
+    let purchaseCurrency = "USD";
+    try {
+      const stored = localStorage.getItem("yuvara_purchase_value");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        purchaseValue = parsed.value || 0;
+        purchaseCurrency = parsed.currency || "USD";
+      }
+    } catch {}
+
+    // Use a deterministic event ID matching the server-side CAPI event
+    // Server uses purchase_{orderId}_{reference} but orderId isn't available client-side
+    // so use reference-based ID for deduplication
+    const eventId = reference ? `purchase_${reference}` : undefined;
 
     trackFBEvent(
       "Purchase",
       {
-        currency: "USD",
+        value: purchaseValue,
+        currency: purchaseCurrency,
         transaction_id: reference || undefined,
       },
       userData,
       eventId
     );
+
+    // Clean up stored value after tracking
+    try {
+      localStorage.removeItem("yuvara_purchase_value");
+    } catch {}
   }, [session, reference]);
 
   return (
