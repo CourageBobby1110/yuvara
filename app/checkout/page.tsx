@@ -8,7 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCurrency } from "@/context/CurrencyContext";
 import { getItemShippingRateUSD } from "@/lib/utils";
-import { trackFBEvent } from "@/lib/fb-pixel";
+import { trackFBEvent, cacheUserForMeta, buildUserData } from "@/lib/fb-pixel";
 import styles from "./Checkout.module.css";
 
 const COUNTRIES = [
@@ -82,12 +82,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (items.length > 0 && !checkoutTracked.current) {
       checkoutTracked.current = true;
-      const userData = {
-        email: session?.user?.email || undefined,
-        firstName: session?.user?.name?.split(" ")[0] || undefined,
-        lastName: session?.user?.name?.split(" ").slice(1).join(" ") || undefined,
-        userId: session?.user?.id || undefined,
-      };
+      const userData = buildUserData(session?.user);
 
       trackFBEvent(
         "InitiateCheckout",
@@ -166,6 +161,13 @@ export default function CheckoutPage() {
       setFormData((prev) => ({ ...prev, email: session.user.email || "" }));
     }
   }, [session]);
+
+  // Cache email/phone for Meta CAPI attribution
+  useEffect(() => {
+    if (formData.email || formData.phone) {
+      cacheUserForMeta(formData.email || undefined, formData.phone || undefined);
+    }
+  }, [formData.email, formData.phone]);
 
   // Calculate shipping fee based on country and cart items
   const calculateShippingFee = (country: string) => {

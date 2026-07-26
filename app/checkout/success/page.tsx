@@ -4,7 +4,7 @@ import { useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { trackFBEvent } from "@/lib/fb-pixel";
+import { trackFBEvent, buildUserData } from "@/lib/fb-pixel";
 import styles from "./Success.module.css";
 
 function SuccessContent() {
@@ -13,14 +13,7 @@ function SuccessContent() {
   const reference = searchParams.get("reference") || searchParams.get("trxref") || "";
 
   useEffect(() => {
-    const userData = session?.user
-      ? {
-          email: session.user.email || undefined,
-          firstName: session.user.name?.split(" ")[0] || undefined,
-          lastName: session.user.name?.split(" ").slice(1).join(" ") || undefined,
-          userId: session.user.id || undefined,
-        }
-      : undefined;
+    const userData = buildUserData(session?.user);
 
     let purchaseValue = 0;
     let purchaseCurrency = "USD";

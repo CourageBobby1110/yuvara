@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { trackFBEvent, trackFBCustom } from "@/lib/fb-pixel";
+import { trackFBEvent, trackFBCustom, buildUserData } from "@/lib/fb-pixel";
 
 export interface CartItem {
   id: string;
@@ -69,7 +69,7 @@ export const useCartStore = create<CartStore>()(
           value: item.price,
           currency: "USD",
           contents: [{ id: item.id, quantity: 1, item_price: item.price }],
-        });
+        }, buildUserData());
 
         const currentItems = get().items;
         const existingItemIndex = currentItems.findIndex(

@@ -105,6 +105,51 @@ export interface UserDataParams {
   fbc?: string;
 }
 
+const CACHED_EMAIL_KEY = "yuvara_meta_user_email";
+const CACHED_PHONE_KEY = "yuvara_meta_user_phone";
+
+export function cacheUserForMeta(email?: string, phone?: string) {
+  if (typeof window === "undefined") return;
+  try {
+    if (email) localStorage.setItem(CACHED_EMAIL_KEY, email);
+    if (phone) localStorage.setItem(CACHED_PHONE_KEY, phone);
+  } catch {}
+}
+
+function getCachedUserForMeta(): { email?: string; phone?: string } {
+  if (typeof window === "undefined") return {};
+  try {
+    return {
+      email: localStorage.getItem(CACHED_EMAIL_KEY) || undefined,
+      phone: localStorage.getItem(CACHED_PHONE_KEY) || undefined,
+    };
+  } catch {
+    return {};
+  }
+}
+
+export function buildUserData(sessionUser?: {
+  email?: string | null;
+  name?: string | null;
+  id?: string;
+} | null): UserDataParams {
+  const cached = getCachedUserForMeta();
+  const email = sessionUser?.email || cached.email;
+  const phone = cached.phone;
+  const name = sessionUser?.name || "";
+  const firstName = name.split(" ")[0] || undefined;
+  const lastName = name.split(" ").slice(1).join(" ") || undefined;
+  const userId = sessionUser?.id || undefined;
+
+  return {
+    email,
+    phone,
+    firstName,
+    lastName,
+    userId,
+  };
+}
+
 export function sendMetaCapiEvent(
   eventName: string,
   eventId: string,

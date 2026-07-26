@@ -12,7 +12,7 @@ import { Star } from "lucide-react";
 import { useSession } from "next-auth/react";
 import styles from "./Product.module.css";
 import { getValidUrl, getItemShippingRateUSD } from "@/lib/utils";
-import { trackFBEvent } from "@/lib/fb-pixel";
+import { trackFBEvent, buildUserData } from "@/lib/fb-pixel";
 
 export interface ProductType {
   _id: string;
@@ -135,14 +135,7 @@ export default function ProductClient({ initialProduct }: ProductClientProps) {
   const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
-    const userData = session?.user
-      ? {
-          email: session.user.email || undefined,
-          firstName: session.user.name?.split(" ")[0] || undefined,
-          lastName: session.user.name?.split(" ").slice(1).join(" ") || undefined,
-          userId: session.user.id || undefined,
-        }
-      : undefined;
+    const userData = buildUserData(session?.user);
 
     // Meta Pixel & CAPI "ViewContent" tracking
     trackFBEvent(

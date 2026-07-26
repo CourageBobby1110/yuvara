@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import Script from "next/script";
 import { useSession } from "next-auth/react";
-import { trackFBEvent, initMetaCookies } from "@/lib/fb-pixel";
+import { trackFBEvent, initMetaCookies, buildUserData } from "@/lib/fb-pixel";
 
 interface FacebookPixelProps {
   id?: string;
@@ -26,14 +26,7 @@ export default function FacebookPixel({ id }: FacebookPixelProps) {
 
     if (!pixelId || isAdmin) return;
 
-    const userData = session?.user
-      ? {
-          email: session.user.email || undefined,
-          firstName: session.user.name?.split(" ")[0] || undefined,
-          lastName: session.user.name?.split(" ").slice(1).join(" ") || undefined,
-          userId: session.user.id || undefined,
-        }
-      : undefined;
+    const userData = buildUserData(session?.user);
 
     // Track PageView on route change via hybrid Pixel + CAPI
     trackFBEvent("PageView", {}, userData);
