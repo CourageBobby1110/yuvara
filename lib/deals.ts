@@ -22,9 +22,35 @@ export async function getHomepageDeals() {
         if (!deal.product) return;
 
         const p = deal.product;
-        const mainImg = deal.customImage || getProductMainImage(p) || getValidUrl(p.images?.[0] || p.image) || "/placeholder.png";
-        const origPrice = deal.originalPrice || (deal.dealPrice ? deal.dealPrice * 1.75 : (p.price || 20) * 1.75);
-        const discount = deal.discountPercent || Math.round(((origPrice - deal.dealPrice) / origPrice) * 100);
+        const dealPrice = Number(deal.dealPrice || p.price || 0);
+        const origPrice = Number(
+          deal.originalPrice || (dealPrice ? dealPrice * 1.75 : (p.price || 20) * 1.75)
+        );
+        const discount =
+          deal.discountPercent ||
+          Math.round(((origPrice - dealPrice) / origPrice) * 100);
+
+        // Calculate total available inventory
+        const pVariantStock = Array.isArray(p.variants)
+          ? p.variants.reduce((acc: number, v: any) => acc + (v.stock || 0), 0)
+          : 0;
+        const pTotalStock = (p.stock || 0) + pVariantStock;
+        const dealStockRemaining =
+          deal.stockRemaining !== undefined && deal.stockRemaining !== null
+            ? Number(deal.stockRemaining)
+            : pTotalStock;
+
+        // STRICT REQUIREMENT: Must have price > 0 and stock > 0
+        if (!dealPrice || dealPrice <= 0 || isNaN(dealPrice)) return;
+        if (dealStockRemaining <= 0 && pTotalStock <= 0) return;
+
+        const mainImg =
+          deal.customImage ||
+          getProductMainImage(p) ||
+          getValidUrl(p.images?.[0] || p.image) ||
+          "/placeholder.png";
+
+        const stockLeft = Math.max(1, Math.min(dealStockRemaining > 0 ? dealStockRemaining : pTotalStock, 8));
 
         const normalized = {
           _id: deal._id.toString(),
@@ -32,16 +58,16 @@ export async function getHomepageDeals() {
           productId: p._id ? p._id.toString() : deal._id.toString(),
           name: deal.customTitle || p.name || "Luxury Item",
           slug: p.slug || "collections",
-          price: Number(deal.dealPrice || p.price || 15),
-          originalPrice: Number(origPrice),
+          price: dealPrice,
+          originalPrice: Number(origPrice.toFixed(2)),
           discountPercent: discount > 0 ? discount : 35,
           image: mainImg,
           category: p.category || "Luxury",
           endTime: deal.endTime ? deal.endTime.toISOString() : null,
           durationHours: deal.durationHours || 24,
           claimedPercent: deal.claimedPercent || 80,
-          stockRemaining: deal.stockRemaining || (p.stock > 0 ? Math.min(p.stock, 8) : 5),
-          stockTag: deal.stockTag || "Only few left",
+          stockRemaining: stockLeft,
+          stockTag: deal.stockTag || `Only ${stockLeft} left`,
           averageRating: deal.rating || p.averageRating || 4.9,
           reviewCount: deal.reviewCount || p.reviewCount || 480,
         };
@@ -54,61 +80,105 @@ export async function getHomepageDeals() {
       });
     }
 
-    // 2. Fetch real products from catalog if admin hasn't configured enough deals yet
+    // 2. Fetch real in-stock products with cheapest prices if admin hasn't configured enough deals yet
     if (countdownDeals.length < 3 || limitedDeals.length < 3) {
-      const catalogProducts = await getProducts({ limit: 16 });
+      // Query cheapest in-stock products first (price: 1)
+      const catalogProducts = await Product.find({
+        price: { $gt: 0 },
+        $or: [{ stock: { $gt: 0 } }, { "variants.stock": { $gt: 0 } }],
+      })
+        .sort({ price: 1 })
+        .limit(40)
+        .lean();
 
       if (Array.isArray(catalogProducts) && catalogProducts.length > 0) {
-        // Fill countdown deals
+        // Filter strictly for price > 0 and stock > 0
+        const inStockCheapProducts = catalogProducts.filter((p: any) => {
+          const price = Number(p.price || 0);
+          const varStock = Array.isArray(p.variants)
+            ? p.variants.reduce((s: number, v: any) => s + (v.stock || 0), 0)
+            : 0;
+          const totalStock = (p.stock || 0) + varStock;
+          return price > 0 && totalStock > 0;
+        });
+
+        // Time-based rotation cycle (rotates every 4 hours based on standard flash deal windows)
+        const rotationWindowHours = 4;
+        const currentWindowSeed = Math.floor(
+          Date.now() / (rotationWindowHours * 60 * 60 * 1000)
+        );
+        const rotationOffset =
+          inStockCheapProducts.length > 0
+            ? (currentWindowSeed * 6) % inStockCheapProducts.length
+            : 0;
+
+        // Shift products according to current rotation window
+        const rotatedPool = [
+          ...inStockCheapProducts.slice(rotationOffset),
+          ...inStockCheapProducts.slice(0, rotationOffset),
+        ];
+
+        // Fill countdown deals from cheapest rotating pool
         let prodIdx = 0;
-        while (countdownDeals.length < 3 && prodIdx < catalogProducts.length) {
-          const p = catalogProducts[prodIdx];
+        while (countdownDeals.length < 3 && prodIdx < rotatedPool.length) {
+          const p = rotatedPool[prodIdx];
           prodIdx++;
           const pId = p._id ? p._id.toString() : `prod-${prodIdx}`;
           if (countdownDeals.some((d) => d.productId === pId)) continue;
 
-          const mainImg = getProductMainImage(p) || getValidUrl(p.images?.[0] || p.image) || "/placeholder.png";
-          const origPrice = (p.price || 20) * 1.75;
-          const discount = Math.round(((origPrice - p.price) / origPrice) * 100);
+          const mainImg =
+            getProductMainImage(p) ||
+            getValidUrl(p.images?.[0] || p.image) ||
+            "/placeholder.png";
+          const pPrice = Number(p.price);
+          const origPrice = pPrice * 1.75;
+          const discount = Math.round(((origPrice - pPrice) / origPrice) * 100);
+          const pStock = Math.max(1, Math.min(p.stock || 5, 8));
 
           countdownDeals.push({
             _id: `cd-${pId}`,
             productId: pId,
             name: p.name || "Timeless Luxury Piece",
             slug: p.slug || "collections",
-            price: Number(p.price || 20),
+            price: pPrice,
             originalPrice: Number(origPrice.toFixed(2)),
             discountPercent: discount > 0 ? discount : 40,
             image: mainImg,
             category: p.category || "Luxury",
-            durationHours: 24,
+            durationHours: rotationWindowHours,
             claimedPercent: 70 + ((prodIdx * 8) % 25),
+            stockRemaining: pStock,
           });
         }
 
-        // Fill limited deals
-        while (limitedDeals.length < 3 && prodIdx < catalogProducts.length) {
-          const p = catalogProducts[prodIdx];
+        // Fill limited deals from cheapest rotating pool
+        while (limitedDeals.length < 3 && prodIdx < rotatedPool.length) {
+          const p = rotatedPool[prodIdx];
           prodIdx++;
           const pId = p._id ? p._id.toString() : `prod-${prodIdx}`;
           if (limitedDeals.some((d) => d.productId === pId)) continue;
 
-          const mainImg = getProductMainImage(p) || getValidUrl(p.images?.[0] || p.image) || "/placeholder.png";
-          const origPrice = (p.price || 25) * 1.9;
-          const discount = Math.round(((origPrice - p.price) / origPrice) * 100);
+          const mainImg =
+            getProductMainImage(p) ||
+            getValidUrl(p.images?.[0] || p.image) ||
+            "/placeholder.png";
+          const pPrice = Number(p.price);
+          const origPrice = pPrice * 1.9;
+          const discount = Math.round(((origPrice - pPrice) / origPrice) * 100);
+          const pStock = Math.max(1, Math.min(p.stock || 4, 6));
 
           limitedDeals.push({
             _id: `ld-${pId}`,
             productId: pId,
             name: p.name || "Exclusive Vault Edition",
             slug: p.slug || "collections",
-            price: Number(p.price || 25),
+            price: pPrice,
             originalPrice: Number(origPrice.toFixed(2)),
             discountPercent: discount > 0 ? discount : 45,
             image: mainImg,
             category: p.category || "Luxury",
-            stockRemaining: p.stock && p.stock > 0 ? Math.min(p.stock, 6) : 3,
-            stockTag: `Only ${p.stock && p.stock > 0 ? Math.min(p.stock, 6) : 3} left`,
+            stockRemaining: pStock,
+            stockTag: `Only ${pStock} left`,
             averageRating: p.averageRating && p.averageRating > 0 ? p.averageRating : 4.9,
             reviewCount: p.reviewCount && p.reviewCount > 0 ? p.reviewCount : 380 + prodIdx * 45,
           });

@@ -39,44 +39,47 @@ interface HeroProps {
 const DEFAULT_COUNTDOWN: DealItem[] = [
   {
     _id: "def-cd-1",
-    name: "Classic Chronograph Watch - Rose Gold Edition",
-    slug: "classic-chronograph-watch",
-    price: 38.5,
-    originalPrice: 75.0,
-    discountPercent: 48,
+    name: "Minimalist Vintage Stainless Ring Band",
+    slug: "minimalist-vintage-ring-band",
+    price: 4.9,
+    originalPrice: 15.0,
+    discountPercent: 67,
     image: "/hero-shoe-minimalist.png",
     claimedPercent: 88,
+    stockRemaining: 6,
   },
   {
     _id: "def-cd-2",
-    name: "Sartorial Cashmere Blend Overcoat",
-    slug: "sartorial-cashmere-overcoat",
-    price: 45.0,
-    originalPrice: 90.0,
-    discountPercent: 50,
+    name: "Classic Braided Leather Charm Bracelet",
+    slug: "classic-braided-leather-charm-bracelet",
+    price: 6.5,
+    originalPrice: 18.0,
+    discountPercent: 64,
     image: "/hero-shoe.png",
     claimedPercent: 74,
+    stockRemaining: 4,
   },
   {
     _id: "def-cd-3",
-    name: "Italian Leather Minimalist Handcrafted Loafers",
-    slug: "italian-leather-loafers",
-    price: 29.9,
-    originalPrice: 58.0,
-    discountPercent: 48,
+    name: "Ultra-Thin Matte Protective Phone Shell",
+    slug: "ultra-thin-matte-phone-shell",
+    price: 7.8,
+    originalPrice: 20.0,
+    discountPercent: 61,
     image: "/hero-shoe-minimalist.png",
     claimedPercent: 92,
+    stockRemaining: 5,
   },
 ];
 
 const DEFAULT_LIMITED: DealItem[] = [
   {
     _id: "def-ld-1",
-    name: "Sterling Silver Geometric Chain Bracelet",
-    slug: "sterling-silver-bracelet",
-    price: 22.0,
-    originalPrice: 48.0,
-    discountPercent: 54,
+    name: "Geometric Titanium Steel Pendant Necklace",
+    slug: "geometric-titanium-steel-pendant",
+    price: 5.9,
+    originalPrice: 16.0,
+    discountPercent: 63,
     image: "/hero-shoe.png",
     stockRemaining: 3,
     stockTag: "Only 3 left",
@@ -85,11 +88,11 @@ const DEFAULT_LIMITED: DealItem[] = [
   },
   {
     _id: "def-ld-2",
-    name: "Minimalist Aviator Polarized Sunglasses",
-    slug: "minimalist-aviator-sunglasses",
-    price: 18.5,
-    originalPrice: 38.0,
-    discountPercent: 51,
+    name: "UV400 Retro Square Frame Sunglasses",
+    slug: "retro-square-frame-sunglasses",
+    price: 6.9,
+    originalPrice: 19.0,
+    discountPercent: 64,
     image: "/hero-shoe-minimalist.png",
     stockRemaining: 2,
     stockTag: "Only 2 left",
@@ -98,11 +101,11 @@ const DEFAULT_LIMITED: DealItem[] = [
   },
   {
     _id: "def-ld-3",
-    name: "Matte Black Wireless Active Noise-Cancelling Audio",
-    slug: "matte-black-wireless-audio",
-    price: 34.0,
-    originalPrice: 70.0,
-    discountPercent: 51,
+    name: "Handmade Woven Artisan Key Accessory",
+    slug: "handmade-woven-key-accessory",
+    price: 8.5,
+    originalPrice: 22.0,
+    discountPercent: 61,
     image: "/hero-shoe.png",
     stockRemaining: 5,
     stockTag: "Only 5 left",
@@ -140,9 +143,22 @@ export default function Hero({
 
   const time = formatDigits(secondsLeft);
 
-  // Guarantee non-empty display items
-  const displayCountdown = (countdownDeals && countdownDeals.length > 0 ? countdownDeals : DEFAULT_COUNTDOWN).slice(0, 3);
-  const displayLimited = (limitedDeals && limitedDeals.length > 0 ? limitedDeals : DEFAULT_LIMITED).slice(0, 3);
+  // Strictly filter out any products without a valid price (> 0) or that are out of stock (stock <= 0)
+  const validCountdown = (countdownDeals || []).filter((d) => {
+    if (!d || typeof d.price !== "number" || d.price <= 0 || isNaN(d.price)) return false;
+    if (d.stockRemaining !== undefined && d.stockRemaining !== null && d.stockRemaining <= 0) return false;
+    return true;
+  });
+
+  const validLimited = (limitedDeals || []).filter((d) => {
+    if (!d || typeof d.price !== "number" || d.price <= 0 || isNaN(d.price)) return false;
+    if (d.stockRemaining !== undefined && d.stockRemaining !== null && d.stockRemaining <= 0) return false;
+    return true;
+  });
+
+  // Fallback to verified premium showcase items if no active in-stock deals exist
+  const displayCountdown = (validCountdown.length > 0 ? validCountdown : DEFAULT_COUNTDOWN).slice(0, 3);
+  const displayLimited = (validLimited.length > 0 ? validLimited : DEFAULT_LIMITED).slice(0, 3);
 
   return (
     <section className={styles.heroSection}>
