@@ -1,180 +1,403 @@
-.heroContainer {
-  display: flex;
+/* ==========================================================================
+   YUVARA MINIMALIST LUXURY HERO DEALS SYSTEM
+   Architectural Split Layout: Timed Drops + The Vault (Animated Bold SVGs)
+   ========================================================================== */
+
+.heroSection {
   width: 100%;
-  height: 420px;
-  background-color: #fafaf9; /* Warm luxury off-white */
-  border-bottom: 1px solid #eaeaea;
-  overflow: hidden;
-  box-sizing: border-box;
+  background-color: var(--color-bg-primary);
+  padding: 0.35rem 0 0.5rem 0;
 }
 
-/* Left Section - Text & Editorial Content */
-.leftSection {
-  width: 45%;
+.container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 4px;
+}
+
+.splitGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+/* ==========================================================================
+   SHOWCASE COLUMN
+   ========================================================================== */
+
+.showcaseColumn {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 2rem 3.5rem;
-  background-color: #fafaf9;
-  box-sizing: border-box;
-  z-index: 10;
+  background-color: #fafafa;
+  border-radius: 0.875rem;
+  padding: 1.25rem;
+  border: 1px solid #ebebeb;
+  transition: all 0.25s ease;
 }
 
-.textInner {
-  max-width: 460px;
-  width: 100%;
+.showcaseColumn:hover {
+  border-color: #dedede;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 }
 
-.kicker {
-  display: block;
-  font-size: 0.7rem;
+.columnHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 1.125rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.headerTitleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  line-height: 1;
+}
+
+.columnKicker {
+  font-size: 0.625rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: #bfa15f; /* Brand gold */
-  margin-bottom: 0.75rem;
+  letter-spacing: 0.15em;
+  color: #996515;
+  line-height: 1;
 }
 
-.title {
-  font-size: 2.5rem;
-  font-weight: 800;
-  line-height: 1.1;
-  color: #111827;
-  margin: 0 0 1rem 0;
+.columnTitle {
+  font-size: 1.25rem;
+  font-weight: 900;
   letter-spacing: -0.02em;
-  font-family: var(--font-inter), system-ui, sans-serif;
+  color: #111827;
+  margin: 0;
+  font-family: var(--font-inter), sans-serif;
+  text-transform: uppercase;
+  line-height: 1.1;
 }
 
-.italicTitle {
-  font-family: Garamond, Baskerville, "Playfair Display", serif;
-  font-style: italic;
-  font-weight: 400;
-  color: #bfa15f;
-}
-
-.subtitle {
-  font-size: 0.95rem;
-  color: #4b5563;
-  line-height: 1.65;
-  margin: 0 0 1.75rem 0;
-}
-
-/* Call to Action Button (Desktop Only) */
-.ctaButton {
+/* Minimalist Countdown Pill */
+.countdownPill {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 0.85rem 1.85rem;
-  background-color: #111827;
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  gap: 0.3rem;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  padding: 0.3rem 0.625rem;
   border-radius: 9999px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  line-height: 1;
+}
+
+.iconWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.clockIcon {
+  color: #996515;
+  stroke: #996515;
+}
+
+.digitSegment {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #111827;
+  font-family: monospace;
+  line-height: 1;
+}
+
+.digitColon {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #9ca3af;
+  line-height: 1;
+}
+
+/* Vault Badge */
+.vaultBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  padding: 0.3rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1;
+}
+
+.vaultIcon {
+  color: #996515;
+  stroke: #996515;
+}
+
+/* ==========================================================================
+   CARDS ROW
+   ========================================================================== */
+
+.cardsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.875rem;
+  flex: 1;
+}
+
+.dealCard {
+  display: flex;
+  flex-direction: column;
   text-decoration: none;
-  border: 1px solid #111827;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  cursor: pointer;
-}
-
-.ctaButton:hover {
-  background-color: #bfa15f;
-  border-color: #bfa15f;
-  color: #ffffff;
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 8px 24px rgba(191, 161, 95, 0.25);
-}
-
-
-/* Right Section - Image showcase */
-.rightSection {
-  width: 55%;
-  position: relative;
-  height: 100%;
+  background-color: #ffffff;
+  border-radius: 0.625rem;
   overflow: hidden;
-  background-color: #f3f4f6;
+  border: 1px solid #ebebeb;
+  transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-.imageWrapper {
+.dealCard:hover {
+  transform: translateY(-3px);
+  border-color: #996515;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* Image Frame */
+.imageFrame {
   position: relative;
   width: 100%;
-  height: 100%;
+  aspect-ratio: 1 / 1;
+  background-color: #f7f7f8;
+  overflow: hidden;
 }
 
-.heroImage {
+.productImage {
   object-fit: cover;
-  object-position: center;
+  transition: transform 0.4s ease;
 }
 
-/* Mobile CTA Overlay - Hidden on Desktop */
-.mobileCtaOverlay {
-  display: none;
+.dealCard:hover .productImage {
+  transform: scale(1.05);
 }
 
-/* Mobile & Tablet Responsiveness */
+/* Minimalist Discount Tag */
+.discountTag {
+  position: absolute;
+  top: 0.375rem;
+  left: 0.375rem;
+  background-color: #111827;
+  color: #ffffff;
+  font-size: 0.5625rem;
+  font-weight: 800;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  line-height: 1;
+}
+
+/* Stock Status Badge */
+.stockStatusBadge {
+  position: absolute;
+  bottom: 0.375rem;
+  left: 0.375rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  color: #996515;
+  font-size: 0.5625rem;
+  font-weight: 800;
+  padding: 0.2rem 0.45rem;
+  border-radius: 3px;
+  border: 1px solid rgba(153, 101, 21, 0.2);
+  z-index: 2;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Card Details */
+.cardDetails {
+  padding: 0.625rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  flex: 1;
+}
+
+.productName {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  line-height: 1;
+}
+
+.currentPrice {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.oldPrice {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  text-decoration: line-through;
+  font-weight: 500;
+  line-height: 1;
+}
+
+/* Progress Container */
+.progressContainer {
+  width: 100%;
+  height: 2.5px;
+  background-color: #f3f4f6;
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-top: 0.25rem;
+}
+
+.progressTrack {
+  height: 100%;
+  background: linear-gradient(90deg, #996515, #c5a86a);
+  border-radius: 9999px;
+}
+
+/* Rating Group */
+.ratingGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.6875rem;
+  line-height: 1;
+}
+
+.ratingNumber {
+  font-weight: 700;
+  color: #111827;
+  line-height: 1;
+}
+
+.reviewNumber {
+  color: #9ca3af;
+  line-height: 1;
+}
+
+/* Column Footer */
+.columnFooter {
+  margin-top: 0.875rem;
+  padding-top: 0.625rem;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.footerActionLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #111827;
+  text-decoration: none;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.footerArrow {
+  color: #996515;
+  transition: transform 0.2s ease;
+}
+
+.footerActionLink:hover {
+  color: #996515;
+}
+
+.footerActionLink:hover .footerArrow {
+  transform: translateX(3px);
+}
+
+/* ==========================================================================
+   SVG MICRO-ANIMATIONS
+   ========================================================================== */
+
+.animateClock {
+  animation: svgClockTick 2s steps(2, start) infinite;
+}
+
+.animateSparkle {
+  animation: svgSparkleGlow 3s ease-in-out infinite;
+}
+
+@keyframes svgClockTick {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(12deg);
+  }
+}
+
+@keyframes svgSparkleGlow {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.15) rotate(15deg);
+    filter: drop-shadow(0 2px 4px rgba(153, 101, 21, 0.3));
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+
 @media (max-width: 1024px) {
-  .heroContainer {
-    flex-direction: column;
-    height: auto;
-    border-bottom: none;
-  }
-
-  /* Hide left side text section entirely on mobile/tablet */
-  .leftSection {
-    display: none;
-  }
-
-  .rightSection {
-    width: 100%;
-    height: 280px; /* Highly compact height so categories below are visible */
-  }
-
-  /* Show mobile CTA overlay button */
-  .mobileCtaOverlay {
-    display: flex;
-    position: absolute;
-    bottom: 1.25rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 20;
-  }
-
-  .mobileCtaButton {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.65rem 1.35rem;
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #ffffff;
-    background-color: rgba(17, 24, 39, 0.85); /* Semi-translucent luxury black */
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 9999px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    text-decoration: none;
-    white-space: nowrap;
-    transition: all 0.25s ease;
-  }
-
-  .mobileCtaButton:active {
-    background-color: rgb(17, 24, 39);
-    transform: scale(0.97);
+  .splitGrid {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
   }
 }
 
-@media (max-width: 768px) {
-  .rightSection {
-    height: 220px; /* Even more compact on smaller phones */
+@media (max-width: 640px) {
+  .container {
+    padding: 0 2px;
   }
 
-  .mobileCtaButton {
-    padding: 0.6rem 1.2rem;
-    font-size: 0.7rem;
+  .showcaseColumn {
+    padding: 0.65rem;
+    border-radius: 6px;
+  }
+
+  .cardsRow {
+    gap: 0.25rem;
+  }
+
+  .columnTitle {
+    font-size: 0.95rem;
+  }
+
+  .currentPrice {
+    font-size: 0.75rem;
+  }
+
+  .oldPrice {
+    font-size: 0.625rem;
   }
 }

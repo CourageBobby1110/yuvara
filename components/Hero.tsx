@@ -3,105 +3,316 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Clock, 
+  ArrowRight, 
+  Star, 
+  Lock,
+  TrendingDown
+} from "lucide-react";
+import { useCurrency } from "@/context/CurrencyContext";
 import styles from "./Hero.module.css";
 
-interface HeroProps {
-  carouselImages: string[];
+interface DealItem {
+  _id?: string;
+  dealId?: string;
+  productId?: string;
+  name: string;
+  slug: string;
+  price: number;
+  originalPrice?: number;
+  discountPercent?: number;
+  image: string;
+  durationHours?: number;
+  claimedPercent?: number;
+  stockRemaining?: number;
+  stockTag?: string;
+  averageRating?: number;
+  reviewCount?: number;
 }
 
-export default function Hero({ carouselImages }: HeroProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+interface HeroProps {
+  countdownDeals?: DealItem[];
+  limitedDeals?: DealItem[];
+}
 
-  // Auto-play the carousel every 4 seconds
+const DEFAULT_COUNTDOWN: DealItem[] = [
+  {
+    _id: "def-cd-1",
+    name: "Classic Chronograph Watch - Rose Gold Edition",
+    slug: "classic-chronograph-watch",
+    price: 38.5,
+    originalPrice: 75.0,
+    discountPercent: 48,
+    image: "/hero-shoe-minimalist.png",
+    claimedPercent: 88,
+  },
+  {
+    _id: "def-cd-2",
+    name: "Sartorial Cashmere Blend Overcoat",
+    slug: "sartorial-cashmere-overcoat",
+    price: 45.0,
+    originalPrice: 90.0,
+    discountPercent: 50,
+    image: "/hero-shoe.png",
+    claimedPercent: 74,
+  },
+  {
+    _id: "def-cd-3",
+    name: "Italian Leather Minimalist Handcrafted Loafers",
+    slug: "italian-leather-loafers",
+    price: 29.9,
+    originalPrice: 58.0,
+    discountPercent: 48,
+    image: "/hero-shoe-minimalist.png",
+    claimedPercent: 92,
+  },
+];
+
+const DEFAULT_LIMITED: DealItem[] = [
+  {
+    _id: "def-ld-1",
+    name: "Sterling Silver Geometric Chain Bracelet",
+    slug: "sterling-silver-bracelet",
+    price: 22.0,
+    originalPrice: 48.0,
+    discountPercent: 54,
+    image: "/hero-shoe.png",
+    stockRemaining: 3,
+    stockTag: "Only 3 left",
+    averageRating: 5.0,
+    reviewCount: 412,
+  },
+  {
+    _id: "def-ld-2",
+    name: "Minimalist Aviator Polarized Sunglasses",
+    slug: "minimalist-aviator-sunglasses",
+    price: 18.5,
+    originalPrice: 38.0,
+    discountPercent: 51,
+    image: "/hero-shoe-minimalist.png",
+    stockRemaining: 2,
+    stockTag: "Only 2 left",
+    averageRating: 4.9,
+    reviewCount: 295,
+  },
+  {
+    _id: "def-ld-3",
+    name: "Matte Black Wireless Active Noise-Cancelling Audio",
+    slug: "matte-black-wireless-audio",
+    price: 34.0,
+    originalPrice: 70.0,
+    discountPercent: 51,
+    image: "/hero-shoe.png",
+    stockRemaining: 5,
+    stockTag: "Only 5 left",
+    averageRating: 5.0,
+    reviewCount: 528,
+  },
+];
+
+export default function Hero({ 
+  countdownDeals = [], 
+  limitedDeals = []
+}: HeroProps) {
+  const { formatPrice } = useCurrency();
+
+  // Active Countdown Ticker for Timed Editions
+  const [secondsLeft, setSecondsLeft] = useState<number>(14 * 3600 + 23 * 60 + 53);
+
   useEffect(() => {
-    if (carouselImages.length <= 1) return;
+    const timer = setInterval(() => {
+      setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 24 * 3600));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % carouselImages.length);
-    }, 4000);
+  const formatDigits = (totalSeconds: number) => {
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+    return {
+      hours: String(h).padStart(2, "0"),
+      minutes: String(m).padStart(2, "0"),
+      seconds: String(s).padStart(2, "0"),
+    };
+  };
 
-    return () => clearInterval(interval);
-  }, [carouselImages]);
+  const time = formatDigits(secondsLeft);
+
+  // Guarantee non-empty display items
+  const displayCountdown = (countdownDeals && countdownDeals.length > 0 ? countdownDeals : DEFAULT_COUNTDOWN).slice(0, 3);
+  const displayLimited = (limitedDeals && limitedDeals.length > 0 ? limitedDeals : DEFAULT_LIMITED).slice(0, 3);
 
   return (
-    <div className={styles.heroContainer}>
-      {/* Left Text / Editorial Section (Desktop only) */}
-      <div className={styles.leftSection}>
-        <div className={styles.textInner}>
-          <motion.span
-            initial={{ y: 15, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.1, duration: 0.6 }}
-            className={styles.kicker}
-          >
-            New Season Arrival
-          </motion.span>
+    <section className={styles.heroSection}>
+      <div className={styles.container}>
+        <div className={styles.splitGrid}>
+          {/* =================================================================
+              LEFT COLUMN: TIMED EDITIONS (Countdown Drops)
+             ================================================================= */}
+          <div className={styles.showcaseColumn}>
+            {/* Header */}
+            <div className={styles.columnHeader}>
+              <div className={styles.headerTitleGroup}>
+                <span className={styles.columnKicker}>Limited Release</span>
+                <h2 className={styles.columnTitle}>Timed Drops</h2>
+              </div>
 
-          <motion.h1
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className={styles.title}
-          >
-            Timeless Essentials, <br />
-            <span className={styles.italicTitle}>Elevated</span>
-          </motion.h1>
+              {/* Minimalist Digital Clock */}
+              <div className={styles.countdownPill}>
+                <div className={`${styles.iconWrap} ${styles.animateClock}`}>
+                  <Clock size={13} className={styles.clockIcon} strokeWidth={2.7} />
+                </div>
+                <span className={styles.digitSegment}>{time.hours}</span>
+                <span className={styles.digitColon}>:</span>
+                <span className={styles.digitSegment}>{time.minutes}</span>
+                <span className={styles.digitColon}>:</span>
+                <span className={styles.digitSegment}>{time.seconds}</span>
+              </div>
+            </div>
 
-          <motion.p
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className={styles.subtitle}
-          >
-            Experience the perfect fusion of enduring quality, minimal design, and ultimate comfort. Crafted for the global citizen.
-          </motion.p>
+            {/* Cards Grid */}
+            <div className={styles.cardsRow}>
+              {displayCountdown.map((deal) => {
+                return (
+                  <Link 
+                    key={deal._id} 
+                    href={`/products/${deal.slug}`} 
+                    className={styles.dealCard}
+                  >
+                    <div className={styles.imageFrame}>
+                      <Image
+                        src={deal.image || "/placeholder.png"}
+                        alt={deal.name}
+                        fill
+                        className={styles.productImage}
+                        sizes="(max-width: 768px) 33vw, 20vw"
+                      />
+                      {deal.discountPercent && deal.discountPercent > 0 && (
+                        <span className={styles.discountTag}>
+                          -{deal.discountPercent}%
+                        </span>
+                      )}
+                    </div>
 
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-          >
-            <Link href="/collections" className={styles.ctaButton}>
-              Explore Collection
-            </Link>
-          </motion.div>
+                    <div className={styles.cardDetails}>
+                      <h4 className={styles.productName}>{deal.name}</h4>
+
+                      <div className={styles.priceRow}>
+                        <span className={styles.currentPrice}>
+                          {formatPrice(deal.price)}
+                        </span>
+                        {deal.originalPrice && (
+                          <span className={styles.oldPrice}>
+                            {formatPrice(deal.originalPrice)}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Minimalist Progress Line */}
+                      <div className={styles.progressContainer}>
+                        <div 
+                          className={styles.progressTrack}
+                          style={{ width: `${deal.claimedPercent || 75}%` }}
+                        />
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* Bottom Link */}
+            <div className={styles.columnFooter}>
+              <Link href="/collections?sort=bestseller" className={styles.footerActionLink}>
+                <span>Explore All Timed Drops</span>
+                <ArrowRight size={13} strokeWidth={2.8} className={styles.footerArrow} />
+              </Link>
+            </div>
+          </div>
+
+          {/* =================================================================
+              RIGHT COLUMN: THE VAULT (Limited Quantity Archive)
+             ================================================================= */}
+          <div className={styles.showcaseColumn}>
+            {/* Header */}
+            <div className={styles.columnHeader}>
+              <div className={styles.headerTitleGroup}>
+                <span className={styles.columnKicker}>Exclusive Archive</span>
+                <h2 className={styles.columnTitle}>The Vault</h2>
+              </div>
+
+              <div className={styles.vaultBadge}>
+                <div className={`${styles.iconWrap} ${styles.animateFloat}`}>
+                  <Lock size={12} className={styles.vaultIcon} strokeWidth={2.7} />
+                </div>
+                <span>Limited Runs</span>
+              </div>
+            </div>
+
+            {/* Cards Grid */}
+            <div className={styles.cardsRow}>
+              {displayLimited.map((deal) => {
+                return (
+                  <Link 
+                    key={deal._id} 
+                    href={`/products/${deal.slug}`} 
+                    className={styles.dealCard}
+                  >
+                    <div className={styles.imageFrame}>
+                      <Image
+                        src={deal.image || "/placeholder.png"}
+                        alt={deal.name}
+                        fill
+                        className={styles.productImage}
+                        sizes="(max-width: 768px) 33vw, 20vw"
+                      />
+                      <span className={styles.stockStatusBadge}>
+                        {deal.stockTag || `Only ${deal.stockRemaining || 3} left`}
+                      </span>
+                    </div>
+
+                    <div className={styles.cardDetails}>
+                      <h4 className={styles.productName}>{deal.name}</h4>
+
+                      <div className={styles.priceRow}>
+                        <span className={styles.currentPrice}>
+                          {formatPrice(deal.price)}
+                        </span>
+                        {deal.originalPrice && (
+                          <span className={styles.oldPrice}>
+                            {formatPrice(deal.originalPrice)}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Minimalist Star Rating */}
+                      <div className={styles.ratingGroup}>
+                        <Star size={12} fill="#996515" color="#996515" strokeWidth={0} />
+                        <span className={styles.ratingNumber}>
+                          {deal.averageRating ? deal.averageRating.toFixed(1) : "5.0"}
+                        </span>
+                        <span className={styles.reviewNumber}>
+                          ({deal.reviewCount || 120})
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* Bottom Link */}
+            <div className={styles.columnFooter}>
+              <Link href="/collections?sort=stock_asc" className={styles.footerActionLink}>
+                <span>Explore The Vault Archive</span>
+                <ArrowRight size={13} strokeWidth={2.8} className={styles.footerArrow} />
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* Right Image Showcase Section (Desktop split, Mobile full screen) */}
-      <div className={styles.rightSection}>
-        <div className={styles.imageWrapper}>
-          <AnimatePresence mode="popLayout">
-            <motion.div
-              key={currentIndex}
-              initial={{ opacity: 0, scale: 1.02 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.98 }}
-              whileHover={{ scale: 1.06 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              style={{ position: "absolute", inset: 0, cursor: "pointer" }}
-            >
-              <Image
-                src={carouselImages[currentIndex]}
-                alt="Yuvara Luxury Collection Showcase"
-                fill
-                className={styles.heroImage}
-                priority
-                quality={95}
-                sizes="(max-width: 1024px) 100vw, 55vw"
-              />
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {/* Small, sleek CTA button overlay (Visible on mobile/tablet view only) */}
-        <div className={styles.mobileCtaOverlay}>
-          <Link href="/collections" className={styles.mobileCtaButton}>
-            Explore Collection
-          </Link>
-        </div>
-      </div>
-    </div>
+    </section>
   );
 }

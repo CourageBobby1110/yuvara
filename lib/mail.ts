@@ -7,12 +7,134 @@ function getFormattedUrl(path: string): string {
   return `${base}/${cleanPath}`;
 }
 
-// Helper to send mail reliably with fallback
+// Helper to parse "YuVara <email@domain.com>" or "email@domain.com"
+function parseSender(fromStr?: string) {
+  const defaultFrom = process.env.EMAIL_FROM || "contact@yuvara.com.ng";
+  const str = fromStr || `YuVara <${defaultFrom}>`;
+  const match = str.match(/^(?:"?([^"]*)"?\s)?<?([^>]+)>?$/);
+  if (match) {
+    return {
+      name: match[1]?.trim() || "YuVara",
+      email: match[2]?.trim() || defaultFrom,
+    };
+  }
+  return { name: "YuVara", email: defaultFrom };
+}
+
+// 1. Primary: Brevo HTTP REST API (Instant delivery, no SMTP port timeouts)
+async function sendViaBrevoAPI(mailOptions: any): Promise<boolean> {
+  const brevoApiKey =
+    process.env.BREVO_API_KEY ||
+    process.env.BREVO_KEY ||
+    process.env.SENDINBLUE_API_KEY ||
+    (process.env.BREVO_SERVER_PASSWORD?.startsWith("xkeysib-")
+      ? process.env.BREVO_SERVER_PASSWORD
+      : undefined);
+
+  if (!brevoApiKey) return false;
+
+  const sender = parseSender(mailOptions.from);
+
+  // Format recipients
+  let toList: { email: string; name?: string }[] = [];
+  if (mailOptions.to) {
+    const rawToList = Array.isArray(mailOptions.to)
+      ? mailOptions.to
+      : mailOptions.to.split(",");
+    toList = rawToList
+      .map((t: string) => t.trim())
+      .filter(Boolean)
+      .map((email: string) => ({ email }));
+  }
+
+  let bccList: { email: string }[] | undefined;
+  if (mailOptions.bcc) {
+    const rawBccList = Array.isArray(mailOptions.bcc)
+      ? mailOptions.bcc
+      : mailOptions.bcc.split(",");
+    bccList = rawBccList
+      .map((t: string) => t.trim())
+      .filter(Boolean)
+      .map((email: string) => ({ email }));
+  }
+
+  // If no direct TO is provided (e.g. BCC broadcast), set TO to sender
+  if (toList.length === 0 && bccList && bccList.length > 0) {
+    toList = [{ email: sender.email, name: sender.name }];
+  }
+
+  if (toList.length === 0) return false;
+
+  const payload: any = {
+    sender,
+    to: toList,
+    subject: mailOptions.subject,
+    htmlContent: mailOptions.html,
+  };
+
+  if (mailOptions.text) {
+    payload.textContent = mailOptions.text;
+  }
+  if (bccList && bccList.length > 0) {
+    payload.bcc = bccList;
+  }
+
+  console.log(`[Brevo API] Sending email to ${toList.map(t => t.email).join(", ")} (BCC: ${bccList?.length || 0})...`);
+  const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "api-key": brevoApiKey,
+      "Content-Type": "application/json",
+      accept: "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const errData = await response.json().catch(() => ({}));
+    console.warn(`[Brevo API Error ${response.status}]`, errData);
+    throw new Error(`Brevo API Error (${response.status}): ${JSON.stringify(errData)}`);
+  }
+
+  const data = await response.json().catch(() => ({}));
+  console.log(`[Brevo API] Email dispatched successfully:`, data?.messageId || "OK");
+  return true;
+}
+
+// Helper to send mail reliably with Brevo-first strategy
 async function sendMailWithRetry(mailOptions: any) {
+  // 1. Try Brevo REST API first (fastest, guaranteed HTTP response)
+  try {
+    const sent = await sendViaBrevoAPI(mailOptions);
+    if (sent) return;
+  } catch (apiError: any) {
+    console.warn("[Brevo API Failed, trying SMTP]", apiError.message);
+  }
+
   const configs: any[] = [];
-  
-  // Gmail configs
-  if (process.env.GMAIL_SERVER_USER && process.env.GMAIL_SERVER_PASSWORD) {
+
+  // 2. Brevo SMTP configs (Primary SMTP)
+  if (process.env.BREVO_SERVER_USER && process.env.BREVO_SERVER_PASSWORD) {
+    const brevoPorts = [587, 465, 2525, 25];
+    for (const port of brevoPorts) {
+      configs.push({
+        name: `Brevo SMTP (Port ${port})`,
+        host: process.env.BREVO_SERVER_HOST || "smtp-relay.brevo.com",
+        port: port,
+        secure: port === 465,
+        auth: {
+          user: process.env.BREVO_SERVER_USER,
+          pass: process.env.BREVO_SERVER_PASSWORD,
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
+      });
+    }
+  }
+
+  // 3. Optional fallback: Gmail configs (only if Brevo is not configured)
+  if (configs.length === 0 && process.env.GMAIL_SERVER_USER && process.env.GMAIL_SERVER_PASSWORD) {
     const gmailPorts = [465, 587];
     for (const port of gmailPorts) {
       configs.push({
@@ -23,26 +145,6 @@ async function sendMailWithRetry(mailOptions: any) {
         auth: {
           user: process.env.GMAIL_SERVER_USER,
           pass: process.env.GMAIL_SERVER_PASSWORD,
-        },
-        tls: {
-          rejectUnauthorized: false, // Helps bypass local antivirus/VPN TLS interceptions
-        },
-      });
-    }
-  }
-
-  // Brevo configs
-  if (process.env.BREVO_SERVER_USER && process.env.BREVO_SERVER_PASSWORD) {
-    const brevoPorts = [587, 465, 25, 2525];
-    for (const port of brevoPorts) {
-      configs.push({
-        name: `Brevo (Port ${port})`,
-        host: process.env.BREVO_SERVER_HOST || "smtp-relay.brevo.com",
-        port: port,
-        secure: port === 465,
-        auth: {
-          user: process.env.BREVO_SERVER_USER,
-          pass: process.env.BREVO_SERVER_PASSWORD,
         },
         tls: {
           rejectUnauthorized: false,
@@ -63,16 +165,15 @@ async function sendMailWithRetry(mailOptions: any) {
 
       // Attempt to send
       await transporter.sendMail(mailOptions);
-      console.log(`Email successfully sent via ${config.name} to ${mailOptions.to}`);
+      console.log(`Email successfully sent via ${config.name} to ${mailOptions.to || mailOptions.bcc}`);
       return; // Success, exit function
     } catch (error: any) {
       console.warn(`Failed to send email via ${config.name}:`, error.message);
       lastError = error;
-      // Continue to next configuration
     }
   }
 
-  throw new Error(`Failed to send email after trying all providers and ports. Last error: ${lastError?.message}`);
+  throw new Error(`Failed to send email after trying Brevo and SMTP. Last error: ${lastError?.message}`);
 }
 
 export async function sendMail({
@@ -195,55 +296,212 @@ export async function sendNewProductNotification(product: any, users: any[]) {
 
 export async function sendTargetedProductNotification(
   product: any,
-  users: any[]
+  users: any[],
+  options?: {
+    additionalProducts?: any[];
+    subject?: string;
+    headline?: string;
+  }
 ) {
-  const bccList = users.map((u) => u.email).join(",");
+  const bccList = users.map((u) => u.email).filter(Boolean).join(",");
 
   if (!bccList) return;
 
+  // 1. Fetch additional catalogue products if not provided (up to 24 products)
+  let catalogue: any[] = options?.additionalProducts || [];
+  if (catalogue.length === 0) {
+    try {
+      const ProductModel = (await import("@/models/Product")).default;
+      const dbCatalogue = await ProductModel.find({
+        _id: { $ne: product._id },
+        isActive: { $ne: false },
+      })
+        .sort({ isFeatured: -1, price: 1 })
+        .limit(24)
+        .lean();
+      catalogue = dbCatalogue;
+    } catch (err) {
+      console.error("Error fetching catalogue for promotional email:", err);
+    }
+  }
+
+  const { getProductMainImage } = await import("@/lib/utils");
+
+  const resolveEmailImgUrl = (raw: any): string => {
+    const main = getProductMainImage(raw);
+    if (!main || main === "/placeholder.png") {
+      return getFormattedUrl("/placeholder.png");
+    }
+    if (main.startsWith("http://") || main.startsWith("https://")) {
+      return main;
+    }
+    return getFormattedUrl(main);
+  };
+
+  const mainProductImg = resolveEmailImgUrl(product);
+  const mainProductUrl = getFormattedUrl(`/products/${product.slug}`);
+  const allCollectionsUrl = getFormattedUrl("/collections");
+  const origMainPrice = (product.price * 1.75).toFixed(2);
+
+  // Combine primary product + catalogue items into a seamless 2-column collection (up to 24 items)
+  const allDisplayItems = [
+    product,
+    ...catalogue.filter((p) => p._id.toString() !== product._id.toString()),
+  ].slice(0, 24);
+
+  // Generate clean, breathable 2-column product grid
+  let catalogueHtml = "";
+  for (let i = 0; i < allDisplayItems.length; i += 2) {
+    const itemA = allDisplayItems[i];
+    const itemB = allDisplayItems[i + 1];
+
+    const imgA = resolveEmailImgUrl(itemA);
+    const urlA = getFormattedUrl(`/products/${itemA.slug}`);
+    const origPriceA = ((itemA.price || 20) * 1.6).toFixed(2);
+
+    let colBHtml = "";
+    if (itemB) {
+      const imgB = resolveEmailImgUrl(itemB);
+      const urlB = getFormattedUrl(`/products/${itemB.slug}`);
+      const origPriceB = ((itemB.price || 20) * 1.6).toFixed(2);
+
+      colBHtml = `
+        <td width="50%" valign="top" style="padding: 4px; box-sizing: border-box;">
+          <div style="background-color: #ffffff; text-align: left;">
+            <a href="${urlB}" style="text-decoration: none; display: block;">
+              <img class="prod-img" src="${imgB}" alt="${itemB.name}" style="width: 100%; height: 180px; object-fit: cover; border-radius: 4px; display: block; background-color: #f7f7f8;" />
+              <div style="padding: 6px 2px 12px;">
+                <div style="font-size: 12px; font-weight: 600; color: #1f2937; line-height: 1.35; height: 32px; overflow: hidden; text-overflow: ellipsis;">
+                  ${itemB.name}
+                </div>
+                <div style="margin-top: 4px; font-size: 13px; font-weight: 800; color: #111827;">
+                  $${Number(itemB.price).toFixed(2)}
+                  <span style="font-size: 10px; color: #9ca3af; text-decoration: line-through; margin-left: 4px; font-weight: 400;">
+                    $${origPriceB}
+                  </span>
+                </div>
+              </div>
+            </a>
+          </div>
+        </td>
+      `;
+    } else {
+      colBHtml = `<td width="50%" style="padding: 4px;"></td>`;
+    }
+
+    catalogueHtml += `
+      <tr>
+        <td width="50%" valign="top" style="padding: 4px; box-sizing: border-box;">
+          <div style="background-color: #ffffff; text-align: left;">
+            <a href="${urlA}" style="text-decoration: none; display: block;">
+              <img class="prod-img" src="${imgA}" alt="${itemA.name}" style="width: 100%; height: 180px; object-fit: cover; border-radius: 4px; display: block; background-color: #f7f7f8;" />
+              <div style="padding: 6px 2px 12px;">
+                <div style="font-size: 12px; font-weight: 600; color: #1f2937; line-height: 1.35; height: 32px; overflow: hidden; text-overflow: ellipsis;">
+                  ${itemA.name}
+                </div>
+                <div style="margin-top: 4px; font-size: 13px; font-weight: 800; color: #111827;">
+                  $${Number(itemA.price).toFixed(2)}
+                  <span style="font-size: 10px; color: #9ca3af; text-decoration: line-through; margin-left: 4px; font-weight: 400;">
+                    $${origPriceA}
+                  </span>
+                </div>
+              </div>
+            </a>
+          </div>
+        </td>
+        ${colBHtml}
+      </tr>
+    `;
+  }
+
+  const subject = options?.subject || `Curated Products For You — YuVara`;
+  const headline = options?.headline || "Featured Collection";
+
   const mailOptions = {
-    from: `Yuvara <${process.env.EMAIL_FROM}>`,
+    from: `YuVara <${process.env.EMAIL_FROM}>`,
     bcc: bccList,
-    subject: `Special Offer: ${product.name}`,
+    subject: subject,
     html: `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="text-align: center; padding: 20px 0; border-bottom: 1px solid #eee;">
-          <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 2px; color: #000;">YUVARA</h1>
-        </div>
-        
-        <div style="padding: 20px 0;">
-          <h2 style="color: #333; margin-top: 0;">Check out our latest product!</h2>
-          <h3 style="font-size: 20px; margin: 10px 0;">${product.name}</h3>
-          <p style="color: #666; line-height: 1.6;">${product.description}</p>
-          <p style="font-size: 18px; font-weight: bold;">Price: $${
-            product.price
-          }</p>
-          
-          <div style="margin: 20px 0; text-align: center;">
-            <img src="${product.images[0]}" alt="${
-      product.name
-    }" style="max-width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px;" />
-          </div>
-          
-          <div style="text-align: center; margin-top: 30px;">
-            <a href="${getFormattedUrl(`/products/${product.slug}`)}" style="background: #000; color: #fff; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold;">View Product</a>
-          </div>
-        </div>
-        
-        <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px;">
-          <p>&copy; ${new Date().getFullYear()} Yuvara. All rights reserved.</p>
-        </div>
-      </div>
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${subject}</title>
+        <style>
+          body { margin: 0; padding: 0; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-text-size-adjust: 100%; }
+          table { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+          img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+          a { text-decoration: none; color: inherit; }
+          @media only screen and (max-width: 480px) {
+            .container { width: 100% !important; padding: 0 4px !important; }
+            .prod-img { height: 160px !important; }
+            .header-pad { padding: 16px 8px 12px !important; }
+          }
+        </style>
+      </head>
+      <body style="margin: 0; padding: 0; background-color: #ffffff; color: #111827;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff;">
+          <tr>
+            <td align="center" style="padding: 0;">
+              <table class="container" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+                
+                <!-- HEADER -->
+                <tr>
+                  <td class="header-pad" align="center" style="padding: 24px 12px 14px; border-bottom: 1px solid #f0f0f0;">
+                    <a href="${allCollectionsUrl}" style="text-decoration: none; display: inline-block;">
+                      <span style="font-size: 20px; font-weight: 800; letter-spacing: 2px; color: #111111; text-transform: uppercase;">
+                        YU<span style="color: #996515;">VARA</span>
+                      </span>
+                    </a>
+                    <div style="font-size: 11px; color: #6b7280; margin-top: 4px; letter-spacing: 0.5px;">
+                      ${headline}
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- 2-COLUMN PRODUCT GRID (Broad & Breathable) -->
+                <tr>
+                  <td style="padding: 10px 2px 20px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                      ${catalogueHtml}
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- EXPLORE ALL BUTTON -->
+                <tr>
+                  <td align="center" style="padding: 10px 12px 28px;">
+                    <a href="${allCollectionsUrl}" style="display: inline-block; background-color: #111827; color: #ffffff; font-size: 12px; font-weight: 700; padding: 12px 32px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none;">
+                      Shop Entire Collection &rarr;
+                    </a>
+                  </td>
+                </tr>
+
+                <!-- MINIMAL FOOTER -->
+                <tr>
+                  <td align="center" style="padding: 20px 12px; border-top: 1px solid #f0f0f0; font-size: 11px; color: #9ca3af; line-height: 1.5;">
+                    <p style="margin: 0 0 4px 0;">YuVara &bull; Curated Essentials</p>
+                    <p style="margin: 0;">You received this email because you are a registered customer.</p>
+                  </td>
+                </tr>
+
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
     `,
   };
 
   try {
     await sendMailWithRetry(mailOptions);
     console.log(
-      `Marketing email sent to ${users.length} users for product ${product.name}`
+      `Marketing catalogue email sent to ${users.length} users for spotlight product ${product.name}`
     );
   } catch (error) {
-    console.error("Error sending marketing email:", error);
+    console.error("Error sending marketing catalogue email:", error);
     throw error;
   }
 }

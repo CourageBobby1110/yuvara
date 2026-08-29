@@ -1,95 +1,108 @@
 .section {
-  padding: 0.5rem 0 2rem 0;
-  background-color: #f9fafb00; /* Transparent/Clean background */
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  background-color: transparent;
 }
 
 .container {
   width: 100%;
-  max-width: 1500px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 0 0.25rem; /* Very tight padding for mobile */
+  padding: 0 2px; /* Ultra-tight Temu edge-to-edge padding */
+  box-sizing: border-box;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-bottom: 0.25rem;
   color: #111827;
 }
 
 .subtitle {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: #6b7280;
   max-width: 600px;
   margin: 0 auto;
 }
 
-/* Abundance Grid Layout */
+/* ==========================================================================
+   TEMU ULTRA-DENSE PRODUCT WALL GRID (ZERO-GAP FEEL)
+   ========================================================================== */
 .masonryGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
-  gap: 0.25rem; /* Very tight gaps for Temu style */
+  gap: 2px; /* 2px seamless gap on mobile */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .masonryItem {
   height: 100%;
+  width: 100%;
 }
 
 .viewAllContainer {
   text-align: center;
-  margin-top: 2rem;
+  margin-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .viewAllButton {
   display: inline-block;
-  background-color: var(--color-primary);
+  background-color: #111827;
   color: #fff;
-  padding: 0.75rem 2rem;
+  padding: 0.65rem 1.75rem;
   border-radius: 9999px;
-  font-weight: 600;
-  font-size: 0.875rem;
+  font-weight: 700;
+  font-size: 0.8125rem;
   transition: all 0.2s ease;
   text-decoration: none;
 }
 
 .viewAllButton:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  background-color: var(--color-luxury-gold);
+  background-color: #996515;
 }
 
 /* Responsive adjustments */
 @media (min-width: 640px) {
-  .section {
-    padding: 0.75rem 0 3rem 0;
-  }
-
   .container {
-    padding: 0 0.5rem;
+    padding: 0 4px;
   }
 
   .masonryGrid {
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.375rem;
+    gap: 4px;
   }
 
   .title {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 900px) {
   .masonryGrid {
-    grid-template-columns: repeat(5, minmax(0, 1fr)); /* Capped at 5 for better premium look */
-    gap: 0.5rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
   }
+}
 
-  .title {
-    font-size: 2.5rem;
+@media (min-width: 1200px) {
+  .masonryGrid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .masonryGrid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 4px;
   }
 }

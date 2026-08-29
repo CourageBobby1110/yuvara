@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -9,44 +9,101 @@ import { hardSignOut, switchAccount } from "@/lib/sign-out";
 import { useCartStore } from "@/store/cart";
 import { trackFBEvent } from "@/lib/fb-pixel";
 import CurrencySelector from "@/components/CurrencySelector";
-
-import { useLanguage } from "@/context/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  Truck,
+  ShieldCheck,
+  Smartphone,
+  Sparkles,
+  LayoutGrid,
+  Search,
+  X,
+  User,
+  Headphones,
+  ShoppingBag,
+  ChevronDown,
+  ChevronRight,
+  Package,
+  Heart,
+  Users,
+  RefreshCw,
+  LogOut,
+  SlidersHorizontal,
+  ArrowRight,
+  Watch,
+  Shirt,
+  Gem,
+  Tv,
+  Footprints,
+  Glasses
+} from "lucide-react";
 import styles from "./Navbar.module.css";
 
+function DressIcon({ size = 16, className = "" }: { size?: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M10 2h4M9 2L7 7l-2.5 15h15L17 7l-2-5" />
+      <path d="M7 7a5 5 0 0 0 10 0" />
+      <path d="M9.5 12.5c1.5 1.5 3.5 1.5 5 0" />
+    </svg>
+  );
+}
+
+const CATEGORY_ITEMS = [
+  { name: "Men's Sartorial", sub: "Suits, Knits & Casuals", slug: "Men", icon: Shirt },
+  { name: "Women's Atelier", sub: "Couture, Silks & Gowns", slug: "Women", icon: DressIcon },
+  { name: "Horology & Watches", sub: "Swiss & Chronograph", slug: "Watches", icon: Watch },
+  { name: "Fine Jewelry", sub: "Diamonds & 18K Gold", slug: "Jewelry", icon: Gem },
+  { name: "Designer Footwear", sub: "Sneakers, Boots & Loafers", slug: "Shoes", icon: Footprints },
+  { name: "Eyewear & Accs", sub: "Sunglasses & Leather Goods", slug: "Accessories", icon: Glasses },
+  { name: "Premium Electronics", sub: "Audio & Smart Tech", slug: "Electronics", icon: Tv },
+  { name: "Complete Archive", sub: "Explore All Catalog", slug: "all", icon: LayoutGrid },
+];
+
 export default function Navbar() {
-  // Live client session only — never a server prop that can go stale after sign-out
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [itemCount, setItemCount] = useState(0);
   const { totalItems, toggleCart } = useCartStore();
-  const { t } = useLanguage();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
-  // Close dropdown when clicking outside
+  const categoryRef = useRef<HTMLDivElement>(null);
+  const accountRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (!target.closest(`.${styles.accountWrapper}`)) {
+      if (accountRef.current && !accountRef.current.contains(target)) {
         setIsAccountDropdownOpen(false);
       }
+      if (categoryRef.current && !categoryRef.current.contains(target)) {
+        setIsCategoryDropdownOpen(false);
+      }
     };
-    if (isAccountDropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
+    document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isAccountDropdownOpen]);
+  }, []);
 
   const items = useCartStore((state) => state.items);
-  // Hydration fix for cart count
   useEffect(() => {
     setItemCount(totalItems());
   }, [items, totalItems]);
 
-  // Prevent scrolling when menu is open
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = "hidden";
@@ -58,7 +115,6 @@ export default function Navbar() {
     };
   }, [isMenuOpen]);
 
-  // Close mobile menu on resize to desktop
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024 && isMenuOpen) {
@@ -77,474 +133,600 @@ export default function Navbar() {
     e.preventDefault();
     if (searchQuery.trim()) {
       trackFBEvent("Search", { search_string: searchQuery.trim() });
-      router.push(`/collections?search=${encodeURIComponent(searchQuery)}`);
+      router.push(`/collections?search=${encodeURIComponent(searchQuery.trim())}`);
       setIsMobileSearchOpen(false);
       setIsMenuOpen(false);
     }
   };
 
+  const handleClearSearch = () => {
+    setSearchQuery("");
+  };
+
   return (
-    <nav className={styles.navbar}>
-      <div className={styles.container}>
-        <div className={styles.navContent}>
-          {/* Logo */}
-          <Link href="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
-            <div style={{ borderRadius: "50%", overflow: "hidden", width: "40px", height: "40px", position: "relative", border: "2px solid #bfa15f", boxShadow: "0 2px 6px rgba(0,0,0,0.08)" }}>
-              <Image
-                src="/icon.png"
-                alt="YuVara Logo"
-                fill
-                sizes="40px"
-                priority
-                style={{ objectFit: "cover" }}
-              />
+    <header className={styles.headerWrapper}>
+      {/* 1. MINIMALIST LUXURY TOP NOTICE RIBBON */}
+      <div className={styles.topNoticeRibbon}>
+        <div className={styles.topNoticeInner}>
+          {/* Left: Global Delivery */}
+          <Link href="/collections" className={styles.noticeLink}>
+            <div className={`${styles.iconWrap} ${styles.animateDrive}`}>
+              <Truck size={14} className={styles.noticeGoldIcon} strokeWidth={2.6} />
             </div>
-            <span style={{ fontSize: "1.4rem", fontWeight: 800, letterSpacing: "-0.5px", color: "#000000", fontFamily: "var(--font-inter), sans-serif" }}>
-              Yu<span style={{ color: "#bfa15f" }}>Vara</span>
-            </span>
+            <span className={styles.noticeText}>Complimentary Global Shipping on Orders over $150</span>
           </Link>
 
-          {/* Desktop Menu */}
-          <div className={styles.desktopMenu}>
-            <Link href="/collections" className={styles.navLink}>
-              {t("nav.shop")}
-            </Link>
-            <Link href="/about" className={styles.navLink}>
-              {t("nav.about")}
+          {/* Center: Guarantee */}
+          <Link href="/shipping-returns" className={styles.noticeLinkCenter}>
+            <div className={`${styles.iconWrap} ${styles.animatePulse}`}>
+              <ShieldCheck size={14} className={styles.noticeGoldIcon} strokeWidth={2.6} />
+            </div>
+            <span className={styles.noticeText}>100% Certified Authenticity &amp; Bespoke Care</span>
+          </Link>
+
+          {/* Right: App Experience */}
+          <Link href="/collections" className={styles.noticeLinkRight}>
+            <div className={`${styles.iconWrap} ${styles.animateFloat}`}>
+              <Smartphone size={14} className={styles.noticeGoldIcon} strokeWidth={2.6} />
+            </div>
+            <span className={styles.noticeText}>YuVara Mobile App</span>
+            <ArrowRight size={12} className={styles.noticeArrow} strokeWidth={2.8} />
+          </Link>
+        </div>
+      </div>
+
+      {/* 2. MAIN MINIMALIST NAVBAR */}
+      <nav className={styles.navbar}>
+        <div className={styles.container}>
+          <div className={styles.navContent}>
+            {/* Logo */}
+            <Link href="/" className={styles.brandLink}>
+              <div className={styles.brandEmblem}>
+                <Image
+                  src="/icon.png"
+                  alt="YuVara"
+                  fill
+                  sizes="36px"
+                  priority
+                  className="object-cover"
+                />
+              </div>
+              <span className={styles.brandName}>
+                Yu<span className={styles.brandGold}>Vara</span>
+              </span>
             </Link>
 
-            {/* Desktop Search */}
-            <form onSubmit={handleSearch} className={styles.searchForm}>
-              <div className={styles.searchIconWrapper}>
-                <svg
-                  width="18"
-                  height="18"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+            {/* Desktop Navigation Links */}
+            <div className={styles.navLinksGroup}>
+              <Link href="/collections?sort=bestseller" className={styles.navItem}>
+                <span>Best Sellers</span>
+              </Link>
+              <Link href="/collections?sort=rating" className={styles.navItem}>
+                <span>Curated Picks</span>
+              </Link>
+              <Link href="/collections?sort=newest" className={styles.navItem}>
+                <span>New Arrivals</span>
+              </Link>
+
+              {/* Categories Mega Trigger */}
+              <div className={styles.categoryDropdownWrapper} ref={categoryRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                  className={`${styles.categoryTrigger} ${
+                    isCategoryDropdownOpen ? styles.categoryTriggerActive : ""
+                  }`}
+                  aria-expanded={isCategoryDropdownOpen}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  <span>Categories</span>
+                  <ChevronDown
+                    size={13}
+                    className={`${styles.chevron} ${
+                      isCategoryDropdownOpen ? styles.chevronOpen : ""
+                    }`}
+                    strokeWidth={2.8}
                   />
-                </svg>
+                </button>
+
+                {/* Categories Luxury Popover */}
+                {isCategoryDropdownOpen && (
+                  <div className={styles.categoryMenu}>
+                    <div className={styles.categoryMenuHeader}>
+                      <span className={styles.categoryHeaderKicker}>Curated Departments</span>
+                      <span className={styles.categoryHeaderTag}>YuVara 2026</span>
+                    </div>
+
+                    <div className={styles.categoryGrid}>
+                      {CATEGORY_ITEMS.map((cat) => {
+                        const IconComponent = cat.icon;
+                        return (
+                          <Link
+                            key={cat.slug}
+                            href={
+                              cat.slug === "all"
+                                ? "/collections"
+                                : `/collections?category=${encodeURIComponent(cat.slug)}`
+                            }
+                            className={styles.categoryMenuItem}
+                            onClick={() => setIsCategoryDropdownOpen(false)}
+                          >
+                            <div className={styles.categoryIconWrap}>
+                              <IconComponent size={16} className={styles.categoryIcon} />
+                            </div>
+                            <div className={styles.categoryTextWrap}>
+                              <span className={styles.categoryMenuLabel}>{cat.name}</span>
+                              <span className={styles.categoryMenuSub}>{cat.sub}</span>
+                            </div>
+                            <ChevronRight size={13} className={styles.itemChevron} strokeWidth={2.5} />
+                          </Link>
+                        );
+                      })}
+                    </div>
+
+                    <div className={styles.categoryMenuFooter}>
+                      <Link 
+                        href="/collections" 
+                        className={styles.allCollectionsFooterLink}
+                        onClick={() => setIsCategoryDropdownOpen(false)}
+                      >
+                        <span>Explore Full Store Catalog</span>
+                        <ArrowRight size={13} strokeWidth={2.6} />
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Minimalist Search Bar */}
+            <form onSubmit={handleSearch} className={styles.searchContainer}>
+              <div className={`${styles.iconWrap} ${styles.searchIconWrap}`}>
+                <Search size={16} className={styles.searchIcon} strokeWidth={2.6} />
               </div>
               <input
                 type="text"
-                placeholder="Search premium tees, knits..."
+                placeholder="Search timeless fashion, timepieces, luxury..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={styles.searchInput}
               />
+              {searchQuery.trim().length > 0 && (
+                <button
+                  type="button"
+                  onClick={handleClearSearch}
+                  className={styles.clearBtn}
+                  aria-label="Clear search"
+                >
+                  <X size={14} strokeWidth={2.8} />
+                </button>
+              )}
             </form>
 
-            <div className={styles.utilityBar}>
-              <CurrencySelector />
-
-              {session?.user ? (
-                <div className={styles.accountWrapper}>
+            {/* Desktop Utilities */}
+            <div className={styles.utilityGroup}>
+              {/* Account Dropdown */}
+              <div className={styles.accountWrapper} ref={accountRef}>
+                {session?.user ? (
                   <button
-                    onClick={() =>
-                      setIsAccountDropdownOpen(!isAccountDropdownOpen)
-                    }
+                    onClick={() => setIsAccountDropdownOpen(!isAccountDropdownOpen)}
                     className={styles.accountTrigger}
+                    aria-label="Account menu"
                   >
-                    <div className={styles.profileImageContainer}>
+                    <div className={styles.profileAvatar}>
                       {session.user?.image ? (
                         <img
                           src={session.user.image}
                           alt={session.user.name || "User"}
-                          className={styles.profileImage}
+                          className={styles.profileImg}
                         />
                       ) : (
-                        <span className={styles.profilePlaceholder}>
-                          {session.user?.name?.[0] ||
-                            session.user?.email?.[0] ||
-                            "U"}
-                        </span>
-                      )}
-                    </div>
-                    <span className={styles.accountLabel}>Account</span>
-                    <svg
-                      className={`${styles.chevron} ${
-                        isAccountDropdownOpen ? styles.chevronOpen : ""
-                      }`}
-                      width="12"
-                      height="12"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2.5"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </button>
-
-                  {isAccountDropdownOpen && (
-                    <div className={styles.dropdown}>
-                      <div className={styles.dropdownHeader}>
-                        <p className={styles.userName}>
-                          {session.user?.name || "User"}
-                        </p>
-                        <p className={styles.userEmail}>{session.user?.email}</p>
-                      </div>
-                      <div className={styles.dropdownContent}>
-                        {(session.user?.role === "admin" || session.user?.role === "worker") && (
-                          <Link
-                            href="/admin/dashboard"
-                            className={styles.dropdownLink}
-                            onClick={() => setIsAccountDropdownOpen(false)}
-                          >
-                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                            </svg>
-                            Admin Dashboard
-                          </Link>
-                        )}
-                        <Link
-                          href="/profile"
-                          className={styles.dropdownLink}
-                          onClick={() => setIsAccountDropdownOpen(false)}
-                        >
-                          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                          </svg>
-                          My Profile
-                        </Link>
-                        <Link
-                          href="/orders"
-                          className={styles.dropdownLink}
-                          onClick={() => setIsAccountDropdownOpen(false)}
-                        >
-                          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                          </svg>
-                          My Orders
-                        </Link>
-                        <Link
-                          href="/wishlist"
-                          className={styles.dropdownLink}
-                          onClick={() => setIsAccountDropdownOpen(false)}
-                        >
-                          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                          </svg>
-                          Favorites
-                        </Link>
-                        <Link
-                          href="/dashboard/referrals"
-                          className={styles.dropdownLink}
-                          onClick={() => setIsAccountDropdownOpen(false)}
-                        >
-                          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                          </svg>
-                          Referrals
-                        </Link>
-                        <button
-                          onClick={() => {
-                            void switchAccount();
-                            setIsAccountDropdownOpen(false);
-                          }}
-                          className={styles.dropdownLink}
-                        >
-                          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                          </svg>
-                          Switch Account
-                        </button>
-                        <button
-                          onClick={() => {
-                            void hardSignOut();
-                            setIsAccountDropdownOpen(false);
-                          }}
-                          className={`${styles.dropdownLink} ${styles.signOutLink}`}
-                        >
-                          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                          </svg>
-                          Sign Out
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <Link href="/auth/signin" className={styles.navLink}>
-                  {t("nav.signin")}
-                </Link>
-              )}
-
-              <button onClick={toggleCart} className={styles.cartButton}>
-                <svg
-                  width="20"
-                  height="20"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2.2"
-                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                  />
-                </svg>
-                <span className={styles.cartLabel}>Cart</span>
-                {itemCount > 0 && (
-                  <span className={styles.cartBadge}>{itemCount}</span>
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Controls */}
-          <div className={styles.mobileControls}>
-            <button
-              onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
-              className={styles.mobileSearchBtn}
-              aria-label="Search"
-            >
-              <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
-
-            <button onClick={toggleCart} className={styles.mobileCartBtn} aria-label="Cart">
-              <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-              {itemCount > 0 && <span className={styles.cartBadge}>{itemCount}</span>}
-            </button>
-
-            <button
-              onClick={toggleMenu}
-              className={styles.menuToggle}
-              aria-label="Toggle menu"
-            >
-              <div className={styles.hamburger}>
-                <span className={`${styles.line} ${isMenuOpen ? styles.lineTopOpen : ""}`}></span>
-                <span className={`${styles.line} ${isMenuOpen ? styles.lineMiddleOpen : ""}`}></span>
-                <span className={`${styles.line} ${isMenuOpen ? styles.lineBottomOpen : ""}`}></span>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Search Bar (Expandable) */}
-        {isMobileSearchOpen && (
-          <div className={styles.mobileSearchBar}>
-            <form onSubmit={handleSearch} className={styles.mobileSearchForm}>
-              <input
-                type="text"
-                placeholder="Search premium tees, knits..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={styles.mobileSearchInput}
-                autoFocus
-              />
-              <button type="submit" className={styles.mobileSearchSubmit}>
-                Go
-              </button>
-            </form>
-          </div>
-        )}
-      </div>
-
-      {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, x: "100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className={`${styles.mobileMenu} ${styles.mobileMenuOpen}`}
-          >
-            <div className={styles.mobileMenuContent}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-              >
-                <Link href="/collections" className={styles.mobileNavLink} onClick={() => setIsMenuOpen(false)}>
-                  <span>Collection</span>
-                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="opacity-40">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-              </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 }}
-              >
-                <Link href="/about" className={styles.mobileNavLink} onClick={() => setIsMenuOpen(false)}>
-                  <span>About</span>
-                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="opacity-40">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-                className={styles.divider}
-              ></motion.div>
-
-              {session?.user ? (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.25 }}
-                  className="flex flex-col gap-4"
-                >
-                  <Link href="/profile" className={styles.mobileProfileLink} onClick={() => setIsMenuOpen(false)}>
-                    <div className={styles.profileImageContainer}>
-                      {session.user?.image ? (
-                        <img src={session.user.image} alt={session.user.name || "User"} className={styles.profileImage} />
-                      ) : (
-                        <span className={styles.profilePlaceholder}>
+                        <span>
                           {session.user?.name?.[0] || session.user?.email?.[0] || "U"}
                         </span>
                       )}
                     </div>
-                    <div className={styles.mobileProfileInfo}>
-                      <h3 className="font-bold text-base m-0 leading-tight">{session.user?.name || "User"}</h3>
-                      <p className="text-xs opacity-60 m-0 mt-1 truncate max-w-[200px]">{session.user?.email}</p>
-                      <p className={styles.editProfileText}>View Profile</p>
+                    <span className={styles.accountName}>
+                      {session.user?.name?.split(" ")[0] || "Account"}
+                    </span>
+                    <ChevronDown
+                      size={12}
+                      className={`${styles.chevron} ${
+                        isAccountDropdownOpen ? styles.chevronOpen : ""
+                      }`}
+                      strokeWidth={2.8}
+                    />
+                  </button>
+                ) : (
+                  <Link href="/auth/signin" className={styles.signInLink}>
+                    <div className={`${styles.iconWrap} ${styles.animateUser}`}>
+                      <User size={17} strokeWidth={2.6} />
                     </div>
+                    <span>Sign In</span>
                   </Link>
+                )}
 
-                  <div className="flex flex-col gap-2.5 mt-1">
-                    {(session.user?.role === "admin" || session.user?.role === "worker") && (
-                      <Link href="/admin/dashboard" className={styles.mobileUserLink} onClick={() => setIsMenuOpen(false)}>
-                        <div className="flex items-center">
-                          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="mr-3 text-[#996515]">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                          </svg>
-                          <span>Dashboard</span>
-                        </div>
-                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="ml-auto opacity-40">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
-                        </svg>
+                {/* Account Dropdown Menu */}
+                {isAccountDropdownOpen && session?.user && (
+                  <div className={styles.dropdownMenu}>
+                    <div className={styles.dropdownHeader}>
+                      <p className={styles.userName}>{session.user?.name || "User"}</p>
+                      <p className={styles.userEmail}>{session.user?.email}</p>
+                    </div>
+                    <div className={styles.dropdownBody}>
+                      {(session.user?.role === "admin" || session.user?.role === "worker") && (
+                        <Link
+                          href="/admin/dashboard"
+                          className={styles.dropdownItem}
+                          onClick={() => setIsAccountDropdownOpen(false)}
+                        >
+                          <SlidersHorizontal size={15} strokeWidth={2.5} />
+                          <span>Admin Dashboard</span>
+                        </Link>
+                      )}
+                      <Link
+                        href="/profile"
+                        className={styles.dropdownItem}
+                        onClick={() => setIsAccountDropdownOpen(false)}
+                      >
+                        <User size={15} strokeWidth={2.5} />
+                        <span>My Profile</span>
                       </Link>
-                    )}
-                    <Link href="/wishlist" className={styles.mobileUserLink} onClick={() => setIsMenuOpen(false)}>
-                      <div className="flex items-center">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="mr-3 text-[#996515]">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                        <span>Favorites</span>
-                      </div>
-                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="ml-auto opacity-40">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </Link>
-                    <Link href="/orders" className={styles.mobileUserLink} onClick={() => setIsMenuOpen(false)}>
-                      <div className="flex items-center">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="mr-3 text-[#996515]">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                        <span>Orders</span>
-                      </div>
-                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="ml-auto opacity-40">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </Link>
-                    <Link href="/dashboard/referrals" className={styles.mobileUserLink} onClick={() => setIsMenuOpen(false)}>
-                      <div className="flex items-center">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="mr-3 text-[#996515]">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
+                      <Link
+                        href="/orders"
+                        className={styles.dropdownItem}
+                        onClick={() => setIsAccountDropdownOpen(false)}
+                      >
+                        <Package size={15} strokeWidth={2.5} />
+                        <span>My Orders</span>
+                      </Link>
+                      <Link
+                        href="/wishlist"
+                        className={styles.dropdownItem}
+                        onClick={() => setIsAccountDropdownOpen(false)}
+                      >
+                        <Heart size={15} strokeWidth={2.5} />
+                        <span>Wishlist</span>
+                      </Link>
+                      <Link
+                        href="/dashboard/referrals"
+                        className={styles.dropdownItem}
+                        onClick={() => setIsAccountDropdownOpen(false)}
+                      >
+                        <Users size={15} strokeWidth={2.5} />
                         <span>Referrals</span>
-                      </div>
-                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="ml-auto opacity-40">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </Link>
-                  </div>
-                  
-                  <button
-                    onClick={() => {
-                      void switchAccount();
-                      setIsMenuOpen(false);
-                    }}
-                    className={styles.mobileUserLink}
-                    style={{ background: "none", border: "none", width: "100%", textAlign: "left" }}
-                  >
-                    <div className="flex items-center">
-                      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="mr-3 text-[#996515]">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                      </svg>
-                      <span>Switch Account</span>
+                      </Link>
+                      <button
+                        onClick={() => {
+                          void switchAccount();
+                          setIsAccountDropdownOpen(false);
+                        }}
+                        className={styles.dropdownItem}
+                      >
+                        <RefreshCw size={15} strokeWidth={2.5} />
+                        <span>Switch Account</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          void hardSignOut();
+                          setIsAccountDropdownOpen(false);
+                        }}
+                        className={`${styles.dropdownItem} ${styles.signOutBtn}`}
+                      >
+                        <LogOut size={15} strokeWidth={2.5} />
+                        <span>Sign Out</span>
+                      </button>
                     </div>
-                  </button>
+                  </div>
+                )}
+              </div>
 
-                  <button
-                    onClick={() => {
-                      void hardSignOut();
-                      setIsMenuOpen(false);
-                    }}
-                    className={styles.mobileSignOut}
-                  >
-                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="mr-2">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    Sign Out
-                  </button>
-                </motion.div>
-              ) : (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.25 }}
-                >
-                  <Link href="/auth/signin" className={styles.mobileNavLink} onClick={() => setIsMenuOpen(false)}>
-                    Sign In
-                  </Link>
-                </motion.div>
-              )}
+              {/* Support */}
+              <Link href="/contact" className={styles.supportBtn} aria-label="Support">
+                <div className={`${styles.iconWrap} ${styles.animateSupport}`}>
+                  <Headphones size={18} strokeWidth={2.6} />
+                </div>
+              </Link>
 
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.35 }}
-                className={styles.divider}
-              ></motion.div>
+              {/* Currency Selector */}
+              <div className={styles.currencyWrapper}>
+                <CurrencySelector />
+              </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className={styles.mobileUtility}
+              {/* Shopping Bag Button */}
+              <button
+                onClick={toggleCart}
+                className={styles.bagButton}
+                aria-label="Shopping Bag"
               >
-                <CurrencySelector variant="flowing" />
-              </motion.div>
+                <div className={`${styles.bagIconWrap} ${styles.animateBag}`}>
+                  <ShoppingBag size={20} strokeWidth={2.6} />
+                  {itemCount > 0 && <span className={styles.bagBadge}>{itemCount}</span>}
+                </div>
+              </button>
             </div>
 
+            {/* Mobile Action Buttons */}
+            <div className={styles.mobileActions}>
+              <button
+                onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+                className={styles.mobileIconButton}
+                aria-label="Search"
+              >
+                <Search size={20} strokeWidth={2.6} />
+              </button>
+
+              <button
+                onClick={toggleCart}
+                className={styles.mobileIconButton}
+                aria-label="Shopping Bag"
+              >
+                <ShoppingBag size={20} strokeWidth={2.6} />
+                {itemCount > 0 && <span className={styles.bagBadge}>{itemCount}</span>}
+              </button>
+
+              <button
+                onClick={toggleMenu}
+                className={styles.menuToggleBtn}
+                aria-label="Menu"
+              >
+                <div className={styles.hamburger}>
+                  <span
+                    className={`${styles.line} ${isMenuOpen ? styles.lineTopOpen : ""}`}
+                  ></span>
+                  <span
+                    className={`${styles.line} ${isMenuOpen ? styles.lineMiddleOpen : ""}`}
+                  ></span>
+                  <span
+                    className={`${styles.line} ${isMenuOpen ? styles.lineBottomOpen : ""}`}
+                  ></span>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile Expandable Search Bar */}
+          {isMobileSearchOpen && (
+            <div className={styles.mobileSearchWrapper}>
+              <form onSubmit={handleSearch} className={styles.mobileSearchForm}>
+                <Search size={17} className="text-gray-400" strokeWidth={2.6} />
+                <input
+                  type="text"
+                  placeholder="Search collections, footwear, watches..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className={styles.mobileSearchInput}
+                  autoFocus
+                />
+                {searchQuery.trim().length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleClearSearch}
+                    className={styles.clearBtn}
+                  >
+                    <X size={15} strokeWidth={2.8} />
+                  </button>
+                )}
+              </form>
+            </div>
+          )}
+        </div>
+
+        {/* Mobile Horizontal Quick Navigation */}
+        <div className={styles.mobileQuickRibbon}>
+          <div className={styles.mobileQuickTrack}>
+            <Link href="/collections?sort=bestseller" className={styles.mobileQuickPill}>
+              Best Sellers
+            </Link>
+            <Link href="/collections?sort=rating" className={styles.mobileQuickPill}>
+              Curated
+            </Link>
+            <Link href="/collections?sort=newest" className={styles.mobileQuickPill}>
+              New In
+            </Link>
+            <Link href="/collections?category=Watches" className={styles.mobileQuickPill}>
+              Watches
+            </Link>
+            <Link href="/collections?category=Jewelry" className={styles.mobileQuickPill}>
+              Jewelry
+            </Link>
+            <Link href="/collections?category=Men" className={styles.mobileQuickPill}>
+              Men
+            </Link>
+            <Link href="/collections?category=Women" className={styles.mobileQuickPill}>
+              Women
+            </Link>
+          </div>
+        </div>
+
+        {/* Mobile Navigation Drawer */}
+        <AnimatePresence>
+          {isMenuOpen && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className={styles.mobileFooter}
+              initial={{ opacity: 0, x: "100%" }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className={styles.mobileDrawer}
             >
-              <p className={styles.copyright}>
-                © {new Date().getFullYear()} Yuvara Premium Lifestyle.
-              </p>
+              {/* Drawer Top Header with Brand & Close Button */}
+              <div className={styles.drawerTopBar}>
+                <Link 
+                  href="/" 
+                  className={styles.brandLink}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <div className={styles.brandEmblem}>
+                    <Image
+                      src="/icon.png"
+                      alt="YuVara"
+                      fill
+                      sizes="32px"
+                      className="object-cover"
+                    />
+                  </div>
+                  <span className={styles.brandName}>
+                    Yu<span className={styles.brandGold}>Vara</span>
+                  </span>
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={() => setIsMenuOpen(false)}
+                  className={styles.drawerCloseBtn}
+                  aria-label="Close navigation menu"
+                >
+                  <X size={20} strokeWidth={2.6} />
+                </button>
+              </div>
+
+              <div className={styles.mobileDrawerContent}>
+                {/* User Status */}
+                {session?.user ? (
+                  <div className={styles.drawerProfileCard}>
+                    <div className={styles.profileAvatar}>
+                      {session.user?.image ? (
+                        <img
+                          src={session.user.image}
+                          alt={session.user.name || "User"}
+                          className={styles.profileImg}
+                        />
+                      ) : (
+                        <span>
+                          {session.user?.name?.[0] || session.user?.email?.[0] || "U"}
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-gray-900 m-0">
+                        {session.user?.name || "User"}
+                      </h4>
+                      <p className="text-xs text-gray-500 m-0 truncate max-w-[200px]">
+                        {session.user?.email}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    href="/auth/signin"
+                    className={styles.drawerSignInBtn}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <User size={17} strokeWidth={2.6} />
+                    <span>Sign In / Register</span>
+                  </Link>
+                )}
+
+                {/* Primary Nav */}
+                <div className={styles.drawerNavSection}>
+                  <span className={styles.drawerSectionLabel}>Collections</span>
+                  <Link
+                    href="/collections"
+                    className={styles.drawerNavLink}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <span>All Collections</span>
+                    <ChevronRight size={15} strokeWidth={2.6} className="opacity-40" />
+                  </Link>
+                  <Link
+                    href="/collections?sort=bestseller"
+                    className={styles.drawerNavLink}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <span>Best-Selling Items</span>
+                    <ChevronRight size={15} strokeWidth={2.6} className="opacity-40" />
+                  </Link>
+                  <Link
+                    href="/collections?sort=newest"
+                    className={styles.drawerNavLink}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <span>New Arrivals</span>
+                    <ChevronRight size={15} strokeWidth={2.6} className="opacity-40" />
+                  </Link>
+                  <Link
+                    href="/about"
+                    className={styles.drawerNavLink}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <span>About the Brand</span>
+                    <ChevronRight size={15} strokeWidth={2.6} className="opacity-40" />
+                  </Link>
+                  <Link
+                    href="/contact"
+                    className={styles.drawerNavLink}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <span>Bespoke Concierge &amp; Support</span>
+                    <ChevronRight size={15} strokeWidth={2.6} className="opacity-40" />
+                  </Link>
+                </div>
+
+                {/* Admin / User Links */}
+                {session?.user && (
+                  <div className={styles.drawerNavSection}>
+                    <span className={styles.drawerSectionLabel}>Account</span>
+                    {(session.user?.role === "admin" || session.user?.role === "worker") && (
+                      <Link
+                        href="/admin/dashboard"
+                        className={styles.drawerNavLink}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <span className="text-[#996515] font-semibold">Admin Dashboard</span>
+                        <ChevronRight size={15} strokeWidth={2.6} className="opacity-40" />
+                      </Link>
+                    )}
+                    <Link
+                      href="/orders"
+                      className={styles.drawerNavLink}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <span>My Orders</span>
+                      <ChevronRight size={15} strokeWidth={2.6} className="opacity-40" />
+                    </Link>
+                    <Link
+                      href="/wishlist"
+                      className={styles.drawerNavLink}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <span>Wishlist</span>
+                      <ChevronRight size={15} strokeWidth={2.6} className="opacity-40" />
+                    </Link>
+                    <Link
+                      href="/dashboard/referrals"
+                      className={styles.drawerNavLink}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <span>Referrals</span>
+                      <ChevronRight size={15} strokeWidth={2.6} className="opacity-40" />
+                    </Link>
+                    <button
+                      onClick={() => {
+                        void hardSignOut();
+                        setIsMenuOpen(false);
+                      }}
+                      className={styles.drawerSignOut}
+                    >
+                      <LogOut size={16} strokeWidth={2.6} />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                )}
+
+                {/* Currency */}
+                <div className={styles.drawerCurrencyWrap}>
+                  <CurrencySelector variant="flowing" />
+                </div>
+              </div>
+
+              <div className={styles.drawerFooter}>
+                <p className={styles.copyrightText}>
+                  © {new Date().getFullYear()} YuVara. All rights reserved.
+                </p>
+              </div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </nav>
+          )}
+        </AnimatePresence>
+      </nav>
+    </header>
   );
 }

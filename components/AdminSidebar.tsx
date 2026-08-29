@@ -286,6 +286,15 @@ export default function AdminSidebar() {
                 Homepage
               </Link>
               <Link
+                href="/admin/deals"
+                className={`${styles.link} ${
+                  isActive("/admin/deals") ? styles.active : ""
+                }`}
+                onClick={() => setIsOpen(false)}
+              >
+                Deals &amp; Countdowns
+              </Link>
+              <Link
                 href="/admin/settings/investment"
                 className={`${styles.link} ${
                   isActive("/admin/settings/investment") ? styles.active : ""

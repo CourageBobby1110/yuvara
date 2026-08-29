@@ -1,0 +1,313 @@
+/* ==========================================================================
+   MINIMALIST LUXURY TRUST & AUTHENTICITY SYSTEM
+   Monochrome, Warm Off-White, Champagne Gold, Animated SVGs
+   ========================================================================== */
+
+.container {
+  width: 100%;
+  background-color: var(--color-bg-primary);
+  margin-bottom: 0.5rem;
+}
+
+/* ==========================================================================
+   1. TRUST STRIP
+   ========================================================================== */
+
+.trustStrip {
+  background-color: #fafafa;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #eaeaea;
+  padding: 0.5rem 1rem;
+}
+
+.trustContainer {
+  max-width: 1320px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trustGroup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.trustItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  color: #374151;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.trustText {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.trustText strong {
+  color: #111827;
+  font-weight: 700;
+}
+
+.iconWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.boldIcon {
+  color: #996515;
+  stroke: #996515;
+  filter: drop-shadow(0 1px 1px rgba(153, 101, 21, 0.15));
+}
+
+.dotSeparator {
+  color: #d1d5db;
+  font-size: 0.625rem;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.trustLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #111827;
+  text-decoration: none;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.trustLink:hover {
+  color: #996515;
+}
+
+.arrowIcon {
+  color: #996515;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.trustLink:hover .arrowIcon {
+  transform: translateX(3px);
+}
+
+/* ==========================================================================
+   2. MINIMALIST SECURITY ALERT
+   ========================================================================== */
+
+.alertStrip {
+  background-color: #ffffff;
+  border-bottom: 1px solid #f3f4f6;
+  padding: 0.375rem 1rem;
+}
+
+.alertContainer {
+  max-width: 1320px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.alertLeft {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  line-height: 1.4;
+}
+
+.alertIcon {
+  color: #996515;
+  flex-shrink: 0;
+}
+
+.alertText {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #4b5563;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.alertLead {
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+}
+
+.alertRight {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.learnMoreLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #996515;
+  text-decoration: none;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.learnArrow {
+  transition: transform 0.2s ease;
+}
+
+.learnMoreLink:hover .learnArrow {
+  transform: translateX(2px);
+}
+
+.dismissButton {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.dismissButton:hover {
+  color: #111827;
+  background-color: #f3f4f6;
+}
+
+/* ==========================================================================
+   SVG MICRO-ANIMATIONS
+   ========================================================================== */
+
+.animatePulse {
+  animation: svgHeartbeat 3s ease-in-out infinite;
+}
+
+.animateFloat {
+  animation: svgFloating 3.5s ease-in-out infinite;
+}
+
+.animateShimmer {
+  animation: svgShimmer 4s ease-in-out infinite;
+}
+
+.animateDrive {
+  animation: svgDrive 4s ease-in-out infinite;
+}
+
+.animateBell {
+  animation: svgSway 3s ease-in-out infinite;
+}
+
+@keyframes svgHeartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.14);
+    filter: drop-shadow(0 2px 5px rgba(153, 101, 21, 0.35));
+  }
+}
+
+@keyframes svgFloating {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes svgShimmer {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-4deg);
+  }
+  75% {
+    transform: rotate(4deg);
+  }
+}
+
+@keyframes svgDrive {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  40% {
+    transform: translateX(2px);
+  }
+  80% {
+    transform: translateX(-1px);
+  }
+}
+
+@keyframes svgSway {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(10deg);
+  }
+  40% {
+    transform: rotate(-10deg);
+  }
+  60% {
+    transform: rotate(5deg);
+  }
+  80% {
+    transform: rotate(0deg);
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .trustGroup {
+    gap: 0.75rem;
+    font-size: 0.6875rem;
+  }
+
+  .dotSeparator {
+    display: none;
+  }
+
+  .alertText {
+    white-space: normal;
+    font-size: 0.6875rem;
+    display: block;
+  }
+
+  .alertContainer {
+    align-items: flex-start;
+  }
+}
