@@ -4,6 +4,16 @@ import Product from "@/models/Product";
 import { getProducts } from "@/lib/products";
 import { getValidUrl, getProductMainImage } from "@/lib/utils";
 
+function toPlainRates(rates: any): { countryCode: string; price: number }[] {
+  if (!Array.isArray(rates)) return [];
+  return rates
+    .map((r: any) => ({
+      countryCode: String(r.countryCode || ""),
+      price: Number(r.price || 0),
+    }))
+    .filter((r) => r.countryCode);
+}
+
 export async function getHomepageDeals() {
   try {
     await dbConnect();
@@ -22,13 +32,13 @@ export async function getHomepageDeals() {
         if (!deal.product) return;
 
         const p = deal.product;
-        const dealPrice = Number(deal.dealPrice || p.price || 0);
+        const realPrice = Number(p.price || 0);
         const origPrice = Number(
-          deal.originalPrice || (dealPrice ? dealPrice * 1.75 : (p.price || 20) * 1.75)
+          deal.originalPrice || (realPrice ? realPrice * 1.75 : (p.price || 20) * 1.75)
         );
         const discount =
           deal.discountPercent ||
-          Math.round(((origPrice - dealPrice) / origPrice) * 100);
+          Math.round(((origPrice - realPrice) / origPrice) * 100);
 
         // Calculate total available inventory
         const pVariantStock = Array.isArray(p.variants)
@@ -40,8 +50,8 @@ export async function getHomepageDeals() {
             ? Number(deal.stockRemaining)
             : pTotalStock;
 
-        // STRICT REQUIREMENT: Must have price > 0 and stock > 0
-        if (!dealPrice || dealPrice <= 0 || isNaN(dealPrice)) return;
+        // STRICT REQUIREMENT: Must have price > 0 and stock > 0 - use real DB price only
+        if (!realPrice || realPrice <= 0 || isNaN(realPrice)) return;
         if (dealStockRemaining <= 0 && pTotalStock <= 0) return;
 
         const mainImg =
@@ -58,10 +68,11 @@ export async function getHomepageDeals() {
           productId: p._id ? p._id.toString() : deal._id.toString(),
           name: deal.customTitle || p.name || "Luxury Item",
           slug: p.slug || "collections",
-          price: dealPrice,
+          price: realPrice,
           originalPrice: Number(origPrice.toFixed(2)),
           discountPercent: discount > 0 ? discount : 35,
           image: mainImg,
+          shippingRates: toPlainRates(p.shippingRates),
           category: p.category || "Luxury",
           endTime: deal.endTime ? deal.endTime.toISOString() : null,
           durationHours: deal.durationHours || 24,
@@ -144,6 +155,7 @@ export async function getHomepageDeals() {
             originalPrice: Number(origPrice.toFixed(2)),
             discountPercent: discount > 0 ? discount : 40,
             image: mainImg,
+            shippingRates: toPlainRates(p.shippingRates),
             category: p.category || "Luxury",
             durationHours: rotationWindowHours,
             claimedPercent: 70 + ((prodIdx * 8) % 25),
@@ -176,6 +188,7 @@ export async function getHomepageDeals() {
             originalPrice: Number(origPrice.toFixed(2)),
             discountPercent: discount > 0 ? discount : 45,
             image: mainImg,
+            shippingRates: toPlainRates(p.shippingRates),
             category: p.category || "Luxury",
             stockRemaining: pStock,
             stockTag: `Only ${pStock} left`,

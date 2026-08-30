@@ -11,6 +11,7 @@ import {
   TrendingDown
 } from "lucide-react";
 import { useCurrency } from "@/context/CurrencyContext";
+import { getItemShippingRateUSD } from "@/lib/utils";
 import styles from "./Hero.module.css";
 
 interface DealItem {
@@ -29,6 +30,7 @@ interface DealItem {
   stockTag?: string;
   averageRating?: number;
   reviewCount?: number;
+  shippingRates?: { countryCode: string; price: number | string }[];
 }
 
 interface HeroProps {
@@ -36,89 +38,11 @@ interface HeroProps {
   limitedDeals?: DealItem[];
 }
 
-const DEFAULT_COUNTDOWN: DealItem[] = [
-  {
-    _id: "def-cd-1",
-    name: "Minimalist Vintage Stainless Ring Band",
-    slug: "minimalist-vintage-ring-band",
-    price: 4.9,
-    originalPrice: 15.0,
-    discountPercent: 67,
-    image: "/hero-shoe-minimalist.png",
-    claimedPercent: 88,
-    stockRemaining: 6,
-  },
-  {
-    _id: "def-cd-2",
-    name: "Classic Braided Leather Charm Bracelet",
-    slug: "classic-braided-leather-charm-bracelet",
-    price: 6.5,
-    originalPrice: 18.0,
-    discountPercent: 64,
-    image: "/hero-shoe.png",
-    claimedPercent: 74,
-    stockRemaining: 4,
-  },
-  {
-    _id: "def-cd-3",
-    name: "Ultra-Thin Matte Protective Phone Shell",
-    slug: "ultra-thin-matte-phone-shell",
-    price: 7.8,
-    originalPrice: 20.0,
-    discountPercent: 61,
-    image: "/hero-shoe-minimalist.png",
-    claimedPercent: 92,
-    stockRemaining: 5,
-  },
-];
-
-const DEFAULT_LIMITED: DealItem[] = [
-  {
-    _id: "def-ld-1",
-    name: "Geometric Titanium Steel Pendant Necklace",
-    slug: "geometric-titanium-steel-pendant",
-    price: 5.9,
-    originalPrice: 16.0,
-    discountPercent: 63,
-    image: "/hero-shoe.png",
-    stockRemaining: 3,
-    stockTag: "Only 3 left",
-    averageRating: 5.0,
-    reviewCount: 412,
-  },
-  {
-    _id: "def-ld-2",
-    name: "UV400 Retro Square Frame Sunglasses",
-    slug: "retro-square-frame-sunglasses",
-    price: 6.9,
-    originalPrice: 19.0,
-    discountPercent: 64,
-    image: "/hero-shoe-minimalist.png",
-    stockRemaining: 2,
-    stockTag: "Only 2 left",
-    averageRating: 4.9,
-    reviewCount: 295,
-  },
-  {
-    _id: "def-ld-3",
-    name: "Handmade Woven Artisan Key Accessory",
-    slug: "handmade-woven-key-accessory",
-    price: 8.5,
-    originalPrice: 22.0,
-    discountPercent: 61,
-    image: "/hero-shoe.png",
-    stockRemaining: 5,
-    stockTag: "Only 5 left",
-    averageRating: 5.0,
-    reviewCount: 528,
-  },
-];
-
 export default function Hero({ 
   countdownDeals = [], 
   limitedDeals = []
 }: HeroProps) {
-  const { formatPrice } = useCurrency();
+  const { formatPrice, userCountryCode } = useCurrency();
 
   // Active Countdown Ticker for Timed Editions
   const [secondsLeft, setSecondsLeft] = useState<number>(14 * 3600 + 23 * 60 + 53);
@@ -156,9 +80,12 @@ export default function Hero({
     return true;
   });
 
-  // Fallback to verified premium showcase items if no active in-stock deals exist
-  const displayCountdown = (validCountdown.length > 0 ? validCountdown : DEFAULT_COUNTDOWN).slice(0, 3);
-  const displayLimited = (validLimited.length > 0 ? validLimited : DEFAULT_LIMITED).slice(0, 3);
+  // Real prices only - no fake fallbacks. If no in-stock deals, columns render empty (lib/deals.ts already falls back to cheapest real products)
+  const displayCountdown = validCountdown.slice(0, 3);
+  const displayLimited = validLimited.slice(0, 3);
+
+  // If no real deals at all, don't render hero (avoids showing stale/fake prices)
+  if (displayCountdown.length === 0 && displayLimited.length === 0) return null;
 
   return (
     <section className={styles.heroSection}>
@@ -191,6 +118,9 @@ export default function Hero({
             {/* Cards Grid */}
             <div className={styles.cardsRow}>
               {displayCountdown.map((deal) => {
+                const shipping = userCountryCode ? getItemShippingRateUSD({ shippingRates: deal.shippingRates } as any, userCountryCode) : 0;
+                const displayPrice = deal.price + shipping;
+                const displayOriginal = deal.originalPrice ? deal.originalPrice + shipping : undefined;
                 return (
                   <Link 
                     key={deal._id} 
@@ -215,13 +145,13 @@ export default function Hero({
                     <div className={styles.cardDetails}>
                       <h4 className={styles.productName}>{deal.name}</h4>
 
-                      <div className={styles.priceRow}>
+                    <div className={styles.priceRow}>
                         <span className={styles.currentPrice}>
-                          {formatPrice(deal.price)}
+                          {formatPrice(displayPrice)}
                         </span>
-                        {deal.originalPrice && (
+                        {displayOriginal && displayOriginal > displayPrice && (
                           <span className={styles.oldPrice}>
-                            {formatPrice(deal.originalPrice)}
+                            {formatPrice(displayOriginal)}
                           </span>
                         )}
                       </div>
@@ -250,7 +180,7 @@ export default function Hero({
 
           {/* =================================================================
               RIGHT COLUMN: THE VAULT (Limited Quantity Archive)
-             ================================================================= */}
+              ================================================================= */}
           <div className={styles.showcaseColumn}>
             {/* Header */}
             <div className={styles.columnHeader}>
@@ -270,6 +200,9 @@ export default function Hero({
             {/* Cards Grid */}
             <div className={styles.cardsRow}>
               {displayLimited.map((deal) => {
+                const shipping = userCountryCode ? getItemShippingRateUSD({ shippingRates: deal.shippingRates } as any, userCountryCode) : 0;
+                const displayPrice = deal.price + shipping;
+                const displayOriginal = deal.originalPrice ? deal.originalPrice + shipping : undefined;
                 return (
                   <Link 
                     key={deal._id} 
@@ -294,11 +227,11 @@ export default function Hero({
 
                       <div className={styles.priceRow}>
                         <span className={styles.currentPrice}>
-                          {formatPrice(deal.price)}
+                          {formatPrice(displayPrice)}
                         </span>
-                        {deal.originalPrice && (
+                        {displayOriginal && displayOriginal > displayPrice && (
                           <span className={styles.oldPrice}>
-                            {formatPrice(deal.originalPrice)}
+                            {formatPrice(displayOriginal)}
                           </span>
                         )}
                       </div>
