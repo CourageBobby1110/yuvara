@@ -266,38 +266,38 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.14rem;
-  line-height: 1.1;
+  gap: 0.12rem;
+  line-height: 1.15;
   min-width: 0;
   max-width: 100%;
   overflow: hidden;
-  flex-wrap: wrap;
 }
 
 .currentPrice {
-  font-size: clamp(0.7rem, 2.6vw, 0.84rem);
+  font-size: clamp(0.74rem, 1.15vw, 0.86rem);
   font-weight: 800;
   color: #0f172a;
   letter-spacing: -0.015em;
-  line-height: 1.1;
+  line-height: 1.15;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
   max-width: 100%;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .oldPrice {
-  font-size: clamp(0.58rem, 2vw, 0.63rem);
+  font-size: clamp(0.6rem, 0.9vw, 0.68rem);
   color: #9ca3af;
   text-decoration: line-through;
   text-decoration-color: #cbd5e1;
   font-weight: 500;
-  line-height: 1.1;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
   max-width: 100%;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Progress Container */
@@ -410,14 +410,6 @@
    RESPONSIVE DESIGN - layout unchanged
    ========================================================================== */
 
-@media (min-width: 1025px) {
-  .priceRow {
-    flex-direction: row;
-    align-items: baseline;
-    gap: 0.32rem;
-  }
-}
-
 @media (max-width: 1024px) {
   .splitGrid {
     grid-template-columns: 1fr;
@@ -482,15 +474,17 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 0.08rem;
-    margin-top: 0.08rem;
+    margin-top: 0.02rem;
   }
 
   .currentPrice {
-    font-size: 0.76rem;
+    font-size: 0.72rem;
+    white-space: nowrap;
   }
 
   .oldPrice {
-    font-size: 0.59rem;
+    font-size: 0.58rem;
+    white-space: nowrap;
   }
 
   .ratingGroup {

@@ -34,11 +34,16 @@ export async function getHomepageDeals() {
         const p = deal.product;
         const realPrice = Number(p.price || 0);
         const origPrice = Number(
-          deal.originalPrice || (realPrice ? realPrice * 1.75 : (p.price || 20) * 1.75)
+          deal.originalPrice && Number(deal.originalPrice) > realPrice
+            ? Number(deal.originalPrice).toFixed(2)
+            : deal.discountPercent && deal.discountPercent > 0
+              ? (realPrice / (1 - Math.min(deal.discountPercent, 80) / 100)).toFixed(2)
+              : (realPrice * 1.75).toFixed(2)
         );
         const discount =
-          deal.discountPercent ||
-          Math.round(((origPrice - realPrice) / origPrice) * 100);
+          deal.discountPercent && deal.discountPercent > 0
+            ? deal.discountPercent
+            : Math.max(5, Math.round(((origPrice - realPrice) / origPrice) * 100));
 
         // Calculate total available inventory
         const pVariantStock = Array.isArray(p.variants)

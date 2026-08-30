@@ -120,7 +120,16 @@ export default function Hero({
               {displayCountdown.map((deal) => {
                 const shipping = userCountryCode ? getItemShippingRateUSD({ shippingRates: deal.shippingRates } as any, userCountryCode) : 0;
                 const displayPrice = deal.price + shipping;
-                const displayOriginal = deal.originalPrice ? deal.originalPrice + shipping : undefined;
+                const rawOriginal = (deal.originalPrice && deal.originalPrice > deal.price)
+                  ? deal.originalPrice
+                  : (deal.discountPercent && deal.discountPercent > 0)
+                    ? Number((deal.price / (1 - Math.min(deal.discountPercent, 80) / 100)).toFixed(2))
+                    : Number((deal.price * 1.75).toFixed(2));
+                const displayOriginal = rawOriginal + shipping;
+                const discount = (deal.discountPercent && deal.discountPercent > 0)
+                  ? deal.discountPercent
+                  : Math.max(5, Math.round(((displayOriginal - displayPrice) / displayOriginal) * 100));
+
                 return (
                   <Link 
                     key={deal._id} 
@@ -135,9 +144,9 @@ export default function Hero({
                         className={styles.productImage}
                         sizes="(max-width: 768px) 33vw, 20vw"
                       />
-                      {deal.discountPercent && deal.discountPercent > 0 && (
+                      {discount > 0 && (
                         <span className={styles.discountTag}>
-                          -{deal.discountPercent}%
+                          -{discount}%
                         </span>
                       )}
                     </div>
@@ -145,15 +154,13 @@ export default function Hero({
                     <div className={styles.cardDetails}>
                       <h4 className={styles.productName}>{deal.name}</h4>
 
-                    <div className={styles.priceRow}>
+                      <div className={styles.priceRow}>
                         <span className={styles.currentPrice}>
                           {formatPrice(displayPrice)}
                         </span>
-                        {displayOriginal && displayOriginal > displayPrice && (
-                          <span className={styles.oldPrice}>
-                            {formatPrice(displayOriginal)}
-                          </span>
-                        )}
+                        <span className={styles.oldPrice}>
+                          {formatPrice(displayOriginal)}
+                        </span>
                       </div>
 
                       {/* Minimalist Progress Line */}
@@ -202,7 +209,13 @@ export default function Hero({
               {displayLimited.map((deal) => {
                 const shipping = userCountryCode ? getItemShippingRateUSD({ shippingRates: deal.shippingRates } as any, userCountryCode) : 0;
                 const displayPrice = deal.price + shipping;
-                const displayOriginal = deal.originalPrice ? deal.originalPrice + shipping : undefined;
+                const rawOriginal = (deal.originalPrice && deal.originalPrice > deal.price)
+                  ? deal.originalPrice
+                  : (deal.discountPercent && deal.discountPercent > 0)
+                    ? Number((deal.price / (1 - Math.min(deal.discountPercent, 80) / 100)).toFixed(2))
+                    : Number((deal.price * 1.75).toFixed(2));
+                const displayOriginal = rawOriginal + shipping;
+
                 return (
                   <Link 
                     key={deal._id} 
@@ -229,11 +242,9 @@ export default function Hero({
                         <span className={styles.currentPrice}>
                           {formatPrice(displayPrice)}
                         </span>
-                        {displayOriginal && displayOriginal > displayPrice && (
-                          <span className={styles.oldPrice}>
-                            {formatPrice(displayOriginal)}
-                          </span>
-                        )}
+                        <span className={styles.oldPrice}>
+                          {formatPrice(displayOriginal)}
+                        </span>
                       </div>
 
                       {/* Minimalist Star Rating */}
