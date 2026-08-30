@@ -45,10 +45,131 @@ export async function getProducts(filter: ProductFilter = {}) {
     }
 
     if (filter.category && filter.category !== "all") {
-      const safeCategory = filter.category.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-      matchStage.category = {
-        $regex: new RegExp(`(^|[\\\\/>]\\s*)${safeCategory}$`, "i")
-      };
+      const cat = filter.category.trim().toLowerCase();
+
+      if (cat === "men" || cat === "mens" || cat === "men's" || cat === "mens clothing" || cat === "men's fashion" || cat === "men's sartorial") {
+        matchStage.$and = [
+          ...(matchStage.$and || []),
+          {
+            $or: [
+              { category: { $regex: /(?:^|[\s\/>])Men(?:'s|s)?(?:\s|[\/>]|$)/i } },
+              { name: { $regex: /\b(?:Men|Men's|Mens)\b/i } }
+            ]
+          },
+          { category: { $not: /Women/i } },
+          { name: { $not: /\b(?:Women|Women's|Womens|Lady|Ladies)\b/i } }
+        ];
+      } else if (cat === "women" || cat === "womens" || cat === "women's" || cat === "womens clothing" || cat === "women's fashion" || cat === "women's atelier") {
+        const womenQuery = {
+          $or: [
+            { category: { $regex: /Women|Woman|Lady|Ladies|Dress/i } },
+            { name: { $regex: /\b(?:Women|Women's|Womens|Lady|Ladies|Dress|Gown|Skirt)\b/i } }
+          ]
+        };
+        if (matchStage.$and) {
+          matchStage.$and.push(womenQuery);
+        } else {
+          Object.assign(matchStage, womenQuery);
+        }
+      } else if (cat === "watches" || cat === "watch" || cat === "horology" || cat === "horology & watches") {
+        const watchQuery = {
+          $or: [
+            { category: { $regex: /Watch|Watches|Horology/i } },
+            { name: { $regex: /\b(?:Watch|Watches|Wristwatch|Timepiece|Chronograph)\b/i } }
+          ]
+        };
+        if (matchStage.$and) {
+          matchStage.$and.push(watchQuery);
+        } else {
+          Object.assign(matchStage, watchQuery);
+        }
+      } else if (cat === "jewelry" || cat === "jewellery" || cat === "fine jewelry") {
+        const jewelryQuery = {
+          $or: [
+            { category: { $regex: /Jewel|Necklace|Pendant|Earring|Bracelet|Ring|Zircon|Diamond/i } },
+            { name: { $regex: /\b(?:Jewelry|Jewellery|Necklace|Pendant|Earring|Bracelet|Ring|Zircon|Diamond)\b/i } }
+          ]
+        };
+        if (matchStage.$and) {
+          matchStage.$and.push(jewelryQuery);
+        } else {
+          Object.assign(matchStage, jewelryQuery);
+        }
+      } else if (cat === "shoes" || cat === "footwear" || cat === "designer footwear") {
+        const shoeQuery = {
+          $or: [
+            { category: { $regex: /Shoe|Shoes|Sneaker|Boot|Loafer|Flat|Sandal|Slipper|Pump|Footwear/i } },
+            { name: { $regex: /\b(?:Shoe|Shoes|Sneakers|Boots|Loafers|Flats|Sandals|Slippers|Pumps|Footwear)\b/i } }
+          ]
+        };
+        if (matchStage.$and) {
+          matchStage.$and.push(shoeQuery);
+        } else {
+          Object.assign(matchStage, shoeQuery);
+        }
+      } else if (cat === "bags" || cat === "luggage" || cat === "accessories" || cat === "eyewear & accs" || cat === "bags & accessories") {
+        const bagQuery = {
+          $or: [
+            { category: { $regex: /Bag|Bags|Luggage|Crossbody|Backpack|Wallet|Purse|Accessory|Accessories|Hat|Cap|Glasses|Sunglasses/i } },
+            { name: { $regex: /\b(?:Bag|Bags|Luggage|Crossbody|Backpack|Wallet|Wallets|Purse|Sunglasses|Cap|Hat)\b/i } }
+          ]
+        };
+        if (matchStage.$and) {
+          matchStage.$and.push(bagQuery);
+        } else {
+          Object.assign(matchStage, bagQuery);
+        }
+      } else if (cat === "beauty" || cat === "skincare" || cat === "health, beauty & hair" || cat === "beauty & skincare") {
+        const beautyQuery = {
+          $or: [
+            { category: { $regex: /Health|Beauty|Skin|Facial|Hair|Serum|Mask|Care|Lip/i } },
+            { name: { $regex: /\b(?:Beauty|Skin|Facial|Serum|Mask|Hair|Lip|Cleanser|Moisturizer)\b/i } }
+          ]
+        };
+        if (matchStage.$and) {
+          matchStage.$and.push(beautyQuery);
+        } else {
+          Object.assign(matchStage, beautyQuery);
+        }
+      } else if (cat === "home" || cat === "home & living" || cat === "home, garden & furniture" || cat === "furniture") {
+        const homeQuery = {
+          $or: [
+            { category: { $regex: /Home|Garden|Furniture|Storage|Office|Kitchen|Dining|Bedding|Lamp/i } },
+            { name: { $regex: /\b(?:Lamp|Decor|Storage|Quilt|Blanket|Glass|Tumbler|Diffuser|Humidifier)\b/i } }
+          ]
+        };
+        if (matchStage.$and) {
+          matchStage.$and.push(homeQuery);
+        } else {
+          Object.assign(matchStage, homeQuery);
+        }
+      } else if (cat === "electronics" || cat === "tech" || cat === "premium electronics" || cat === "tech & gadgets" || cat === "phones & accessories") {
+        const techQuery = {
+          $or: [
+            { category: { $regex: /Phone|Electronic|Computer|Tablet|Office Electronics|Audio/i } },
+            { name: { $regex: /\b(?:Phone|Screen|Charger|Laptop|Tablet|Electronic|Speaker|Bluetooth|Wireless|Headphone|Earbuds)\b/i } }
+          ]
+        };
+        if (matchStage.$and) {
+          matchStage.$and.push(techQuery);
+        } else {
+          Object.assign(matchStage, techQuery);
+        }
+      } else {
+        const leafName = filter.category.split(/[\/>]/).pop()?.trim() || filter.category.trim();
+        const safe = leafName.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+        const fallbackQuery = {
+          $or: [
+            { category: { $regex: safe, $options: "i" } },
+            { name: { $regex: safe, $options: "i" } }
+          ]
+        };
+        if (matchStage.$and) {
+          matchStage.$and.push(fallbackQuery);
+        } else {
+          Object.assign(matchStage, fallbackQuery);
+        }
+      }
     }
 
     if (filter.minPrice !== undefined || filter.maxPrice !== undefined) {

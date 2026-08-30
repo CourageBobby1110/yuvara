@@ -35,7 +35,8 @@ import {
   Gem,
   Tv,
   Footprints,
-  Glasses
+  Glasses,
+  Home
 } from "lucide-react";
 import styles from "./Navbar.module.css";
 
@@ -62,12 +63,13 @@ function DressIcon({ size = 16, className = "" }: { size?: number; className?: s
 const CATEGORY_ITEMS = [
   { name: "Men's Sartorial", sub: "Suits, Knits & Casuals", slug: "Men", icon: Shirt },
   { name: "Women's Atelier", sub: "Couture, Silks & Gowns", slug: "Women", icon: DressIcon },
-  { name: "Horology & Watches", sub: "Swiss & Chronograph", slug: "Watches", icon: Watch },
+  { name: "Horology & Watches", sub: "Swiss & Chronographs", slug: "Watches", icon: Watch },
   { name: "Fine Jewelry", sub: "Diamonds & 18K Gold", slug: "Jewelry", icon: Gem },
   { name: "Designer Footwear", sub: "Sneakers, Boots & Loafers", slug: "Shoes", icon: Footprints },
-  { name: "Eyewear & Accs", sub: "Sunglasses & Leather Goods", slug: "Accessories", icon: Glasses },
-  { name: "Premium Electronics", sub: "Audio & Smart Tech", slug: "Electronics", icon: Tv },
-  { name: "Complete Archive", sub: "Explore All Catalog", slug: "all", icon: LayoutGrid },
+  { name: "Beauty & Skincare", sub: "Facial Care, Serums & Oils", slug: "Beauty", icon: Sparkles },
+  { name: "Home & Living", sub: "Smart Decor, Lamps & Living", slug: "Home", icon: Home },
+  { name: "Tech & Gadgets", sub: "Phone Cases, Audio & Office", slug: "Electronics", icon: Tv },
+  { name: "Complete Archive", sub: "Explore Full Catalog", slug: "all", icon: LayoutGrid },
 ];
 
 export default function Navbar() {
