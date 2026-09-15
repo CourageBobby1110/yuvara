@@ -55,7 +55,7 @@ export default async function Home() {
       {/* 1. Top Infinite Global Marquee (Trust & Guarantees Ticker) */}
       <TrendingMarquee />
 
-      {/* 2. Modern 2026 Editorial Hero: YuVara Global Store */}
+      {/* 2. Hero Section */}
       <Hero 
         countdownDeals={homepageDeals.countdownDeals}
         limitedDeals={homepageDeals.limitedDeals}
