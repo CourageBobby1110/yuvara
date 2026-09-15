@@ -10,66 +10,25 @@ import { useCartStore } from "@/store/cart";
 import { trackFBEvent } from "@/lib/fb-pixel";
 import CurrencySelector from "@/components/CurrencySelector";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Truck,
-  ShieldCheck,
-  Smartphone,
-  Sparkles,
-  LayoutGrid,
-  Search,
-  X,
-  User,
-  Headphones,
-  ShoppingBag,
-  ChevronDown,
-  ChevronRight,
-  Package,
-  Heart,
-  Users,
-  RefreshCw,
-  LogOut,
-  SlidersHorizontal,
-  ArrowRight,
-  Watch,
-  Shirt,
-  Gem,
-  Tv,
-  Footprints,
-  Glasses,
-  Home
-} from "lucide-react";
+import { Search, X, ShoppingBag, ChevronDown } from "lucide-react";
 import styles from "./Navbar.module.css";
 
-function DressIcon({ size = 16, className = "" }: { size?: number; className?: string }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <path d="M10 2h4M9 2L7 7l-2.5 15h15L17 7l-2-5" />
-      <path d="M7 7a5 5 0 0 0 10 0" />
-      <path d="M9.5 12.5c1.5 1.5 3.5 1.5 5 0" />
-    </svg>
-  );
-}
-
 const CATEGORY_ITEMS = [
-  { name: "Men's Sartorial", sub: "Suits, Knits & Casuals", slug: "Men", icon: Shirt },
-  { name: "Women's Atelier", sub: "Couture, Silks & Gowns", slug: "Women", icon: DressIcon },
-  { name: "Horology & Watches", sub: "Swiss & Chronographs", slug: "Watches", icon: Watch },
-  { name: "Fine Jewelry", sub: "Diamonds & 18K Gold", slug: "Jewelry", icon: Gem },
-  { name: "Designer Footwear", sub: "Sneakers, Boots & Loafers", slug: "Shoes", icon: Footprints },
-  { name: "Beauty & Skincare", sub: "Facial Care, Serums & Oils", slug: "Beauty", icon: Sparkles },
-  { name: "Home & Living", sub: "Smart Decor, Lamps & Living", slug: "Home", icon: Home },
-  { name: "Tech & Gadgets", sub: "Phone Cases, Audio & Office", slug: "Electronics", icon: Tv },
-  { name: "Complete Archive", sub: "Explore Full Catalog", slug: "all", icon: LayoutGrid },
+  { name: "Men", slug: "Men" },
+  { name: "Women", slug: "Women" },
+  { name: "Watches", slug: "Watches" },
+  { name: "Jewelry", slug: "Jewelry" },
+  { name: "Shoes", slug: "Shoes" },
+  { name: "Beauty", slug: "Beauty" },
+  { name: "Home", slug: "Home" },
+  { name: "Electronics", slug: "Electronics" },
+];
+
+const QUICK_PILLS = [
+  { label: "Best Sellers", href: "/collections?sort=bestseller" },
+  { label: "New In", href: "/collections?sort=newest" },
+  { label: "Men", href: "/collections?category=Men" },
+  { label: "Women", href: "/collections?category=Women" },
 ];
 
 export default function Navbar() {
@@ -147,37 +106,6 @@ export default function Navbar() {
 
   return (
     <header className={styles.headerWrapper}>
-      {/* 1. MINIMALIST LUXURY TOP NOTICE RIBBON */}
-      <div className={styles.topNoticeRibbon}>
-        <div className={styles.topNoticeInner}>
-          {/* Left: Global Delivery */}
-          <Link href="/collections" className={styles.noticeLink}>
-            <div className={`${styles.iconWrap} ${styles.animateDrive}`}>
-              <Truck size={14} className={styles.noticeGoldIcon} strokeWidth={2.6} />
-            </div>
-            <span className={styles.noticeText}>Complimentary Global Shipping on Orders over $150</span>
-          </Link>
-
-          {/* Center: Guarantee */}
-          <Link href="/shipping-returns" className={styles.noticeLinkCenter}>
-            <div className={`${styles.iconWrap} ${styles.animatePulse}`}>
-              <ShieldCheck size={14} className={styles.noticeGoldIcon} strokeWidth={2.6} />
-            </div>
-            <span className={styles.noticeText}>100% Certified Authenticity &amp; Bespoke Care</span>
-          </Link>
-
-          {/* Right: App Experience */}
-          <Link href="/collections" className={styles.noticeLinkRight}>
-            <div className={`${styles.iconWrap} ${styles.animateFloat}`}>
-              <Smartphone size={14} className={styles.noticeGoldIcon} strokeWidth={2.6} />
-            </div>
-            <span className={styles.noticeText}>YuVara Mobile App</span>
-            <ArrowRight size={12} className={styles.noticeArrow} strokeWidth={2.8} />
-          </Link>
-        </div>
-      </div>
-
-      {/* 2. MAIN MINIMALIST NAVBAR */}
       <nav className={styles.navbar}>
         <div className={styles.container}>
           <div className={styles.navContent}>
@@ -210,7 +138,7 @@ export default function Navbar() {
                 <span>New Arrivals</span>
               </Link>
 
-              {/* Categories Mega Trigger */}
+              {/* Categories Dropdown */}
               <div className={styles.categoryDropdownWrapper} ref={categoryRef}>
                 <button
                   type="button"
@@ -230,49 +158,32 @@ export default function Navbar() {
                   />
                 </button>
 
-                {/* Categories Luxury Popover */}
                 {isCategoryDropdownOpen && (
                   <div className={styles.categoryMenu}>
                     <div className={styles.categoryMenuHeader}>
-                      <span className={styles.categoryHeaderKicker}>Curated Departments</span>
-                      <span className={styles.categoryHeaderTag}>YuVara 2026</span>
+                      <span className={styles.categoryHeaderKicker}>Shop by category</span>
                     </div>
 
                     <div className={styles.categoryGrid}>
-                      {CATEGORY_ITEMS.map((cat) => {
-                        const IconComponent = cat.icon;
-                        return (
-                          <Link
-                            key={cat.slug}
-                            href={
-                              cat.slug === "all"
-                                ? "/collections"
-                                : `/collections?category=${encodeURIComponent(cat.slug)}`
-                            }
-                            className={styles.categoryMenuItem}
-                            onClick={() => setIsCategoryDropdownOpen(false)}
-                          >
-                            <div className={styles.categoryIconWrap}>
-                              <IconComponent size={16} className={styles.categoryIcon} />
-                            </div>
-                            <div className={styles.categoryTextWrap}>
-                              <span className={styles.categoryMenuLabel}>{cat.name}</span>
-                              <span className={styles.categoryMenuSub}>{cat.sub}</span>
-                            </div>
-                            <ChevronRight size={13} className={styles.itemChevron} strokeWidth={2.5} />
-                          </Link>
-                        );
-                      })}
+                      {CATEGORY_ITEMS.map((cat) => (
+                        <Link
+                          key={cat.slug}
+                          href={`/collections?category=${encodeURIComponent(cat.slug)}`}
+                          className={styles.categoryMenuItem}
+                          onClick={() => setIsCategoryDropdownOpen(false)}
+                        >
+                          <span className={styles.categoryMenuLabel}>{cat.name}</span>
+                        </Link>
+                      ))}
                     </div>
 
                     <div className={styles.categoryMenuFooter}>
-                      <Link 
-                        href="/collections" 
+                      <Link
+                        href="/collections"
                         className={styles.allCollectionsFooterLink}
                         onClick={() => setIsCategoryDropdownOpen(false)}
                       >
-                        <span>Explore Full Store Catalog</span>
-                        <ArrowRight size={13} strokeWidth={2.6} />
+                        <span>View all collections</span>
                       </Link>
                     </div>
                   </div>
@@ -280,14 +191,12 @@ export default function Navbar() {
               </div>
             </div>
 
-            {/* Minimalist Search Bar */}
+            {/* Search Bar */}
             <form onSubmit={handleSearch} className={styles.searchContainer}>
-              <div className={`${styles.iconWrap} ${styles.searchIconWrap}`}>
-                <Search size={16} className={styles.searchIcon} strokeWidth={2.6} />
-              </div>
+              <Search size={16} className={styles.searchIcon} strokeWidth={2.6} />
               <input
                 type="text"
-                placeholder="Search timeless fashion, timepieces, luxury..."
+                placeholder="Search products…"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={styles.searchInput}
@@ -340,9 +249,6 @@ export default function Navbar() {
                   </button>
                 ) : (
                   <Link href="/auth/signin" className={styles.signInLink}>
-                    <div className={`${styles.iconWrap} ${styles.animateUser}`}>
-                      <User size={17} strokeWidth={2.6} />
-                    </div>
                     <span>Sign In</span>
                   </Link>
                 )}
@@ -361,7 +267,6 @@ export default function Navbar() {
                           className={styles.dropdownItem}
                           onClick={() => setIsAccountDropdownOpen(false)}
                         >
-                          <SlidersHorizontal size={15} strokeWidth={2.5} />
                           <span>Admin Dashboard</span>
                         </Link>
                       )}
@@ -370,23 +275,20 @@ export default function Navbar() {
                         className={styles.dropdownItem}
                         onClick={() => setIsAccountDropdownOpen(false)}
                       >
-                        <User size={15} strokeWidth={2.5} />
-                        <span>My Profile</span>
+                        <span>Profile</span>
                       </Link>
                       <Link
                         href="/orders"
                         className={styles.dropdownItem}
                         onClick={() => setIsAccountDropdownOpen(false)}
                       >
-                        <Package size={15} strokeWidth={2.5} />
-                        <span>My Orders</span>
+                        <span>Orders</span>
                       </Link>
                       <Link
                         href="/wishlist"
                         className={styles.dropdownItem}
                         onClick={() => setIsAccountDropdownOpen(false)}
                       >
-                        <Heart size={15} strokeWidth={2.5} />
                         <span>Wishlist</span>
                       </Link>
                       <Link
@@ -394,7 +296,6 @@ export default function Navbar() {
                         className={styles.dropdownItem}
                         onClick={() => setIsAccountDropdownOpen(false)}
                       >
-                        <Users size={15} strokeWidth={2.5} />
                         <span>Referrals</span>
                       </Link>
                       <button
@@ -404,8 +305,7 @@ export default function Navbar() {
                         }}
                         className={styles.dropdownItem}
                       >
-                        <RefreshCw size={15} strokeWidth={2.5} />
-                        <span>Switch Account</span>
+                        <span>Switch account</span>
                       </button>
                       <button
                         onClick={() => {
@@ -414,20 +314,12 @@ export default function Navbar() {
                         }}
                         className={`${styles.dropdownItem} ${styles.signOutBtn}`}
                       >
-                        <LogOut size={15} strokeWidth={2.5} />
                         <span>Sign Out</span>
                       </button>
                     </div>
                   </div>
                 )}
               </div>
-
-              {/* Support */}
-              <Link href="/contact" className={styles.supportBtn} aria-label="Support">
-                <div className={`${styles.iconWrap} ${styles.animateSupport}`}>
-                  <Headphones size={18} strokeWidth={2.6} />
-                </div>
-              </Link>
 
               {/* Currency Selector */}
               <div className={styles.currencyWrapper}>
@@ -440,7 +332,7 @@ export default function Navbar() {
                 className={styles.bagButton}
                 aria-label="Shopping Bag"
               >
-                <div className={`${styles.bagIconWrap} ${styles.animateBag}`}>
+                <div className={styles.bagIconWrap}>
                   <ShoppingBag size={20} strokeWidth={2.6} />
                   {itemCount > 0 && <span className={styles.bagBadge}>{itemCount}</span>}
                 </div>
@@ -493,7 +385,7 @@ export default function Navbar() {
                 <Search size={17} className="text-gray-400" strokeWidth={2.6} />
                 <input
                   type="text"
-                  placeholder="Search collections, footwear, watches..."
+                  placeholder="Search products…"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className={styles.mobileSearchInput}
@@ -513,30 +405,14 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile Horizontal Quick Navigation */}
+        {/* Mobile Quick Navigation */}
         <div className={styles.mobileQuickRibbon}>
           <div className={styles.mobileQuickTrack}>
-            <Link href="/collections?sort=bestseller" className={styles.mobileQuickPill}>
-              Best Sellers
-            </Link>
-            <Link href="/collections?sort=rating" className={styles.mobileQuickPill}>
-              Curated
-            </Link>
-            <Link href="/collections?sort=newest" className={styles.mobileQuickPill}>
-              New In
-            </Link>
-            <Link href="/collections?category=Watches" className={styles.mobileQuickPill}>
-              Watches
-            </Link>
-            <Link href="/collections?category=Jewelry" className={styles.mobileQuickPill}>
-              Jewelry
-            </Link>
-            <Link href="/collections?category=Men" className={styles.mobileQuickPill}>
-              Men
-            </Link>
-            <Link href="/collections?category=Women" className={styles.mobileQuickPill}>
-              Women
-            </Link>
+            {QUICK_PILLS.map((pill) => (
+              <Link key={pill.label} href={pill.href} className={styles.mobileQuickPill}>
+                {pill.label}
+              </Link>
+            ))}
           </div>
         </div>
 
@@ -552,8 +428,8 @@ export default function Navbar() {
             >
               {/* Drawer Top Header with Brand & Close Button */}
               <div className={styles.drawerTopBar}>
-                <Link 
-                  href="/" 
+                <Link
+                  href="/"
                   className={styles.brandLink}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -613,29 +489,26 @@ export default function Navbar() {
                     className={styles.drawerSignInBtn}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <User size={17} strokeWidth={2.6} />
                     <span>Sign In / Register</span>
                   </Link>
                 )}
 
                 {/* Primary Nav */}
                 <div className={styles.drawerNavSection}>
-                  <span className={styles.drawerSectionLabel}>Collections</span>
+                  <span className={styles.drawerSectionLabel}>Shop</span>
                   <Link
                     href="/collections"
                     className={styles.drawerNavLink}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <span>All Collections</span>
-                    <ChevronRight size={15} strokeWidth={2.6} className="opacity-40" />
                   </Link>
                   <Link
                     href="/collections?sort=bestseller"
                     className={styles.drawerNavLink}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <span>Best-Selling Items</span>
-                    <ChevronRight size={15} strokeWidth={2.6} className="opacity-40" />
+                    <span>Best Sellers</span>
                   </Link>
                   <Link
                     href="/collections?sort=newest"
@@ -643,23 +516,20 @@ export default function Navbar() {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <span>New Arrivals</span>
-                    <ChevronRight size={15} strokeWidth={2.6} className="opacity-40" />
                   </Link>
                   <Link
                     href="/about"
                     className={styles.drawerNavLink}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <span>About the Brand</span>
-                    <ChevronRight size={15} strokeWidth={2.6} className="opacity-40" />
+                    <span>About</span>
                   </Link>
                   <Link
                     href="/contact"
                     className={styles.drawerNavLink}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <span>Bespoke Concierge &amp; Support</span>
-                    <ChevronRight size={15} strokeWidth={2.6} className="opacity-40" />
+                    <span>Contact</span>
                   </Link>
                 </div>
 
@@ -674,16 +544,21 @@ export default function Navbar() {
                         onClick={() => setIsMenuOpen(false)}
                       >
                         <span className="text-[#996515] font-semibold">Admin Dashboard</span>
-                        <ChevronRight size={15} strokeWidth={2.6} className="opacity-40" />
                       </Link>
                     )}
+                    <Link
+                      href="/profile"
+                      className={styles.drawerNavLink}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <span>Profile</span>
+                    </Link>
                     <Link
                       href="/orders"
                       className={styles.drawerNavLink}
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      <span>My Orders</span>
-                      <ChevronRight size={15} strokeWidth={2.6} className="opacity-40" />
+                      <span>Orders</span>
                     </Link>
                     <Link
                       href="/wishlist"
@@ -691,7 +566,6 @@ export default function Navbar() {
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <span>Wishlist</span>
-                      <ChevronRight size={15} strokeWidth={2.6} className="opacity-40" />
                     </Link>
                     <Link
                       href="/dashboard/referrals"
@@ -699,7 +573,6 @@ export default function Navbar() {
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <span>Referrals</span>
-                      <ChevronRight size={15} strokeWidth={2.6} className="opacity-40" />
                     </Link>
                     <button
                       onClick={() => {
@@ -708,7 +581,6 @@ export default function Navbar() {
                       }}
                       className={styles.drawerSignOut}
                     >
-                      <LogOut size={16} strokeWidth={2.6} />
                       <span>Sign Out</span>
                     </button>
                   </div>

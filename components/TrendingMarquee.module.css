@@ -1,27 +1,25 @@
-/* ==========================================================================
-   YUVARA LUXURY INFINITE MARQUEE (Understated Subtle Micro-Animations)
-   ========================================================================== */
+/* Yuvara marquee — quiet single-line ticker, no icons. */
 
 .marqueeContainer {
   width: 100%;
   background-color: #fafafa;
   border-top: 1px solid #f0f0f0;
-  border-bottom: 1px solid #eaeaea;
+  border-bottom: 1px solid #ececec;
   overflow: hidden;
   position: relative;
   display: flex;
-  padding: 0.45rem 0;
+  padding: 0.4rem 0;
   user-select: none;
   margin-bottom: 0;
 }
 
-/* Edge gradient fade masks */
+/* Edge fade masks */
 .marqueeContainer::before,
 .marqueeContainer::after {
   content: "";
   position: absolute;
   top: 0;
-  width: 80px;
+  width: 72px;
   height: 100%;
   z-index: 2;
   pointer-events: none;
@@ -40,7 +38,7 @@
 .scrollTrack {
   display: flex;
   align-items: center;
-  animation: scroll 35s linear infinite;
+  animation: scroll 42s linear infinite;
   white-space: nowrap;
   will-change: transform;
 }
@@ -51,43 +49,21 @@
   line-height: 1;
 }
 
-.iconWrap {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 0.45rem;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.goldIcon {
-  color: #996515;
-  stroke: #996515;
-}
-
 .text {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #374151;
-  letter-spacing: 0.01em;
+  font-size: 0.7rem;
+  font-weight: 550;
+  color: #6b7280;
+  letter-spacing: 0.04em;
   line-height: 1;
-  display: inline-flex;
-  align-items: center;
 }
 
 .separator {
-  margin: 0 1.75rem;
+  margin: 0 1.5rem;
   color: #d1d5db;
-  font-size: 0.625rem;
+  font-size: 0.7rem;
   line-height: 1;
-  display: inline-flex;
-  align-items: center;
   user-select: none;
 }
-
-/* ==========================================================================
-   REFINED, SUBTLE LUXURY MICRO-ANIMATIONS
-   ========================================================================== */
 
 @keyframes scroll {
   0% {
@@ -102,93 +78,22 @@
   animation-play-state: paused;
 }
 
-/* 1. Subtle Heartbeat Pulse */
-.animateSubtlePulse {
-  animation: subtlePulse 3.5s ease-in-out infinite;
-}
-
-@keyframes subtlePulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.08);
-  }
-}
-
-/* 2. Subtle Float */
-.animateSubtleFloat {
-  animation: subtleFloat 3.8s ease-in-out infinite;
-}
-
-@keyframes subtleFloat {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-1.5px);
-  }
-}
-
-/* 3. Subtle Plane Glide */
-.animateSubtleGlide {
-  animation: subtleGlide 4s ease-in-out infinite;
-}
-
-@keyframes subtleGlide {
-  0%, 100% {
-    transform: translate(0, 0);
-  }
-  50% {
-    transform: translate(1.5px, -1px);
-  }
-}
-
-/* 4. Subtle Shimmer */
-.animateSubtleShimmer {
-  animation: subtleShimmer 4.2s ease-in-out infinite;
-}
-
-@keyframes subtleShimmer {
-  0%, 100% {
-    transform: rotate(0deg);
-  }
-  25% {
-    transform: rotate(-3deg);
-  }
-  75% {
-    transform: rotate(3deg);
-  }
-}
-
-/* 5. Subtle Drive */
-.animateSubtleDrive {
-  animation: subtleDrive 3.6s ease-in-out infinite;
-}
-
-@keyframes subtleDrive {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(1.5px);
-  }
-}
-
-/* ==========================================================================
-   RESPONSIVE
-   ========================================================================== */
-
 @media (max-width: 768px) {
   .marqueeContainer {
-    padding: 0.4rem 0;
+    padding: 0.36rem 0;
   }
 
   .text {
-    font-size: 0.6875rem;
+    font-size: 0.66rem;
   }
 
   .separator {
-    margin: 0 1.25rem;
+    margin: 0 1.1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrollTrack {
+    animation: none;
   }
 }

@@ -33,8 +33,8 @@ export default async function Home() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "YuVara",
-    "alternateName": ["YuVara NG", "YuVara Luxury"],
+    "name": "YuVara Global Store",
+    "alternateName": ["YuVara NG", "YuVara Global"],
     "url": "https://yuvara.com.ng",
   };
 
@@ -52,27 +52,10 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Visually hidden h1 for search engine site-name recognition and accessibility */}
-      <h1
-        style={{
-          position: "absolute",
-          width: "1px",
-          height: "1px",
-          padding: 0,
-          margin: "-1px",
-          overflow: "hidden",
-          clip: "rect(0, 0, 0, 0)",
-          whiteSpace: "nowrap",
-          border: 0,
-        }}
-      >
-        YuVara Luxury
-      </h1>
-
-      {/* 1. Top Infinite Luxury Marquee (Trust & Guarantees Ticker) */}
+      {/* 1. Top Infinite Global Marquee (Trust & Guarantees Ticker) */}
       <TrendingMarquee />
 
-      {/* 2. Split Hero Section: Timed Drops & The Vault */}
+      {/* 2. Modern 2026 Editorial Hero: YuVara Global Store */}
       <Hero 
         countdownDeals={homepageDeals.countdownDeals}
         limitedDeals={homepageDeals.limitedDeals}
