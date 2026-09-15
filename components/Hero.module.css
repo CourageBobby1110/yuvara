@@ -57,13 +57,13 @@
   min-width: 0;
   text-decoration: none;
   border-radius: 14px;
-  border: 1px solid transparent;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  overflow: hidden;
+  background: transparent;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .card:hover {
-  border-color: #e8e8e8;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   transform: translateY(-2px);
 }
 
@@ -108,7 +108,7 @@
 }
 
 .meta {
-  padding: 10px 2px 0;
+  padding: 10px 4px 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -198,7 +198,7 @@
   }
 
   .meta {
-    padding: 9px 2px 0;
+    padding: 9px 4px 0;
     gap: 3px;
   }
 
@@ -223,7 +223,6 @@
   }
 
   .card:hover {
-    border-color: transparent;
     box-shadow: none;
     transform: none;
   }
