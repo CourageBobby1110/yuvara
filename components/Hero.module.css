@@ -57,6 +57,14 @@
   min-width: 0;
   text-decoration: none;
   border-radius: 14px;
+  border: 1px solid transparent;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover {
+  border-color: #e8e8e8;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  transform: translateY(-2px);
 }
 
 .card:focus-visible {
@@ -70,7 +78,7 @@
   aspect-ratio: 4 / 5;
   border-radius: 14px;
   overflow: hidden;
-  background: #f4f4f2;
+  background: #f5f3ef;
 }
 
 .productImage {
@@ -208,9 +216,16 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .card,
   .productImage,
   .viewAll {
     transition: none;
+  }
+
+  .card:hover {
+    border-color: transparent;
+    box-shadow: none;
+    transform: none;
   }
 
   .card:hover .productImage {
