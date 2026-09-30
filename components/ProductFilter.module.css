@@ -2,11 +2,11 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  padding: 2rem;
-  border-radius: 1rem;
-  background-color: var(--color-bg-primary);
-  border: 1px solid var(--color-border-light);
-  box-shadow: var(--shadow-sm);
+  padding: 1.75rem;
+  border-radius: 14px;
+  background-color: #ffffff;
+  border: 1px solid #ebe8e2;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 }
 
 .header {
@@ -18,16 +18,16 @@
 
 .title {
   font-weight: 700;
-  font-size: 1.5rem;
-  color: var(--color-text-primary);
-  letter-spacing: -0.025em;
+  font-size: 1.35rem;
+  color: #1c1917;
+  letter-spacing: -0.02em;
   margin: 0;
 }
 
 .toggleIcon {
   width: 1.25rem;
   height: 1.25rem;
-  color: var(--color-text-light);
+  color: #78746e;
   transition: transform 0.2s ease;
 }
 
@@ -53,11 +53,11 @@
 
 .label {
   display: block;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 700;
-  color: var(--color-text-primary);
+  color: #1c1917;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
 .selectWrapper {
@@ -67,26 +67,27 @@
 .select {
   width: 100%;
   appearance: none;
-  background-color: var(--color-bg-secondary);
-  border: 2px solid var(--color-border-light);
-  border-radius: 0.75rem;
-  padding: 0.875rem 1rem;
+  background-color: #f6f5f1;
+  border: 1px solid #e7e4dc;
+  border-radius: 0.65rem;
+  padding: 0.75rem 1rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--color-text-primary);
+  color: #1c1917;
   outline: none;
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .select:hover {
-  background-color: var(--color-bg-tertiary);
-  border-color: var(--color-border-medium);
+  background-color: #f0eee8;
+  border-color: #ded9cf;
 }
 
 .select:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+  background-color: #ffffff;
+  border-color: #1a1a1a;
+  box-shadow: 0 0 0 2px rgba(26, 26, 26, 0.08);
 }
 
 .selectIcon {
@@ -98,7 +99,7 @@
   align-items: center;
   padding-right: 1rem;
   pointer-events: none;
-  color: var(--color-text-light);
+  color: #78746e;
 }
 
 .icon {
@@ -118,10 +119,10 @@
 
 .currencySymbol {
   position: absolute;
-  left: 1rem;
+  left: 0.85rem;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--color-text-light);
+  color: #78746e;
   font-size: 0.875rem;
   font-weight: 500;
   pointer-events: none;
@@ -129,34 +130,35 @@
 }
 
 .inputWrapper:focus-within .currencySymbol {
-  color: var(--color-text-primary);
+  color: #1c1917;
 }
 
 .input {
   width: 100%;
-  background-color: var(--color-bg-secondary);
-  border: 2px solid var(--color-border-light);
-  border-radius: 0.75rem;
-  padding: 0.875rem 1rem 0.875rem 2.25rem;
+  background-color: #f6f5f1;
+  border: 1px solid #e7e4dc;
+  border-radius: 0.65rem;
+  padding: 0.75rem 0.85rem 0.75rem 2.1rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--color-text-primary);
+  color: #1c1917;
   outline: none;
   transition: all 0.2s ease;
 }
 
 .input::placeholder {
-  color: var(--color-text-light);
+  color: #8c8882;
 }
 
 .input:hover {
-  background-color: var(--color-bg-tertiary);
-  border-color: var(--color-border-medium);
+  background-color: #f0eee8;
+  border-color: #ded9cf;
 }
 
 .input:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+  background-color: #ffffff;
+  border-color: #1a1a1a;
+  box-shadow: 0 0 0 2px rgba(26, 26, 26, 0.08);
 }
 
 /* Inline Spinner */

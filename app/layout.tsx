@@ -100,6 +100,9 @@ export async function generateMetadata(): Promise<Metadata> {
     verification: verificationGoogle ? {
       google: verificationGoogle,
     } : undefined,
+    other: {
+      "p:domain_verify": "ab8015c7a7ea823218b9b28e87f22a4f",
+    },
   };
 }
 

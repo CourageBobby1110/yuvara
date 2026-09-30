@@ -29,56 +29,56 @@
 .input {
   display: block;
   width: 100%;
-  height: 3.25rem;
+  height: 2.75rem;
   border-radius: 9999px;
-  border: none;
-  background-color: #ffffff;
-  padding: 0 3.5rem;
-  font-size: 0.95rem;
-  color: var(--color-text-primary);
+  border: 1px solid #e7e4dc;
+  background-color: #f6f5f1;
+  padding: 0 3.25rem 0 3rem;
+  font-size: 0.88rem;
+  color: #1a1a1a;
   outline: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
   font-weight: 500;
   letter-spacing: 0.01em;
 }
 
 .input::placeholder {
-  color: #9ca3af;
+  color: #8c8882;
   font-weight: 400;
+}
+
+.input:hover:not(:focus) {
+  background-color: #f0eee8;
+  border-color: #ded9cf;
 }
 
 .input:focus {
   background-color: #ffffff;
-  box-shadow: 0 4px 20px rgba(153, 101, 21, 0.2); /* Golden mild shadow */
-  transform: translateY(-1px);
-}
-
-.input:hover:not(:focus) {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border-color: #1a1a1a;
+  box-shadow: 0 0 0 2px rgba(26, 26, 26, 0.08);
 }
 
 .iconWrapper {
   position: absolute;
-  left: 1.125rem;
+  left: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  color: #9ca3af;
+  color: #78746e;
   pointer-events: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color 0.2s ease;
   z-index: 1;
 }
 
 .input:focus ~ .iconWrapper {
-  color: #111827;
-  transform: translateY(-50%) scale(1.05);
+  color: #1a1a1a;
+  transform: translateY(-50%);
 }
 
 .input:hover:not(:focus) ~ .iconWrapper {
-  color: #6b7280;
+  color: #524f4b;
 }
 
 .icon {

@@ -1,7 +1,7 @@
 /* Collections Page Styles */
 .pageContainer {
   min-height: 100vh;
-  background-color: #f9fafb;
+  background-color: #fbfaf8;
 }
 
 .hero {
@@ -47,7 +47,7 @@
 .contentContainer {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 3rem 1rem;
+  padding: 2.5rem 1rem 4rem;
 }
 
 .layout {
@@ -78,15 +78,14 @@
   display: none;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  background-color: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  padding: 1rem;
+  margin-bottom: 1.75rem;
+  background-color: #ffffff;
+  padding: 0.85rem 1.25rem;
   border-radius: 1rem;
-  border: 1px solid var(--color-border-light);
-  box-shadow: var(--shadow-sm);
+  border: 1px solid #ebe8e2;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
   position: sticky;
-  top: 6rem; /* Adjust based on navbar height */
+  top: 5.5rem; /* Adjust based on navbar height */
   z-index: 20;
 }
 
