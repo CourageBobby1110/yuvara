@@ -67,9 +67,9 @@ export default function Hero({
     <section className={styles.heroSection} aria-label="Featured products">
       <div className={styles.container}>
         <div className={styles.head}>
-          <span className={styles.eyebrow}>Featured</span>
+          <span className={styles.eyebrow}>Featured Picks</span>
           <Link href="/collections" className={styles.viewAll}>
-            View all <span aria-hidden="true">→</span>
+            View all
           </Link>
         </div>
 

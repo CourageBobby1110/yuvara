@@ -26,7 +26,7 @@ export default async function Home() {
 
   // Time-based seed (changes every 1 hour)
   const currentWindowSeed = Math.floor(Date.now() / (60 * 60 * 1000));
-  const filter = { limit: 40, sort: "price_asc" };
+  const filter = { limit: 100, sort: "price_asc" };
   const productsPool = await getProducts(filter);
   const shuffledProducts = shuffleArray(productsPool, currentWindowSeed);
 

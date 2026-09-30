@@ -1,55 +1,59 @@
-/* Yuvara hero — ultra-minimal featured products. Mobile-first, quiet, human. */
+/* Yuvara hero — elevated featured products. Clean, confident, spacious. */
 
 .heroSection {
   width: 100%;
-  background: #fbfaf8;
-  border-bottom: 1px solid #ebe8e2;
-  padding: 30px 0 36px;
+  background: #faf9f7;
+  padding: 40px 0 48px;
   box-sizing: border-box;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 28px;
   box-sizing: border-box;
 }
 
-/* Quiet header row: one word left, one link right. */
+/* Header row — bold section label with a proper "View all" link. */
 .head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 18px;
+  gap: 16px;
+  margin-bottom: 28px;
 }
 
 .eyebrow {
-  font-size: 12px;
-  font-weight: 650;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #787571;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #1c1917;
+  text-transform: none;
 }
 
 .viewAll {
-  font-size: 13px;
-  font-weight: 550;
-  color: #63605c;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #996515;
   text-decoration: none;
   white-space: nowrap;
-  transition: color 0.2s ease;
+  padding: 0.5rem 1.25rem;
+  border: 1.5px solid #996515;
+  border-radius: 9999px;
+  transition: all 0.25s ease;
+  letter-spacing: 0.01em;
 }
 
 .viewAll:hover {
-  color: #111;
+  background: #996515;
+  color: #fff;
 }
 
-/* Product grid — airy, no card chrome. */
+/* Product grid — generous sizing. */
 .grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 22px 20px;
+  gap: 24px;
 }
 
 .card {
@@ -57,17 +61,20 @@
   flex-direction: column;
   min-width: 0;
   text-decoration: none;
-  border-radius: 14px;
-  background: transparent;
-  transition: transform 0.25s ease;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
 }
 
 .card:focus-visible {
-  outline: 2px solid #111;
+  outline: 2px solid #996515;
   outline-offset: 3px;
 }
 
@@ -75,16 +82,8 @@
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 5;
-  border-radius: 14px;
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
-}
-
-.card:hover .imageWrap {
-  border-color: rgba(0, 0, 0, 0.1);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  background: #f5f4f2;
 }
 
 .productImage {
@@ -93,41 +92,37 @@
 }
 
 .card:hover .productImage {
-  transform: scale(1.03);
+  transform: scale(1.04);
 }
 
 .discountBadge {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  color: #111;
-  font-size: 11px;
+  top: 12px;
+  left: 12px;
+  background: #996515;
+  color: #ffffff;
+  font-size: 0.8125rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
-  padding: 3px 7px;
+  letter-spacing: 0.01em;
+  padding: 5px 12px;
   border-radius: 9999px;
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .meta {
-  padding: 10px 2px 0;
+  padding: 16px 16px 18px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   min-width: 0;
 }
 
 .productName {
   margin: 0;
-  font-size: 13px;
-  font-weight: 550;
-  line-height: 1.4;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.35;
   color: #1c1917;
   letter-spacing: -0.005em;
   white-space: nowrap;
@@ -138,21 +133,21 @@
 .priceRow {
   display: flex;
   align-items: baseline;
-  gap: 7px;
+  gap: 8px;
   flex-wrap: wrap;
   min-width: 0;
 }
 
 .currentPrice {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 1.0625rem;
+  font-weight: 800;
   color: #111;
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
 }
 
 .oldPrice {
-  font-size: 12.5px;
+  font-size: 0.875rem;
   font-weight: 450;
   color: #8c8883;
   text-decoration: line-through;
@@ -160,21 +155,35 @@
 }
 
 .lowStock {
-  font-size: 11px;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: #92400e;
+  color: #b45309;
   letter-spacing: 0.01em;
+  margin-top: 2px;
 }
 
-/* Tablet: calm 2x2. */
+/* Tablet: comfortable 2-col. */
 @media (max-width: 1024px) {
+  .heroSection {
+    padding: 32px 0 38px;
+  }
+
   .grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px 16px;
+    gap: 20px;
+  }
+
+  .eyebrow {
+    font-size: 1.125rem;
+  }
+
+  .viewAll {
+    font-size: 0.875rem;
+    padding: 0.45rem 1rem;
   }
 }
 
-/* Mobile: the part that matters — generous, neat, touch-calm. */
+/* Mobile: clean 2-col, touch-friendly. */
 @media (max-width: 640px) {
   .heroSection {
     padding: 22px 0 28px;
@@ -185,41 +194,49 @@
   }
 
   .head {
-    margin-bottom: 14px;
+    margin-bottom: 18px;
   }
 
   .eyebrow {
-    font-size: 11px;
+    font-size: 1rem;
   }
 
   .viewAll {
-    font-size: 12.5px;
+    font-size: 0.8125rem;
+    padding: 0.4rem 0.875rem;
   }
 
   .grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 18px 12px;
+    gap: 14px;
   }
 
-  .imageWrap {
+  .card {
     border-radius: 12px;
   }
 
   .meta {
-    padding: 8px 2px 0;
-    gap: 3px;
+    padding: 10px 12px 14px;
+    gap: 4px;
   }
 
   .productName {
-    font-size: 12.5px;
+    font-size: 0.8125rem;
   }
 
   .currentPrice {
-    font-size: 13.5px;
+    font-size: 0.9375rem;
   }
 
   .oldPrice {
-    font-size: 12px;
+    font-size: 0.8125rem;
+  }
+
+  .discountBadge {
+    font-size: 0.6875rem;
+    padding: 4px 9px;
+    top: 8px;
+    left: 8px;
   }
 }
 
@@ -233,11 +250,7 @@
 
   .card:hover {
     transform: none;
-  }
-
-  .card:hover .imageWrap {
     box-shadow: none;
-    border-color: rgba(0, 0, 0, 0.05);
   }
 
   .card:hover .productImage {

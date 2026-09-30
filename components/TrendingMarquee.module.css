@@ -1,14 +1,12 @@
-/* Yuvara marquee — quiet single-line ticker, no icons. */
+/* Yuvara marquee — confident single-line ticker, clean. */
 
 .marqueeContainer {
   width: 100%;
-  background-color: #fafafa;
-  border-top: 1px solid #f0f0f0;
-  border-bottom: 1px solid #ececec;
+  background-color: #111827;
   overflow: hidden;
   position: relative;
   display: flex;
-  padding: 0.4rem 0;
+  padding: 0.6rem 0;
   user-select: none;
   margin-bottom: 0;
 }
@@ -19,7 +17,7 @@
   content: "";
   position: absolute;
   top: 0;
-  width: 72px;
+  width: 90px;
   height: 100%;
   z-index: 2;
   pointer-events: none;
@@ -27,12 +25,12 @@
 
 .marqueeContainer::before {
   left: 0;
-  background: linear-gradient(to right, #fafafa, transparent);
+  background: linear-gradient(to right, #111827, transparent);
 }
 
 .marqueeContainer::after {
   right: 0;
-  background: linear-gradient(to left, #fafafa, transparent);
+  background: linear-gradient(to left, #111827, transparent);
 }
 
 .scrollTrack {
@@ -50,17 +48,18 @@
 }
 
 .text {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   font-weight: 550;
-  color: #6b7280;
-  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   line-height: 1;
 }
 
 .separator {
-  margin: 0 1.5rem;
-  color: #d1d5db;
-  font-size: 0.7rem;
+  margin: 0 2rem;
+  color: #996515;
+  font-size: 0.55rem;
   line-height: 1;
   user-select: none;
 }
@@ -80,15 +79,15 @@
 
 @media (max-width: 768px) {
   .marqueeContainer {
-    padding: 0.36rem 0;
+    padding: 0.45rem 0;
   }
 
   .text {
-    font-size: 0.66rem;
+    font-size: 0.68rem;
   }
 
   .separator {
-    margin: 0 1.1rem;
+    margin: 0 1.25rem;
   }
 }
 

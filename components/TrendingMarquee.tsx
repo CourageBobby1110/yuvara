@@ -6,6 +6,11 @@ const ITEMS = [
   "Free shipping over $150",
   "Authenticity guaranteed",
   "Ships worldwide",
+  "Secure checkout",
+  "Easy 30-day returns",
+  "24/7 Customer support",
+  "Premium quality",
+  "New arrivals weekly",
 ];
 
 export default function TrendingMarquee() {
@@ -18,7 +23,7 @@ export default function TrendingMarquee() {
           <span key={`item-${index}`} className={styles.item}>
             <span className={styles.text}>{text}</span>
             <span className={styles.separator} aria-hidden="true">
-              ·
+              ◆
             </span>
           </span>
         ))}
@@ -28,7 +33,7 @@ export default function TrendingMarquee() {
           <span key={`clone-${index}`} className={styles.item}>
             <span className={styles.text}>{text}</span>
             <span className={styles.separator} aria-hidden="true">
-              ·
+              ◆
             </span>
           </span>
         ))}
