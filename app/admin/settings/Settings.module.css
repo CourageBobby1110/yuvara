@@ -326,3 +326,286 @@
     width: auto;
   }
 }
+
+/* ==========================================================================
+   Pinterest Integration Card Styles (Mobile-Friendly & Premium)
+   ========================================================================== */
+.pinterestCard {
+  background: var(--color-bg-primary);
+  border: 1px solid rgba(230, 0, 35, 0.2);
+  border-radius: 0.875rem;
+  padding: 1.25rem;
+  box-shadow: 0 4px 20px -2px rgba(230, 0, 35, 0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .pinterestCard {
+    padding: 1.75rem;
+  }
+}
+
+.pinterestHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .pinterestHeader {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+}
+
+.pinterestTitleArea {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pinterestLogoBadge {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #E60023;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(230, 0, 35, 0.3);
+}
+
+.pinterestTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.pinterestBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.6rem;
+  background-color: #fef2f2;
+  color: #E60023;
+  border: 1px solid #fee2e2;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.pinterestSubtitle {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  margin: 0.25rem 0 0;
+}
+
+/* Status Alert Box */
+.pinterestNotice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.625rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.noticeWarning {
+  background-color: #fffbeb;
+  border: 1px solid #fef3c7;
+  color: #92400e;
+}
+
+.noticeSuccess {
+  background-color: #ecfdf5;
+  border: 1px solid #d1fae5;
+  color: #065f46;
+}
+
+.noticeInfo {
+  background-color: #eff6ff;
+  border: 1px solid #dbeafe;
+  color: #1e40af;
+}
+
+.noticeIcon {
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+/* Stats Row */
+.pinterestStats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .pinterestStats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.statItem {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-light);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.statLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.statValue {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+/* Actions Row */
+.pinterestActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border-light);
+}
+
+@media (min-width: 640px) {
+  .pinterestActions {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.btnPinterest {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #E60023;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.65rem 1.25rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(230, 0, 35, 0.25);
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .btnPinterest {
+    width: auto;
+  }
+}
+
+.btnPinterest:hover:not(:disabled) {
+  background-color: #b6001c;
+  transform: translateY(-1px);
+}
+
+.btnPinterest:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btnSecondaryAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  background-color: transparent;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-medium);
+  border-radius: 0.5rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .btnSecondaryAction {
+    width: auto;
+  }
+}
+
+.btnSecondaryAction:hover {
+  background-color: var(--color-bg-secondary);
+}
+
+/* Feed Link Box */
+.feedBox {
+  margin-top: 1rem;
+  padding: 0.875rem 1rem;
+  background-color: var(--color-bg-secondary);
+  border: 1px dashed var(--color-border-medium);
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .feedBox {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.feedText {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.feedCode {
+  font-family: monospace;
+  background-color: var(--color-bg-primary);
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--color-border-light);
+  color: #E60023;
+  font-weight: 600;
+}
+
+.feedButtons {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+

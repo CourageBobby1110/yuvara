@@ -38,6 +38,15 @@ export async function generateMetadata({
       description: product.description.substring(0, 160),
       images: product.images.length > 0 ? [getValidUrl(product.images[0])] : [],
     },
+    other: {
+      "product:price:amount": String(product.price || 0),
+      "product:price:currency": "USD",
+      "product:availability": (product.stock ?? 0) > 0 ? "in stock" : "out of stock",
+      "product:brand": "YuVara",
+      "og:price:amount": String(product.price || 0),
+      "og:price:currency": "USD",
+      "og:availability": (product.stock ?? 0) > 0 ? "instock" : "oos",
+    },
   };
 }
 
@@ -49,5 +58,38 @@ export default async function ProductPage({ params }: PageProps) {
     notFound();
   }
 
-  return <ProductClient key={product._id} initialProduct={product as any} />;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    image: product.images?.map((img: string) => getValidUrl(img)) || [],
+    description:
+      product.description?.replace(/<[^>]*>?/gm, "").substring(0, 500) || "",
+    sku: product._id?.toString(),
+    brand: {
+      "@type": "Brand",
+      name: "YuVara",
+    },
+    offers: {
+      "@type": "Offer",
+      url: `https://yuvara.com.ng/products/${product.slug}`,
+      priceCurrency: "USD",
+      price: Number(product.price || 0).toFixed(2),
+      availability:
+        (product.stock ?? 0) > 0
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
+      itemCondition: "https://schema.org/NewCondition",
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ProductClient key={product._id} initialProduct={product as any} />
+    </>
+  );
 }

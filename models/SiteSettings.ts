@@ -50,6 +50,11 @@ const SiteSettingsSchema = new Schema(
     lastSyncStatus: { type: String, default: "Idle" },
     productsSyncedToday: { type: Number, default: 0 },
     lastSyncDate: { type: Date, default: Date.now },
+    pinterestAccessToken: { type: String, default: "" },
+    pinterestBoardId: { type: String, default: "" },
+    pinterestLastSyncStatus: { type: String, default: "Idle" },
+    pinterestSyncedCount: { type: Number, default: 0 },
+    pinterestLastSyncDate: { type: Date },
   },
   { timestamps: true }
 );
@@ -88,6 +93,11 @@ export interface ISiteSettings {
   lastSyncStatus?: string;
   productsSyncedToday?: number;
   lastSyncDate?: Date;
+  pinterestAccessToken?: string;
+  pinterestBoardId?: string;
+  pinterestLastSyncStatus?: string;
+  pinterestSyncedCount?: number;
+  pinterestLastSyncDate?: Date;
   createdAt?: Date;
   updatedAt?: Date;
 }

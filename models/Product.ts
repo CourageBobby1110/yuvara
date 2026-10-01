@@ -122,6 +122,8 @@ const ProductSchema = new Schema(
     lastSyncedStock: { type: Date },
     lastSyncedShipping: { type: Date },
     syncCompleted: { type: Boolean, default: false },
+    pinterestPinId: { type: String, trim: true },
+    pinterestSyncedAt: { type: Date },
   },
   { timestamps: true }
 );
@@ -178,6 +180,8 @@ export type Product = {
   lastSyncedStock?: Date;
   lastSyncedShipping?: Date;
   syncCompleted?: boolean;
+  pinterestPinId?: string;
+  pinterestSyncedAt?: Date;
 };
 
 export default Product;
