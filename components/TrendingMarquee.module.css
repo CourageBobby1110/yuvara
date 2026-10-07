@@ -1,23 +1,33 @@
-/* Yuvara marquee — confident single-line ticker, clean. */
+/* Yuvara luxury marquee — refined, luminous single-line ticker */
 
 .marqueeContainer {
   width: 100%;
-  background-color: #111827;
+  background: linear-gradient(
+    90deg,
+    #faf8f4 0%,
+    #ffffff 22%,
+    #fbf9f5 50%,
+    #ffffff 78%,
+    #faf8f4 100%
+  );
+  border-top: 1px solid rgba(184, 134, 11, 0.14);
+  border-bottom: 1px solid rgba(184, 134, 11, 0.16);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
   overflow: hidden;
   position: relative;
   display: flex;
-  padding: 0.6rem 0;
+  padding: 0.52rem 0;
   user-select: none;
   margin-bottom: 0;
 }
 
-/* Edge fade masks */
+/* Edge gradient fade masks for seamless enter/exit */
 .marqueeContainer::before,
 .marqueeContainer::after {
   content: "";
   position: absolute;
   top: 0;
-  width: 90px;
+  width: 80px;
   height: 100%;
   z-index: 2;
   pointer-events: none;
@@ -25,18 +35,26 @@
 
 .marqueeContainer::before {
   left: 0;
-  background: linear-gradient(to right, #111827, transparent);
+  background: linear-gradient(
+    to right,
+    #faf8f4 0%,
+    rgba(250, 248, 244, 0) 100%
+  );
 }
 
 .marqueeContainer::after {
   right: 0;
-  background: linear-gradient(to left, #111827, transparent);
+  background: linear-gradient(
+    to left,
+    #faf8f4 0%,
+    rgba(250, 248, 244, 0) 100%
+  );
 }
 
 .scrollTrack {
   display: flex;
   align-items: center;
-  animation: scroll 42s linear infinite;
+  animation: scroll 72s linear infinite;
   white-space: nowrap;
   will-change: transform;
 }
@@ -45,23 +63,63 @@
   display: inline-flex;
   align-items: center;
   line-height: 1;
+  cursor: default;
+}
+
+.iconWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.45rem;
+  color: #b8860b;
+  flex-shrink: 0;
+  line-height: 1;
+  transition: transform 0.25s ease, color 0.25s ease;
+}
+
+.icon {
+  width: 14px;
+  height: 14px;
+  display: block;
+  stroke: currentColor;
 }
 
 .text {
-  font-size: 0.8rem;
-  font-weight: 550;
-  color: rgba(255, 255, 255, 0.85);
-  letter-spacing: 0.06em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1e242e;
+  letter-spacing: 0.085em;
   text-transform: uppercase;
   line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.item:hover .iconWrap {
+  color: #996515;
+  transform: scale(1.18);
+}
+
+.item:hover .text {
+  color: #996515;
 }
 
 .separator {
-  margin: 0 2rem;
-  color: #996515;
-  font-size: 0.55rem;
+  margin: 0 1.85rem;
+  color: #b8860b;
+  font-size: 0.85rem;
+  font-weight: 300;
   line-height: 1;
   user-select: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.65;
+  transition: color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
+}
+
+.item:hover .separator {
+  color: #996515;
+  opacity: 1;
 }
 
 @keyframes scroll {
@@ -79,15 +137,35 @@
 
 @media (max-width: 768px) {
   .marqueeContainer {
-    padding: 0.45rem 0;
+    padding: 0.42rem 0;
+  }
+
+  .scrollTrack {
+    animation-duration: 62s;
+  }
+
+  .iconWrap {
+    margin-right: 0.35rem;
+  }
+
+  .icon {
+    width: 12px;
+    height: 12px;
   }
 
   .text {
     font-size: 0.68rem;
+    letter-spacing: 0.07em;
   }
 
   .separator {
     margin: 0 1.25rem;
+    font-size: 0.75rem;
+  }
+
+  .marqueeContainer::before,
+  .marqueeContainer::after {
+    width: 48px;
   }
 }
 

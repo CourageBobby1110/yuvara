@@ -2,12 +2,12 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  background-color: #ffffff;
+  background-color: #f8f7f4;
   padding: 0;
   border-radius: 8px;
-  border: 1px solid #eeecea;
+  border: 1px solid #e8e5df;
   box-shadow: none;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.25s ease, border-color 0.25s ease;
   overflow: hidden;
   height: 100%;
   width: 100%;
@@ -15,9 +15,9 @@
 }
 
 .card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  border-color: #e0ddd8;
+  transform: translateY(-2px);
+  box-shadow: none;
+  border-color: #ded9cf;
 }
 
 .imageLink {
