@@ -219,12 +219,12 @@
   position: absolute;
   top: calc(100% + 0.75rem);
   left: -20px;
-  width: 520px;
+  width: 550px;
   background-color: #ffffff;
-  border: 1px solid #f0f0f0;
-  border-radius: 14px;
-  box-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.08);
-  padding: 0.75rem;
+  border: 1px solid #ebe8e2;
+  border-radius: 16px;
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.08);
+  padding: 0.85rem;
   z-index: 10002;
   animation: dropFade 0.2s ease;
 }
@@ -233,8 +233,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.2rem 0.5rem 0.5rem 0.5rem;
+  padding: 0.2rem 0.5rem 0.6rem 0.5rem;
   margin-bottom: 0.4rem;
+  border-bottom: 1px solid #f5f3ef;
 }
 
 .categoryHeaderKicker {
@@ -248,58 +249,77 @@
 .categoryHeaderTag {
   font-size: 0.625rem;
   font-weight: 600;
-  color: #9ca3af;
-  background-color: #f7f7f8;
-  padding: 0.15rem 0.45rem;
-  border-radius: 4px;
+  color: #78716c;
+  background-color: #f7f5f0;
+  border: 1px solid #ebe6dc;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
 }
 
 .categoryGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
+  gap: 0.55rem;
 }
 
 .categoryMenuItem {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
-  padding: 0.6rem 0.65rem;
-  border-radius: 10px;
+  gap: 0.75rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 12px;
   text-decoration: none;
-  background-color: #fafafa;
-  transition: background-color 0.2s ease;
+  background-color: #fbfaf8;
+  border: 1px solid #f0ede6;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
 .categoryMenuItem:hover {
-  background-color: #f3f3f1;
+  background-color: #f5f2eb;
+  border-color: #e2ded5;
+  transform: translateY(-1px);
 }
 
-.categoryIconWrap {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  color: #996515;
+/* Circular Category Image */
+.categoryCircleWrapper {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(135deg, rgba(184, 134, 11, 0.45), #ffffff, #996515);
   flex-shrink: 0;
-  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.categoryMenuItem:hover .categoryIconWrap {
-  background-color: #996515;
-  color: #ffffff;
-  border-color: #996515;
-  transform: scale(1.05);
+.categoryMenuItem:hover .categoryCircleWrapper {
+  transform: scale(1.06);
+  box-shadow: 0 4px 12px rgba(153, 101, 21, 0.22);
+}
+
+.categoryCircleInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #f3f4f6;
+}
+
+.categoryCircleImage {
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.categoryMenuItem:hover .categoryCircleImage {
+  transform: scale(1.12);
 }
 
 .categoryTextWrap {
   display: flex;
   flex-direction: column;
-  gap: 0.125rem;
+  gap: 0.15rem;
   min-width: 0;
   flex: 1;
 }
@@ -307,16 +327,17 @@
 .categoryMenuLabel {
   font-size: 0.875rem;
   font-weight: 700;
-  color: #111827;
+  color: #1c1917;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.2;
+  transition: color 0.2s ease;
 }
 
 .categoryMenuSub {
-  font-size: 0.625rem;
-  color: #6b7280;
+  font-size: 0.6875rem;
+  color: #78716c;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
@@ -329,14 +350,14 @@
 }
 
 .itemChevron {
-  color: #d1d5db;
+  color: #c4bfb7;
   flex-shrink: 0;
   transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .categoryMenuItem:hover .itemChevron {
   color: #996515;
-  transform: translateX(2px);
+  transform: translateX(3px);
 }
 
 .categoryMenuFooter {

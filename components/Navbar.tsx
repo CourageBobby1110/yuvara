@@ -10,18 +10,58 @@ import { useCartStore } from "@/store/cart";
 import { trackFBEvent } from "@/lib/fb-pixel";
 import CurrencySelector from "@/components/CurrencySelector";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, ShoppingBag, ChevronDown } from "lucide-react";
+import { Search, X, ShoppingBag, ChevronDown, ChevronRight } from "lucide-react";
 import styles from "./Navbar.module.css";
 
 const CATEGORY_ITEMS = [
-  { name: "Men", slug: "Men" },
-  { name: "Women", slug: "Women" },
-  { name: "Watches", slug: "Watches" },
-  { name: "Jewelry", slug: "Jewelry" },
-  { name: "Shoes", slug: "Shoes" },
-  { name: "Beauty", slug: "Beauty" },
-  { name: "Home", slug: "Home" },
-  { name: "Electronics", slug: "Electronics" },
+  {
+    name: "Men",
+    slug: "Men",
+    description: "Apparel & Style",
+    image: "/categories/men.jpg",
+  },
+  {
+    name: "Women",
+    slug: "Women",
+    description: "Couture & Fashion",
+    image: "/categories/women.jpg",
+  },
+  {
+    name: "Watches",
+    slug: "Watches",
+    description: "Luxury Timepieces",
+    image: "/categories/watches.jpg",
+  },
+  {
+    name: "Jewelry",
+    slug: "Jewelry",
+    description: "Fine & Designer Pieces",
+    image: "/categories/jewelry.jpg",
+  },
+  {
+    name: "Shoes",
+    slug: "Shoes",
+    description: "Footwear & Boots",
+    image: "/categories/shoes.png",
+  },
+  {
+    name: "Beauty",
+    slug: "Beauty",
+    description: "Skincare & Cosmetics",
+    image: "/categories/beauty.jpg",
+  },
+  {
+    name: "Home",
+    slug: "Home",
+    description: "Living & Decor",
+    image: "/categories/home.jpg",
+  },
+  {
+    name: "Electronics",
+    slug: "Electronics",
+    description: "Smart Devices & Audio",
+    image: "/categories/electronics.jpg",
+  },
 ];
 
 const QUICK_PILLS = [
@@ -162,6 +202,7 @@ export default function Navbar() {
                   <div className={styles.categoryMenu}>
                     <div className={styles.categoryMenuHeader}>
                       <span className={styles.categoryHeaderKicker}>Shop by category</span>
+                      <span className={styles.categoryHeaderTag}>{CATEGORY_ITEMS.length} Categories</span>
                     </div>
 
                     <div className={styles.categoryGrid}>
@@ -172,7 +213,22 @@ export default function Navbar() {
                           className={styles.categoryMenuItem}
                           onClick={() => setIsCategoryDropdownOpen(false)}
                         >
-                          <span className={styles.categoryMenuLabel}>{cat.name}</span>
+                          <div className={styles.categoryCircleWrapper}>
+                            <div className={styles.categoryCircleInner}>
+                              <Image
+                                src={cat.image}
+                                alt={cat.name}
+                                fill
+                                sizes="44px"
+                                className={styles.categoryCircleImage}
+                              />
+                            </div>
+                          </div>
+                          <div className={styles.categoryTextWrap}>
+                            <span className={styles.categoryMenuLabel}>{cat.name}</span>
+                            <span className={styles.categoryMenuSub}>{cat.description}</span>
+                          </div>
+                          <ChevronRight size={13} className={styles.itemChevron} strokeWidth={2.5} />
                         </Link>
                       ))}
                     </div>
@@ -184,6 +240,7 @@ export default function Navbar() {
                         onClick={() => setIsCategoryDropdownOpen(false)}
                       >
                         <span>View all collections</span>
+                        <ChevronRight size={13} strokeWidth={2.5} />
                       </Link>
                     </div>
                   </div>
