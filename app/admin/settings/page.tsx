@@ -489,13 +489,13 @@ export default function SettingsPage() {
                 </p>
               </div>
             </div>
-          ) : settings.pinterestLastSyncStatus === "Trial Access Pending" ? (
+          ) : settings.pinterestLastSyncStatus?.includes("Trial") || settings.pinterestLastSyncStatus?.includes("Standard Access") ? (
             <div className={`${styles.pinterestNotice} ${styles.noticeWarning}`}>
               <Clock className={styles.noticeIcon} size={18} />
               <div>
-                <strong>Trial Access Under Review by Pinterest</strong>
+                <strong>Trial Access Active — Standard Access Required for Live Pins</strong>
                 <p style={{ margin: "0.2rem 0 0" }}>
-                  Your Pinterest connection is active. When Pinterest activates your account, click <strong>Sync Products to Pinterest</strong> below to publish all items.
+                  Your store is successfully connected via OAuth 2.0 to <strong>@{settings.pinterestAccountUsername || "your account"}</strong>! Pinterest policy restricts publishing live Pins in production on Trial Access (Error Code 29). Use this active connection to record your 60-second upgrade demo video and submit it in the Pinterest Developer Portal.
                 </p>
               </div>
             </div>

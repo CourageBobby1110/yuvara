@@ -134,15 +134,19 @@ export async function POST(req: Request) {
 
         synced++;
       } catch (pinErr: any) {
-        if (pinErr.isTrialPending) {
+        if (
+          pinErr.isTrialPending ||
+          pinErr.code === 29 ||
+          pinErr.message?.toLowerCase().includes("trial access")
+        ) {
           await SiteSettings.findOneAndUpdate(
             {},
-            { pinterestLastSyncStatus: "Trial Access Pending" }
+            { pinterestLastSyncStatus: "Standard Access Required (Trial Access Active)" }
           );
           return NextResponse.json(
             {
               error:
-                "Your Pinterest Developer App is currently in Trial review by Pinterest. Once approved, all products will pin successfully.",
+                "Standard Access Required: Pinterest Trial access does not allow publishing live Pins in production. Your OAuth connection is working and ready—record your demo video now and submit for Standard Access.",
               isTrialPending: true,
               partialSync: synced,
             },
@@ -159,10 +163,23 @@ export async function POST(req: Request) {
       {},
       {
         pinterestLastSyncDate: new Date(),
-        pinterestLastSyncStatus: failed === 0 ? "Success" : "Partial",
+        pinterestLastSyncStatus:
+          synced > 0 ? (failed === 0 ? "Success" : "Partial") : "Failed",
         $inc: { pinterestSyncedCount: synced },
       }
     );
+
+    if (synced === 0 && failed > 0) {
+      return NextResponse.json(
+        {
+          error: `Sync could not publish products: ${errors[0] || "Pinterest API error"}`,
+          failed,
+          synced: 0,
+          errors: errors.slice(0, 5),
+        },
+        { status: 400 }
+      );
+    }
 
     return NextResponse.json({
       message: `Sync completed: ${synced} product(s) published to Pinterest.`,

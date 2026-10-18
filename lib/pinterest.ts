@@ -208,12 +208,18 @@ export function parsePinterestError(err: any): PinterestApiError {
     err?.message ||
     "Unknown Pinterest API error";
 
-  // Code 3 = "Your application consumer type is not supported" -> App is in Trial review
-  if (code === 3 || message?.toLowerCase().includes("consumer type")) {
+  // Code 29 = "Apps with Trial access may not create Pins in production"
+  // Code 3 = "Your application consumer type is not supported"
+  if (
+    code === 29 ||
+    code === 3 ||
+    message?.toLowerCase().includes("trial access") ||
+    message?.toLowerCase().includes("consumer type")
+  ) {
     return {
       code,
       message:
-        "Trial access pending: Pinterest is still reviewing your Developer App. Token will activate as soon as Pinterest approves it.",
+        "Standard Access Required: Pinterest Trial access does not permit creating live Pins in production. Please record your integration demo video and submit for Standard Access approval.",
       isTrialPending: true,
     };
   }
