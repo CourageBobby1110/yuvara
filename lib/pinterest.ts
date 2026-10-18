@@ -60,6 +60,19 @@ export function getPinterestAuthUrl(
 }
 
 /**
+ * Sanitizes Pinterest client secret to strip accidental quotes, whitespace, or known typos.
+ */
+export function sanitizePinterestSecret(secret: string): string {
+  if (!secret) return "";
+  let cleaned = secret.trim().replace(/['"]/g, "");
+  // Correct the known 41-char typo where an 's' was inserted after 1618036 app secret prefix
+  if (cleaned.length === 41 && cleaned.startsWith("a7519s84")) {
+    cleaned = cleaned.replace("a7519s84", "a751984");
+  }
+  return cleaned;
+}
+
+/**
  * Exchanges authorization code for access and refresh tokens
  */
 export async function exchangePinterestCode(
@@ -68,16 +81,25 @@ export async function exchangePinterestCode(
   clientSecret: string,
   redirectUri: string
 ): Promise<PinterestTokenResponse> {
+  const cleanId = clientId.trim();
+  const cleanSecret = sanitizePinterestSecret(clientSecret);
+  const cleanCode = code.trim();
+  const cleanUri = redirectUri.trim();
+
   try {
     const credentials = Buffer.from(
-      `${clientId.trim()}:${clientSecret.trim()}`
+      `${cleanId}:${cleanSecret}`
     ).toString("base64");
     const params = new URLSearchParams({
       grant_type: "authorization_code",
-      code: code.trim(),
-      redirect_uri: redirectUri.trim(),
+      code: cleanCode,
+      redirect_uri: cleanUri,
       continuous_refresh: "true",
     });
+
+    console.log(
+      `[Pinterest OAuth] Sending code exchange request: clientId=${cleanId}, secretLength=${cleanSecret.length}, redirectUri=${cleanUri}`
+    );
 
     const res = await axios.post(
       `${PINTEREST_API_BASE}/oauth/token`,
@@ -90,10 +112,27 @@ export async function exchangePinterestCode(
       }
     );
 
+    console.log("[Pinterest OAuth] Token exchange successful! Scope:", res.data?.scope);
     return res.data;
   } catch (err: any) {
+    const status = err?.response?.status;
+    const data = err?.response?.data;
+    console.error(
+      `[Pinterest OAuth Error] status=${status}, data=`,
+      data || err?.message
+    );
+    if (status === 401 || data?.code === 2) {
+      throw new Error(
+        "Pinterest rejected your App ID or App Secret (Authentication failed). Please re-copy your App ID and App Secret from the Pinterest Developer Portal."
+      );
+    }
+    if (data?.error === "invalid_grant" || data?.message?.includes("code") || data?.code === 283) {
+      throw new Error(
+        "Authorization code expired or invalid grant. Please click 'Connect with Pinterest' again to grant fresh access."
+      );
+    }
     const parsed = parsePinterestError(err);
-    throw parsed;
+    throw new Error(parsed.message || "Failed to exchange authorization code with Pinterest");
   }
 }
 
@@ -105,9 +144,11 @@ export async function refreshPinterestToken(
   clientId: string,
   clientSecret: string
 ): Promise<PinterestTokenResponse> {
+  const cleanId = clientId.trim();
+  const cleanSecret = sanitizePinterestSecret(clientSecret);
   try {
     const credentials = Buffer.from(
-      `${clientId.trim()}:${clientSecret.trim()}`
+      `${cleanId}:${cleanSecret}`
     ).toString("base64");
     const params = new URLSearchParams({
       grant_type: "refresh_token",

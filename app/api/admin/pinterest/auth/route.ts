@@ -59,6 +59,17 @@ export async function GET(req: Request) {
       maxAge: 60 * 15, // 15 minutes
       path: "/",
     });
+    cookieStore.set("pinterest_redirect_uri", redirectUri, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 15,
+      path: "/",
+    });
+
+    console.log(
+      `[Pinterest OAuth Init] Redirecting to Pinterest: appId=${appId}, redirectUri=${redirectUri}`
+    );
 
     const authUrl = getPinterestAuthUrl(appId, redirectUri, state);
 

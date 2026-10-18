@@ -53,11 +53,16 @@ export async function GET(req: Request) {
 
     const cookieStore = await cookies();
     const storedState = cookieStore.get("pinterest_oauth_state")?.value;
+    const storedRedirectUri = cookieStore.get("pinterest_redirect_uri")?.value;
     cookieStore.delete("pinterest_oauth_state");
+    cookieStore.delete("pinterest_redirect_uri");
 
     if (storedState && state && storedState !== state) {
       console.warn("[Pinterest OAuth] State parameter mismatch during verification");
     }
+
+    const effectiveRedirectUri = storedRedirectUri || redirectUri;
+    console.log("[Pinterest OAuth Callback] Using redirectUri:", effectiveRedirectUri);
 
     await dbConnect();
     const settings = await SiteSettings.findOne().lean();
@@ -82,13 +87,12 @@ export async function GET(req: Request) {
       );
     }
 
-
     // Exchange authorization code for tokens
     const tokenData = await exchangePinterestCode(
       code,
       appId,
       appSecret,
-      redirectUri
+      effectiveRedirectUri
     );
 
     // Fetch account info

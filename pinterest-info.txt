@@ -8,7 +8,7 @@ App ID (Client ID):
 1618036
 
 App Secret: 
-a7519s84aa0ed476884be1210fde14173ff66a291
+a751984aa0ed476884be1210fde14173ff66a291
 
 Pinterest Developer Portal:
 https://developers.pinterest.com/apps

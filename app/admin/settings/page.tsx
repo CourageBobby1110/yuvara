@@ -55,6 +55,8 @@ export default function SettingsPage() {
   const [showAdvancedToken, setShowAdvancedToken] = useState(false);
   const [copiedUri, setCopiedUri] = useState(false);
   const [showToken, setShowToken] = useState(false);
+  const [showSecret, setShowSecret] = useState(false);
+  const [oauthError, setOauthError] = useState<string | null>(null);
   const [copiedFeed, setCopiedFeed] = useState(false);
   const [boards, setBoards] = useState<{ id: string; name: string }[]>([]);
   const [loadingBoards, setLoadingBoards] = useState(false);
@@ -64,18 +66,20 @@ export default function SettingsPage() {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       if (params.get("pinterest") === "connected") {
+        setOauthError(null);
         const user = params.get("user");
         toast.success(
           user
             ? `Connected to Pinterest account: @${user}!`
-            : "Connected successfully to Pinterest via OAuth 2.0!"
+            : "Connected successfully to Pinterest via OAuth 2.0!",
+          { duration: 8000 }
         );
         fetchSettings();
         window.history.replaceState({}, "", window.location.pathname);
       } else if (params.get("pinterest_error")) {
-        toast.error(
-          `Pinterest authorization failed: ${params.get("pinterest_error")}`
-        );
+        const err = params.get("pinterest_error")!;
+        setOauthError(err);
+        toast.error(`Pinterest authorization failed: ${err}`, { duration: 10000 });
         window.history.replaceState({}, "", window.location.pathname);
       }
     }
@@ -560,6 +564,47 @@ export default function SettingsPage() {
           {/* OAuth Setup Card (When not connected or when wanting to re-authenticate) */}
           {!settings.pinterestAccessToken && (
             <div className={styles.oauthSetupCard}>
+              {oauthError && (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: "0.75rem",
+                    padding: "0.875rem 1rem",
+                    backgroundColor: "#fef2f2",
+                    border: "1px solid #f87171",
+                    borderRadius: "8px",
+                    color: "#991b1b",
+                    fontSize: "0.85rem",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  <AlertCircle size={20} style={{ flexShrink: 0, marginTop: "2px", color: "#dc2626" }} />
+                  <div style={{ flex: 1 }}>
+                    <strong style={{ display: "block", marginBottom: "0.25rem", color: "#991b1b", fontSize: "0.9rem" }}>
+                      Pinterest OAuth Connection Failed
+                    </strong>
+                    <p style={{ margin: 0, lineHeight: 1.4 }}>{oauthError}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setOauthError(null)}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: "#991b1b",
+                      cursor: "pointer",
+                      fontSize: "1.2rem",
+                      padding: "0 0.25rem",
+                      lineHeight: 1,
+                    }}
+                    aria-label="Dismiss error"
+                  >
+                    &times;
+                  </button>
+                </div>
+              )}
+
               <div>
                 <div className={styles.redirectUriLabel}>
                   Step 1: Add this Redirect URI in your Pinterest Developer App
@@ -589,7 +634,7 @@ export default function SettingsPage() {
                   Step 2: Pinterest App Credentials{" "}
                   {settings.pinterestAppId && (
                     <span style={{ color: "#16a34a", fontWeight: 500, fontSize: "0.72rem" }}>
-                      (✓ Auto-detected from .env.local)
+                      (✓ Verified in Settings)
                     </span>
                   )}
                 </div>
@@ -604,15 +649,33 @@ export default function SettingsPage() {
                       placeholder="Pinterest App ID (Client ID)"
                     />
                   </div>
-                  <div>
+                  <div style={{ position: "relative" }}>
                     <input
-                      type="password"
+                      type={showSecret ? "text" : "password"}
                       name="pinterestAppSecret"
                       value={settings.pinterestAppSecret || ""}
                       onChange={handleChange}
                       className={styles.input}
                       placeholder="Pinterest App Secret"
+                      style={{ paddingRight: "2.5rem" }}
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowSecret(!showSecret)}
+                      style={{
+                        position: "absolute",
+                        right: "0.75rem",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        color: "var(--color-text-muted)",
+                      }}
+                      aria-label="Toggle secret visibility"
+                    >
+                      {showSecret ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
                   </div>
                 </div>
               </div>
