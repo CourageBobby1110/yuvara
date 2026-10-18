@@ -73,7 +73,28 @@ export default function PrivacyPolicy() {
           other third parties who have a business need to know.
         </p>
 
-        <h2 className={styles.sectionTitle}>5. Contact Us</h2>
+        <h2 className={styles.sectionTitle}>
+          5. Third-Party Integrations &amp; Pinterest API Compliance
+        </h2>
+        <p>
+          YuVara integrates with third-party platforms, including the Pinterest API (v5), to enable product catalog syndication, Rich Pins, and automated social merchandising. In accordance with Pinterest&apos;s Developer Guidelines and Privacy Standards:
+        </p>
+        <ul className={styles.list}>
+          <li>
+            <strong>Information Accessed:</strong> When our store connects to Pinterest via official OAuth 2.0, we access only the minimal requested permissions (such as reading boards, creating boards, and publishing product Pins). We do not collect or store sensitive personal Pinterest profile data.
+          </li>
+          <li>
+            <strong>Data Transferred:</strong> Only public e-commerce store catalog information (including product titles, descriptions, imagery, pricing, and product URLs) is transmitted to Pinterest to create product Pins. Customer personal data, billing data, and customer purchase histories are never shared with or sent to Pinterest.
+          </li>
+          <li>
+            <strong>Credential Security:</strong> All Pinterest API authorization tokens and refresh tokens are securely encrypted and stored on restricted servers. We never collect or store user passwords.
+          </li>
+          <li>
+            <strong>Data Revocation &amp; Deletion:</strong> You or our authorized administrators may revoke access to Pinterest at any time either through our store administration dashboard or directly through your Pinterest account under <em>Settings &rarr; Apps</em>. Upon disconnection, token access is immediately revoked and deleted from our active database.
+          </li>
+        </ul>
+
+        <h2 className={styles.sectionTitle}>6. Contact Us</h2>
         <p>
           If you have any questions about this privacy policy or our privacy
           practices, please contact us at support@yuvarastore.com.

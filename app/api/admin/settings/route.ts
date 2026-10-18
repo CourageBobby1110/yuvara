@@ -13,6 +13,14 @@ export async function GET() {
 
     await dbConnect();
     const settings = await SiteSettings.findOne().lean();
+    const appId =
+      settings?.pinterestAppId ||
+      process.env.PINTEREST_APP_ID ||
+      "";
+    const appSecret =
+      settings?.pinterestAppSecret ||
+      process.env.PINTEREST_APP_SECRET ||
+      "";
     const token =
       settings?.pinterestAccessToken ||
       process.env.PINTEREST_ACCESS_TOKEN ||
@@ -20,7 +28,10 @@ export async function GET() {
 
     return NextResponse.json({
       ...(settings || {}),
+      pinterestAppId: appId,
+      pinterestAppSecret: appSecret,
       pinterestAccessToken: token,
+      pinterestAccountUsername: settings?.pinterestAccountUsername || "",
     });
   } catch (error) {
     console.error("Error fetching settings:", error);

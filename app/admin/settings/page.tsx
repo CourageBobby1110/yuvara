@@ -15,6 +15,11 @@ import {
   EyeOff,
   AlertCircle,
   Save,
+  Link2,
+  Unlink,
+  ShieldCheck,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import styles from "./Settings.module.css";
 
@@ -33,7 +38,10 @@ export default function SettingsPage() {
     facebookPixelId: "",
     lastSyncStatus: "",
     productsSyncedToday: 0,
+    pinterestAppId: "",
+    pinterestAppSecret: "",
     pinterestAccessToken: "",
+    pinterestAccountUsername: "",
     pinterestBoardId: "",
     pinterestLastSyncStatus: "",
     pinterestSyncedCount: 0,
@@ -42,6 +50,10 @@ export default function SettingsPage() {
 
   const [syncingPinterest, setSyncingPinterest] = useState(false);
   const [savingPinterest, setSavingPinterest] = useState(false);
+  const [connectingOAuth, setConnectingOAuth] = useState(false);
+  const [disconnectingPinterest, setDisconnectingPinterest] = useState(false);
+  const [showAdvancedToken, setShowAdvancedToken] = useState(false);
+  const [copiedUri, setCopiedUri] = useState(false);
   const [showToken, setShowToken] = useState(false);
   const [copiedFeed, setCopiedFeed] = useState(false);
   const [boards, setBoards] = useState<{ id: string; name: string }[]>([]);
@@ -49,6 +61,23 @@ export default function SettingsPage() {
 
   useEffect(() => {
     fetchSettings();
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("pinterest") === "connected") {
+        const user = params.get("user");
+        toast.success(
+          user
+            ? `Connected to Pinterest account: @${user}!`
+            : "Connected successfully to Pinterest via OAuth 2.0!"
+        );
+        window.history.replaceState({}, "", window.location.pathname);
+      } else if (params.get("pinterest_error")) {
+        toast.error(
+          `Pinterest authorization failed: ${params.get("pinterest_error")}`
+        );
+        window.history.replaceState({}, "", window.location.pathname);
+      }
+    }
   }, []);
 
   const fetchSettings = async () => {
@@ -71,6 +100,73 @@ export default function SettingsPage() {
   ) => {
     const { name, value } = e.target;
     setSettings((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCopyRedirectUri = () => {
+    const origin =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : "https://yuvara.com.ng";
+    const uri = `${origin}/api/admin/pinterest/callback`;
+    navigator.clipboard.writeText(uri);
+    setCopiedUri(true);
+    toast.success("Redirect URI copied! Paste this in your Pinterest Developer App.");
+    setTimeout(() => setCopiedUri(false), 2500);
+  };
+
+  const handleConnectOAuth = async () => {
+    setConnectingOAuth(true);
+    try {
+      const appId = settings.pinterestAppId?.trim();
+      const appSecret = settings.pinterestAppSecret?.trim();
+
+      // If credentials were provided or edited in the form, save them
+      if (appId || appSecret) {
+        await fetch("/api/admin/settings", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            pinterestAppId: appId,
+            pinterestAppSecret: appSecret,
+          }),
+        });
+      }
+
+      // Redirect to OAuth initiation route (which uses saved settings or .env.local)
+      window.location.href = "/api/admin/pinterest/auth";
+    } catch {
+      toast.error("Failed to initiate Pinterest connection");
+      setConnectingOAuth(false);
+    }
+  };
+
+  const handleDisconnectPinterest = async () => {
+    if (!confirm("Are you sure you want to disconnect your Pinterest account?")) {
+      return;
+    }
+    setDisconnectingPinterest(true);
+    try {
+      const res = await fetch("/api/admin/pinterest/disconnect", {
+        method: "POST",
+      });
+      if (res.ok) {
+        toast.success("Disconnected Pinterest account successfully.");
+        setSettings((prev) => ({
+          ...prev,
+          pinterestAccessToken: "",
+          pinterestAccountUsername: "",
+          pinterestLastSyncStatus: "Disconnected",
+        }));
+        setBoards([]);
+        fetchSettings();
+      } else {
+        toast.error("Failed to disconnect Pinterest account");
+      }
+    } catch {
+      toast.error("Network error while disconnecting");
+    } finally {
+      setDisconnectingPinterest(false);
+    }
   };
 
   const handleSavePinterestSettings = async () => {
@@ -382,9 +478,9 @@ export default function SettingsPage() {
             <div className={`${styles.pinterestNotice} ${styles.noticeWarning}`}>
               <AlertCircle className={styles.noticeIcon} size={18} />
               <div>
-                <strong>No Access Token Configured</strong>
+                <strong>OAuth 2.0 Required for Pinterest Standard Access</strong>
                 <p style={{ margin: "0.2rem 0 0" }}>
-                  Please enter your Pinterest Access Token below and click <strong>Save Token</strong>. You can generate a token in the <a href="https://developers.pinterest.com/apps" target="_blank" rel="noreferrer" style={{ color: "#b45309", textDecoration: "underline", fontWeight: 600 }}>Pinterest Developer Portal</a> under your App &rarr; Tools &rarr; Generate Access Token.
+                  Pinterest requires an automated OAuth 2.0 authorization flow to approve Standard Access. Connect your Pinterest account below using your App ID &amp; App Secret.
                 </p>
               </div>
             </div>
@@ -394,28 +490,207 @@ export default function SettingsPage() {
               <div>
                 <strong>Trial Access Under Review by Pinterest</strong>
                 <p style={{ margin: "0.2rem 0 0" }}>
-                  Your Access Token is configured and saved. Pinterest Developer accounts take 1–2 business days for trial review. As soon as Pinterest approves your app, the Sync button below will publish all your products automatically.
-                </p>
-              </div>
-            </div>
-          ) : settings.pinterestSyncedCount && settings.pinterestSyncedCount > 0 ? (
-            <div className={`${styles.pinterestNotice} ${styles.noticeSuccess}`}>
-              <CheckCircle2 className={styles.noticeIcon} size={18} />
-              <div>
-                <strong>Pinterest Connected &amp; Synced</strong>
-                <p style={{ margin: "0.2rem 0 0" }}>
-                  {settings.pinterestSyncedCount} product(s) synchronized. Rich Pins schema is active across all product pages.
+                  Your Pinterest connection is active. When Pinterest activates your account, click <strong>Sync Products to Pinterest</strong> below to publish all items.
                 </p>
               </div>
             </div>
           ) : (
-            <div className={`${styles.pinterestNotice} ${styles.noticeInfo}`}>
+            <div className={`${styles.pinterestNotice} ${styles.noticeSuccess}`}>
               <CheckCircle2 className={styles.noticeIcon} size={18} />
               <div>
-                <strong>Access Token Configured &amp; Saved</strong>
+                <strong>Pinterest Connected via OAuth 2.0</strong>
                 <p style={{ margin: "0.2rem 0 0" }}>
-                  Your Access Token is active. Click <strong>Load My Boards</strong> below to select a target board, then click <strong>Sync Products to Pinterest</strong> to begin publishing your catalog.
+                  Ready to sync products to your boards. Rich Pins schema and product catalog feed are live.
                 </p>
+              </div>
+            </div>
+          )}
+
+          {/* Connected Account Banner if Access Token Exists */}
+          {settings.pinterestAccessToken && (
+            <div className={styles.connectedAccountBox}>
+              <div className={styles.connectedAccountInfo}>
+                <div className={styles.connectedAvatar}>P</div>
+                <div className={styles.connectedAccountDetails}>
+                  <div className={styles.connectedAccountTitle}>
+                    <span>
+                      {settings.pinterestAccountUsername
+                        ? `@${settings.pinterestAccountUsername}`
+                        : "Pinterest Account Connected"}
+                    </span>
+                    <ShieldCheck size={16} color="#16a34a" />
+                  </div>
+                  <span className={styles.connectedAccountSub}>
+                    Scopes: boards:read,write, pins:read,write, user_accounts:read
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleDisconnectPinterest}
+                disabled={disconnectingPinterest}
+                className={styles.btnDisconnect}
+              >
+                <Unlink size={13} />
+                {disconnectingPinterest ? "Disconnecting..." : "Disconnect Account"}
+              </button>
+            </div>
+          )}
+
+          {/* OAuth Setup Card (When not connected or when wanting to re-authenticate) */}
+          {!settings.pinterestAccessToken && (
+            <div className={styles.oauthSetupCard}>
+              <div>
+                <div className={styles.redirectUriLabel}>
+                  Step 1: Add this Redirect URI in your Pinterest Developer App
+                </div>
+                <div className={styles.redirectUriBox}>
+                  <span className={styles.redirectUriValue}>
+                    {typeof window !== "undefined"
+                      ? `${window.location.origin}/api/admin/pinterest/callback`
+                      : "https://yuvara.com.ng/api/admin/pinterest/callback"}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopyRedirectUri}
+                    className={styles.btnCopyUri}
+                  >
+                    {copiedUri ? <Check size={13} color="#16a34a" /> : <Copy size={13} />}
+                    {copiedUri ? "Copied!" : "Copy URI"}
+                  </button>
+                </div>
+                <p style={{ fontSize: "0.72rem", color: "var(--color-text-muted)", margin: "0.35rem 0 0" }}>
+                  Go to <a href="https://developers.pinterest.com/apps" target="_blank" rel="noreferrer" style={{ color: "#E60023", textDecoration: "underline", fontWeight: 600 }}>Pinterest Developer Portal</a> &rarr; Your App &rarr; Manage &rarr; Configure &rarr; Redirect URIs.
+                </p>
+              </div>
+
+              <div>
+                <div className={styles.redirectUriLabel}>
+                  Step 2: Pinterest App Credentials{" "}
+                  {settings.pinterestAppId && (
+                    <span style={{ color: "#16a34a", fontWeight: 500, fontSize: "0.72rem" }}>
+                      (✓ Auto-detected from .env.local)
+                    </span>
+                  )}
+                </div>
+                <div className={styles.oauthConfigGrid}>
+                  <div>
+                    <input
+                      type="text"
+                      name="pinterestAppId"
+                      value={settings.pinterestAppId || ""}
+                      onChange={handleChange}
+                      className={styles.input}
+                      placeholder="Pinterest App ID (Client ID)"
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="password"
+                      name="pinterestAppSecret"
+                      value={settings.pinterestAppSecret || ""}
+                      onChange={handleChange}
+                      className={styles.input}
+                      placeholder="Pinterest App Secret"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <button
+                  type="button"
+                  onClick={handleConnectOAuth}
+                  disabled={connectingOAuth}
+                  className={styles.btnConnectOAuth}
+                >
+                  {connectingOAuth ? (
+                    <RefreshCw size={16} className="animate-spin" />
+                  ) : (
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 384 512"
+                      fill="#ffffff"
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{ display: "inline-block" }}
+                    >
+                      <path d="M204 6.5C101.4 6.5 0 74.9 0 185.6 0 256 39.6 296 63.6 296c9.9 0 15.6-27.6 15.6-35.4 0-9.3-23.7-29.1-23.7-67.8 0-80.4 61.2-137.4 140.4-137.4 68.1 0 118.5 38.7 118.5 109.8 0 53.1-21.3 152.7-90.3 152.7-28.8 0-51.9-24-44.4-53.7l19.5-82.5c7.5-30.6-14.7-56.1-43.5-56.1-36.9 0-66 38.4-66 89.1 0 32.7 11.4 55.2 11.4 55.2L42.9 444.6C30.3 498 33 507.9 33.6 510c1.2 3.9 6.6 5.4 8.7 2.4 3-4.2 41.7-57.9 54.3-107.1 3.9-15 20.4-78.9 20.4-78.9 9.6 18.3 37.8 34.5 67.8 34.5 91.2 0 157.2-83.7 157.2-192.9C342 77.3 277.2 6.5 204 6.5z" />
+                    </svg>
+                  )}
+                  {connectingOAuth
+                    ? "Connecting to Pinterest..."
+                    : "Connect with Pinterest (OAuth 2.0)"}
+                </button>
+              </div>
+
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setShowAdvancedToken(!showAdvancedToken)}
+                  className={styles.accordionBtn}
+                >
+                  {showAdvancedToken ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                  {showAdvancedToken
+                    ? "Hide Manual Token Entry"
+                    : "Or enter Access Token manually (Testing / Advanced)"}
+                </button>
+
+                {showAdvancedToken && (
+                  <div style={{ marginTop: "0.75rem", paddingTop: "0.75rem", borderTop: "1px dashed var(--color-border-medium)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.375rem" }}>
+                      <label className={styles.label} style={{ margin: 0 }}>Manual Pinterest Access Token</label>
+                      <button
+                        type="button"
+                        onClick={handleSavePinterestSettings}
+                        disabled={savingPinterest}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          color: "#E60023",
+                          fontSize: "0.75rem",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "0.25rem",
+                          padding: "0.2rem 0.4rem",
+                        }}
+                      >
+                        <Save size={12} className={savingPinterest ? "animate-spin" : ""} />
+                        {savingPinterest ? "Saving..." : "Save Token"}
+                      </button>
+                    </div>
+                    <div style={{ position: "relative" }}>
+                      <input
+                        type={showToken ? "text" : "password"}
+                        name="pinterestAccessToken"
+                        value={settings.pinterestAccessToken || ""}
+                        onChange={handleChange}
+                        className={styles.input}
+                        placeholder="Enter manual access token (e.g. pina_...)"
+                        style={{ paddingRight: "2.75rem" }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowToken(!showToken)}
+                        style={{
+                          position: "absolute",
+                          right: "0.75rem",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          color: "var(--color-text-muted)",
+                        }}
+                        aria-label="Toggle token visibility"
+                      >
+                        {showToken ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -426,8 +701,8 @@ export default function SettingsPage() {
               <span className={styles.statLabel}>Sync Status</span>
               <span className={styles.statValue}>
                 {!settings.pinterestAccessToken
-                  ? "Not Configured"
-                  : settings.pinterestLastSyncStatus || "Configured"}
+                  ? "Not Connected"
+                  : settings.pinterestLastSyncStatus || "Connected"}
               </span>
             </div>
             <div className={styles.statItem}>
@@ -444,64 +719,6 @@ export default function SettingsPage() {
                   : "Never"}
               </span>
             </div>
-          </div>
-
-          {/* Token Input */}
-          <div className={styles.field}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.375rem" }}>
-              <label className={styles.label} style={{ margin: 0 }}>Pinterest Access Token</label>
-              <button
-                type="button"
-                onClick={handleSavePinterestSettings}
-                disabled={savingPinterest}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "#E60023",
-                  fontSize: "0.75rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.25rem",
-                  padding: "0.2rem 0.4rem",
-                }}
-              >
-                <Save size={12} className={savingPinterest ? "animate-spin" : ""} />
-                {savingPinterest ? "Saving..." : "Save Token"}
-              </button>
-            </div>
-            <div style={{ position: "relative" }}>
-              <input
-                type={showToken ? "text" : "password"}
-                name="pinterestAccessToken"
-                value={settings.pinterestAccessToken || ""}
-                onChange={handleChange}
-                className={styles.input}
-                placeholder="Enter your Pinterest access token (e.g. pina_...)"
-                style={{ paddingRight: "2.75rem" }}
-              />
-              <button
-                type="button"
-                onClick={() => setShowToken(!showToken)}
-                style={{
-                  position: "absolute",
-                  right: "0.75rem",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  color: "var(--color-text-muted)",
-                }}
-                aria-label="Toggle token visibility"
-              >
-                {showToken ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </div>
-            <p style={{ fontSize: "0.75rem", color: "var(--color-text-muted)", marginTop: "0.35rem", marginBottom: 0 }}>
-              Need a token? Go to <a href="https://developers.pinterest.com/apps" target="_blank" rel="noreferrer" style={{ color: "#E60023", fontWeight: 600, textDecoration: "underline" }}>Pinterest Developer Portal</a> &rarr; Your App &rarr; Tools &rarr; Generate Access Token.
-            </p>
           </div>
 
           {/* Board Selection */}
@@ -618,6 +835,62 @@ export default function SettingsPage() {
               </a>
             </div>
           </div>
+
+          {/* Re-authenticate or configure App Credentials when connected */}
+          {settings.pinterestAccessToken && (
+            <div style={{ marginTop: "1rem" }}>
+              <button
+                type="button"
+                onClick={() => setShowAdvancedToken(!showAdvancedToken)}
+                className={styles.accordionBtn}
+              >
+                {showAdvancedToken ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                {showAdvancedToken
+                  ? "Hide Pinterest App Credentials"
+                  : "View or Update Pinterest App ID & Secret"}
+              </button>
+              {showAdvancedToken && (
+                <div style={{ marginTop: "0.75rem", padding: "0.875rem", background: "var(--color-bg-secondary)", borderRadius: "0.5rem", border: "1px solid var(--color-border-medium)" }}>
+                  <div className={styles.oauthConfigGrid}>
+                    <div>
+                      <label className={styles.label} style={{ fontSize: "0.75rem" }}>Pinterest App ID</label>
+                      <input
+                        type="text"
+                        name="pinterestAppId"
+                        value={settings.pinterestAppId || ""}
+                        onChange={handleChange}
+                        className={styles.input}
+                        placeholder="Pinterest App ID"
+                      />
+                    </div>
+                    <div>
+                      <label className={styles.label} style={{ fontSize: "0.75rem" }}>Pinterest App Secret</label>
+                      <input
+                        type="password"
+                        name="pinterestAppSecret"
+                        value={settings.pinterestAppSecret || ""}
+                        onChange={handleChange}
+                        className={styles.input}
+                        placeholder="Pinterest App Secret"
+                      />
+                    </div>
+                  </div>
+                  <div style={{ marginTop: "0.75rem", display: "flex", gap: "0.5rem" }}>
+                    <button
+                      type="button"
+                      onClick={handleConnectOAuth}
+                      disabled={connectingOAuth}
+                      className={styles.btnSecondaryAction}
+                      style={{ padding: "0.4rem 0.75rem", fontSize: "0.75rem" }}
+                    >
+                      <Link2 size={13} />
+                      {connectingOAuth ? "Connecting..." : "Re-authorize via OAuth 2.0"}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className={styles.card}>

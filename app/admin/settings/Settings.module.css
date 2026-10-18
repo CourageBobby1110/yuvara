@@ -615,3 +615,222 @@
   flex-shrink: 0;
 }
 
+/* OAuth 2.0 Connection & App Setup Styles */
+.oauthSetupCard {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-medium);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.oauthConfigGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .oauthConfigGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.redirectUriBox {
+  background: var(--color-bg-primary);
+  border: 1px solid rgba(230, 0, 35, 0.25);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .redirectUriBox {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.redirectUriLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.2rem;
+}
+
+.redirectUriValue {
+  font-family: monospace;
+  font-size: 0.8125rem;
+  color: #E60023;
+  word-break: break-all;
+  font-weight: 600;
+}
+
+.btnCopyUri {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-medium);
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  align-self: flex-start;
+}
+
+@media (min-width: 640px) {
+  .btnCopyUri {
+    align-self: center;
+  }
+}
+
+.btnCopyUri:hover {
+  background-color: var(--color-border-light);
+}
+
+.btnConnectOAuth {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background-color: #E60023;
+  color: #ffffff;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(230, 0, 35, 0.35);
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.btnConnectOAuth:hover:not(:disabled) {
+  background-color: #b6001c;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(230, 0, 35, 0.45);
+}
+
+.btnConnectOAuth:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.connectedAccountBox {
+  background: linear-gradient(135deg, rgba(230, 0, 35, 0.04) 0%, rgba(22, 163, 74, 0.04) 100%);
+  border: 1px solid rgba(22, 163, 74, 0.25);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .connectedAccountBox {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.connectedAccountInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.connectedAvatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background-color: #E60023;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.connectedAccountDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.connectedAccountTitle {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.connectedAccountSub {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.btnDisconnect {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  background-color: transparent;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .btnDisconnect {
+    width: auto;
+  }
+}
+
+.btnDisconnect:hover:not(:disabled) {
+  background-color: #fef2f2;
+  border-color: #f87171;
+}
+
+.accordionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.25rem 0;
+  margin-top: 0.5rem;
+}
+
+.accordionBtn:hover {
+  color: var(--color-text-primary);
+}
+
+

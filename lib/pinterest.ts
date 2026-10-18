@@ -10,10 +10,146 @@ export interface PinterestBoard {
   pin_count?: number;
 }
 
+export interface PinterestUserAccount {
+  username?: string;
+  account_type?: string;
+  profile_image?: string;
+  website_url?: string;
+  business_name?: string;
+}
+
+export interface PinterestTokenResponse {
+  access_token: string;
+  refresh_token?: string;
+  token_type?: string;
+  expires_in?: number;
+  scope?: string;
+}
+
 export interface PinterestApiError {
   code?: number;
   message?: string;
   isTrialPending?: boolean;
+}
+
+export const PINTEREST_OAUTH_SCOPES = [
+  "boards:read",
+  "boards:write",
+  "pins:read",
+  "pins:write",
+  "user_accounts:read",
+];
+
+/**
+ * Builds Pinterest OAuth 2.0 authorization URL
+ */
+export function getPinterestAuthUrl(
+  clientId: string,
+  redirectUri: string,
+  state: string = "yuvara_pinterest_auth"
+): string {
+  const scopeParam = PINTEREST_OAUTH_SCOPES.join(",");
+  const params = new URLSearchParams({
+    client_id: clientId,
+    redirect_uri: redirectUri,
+    response_type: "code",
+    scope: scopeParam,
+    state,
+  });
+  return `https://www.pinterest.com/oauth/?${params.toString()}`;
+}
+
+/**
+ * Exchanges authorization code for access and refresh tokens
+ */
+export async function exchangePinterestCode(
+  code: string,
+  clientId: string,
+  clientSecret: string,
+  redirectUri: string
+): Promise<PinterestTokenResponse> {
+  try {
+    const credentials = Buffer.from(
+      `${clientId.trim()}:${clientSecret.trim()}`
+    ).toString("base64");
+    const params = new URLSearchParams({
+      grant_type: "authorization_code",
+      code: code.trim(),
+      redirect_uri: redirectUri.trim(),
+    });
+
+    const res = await axios.post(
+      `${PINTEREST_API_BASE}/oauth/token`,
+      params.toString(),
+      {
+        headers: {
+          Authorization: `Basic ${credentials}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+
+    return res.data;
+  } catch (err: any) {
+    const parsed = parsePinterestError(err);
+    throw parsed;
+  }
+}
+
+/**
+ * Refreshes an expired Pinterest access token
+ */
+export async function refreshPinterestToken(
+  refreshToken: string,
+  clientId: string,
+  clientSecret: string
+): Promise<PinterestTokenResponse> {
+  try {
+    const credentials = Buffer.from(
+      `${clientId.trim()}:${clientSecret.trim()}`
+    ).toString("base64");
+    const params = new URLSearchParams({
+      grant_type: "refresh_token",
+      refresh_token: refreshToken.trim(),
+    });
+
+    const res = await axios.post(
+      `${PINTEREST_API_BASE}/oauth/token`,
+      params.toString(),
+      {
+        headers: {
+          Authorization: `Basic ${credentials}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+
+    return res.data;
+  } catch (err: any) {
+    const parsed = parsePinterestError(err);
+    throw parsed;
+  }
+}
+
+/**
+ * Retrieves the currently authenticated Pinterest user account details
+ */
+export async function getPinterestUserAccount(
+  token: string
+): Promise<PinterestUserAccount> {
+  try {
+    const res = await axios.get(`${PINTEREST_API_BASE}/user_account`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    return res.data || {};
+  } catch (err: any) {
+    const parsed = parsePinterestError(err);
+    throw parsed;
+  }
 }
 
 /**
