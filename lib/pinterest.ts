@@ -38,7 +38,8 @@ export function parsePinterestError(err: any): PinterestApiError {
   if (status === 401) {
     return {
       code,
-      message: "Pinterest authentication failed. Please verify your Access Token.",
+      message:
+        "Pinterest authentication failed. Your access token is invalid or expired. Please generate a fresh token in the Pinterest Developer Portal.",
     };
   }
 

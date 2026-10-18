@@ -13,7 +13,15 @@ export async function GET() {
 
     await dbConnect();
     const settings = await SiteSettings.findOne().lean();
-    return NextResponse.json(settings || {});
+    const token =
+      settings?.pinterestAccessToken ||
+      process.env.PINTEREST_ACCESS_TOKEN ||
+      "";
+
+    return NextResponse.json({
+      ...(settings || {}),
+      pinterestAccessToken: token,
+    });
   } catch (error) {
     console.error("Error fetching settings:", error);
     return NextResponse.json(
@@ -31,12 +39,18 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
+    const { _id, createdAt, updatedAt, __v, ...updateData } = body;
     await dbConnect();
 
-    const settings = await SiteSettings.findOneAndUpdate({}, body, {
-      new: true,
-      upsert: true,
-    });
+    const settings = await SiteSettings.findOneAndUpdate(
+      {},
+      { $set: updateData },
+      {
+        new: true,
+        upsert: true,
+        setDefaultsOnInsert: true,
+      }
+    );
 
     try {
       revalidatePath("/", "layout");

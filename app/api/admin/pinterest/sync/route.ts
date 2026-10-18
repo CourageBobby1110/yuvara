@@ -20,16 +20,27 @@ export async function POST(req: Request) {
 
     const body = await req.json().catch(() => ({}));
     const forceResync = Boolean(body.forceResync);
+    const passedToken = (body.token || body.pinterestAccessToken)?.trim();
 
     await dbConnect();
     const settings = await SiteSettings.findOne().lean();
     const token =
-      settings?.pinterestAccessToken || process.env.PINTEREST_ACCESS_TOKEN;
+      passedToken ||
+      settings?.pinterestAccessToken ||
+      process.env.PINTEREST_ACCESS_TOKEN;
 
     if (!token) {
       return NextResponse.json(
         { error: "Please enter your Pinterest Access Token before syncing." },
         { status: 400 }
+      );
+    }
+
+    if (passedToken && passedToken !== settings?.pinterestAccessToken) {
+      await SiteSettings.findOneAndUpdate(
+        {},
+        { $set: { pinterestAccessToken: passedToken } },
+        { upsert: true }
       );
     }
 

@@ -74,6 +74,8 @@
   color: #b8860b;
   flex-shrink: 0;
   line-height: 1;
+  position: relative;
+  top: -1px;
   transition: transform 0.25s ease, color 0.25s ease;
 }
 

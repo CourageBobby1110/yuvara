@@ -13,6 +13,8 @@ import {
   CheckCircle2,
   Eye,
   EyeOff,
+  AlertCircle,
+  Save,
 } from "lucide-react";
 import styles from "./Settings.module.css";
 
@@ -33,12 +35,13 @@ export default function SettingsPage() {
     productsSyncedToday: 0,
     pinterestAccessToken: "",
     pinterestBoardId: "",
-    pinterestLastSyncStatus: "Trial Access Pending",
+    pinterestLastSyncStatus: "",
     pinterestSyncedCount: 0,
     pinterestLastSyncDate: null,
   });
 
   const [syncingPinterest, setSyncingPinterest] = useState(false);
+  const [savingPinterest, setSavingPinterest] = useState(false);
   const [showToken, setShowToken] = useState(false);
   const [copiedFeed, setCopiedFeed] = useState(false);
   const [boards, setBoards] = useState<{ id: string; name: string }[]>([]);
@@ -70,16 +73,56 @@ export default function SettingsPage() {
     setSettings((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleSavePinterestSettings = async () => {
+    const token = settings.pinterestAccessToken?.trim();
+    if (!token) {
+      toast.error("Please enter a Pinterest Access Token first");
+      return;
+    }
+    setSavingPinterest(true);
+    try {
+      const res = await fetch("/api/admin/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pinterestAccessToken: token,
+          pinterestBoardId: settings.pinterestBoardId,
+        }),
+      });
+
+      if (res.ok) {
+        toast.success("Pinterest settings saved successfully!");
+        fetchSettings();
+      } else {
+        toast.error("Failed to save Pinterest settings");
+      }
+    } catch {
+      toast.error("Network error while saving settings");
+    } finally {
+      setSavingPinterest(false);
+    }
+  };
+
   const handleFetchBoards = async () => {
+    const token = settings.pinterestAccessToken?.trim();
+    if (!token) {
+      toast.error("Please enter a Pinterest Access Token first");
+      return;
+    }
     setLoadingBoards(true);
     try {
-      const res = await fetch("/api/admin/pinterest/boards");
+      const url = token
+        ? `/api/admin/pinterest/boards?token=${encodeURIComponent(token)}`
+        : "/api/admin/pinterest/boards";
+      const res = await fetch(url);
       const data = await res.json();
       if (res.ok && data.boards) {
         setBoards(data.boards);
         toast.success(`Found ${data.boards.length} Pinterest boards`);
+        fetchSettings();
       } else if (data.isTrialPending) {
         toast.info(data.error || "Trial access pending review by Pinterest.");
+        fetchSettings();
       } else {
         toast.error(data.error || "Failed to load boards from Pinterest");
       }
@@ -91,6 +134,11 @@ export default function SettingsPage() {
   };
 
   const handlePinterestSync = async (forceResync = false) => {
+    const token = settings.pinterestAccessToken?.trim();
+    if (!token) {
+      toast.error("Please enter your Pinterest Access Token before syncing");
+      return;
+    }
     setSyncingPinterest(true);
     toast.info("Connecting to Pinterest API...");
     try {
@@ -100,6 +148,7 @@ export default function SettingsPage() {
         body: JSON.stringify({
           forceResync,
           boardId: settings.pinterestBoardId,
+          pinterestAccessToken: token,
         }),
       });
       const data = await res.json();
@@ -291,7 +340,35 @@ export default function SettingsPage() {
               <div>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
                   <h2 className={styles.pinterestTitle}>Pinterest Integration &amp; Auto-Pinning</h2>
-                  <span className={styles.pinterestBadge}>Rich Pins Ready</span>
+                  {!settings.pinterestAccessToken ? (
+                    <span
+                      className={styles.pinterestBadge}
+                      style={{ backgroundColor: "#fef2f2", color: "#dc2626", borderColor: "#fecaca" }}
+                    >
+                      Token Required
+                    </span>
+                  ) : settings.pinterestLastSyncStatus === "Trial Access Pending" ? (
+                    <span
+                      className={styles.pinterestBadge}
+                      style={{ backgroundColor: "#fffbeb", color: "#d97706", borderColor: "#fde68a" }}
+                    >
+                      Trial Review
+                    </span>
+                  ) : settings.pinterestSyncedCount && settings.pinterestSyncedCount > 0 ? (
+                    <span
+                      className={styles.pinterestBadge}
+                      style={{ backgroundColor: "#ecfdf5", color: "#16a34a", borderColor: "#bbf7d0" }}
+                    >
+                      Connected
+                    </span>
+                  ) : (
+                    <span
+                      className={styles.pinterestBadge}
+                      style={{ backgroundColor: "#eff6ff", color: "#2563eb", borderColor: "#bfdbfe" }}
+                    >
+                      Configured
+                    </span>
+                  )}
                 </div>
                 <p className={styles.pinterestSubtitle}>
                   Connect your store to Pinterest. Publish products with real-time prices, high-res photos, and direct links to checkout.
@@ -300,8 +377,18 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          {/* Trial / Status Notice */}
-          {settings.pinterestLastSyncStatus === "Trial Access Pending" || !settings.pinterestSyncedCount ? (
+          {/* Status Alert Notice */}
+          {!settings.pinterestAccessToken ? (
+            <div className={`${styles.pinterestNotice} ${styles.noticeWarning}`}>
+              <AlertCircle className={styles.noticeIcon} size={18} />
+              <div>
+                <strong>No Access Token Configured</strong>
+                <p style={{ margin: "0.2rem 0 0" }}>
+                  Please enter your Pinterest Access Token below and click <strong>Save Token</strong>. You can generate a token in the <a href="https://developers.pinterest.com/apps" target="_blank" rel="noreferrer" style={{ color: "#b45309", textDecoration: "underline", fontWeight: 600 }}>Pinterest Developer Portal</a> under your App &rarr; Tools &rarr; Generate Access Token.
+                </p>
+              </div>
+            </div>
+          ) : settings.pinterestLastSyncStatus === "Trial Access Pending" ? (
             <div className={`${styles.pinterestNotice} ${styles.noticeWarning}`}>
               <Clock className={styles.noticeIcon} size={18} />
               <div>
@@ -311,13 +398,23 @@ export default function SettingsPage() {
                 </p>
               </div>
             </div>
-          ) : (
+          ) : settings.pinterestSyncedCount && settings.pinterestSyncedCount > 0 ? (
             <div className={`${styles.pinterestNotice} ${styles.noticeSuccess}`}>
               <CheckCircle2 className={styles.noticeIcon} size={18} />
               <div>
-                <strong>Pinterest Connected</strong>
+                <strong>Pinterest Connected &amp; Synced</strong>
                 <p style={{ margin: "0.2rem 0 0" }}>
                   {settings.pinterestSyncedCount} product(s) synchronized. Rich Pins schema is active across all product pages.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className={`${styles.pinterestNotice} ${styles.noticeInfo}`}>
+              <CheckCircle2 className={styles.noticeIcon} size={18} />
+              <div>
+                <strong>Access Token Configured &amp; Saved</strong>
+                <p style={{ margin: "0.2rem 0 0" }}>
+                  Your Access Token is active. Click <strong>Load My Boards</strong> below to select a target board, then click <strong>Sync Products to Pinterest</strong> to begin publishing your catalog.
                 </p>
               </div>
             </div>
@@ -328,7 +425,9 @@ export default function SettingsPage() {
             <div className={styles.statItem}>
               <span className={styles.statLabel}>Sync Status</span>
               <span className={styles.statValue}>
-                {settings.pinterestLastSyncStatus || "Pending Approval"}
+                {!settings.pinterestAccessToken
+                  ? "Not Configured"
+                  : settings.pinterestLastSyncStatus || "Configured"}
               </span>
             </div>
             <div className={styles.statItem}>
@@ -349,7 +448,29 @@ export default function SettingsPage() {
 
           {/* Token Input */}
           <div className={styles.field}>
-            <label className={styles.label}>Pinterest Access Token</label>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.375rem" }}>
+              <label className={styles.label} style={{ margin: 0 }}>Pinterest Access Token</label>
+              <button
+                type="button"
+                onClick={handleSavePinterestSettings}
+                disabled={savingPinterest}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "#E60023",
+                  fontSize: "0.75rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.25rem",
+                  padding: "0.2rem 0.4rem",
+                }}
+              >
+                <Save size={12} className={savingPinterest ? "animate-spin" : ""} />
+                {savingPinterest ? "Saving..." : "Save Token"}
+              </button>
+            </div>
             <div style={{ position: "relative" }}>
               <input
                 type={showToken ? "text" : "password"}
@@ -357,7 +478,7 @@ export default function SettingsPage() {
                 value={settings.pinterestAccessToken || ""}
                 onChange={handleChange}
                 className={styles.input}
-                placeholder="Enter your Pinterest access token"
+                placeholder="Enter your Pinterest access token (e.g. pina_...)"
                 style={{ paddingRight: "2.75rem" }}
               />
               <button
@@ -378,6 +499,9 @@ export default function SettingsPage() {
                 {showToken ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
+            <p style={{ fontSize: "0.75rem", color: "var(--color-text-muted)", marginTop: "0.35rem", marginBottom: 0 }}>
+              Need a token? Go to <a href="https://developers.pinterest.com/apps" target="_blank" rel="noreferrer" style={{ color: "#E60023", fontWeight: 600, textDecoration: "underline" }}>Pinterest Developer Portal</a> &rarr; Your App &rarr; Tools &rarr; Generate Access Token.
+            </p>
           </div>
 
           {/* Board Selection */}

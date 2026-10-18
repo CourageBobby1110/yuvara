@@ -8,27 +8,42 @@ import {
   parsePinterestError,
 } from "@/lib/pinterest";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const session = await auth();
     if (!session || session.user?.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { searchParams } = new URL(req.url);
+    const tokenQuery = searchParams.get("token")?.trim();
+
     await dbConnect();
     const settings = await SiteSettings.findOne().lean();
     const token =
-      settings?.pinterestAccessToken || process.env.PINTEREST_ACCESS_TOKEN;
+      tokenQuery ||
+      settings?.pinterestAccessToken ||
+      process.env.PINTEREST_ACCESS_TOKEN;
 
     if (!token) {
       return NextResponse.json(
-        { error: "No Pinterest Access Token configured yet" },
+        { error: "No Pinterest Access Token configured yet. Please enter your Access Token." },
         { status: 400 }
       );
     }
 
     try {
       const boards = await getPinterestBoards(token);
+
+      // Auto-save the token in SiteSettings if it worked and differs from stored token
+      if (tokenQuery && tokenQuery !== settings?.pinterestAccessToken) {
+        await SiteSettings.findOneAndUpdate(
+          {},
+          { $set: { pinterestAccessToken: tokenQuery } },
+          { upsert: true }
+        );
+      }
+
       return NextResponse.json({ boards });
     } catch (apiErr: any) {
       return NextResponse.json(
@@ -55,7 +70,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { name, description } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const { name, description, token: bodyToken, pinterestAccessToken } = body;
     if (!name) {
       return NextResponse.json(
         { error: "Board name is required" },
@@ -66,7 +82,9 @@ export async function POST(req: Request) {
     await dbConnect();
     const settings = await SiteSettings.findOne().lean();
     const token =
-      settings?.pinterestAccessToken || process.env.PINTEREST_ACCESS_TOKEN;
+      (bodyToken || pinterestAccessToken)?.trim() ||
+      settings?.pinterestAccessToken ||
+      process.env.PINTEREST_ACCESS_TOKEN;
 
     if (!token) {
       return NextResponse.json(
@@ -79,10 +97,18 @@ export async function POST(req: Request) {
       const board = await createPinterestBoard(token, name, description);
 
       // Auto-save this board ID as default if none set
+      const updateData: any = {};
       if (!settings?.pinterestBoardId) {
+        updateData.pinterestBoardId = board.id;
+      }
+      if ((bodyToken || pinterestAccessToken) && (bodyToken || pinterestAccessToken) !== settings?.pinterestAccessToken) {
+        updateData.pinterestAccessToken = (bodyToken || pinterestAccessToken).trim();
+      }
+      if (Object.keys(updateData).length > 0) {
         await SiteSettings.findOneAndUpdate(
           {},
-          { pinterestBoardId: board.id }
+          { $set: updateData },
+          { upsert: true }
         );
       }
 
