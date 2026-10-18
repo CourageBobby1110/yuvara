@@ -76,6 +76,7 @@ export async function exchangePinterestCode(
       grant_type: "authorization_code",
       code: code.trim(),
       redirect_uri: redirectUri.trim(),
+      continuous_refresh: "true",
     });
 
     const res = await axios.post(
@@ -159,7 +160,12 @@ export function parsePinterestError(err: any): PinterestApiError {
   const status = err?.response?.status;
   const data = err?.response?.data;
   const code = data?.code;
-  const message = data?.message || err?.message || "Unknown Pinterest API error";
+  const message =
+    data?.message ||
+    data?.error_description ||
+    data?.error ||
+    err?.message ||
+    "Unknown Pinterest API error";
 
   // Code 3 = "Your application consumer type is not supported" -> App is in Trial review
   if (code === 3 || message?.toLowerCase().includes("consumer type")) {

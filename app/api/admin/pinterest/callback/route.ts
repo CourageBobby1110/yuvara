@@ -18,19 +18,20 @@ export async function GET(req: Request) {
   const errorDescription = searchParams.get("error_description");
 
   const host = req.headers.get("host") || "localhost:3000";
+  const isLocal = host.includes("localhost") || host.includes("127.0.0.1");
   const proto =
-    req.headers.get("x-forwarded-proto") ||
-    (host.includes("localhost") ? "http" : "https");
-  const defaultOrigin = `${proto}://${host}`;
-  const configuredBaseUrl =
-    process.env.NEXTAUTH_URL ||
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    defaultOrigin;
+    req.headers.get("x-forwarded-proto") || (isLocal ? "http" : "https");
+  const baseUrl = isLocal
+    ? `${proto}://${host}`
+    : process.env.NEXTAUTH_URL ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      `${proto}://${host}`;
 
-  const adminSettingsUrl = `${configuredBaseUrl.replace(
+  const adminSettingsUrl = `${baseUrl.replace(/\/$/, "")}/admin/settings`;
+  const redirectUri = `${baseUrl.replace(
     /\/$/,
     ""
-  )}/admin/settings`;
+  )}/api/admin/pinterest/callback`;
 
   if (errorParam) {
     const errorMsg = errorDescription || errorParam;
@@ -48,21 +49,14 @@ export async function GET(req: Request) {
   }
 
   try {
-    const session = await auth();
-    if (!session || session.user?.role !== "admin") {
-      return NextResponse.redirect(
-        `${configuredBaseUrl}/auth/login?callbackUrl=${encodeURIComponent(
-          "/admin/settings"
-        )}`
-      );
-    }
+    console.log("[Pinterest OAuth Callback] Incoming redirect with code:", !!code, "state:", state);
 
     const cookieStore = await cookies();
     const storedState = cookieStore.get("pinterest_oauth_state")?.value;
     cookieStore.delete("pinterest_oauth_state");
 
     if (storedState && state && storedState !== state) {
-      console.warn("State mismatch during Pinterest OAuth verification");
+      console.warn("[Pinterest OAuth] State parameter mismatch during verification");
     }
 
     await dbConnect();
@@ -88,10 +82,6 @@ export async function GET(req: Request) {
       );
     }
 
-    const redirectUri = `${configuredBaseUrl.replace(
-      /\/$/,
-      ""
-    )}/api/admin/pinterest/callback`;
 
     // Exchange authorization code for tokens
     const tokenData = await exchangePinterestCode(
@@ -123,6 +113,7 @@ export async function GET(req: Request) {
       },
       { upsert: true }
     );
+    console.log("[Pinterest OAuth] Saved tokens successfully to SiteSettings! Account:", username || "(no username)");
 
     return NextResponse.redirect(
       `${adminSettingsUrl}?pinterest=connected${

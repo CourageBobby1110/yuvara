@@ -21,10 +21,7 @@ export async function GET() {
       settings?.pinterestAppSecret ||
       process.env.PINTEREST_APP_SECRET ||
       "";
-    const token =
-      settings?.pinterestAccessToken ||
-      process.env.PINTEREST_ACCESS_TOKEN ||
-      "";
+    const token = settings?.pinterestAccessToken || "";
 
     return NextResponse.json({
       ...(settings || {}),

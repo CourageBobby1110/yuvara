@@ -70,6 +70,7 @@ export default function SettingsPage() {
             ? `Connected to Pinterest account: @${user}!`
             : "Connected successfully to Pinterest via OAuth 2.0!"
         );
+        fetchSettings();
         window.history.replaceState({}, "", window.location.pathname);
       } else if (params.get("pinterest_error")) {
         toast.error(
@@ -525,15 +526,34 @@ export default function SettingsPage() {
                   </span>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={handleDisconnectPinterest}
-                disabled={disconnectingPinterest}
-                className={styles.btnDisconnect}
-              >
-                <Unlink size={13} />
-                {disconnectingPinterest ? "Disconnecting..." : "Disconnect Account"}
-              </button>
+              <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center" }}>
+                <button
+                  type="button"
+                  onClick={handleConnectOAuth}
+                  disabled={connectingOAuth}
+                  className={styles.btnSecondaryAction}
+                  style={{
+                    padding: "0.45rem 0.85rem",
+                    fontSize: "0.75rem",
+                    borderColor: "#fca5a5",
+                    color: "#b91c1c",
+                    backgroundColor: "#fff",
+                  }}
+                  title="Reconnect to Pinterest with fresh OAuth tokens"
+                >
+                  <Link2 size={13} />
+                  {connectingOAuth ? "Connecting..." : "Re-authorize OAuth"}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDisconnectPinterest}
+                  disabled={disconnectingPinterest}
+                  className={styles.btnDisconnect}
+                >
+                  <Unlink size={13} />
+                  {disconnectingPinterest ? "Disconnecting..." : "Disconnect"}
+                </button>
+              </div>
             </div>
           )}
 

@@ -24,10 +24,7 @@ export async function POST(req: Request) {
 
     await dbConnect();
     const settings = await SiteSettings.findOne().lean();
-    const token =
-      passedToken ||
-      settings?.pinterestAccessToken ||
-      process.env.PINTEREST_ACCESS_TOKEN;
+    const token = passedToken || settings?.pinterestAccessToken;
 
     if (!token) {
       return NextResponse.json(

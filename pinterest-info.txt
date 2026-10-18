@@ -1,0 +1,111 @@
+================================================================================
+           YUVARA - PINTEREST STANDARD ACCESS UPGRADE CHEATSHEET
+================================================================================
+
+1. ESSENTIAL APP DETAILS & URLS
+--------------------------------------------------------------------------------
+App ID (Client ID): 
+1618036
+
+App Secret: 
+a7519s84aa0ed476884be1210fde14173ff66a291
+
+Pinterest Developer Portal:
+https://developers.pinterest.com/apps
+
+Redirect URI (Must match character-for-character in Pinterest Portal):
+https://yuvara.com.ng/api/admin/pinterest/callback
+(Local testing URI if needed: http://localhost:3000/api/admin/pinterest/callback)
+
+Website / App URL:
+https://yuvara.com.ng
+
+Privacy Policy URL:
+https://yuvara.com.ng/privacy
+
+Terms of Service URL:
+https://yuvara.com.ng/terms
+
+Product Catalog Feed URL:
+https://yuvara.com.ng/api/pinterest/feed
+
+
+--------------------------------------------------------------------------------
+2. READY-TO-PASTE FORM FIELDS FOR UPGRADE APPLICATION
+--------------------------------------------------------------------------------
+When you click "Upgrade to Standard Access" in the Pinterest Developer Portal,
+use these exact details:
+
+App Name:
+YuVara Store Catalog & Pinning
+
+Use Case Description:
+"YuVara is an online e-commerce fashion and lifestyle retail store. We use the 
+Pinterest API v5 to connect our store via official OAuth 2.0 and automatically 
+publish and synchronize our curated product catalog directly as Pins to our 
+official Pinterest boards. Each Pin includes live pricing, high-resolution 
+product photography, rich product descriptions, and direct product checkout 
+links back to our verified store."
+
+Requested Scopes:
+- boards:read
+- boards:write
+- pins:read
+- pins:write
+- user_accounts:read
+
+Scope Justification:
+- boards:read & boards:write: Allows the store owner to select or create 
+  target boards to organize products by category.
+- pins:read & pins:write: Enables publishing product Pins with title, description, 
+  pricing, and direct checkout links.
+- user_accounts:read: Identifies the authenticated store account and ensures 
+  the admin is publishing to their verified business profile.
+
+
+--------------------------------------------------------------------------------
+3. STEP-BY-STEP DEMO VIDEO RECORDING SCRIPT (60 TO 90 SECONDS)
+--------------------------------------------------------------------------------
+*IMPORTANT: Reviewers will reject the video if the Pinterest OAuth consent 
+ screen is skipped or cut out. Do not edit it out!*
+
+[0:00 - 0:15] STEP 1: START IN YUVARA ADMIN
+- Open your browser to https://yuvara.com.ng/admin/settings (or localhost:3000/admin/settings).
+- Scroll down to the "Pinterest Integration & Auto-Pinning" card.
+- Show the "Connect with Pinterest (OAuth 2.0)" button.
+
+[0:15 - 0:35] STEP 2: SHOW THE PINTEREST OAUTH CONSENT SCREEN
+- Click the red "Connect with Pinterest (OAuth 2.0)" button.
+- Let the browser redirect to https://www.pinterest.com/oauth/...
+- Make sure the permissions list (boards, pins, profile) is visible on screen.
+- Click "Allow" / "Grant Access".
+
+[0:35 - 0:50] STEP 3: RETURN TO ADMIN & VERIFY CONNECTION
+- The browser redirects back to YuVara Admin Settings.
+- Highlight the green "Pinterest Connected via OAuth 2.0" status and 
+  the "@username Connected" banner.
+
+[0:50 - 1:15] STEP 4: TRIGGER AN API PIN ACTION
+- Click "Load My Boards" to fetch boards via the API.
+- Select your target board.
+- Click "Sync Products to Pinterest".
+- Wait for the success confirmation toast ("Sync completed").
+
+[1:15 - 1:30] STEP 5: VERIFY LIVE ON PINTEREST
+- Switch to a new tab and open your Pinterest profile (pinterest.com/your-username).
+- Navigate to the board and show the freshly created Pin live with its product image, 
+  title, price, and clickable link back to yuvara.com.ng.
+- End the recording.
+
+
+--------------------------------------------------------------------------------
+4. VIDEO HOSTING & SUBMISSION INSTRUCTIONS
+--------------------------------------------------------------------------------
+1. Upload your recording to Loom, Google Drive, or YouTube (as Unlisted).
+   - If using Google Drive: Ensure link sharing is set to "Anyone with the link can view".
+   - If using Loom: Ensure privacy is set to "Public with link".
+2. Open Pinterest Developer Portal -> Your App.
+3. Click "Upgrade to Standard Access".
+4. Fill in the form using Section 2 above and paste your video link.
+5. Click Submit. Reviews take 2 to 5 business days.
+================================================================================

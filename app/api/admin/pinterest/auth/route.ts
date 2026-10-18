@@ -35,16 +35,16 @@ export async function GET(req: Request) {
     }
 
     const host = req.headers.get("host") || "localhost:3000";
+    const isLocal = host.includes("localhost") || host.includes("127.0.0.1");
     const proto =
-      req.headers.get("x-forwarded-proto") ||
-      (host.includes("localhost") ? "http" : "https");
-    const defaultOrigin = `${proto}://${host}`;
-    const configuredBaseUrl =
-      process.env.NEXTAUTH_URL ||
-      process.env.NEXT_PUBLIC_SITE_URL ||
-      defaultOrigin;
+      req.headers.get("x-forwarded-proto") || (isLocal ? "http" : "https");
+    const baseUrl = isLocal
+      ? `${proto}://${host}`
+      : process.env.NEXTAUTH_URL ||
+        process.env.NEXT_PUBLIC_SITE_URL ||
+        `${proto}://${host}`;
 
-    const redirectUri = `${configuredBaseUrl.replace(
+    const redirectUri = `${baseUrl.replace(
       /\/$/,
       ""
     )}/api/admin/pinterest/callback`;

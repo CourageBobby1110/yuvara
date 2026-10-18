@@ -20,10 +20,7 @@ export async function GET(req: Request) {
 
     await dbConnect();
     const settings = await SiteSettings.findOne().lean();
-    const token =
-      tokenQuery ||
-      settings?.pinterestAccessToken ||
-      process.env.PINTEREST_ACCESS_TOKEN;
+    const token = tokenQuery || settings?.pinterestAccessToken;
 
     if (!token) {
       return NextResponse.json(
