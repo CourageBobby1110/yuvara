@@ -56,3 +56,13 @@
     padding-right: 2rem;
   }
 }
+
+.emailLink {
+  color: var(--color-luxury-gold, #996515);
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.emailLink:hover {
+  color: var(--color-luxury-gold-dark, #724b0f);
+}

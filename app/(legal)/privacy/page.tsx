@@ -1,5 +1,12 @@
 import React from "react";
+import type { Metadata } from "next";
 import styles from "./Privacy.module.css";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy | Yuvara",
+  description:
+    "Learn how Yuvara collects, uses, and safeguards your personal data when you visit our website.",
+};
 
 export default function PrivacyPolicy() {
   return (
@@ -97,7 +104,14 @@ export default function PrivacyPolicy() {
         <h2 className={styles.sectionTitle}>6. Contact Us</h2>
         <p>
           If you have any questions about this privacy policy or our privacy
-          practices, please contact us at support@yuvarastore.com.
+          practices, please contact us at{" "}
+          <a
+            href="mailto:support@yuvara.com.ng"
+            className={styles.emailLink}
+          >
+            support@yuvara.com.ng
+          </a>
+          .
         </p>
       </div>
     </div>
