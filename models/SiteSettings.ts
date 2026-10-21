@@ -56,6 +56,7 @@ const SiteSettingsSchema = new Schema(
     pinterestRefreshToken: { type: String, default: "" },
     pinterestAccountUsername: { type: String, default: "" },
     pinterestBoardId: { type: String, default: "" },
+    pinterestBoardName: { type: String, default: "" },
     pinterestLastSyncStatus: { type: String, default: "Idle" },
     pinterestSyncedCount: { type: Number, default: 0 },
     pinterestLastSyncDate: { type: Date },
@@ -103,6 +104,7 @@ export interface ISiteSettings {
   pinterestRefreshToken?: string;
   pinterestAccountUsername?: string;
   pinterestBoardId?: string;
+  pinterestBoardName?: string;
   pinterestLastSyncStatus?: string;
   pinterestSyncedCount?: number;
   pinterestLastSyncDate?: Date;

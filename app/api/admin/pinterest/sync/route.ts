@@ -7,6 +7,7 @@ import {
   getPinterestBoards,
   createPinterestBoard,
   createPinterestPin,
+  withPinterestTokenRefresh,
 } from "@/lib/pinterest";
 
 export const maxDuration = 300; // 5 minutes timeout for bulk operations
@@ -23,12 +24,12 @@ export async function POST(req: Request) {
     const passedToken = (body.token || body.pinterestAccessToken)?.trim();
 
     await dbConnect();
-    const settings = await SiteSettings.findOne().lean();
-    const token = passedToken || settings?.pinterestAccessToken;
+    const settings = await SiteSettings.findOne();
+    let token = passedToken || settings?.pinterestAccessToken;
 
     if (!token) {
       return NextResponse.json(
-        { error: "Please enter your Pinterest Access Token before syncing." },
+        { error: "Please enter or connect your Pinterest Access Token before syncing." },
         { status: 400 }
       );
     }
@@ -43,24 +44,65 @@ export async function POST(req: Request) {
 
     let boardId = body.boardId || settings?.pinterestBoardId;
 
+    // Helper for executing Pinterest calls with auto-refresh
+    const executeWithRefresh = async <T>(action: (t: string) => Promise<T>): Promise<T> => {
+      return withPinterestTokenRefresh(action, {
+        accessToken: token as string,
+        refreshToken: settings?.pinterestRefreshToken,
+        appId: settings?.pinterestAppId || process.env.PINTEREST_APP_ID,
+        appSecret: settings?.pinterestAppSecret || process.env.PINTEREST_APP_SECRET,
+        onTokenRefreshed: async (newToken, newRefresh) => {
+          token = newToken;
+          await SiteSettings.findOneAndUpdate(
+            {},
+            {
+              $set: {
+                pinterestAccessToken: newToken,
+                ...(newRefresh ? { pinterestRefreshToken: newRefresh } : {}),
+              },
+            }
+          );
+        },
+      });
+    };
+
     // If no boardId is provided, retrieve or auto-create one
     if (!boardId) {
       try {
-        const boards = await getPinterestBoards(token);
-        if (boards && boards.length > 0) {
-          boardId = boards[0].id;
+        const boards = await executeWithRefresh((t) => getPinterestBoards(t));
+        // Check if there is an official YuVara board
+        const existingYuvaraBoard = boards.find((b) =>
+          b.name?.toLowerCase().includes("yuvara")
+        );
+
+        if (existingYuvaraBoard) {
+          boardId = existingYuvaraBoard.id;
+          await SiteSettings.findOneAndUpdate(
+            {},
+            {
+              pinterestBoardId: boardId,
+              pinterestBoardName: existingYuvaraBoard.name,
+            }
+          );
         } else {
-          // Auto create a board
-          const newBoard = await createPinterestBoard(
-            token,
-            "YuVara Official Store",
-            "Shop exclusive trends and products directly from YuVara"
+          // Auto create "YuVara Official Store" board
+          const newBoard = await executeWithRefresh((t) =>
+            createPinterestBoard(
+              t,
+              "YuVara Official Store",
+              "Shop exclusive trends and products directly from YuVara (yuvara.com.ng)",
+              "PUBLIC"
+            )
           );
           boardId = newBoard.id;
+          await SiteSettings.findOneAndUpdate(
+            {},
+            {
+              pinterestBoardId: boardId,
+              pinterestBoardName: newBoard.name,
+            }
+          );
         }
-
-        // Save selected/created board ID
-        await SiteSettings.findOneAndUpdate({}, { pinterestBoardId: boardId });
       } catch (boardErr: any) {
         if (boardErr.isTrialPending) {
           await SiteSettings.findOneAndUpdate(

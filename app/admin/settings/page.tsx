@@ -20,6 +20,10 @@ import {
   ShieldCheck,
   ChevronDown,
   ChevronUp,
+  Plus,
+  FolderPlus,
+  Sparkles,
+  Layers,
 } from "lucide-react";
 import styles from "./Settings.module.css";
 
@@ -43,6 +47,7 @@ export default function SettingsPage() {
     pinterestAccessToken: "",
     pinterestAccountUsername: "",
     pinterestBoardId: "",
+    pinterestBoardName: "",
     pinterestLastSyncStatus: "",
     pinterestSyncedCount: 0,
     pinterestLastSyncDate: null,
@@ -58,8 +63,20 @@ export default function SettingsPage() {
   const [showSecret, setShowSecret] = useState(false);
   const [oauthError, setOauthError] = useState<string | null>(null);
   const [copiedFeed, setCopiedFeed] = useState(false);
-  const [boards, setBoards] = useState<{ id: string; name: string }[]>([]);
+  const [boards, setBoards] = useState<{
+    id: string;
+    name: string;
+    pin_count?: number;
+    privacy?: string;
+    description?: string;
+  }[]>([]);
   const [loadingBoards, setLoadingBoards] = useState(false);
+  const [showCreateBoard, setShowCreateBoard] = useState(false);
+  const [newBoardName, setNewBoardName] = useState("");
+  const [newBoardDescription, setNewBoardDescription] = useState("");
+  const [newBoardPrivacy, setNewBoardPrivacy] = useState<"PUBLIC" | "SECRET">("PUBLIC");
+  const [creatingBoard, setCreatingBoard] = useState(false);
+  const [creatingCategories, setCreatingCategories] = useState(false);
 
   useEffect(() => {
     fetchSettings();
@@ -68,12 +85,14 @@ export default function SettingsPage() {
       if (params.get("pinterest") === "connected") {
         setOauthError(null);
         const user = params.get("user");
-        toast.success(
-          user
-            ? `Connected to Pinterest account: @${user}!`
-            : "Connected successfully to Pinterest via OAuth 2.0!",
-          { duration: 8000 }
-        );
+        const board = params.get("board");
+        let msg = user
+          ? `Connected to Pinterest account: @${user}!`
+          : "Connected successfully to Pinterest via OAuth 2.0!";
+        if (board) {
+          msg += ` Target board: "${board}".`;
+        }
+        toast.success(msg, { duration: 8000 });
         fetchSettings();
         window.history.replaceState({}, "", window.location.pathname);
       } else if (params.get("pinterest_error")) {
@@ -91,12 +110,37 @@ export default function SettingsPage() {
       if (res.ok) {
         const data = await res.json();
         setSettings((prev) => ({ ...prev, ...data }));
+        if (data.pinterestAccessToken) {
+          handleFetchBoardsQuietly(data.pinterestAccessToken);
+        }
       }
     } catch (error) {
       console.error("Error fetching settings:", error);
       toast.error("Failed to load settings");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleFetchBoardsQuietly = async (token?: string) => {
+    try {
+      const activeToken = token || settings.pinterestAccessToken;
+      if (!activeToken) return;
+      const url = `/api/admin/pinterest/boards?token=${encodeURIComponent(activeToken)}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (res.ok && data.boards) {
+        setBoards(data.boards);
+        if (data.currentBoardId) {
+          setSettings((prev) => ({
+            ...prev,
+            pinterestBoardId: data.currentBoardId,
+            pinterestBoardName: data.currentBoardName || prev.pinterestBoardName,
+          }));
+        }
+      }
+    } catch {
+      // Quiet background fetch
     }
   };
 
@@ -204,10 +248,10 @@ export default function SettingsPage() {
     }
   };
 
-  const handleFetchBoards = async () => {
+  const handleFetchBoards = async (quiet = false) => {
     const token = settings.pinterestAccessToken?.trim();
     if (!token) {
-      toast.error("Please enter a Pinterest Access Token first");
+      if (!quiet) toast.error("Please enter a Pinterest Access Token first");
       return;
     }
     setLoadingBoards(true);
@@ -219,18 +263,116 @@ export default function SettingsPage() {
       const data = await res.json();
       if (res.ok && data.boards) {
         setBoards(data.boards);
-        toast.success(`Found ${data.boards.length} Pinterest boards`);
-        fetchSettings();
+        if (data.currentBoardId) {
+          setSettings((prev) => ({
+            ...prev,
+            pinterestBoardId: data.currentBoardId,
+            pinterestBoardName: data.currentBoardName || prev.pinterestBoardName,
+          }));
+        }
+        if (!quiet) toast.success(`Found ${data.boards.length} Pinterest boards`);
       } else if (data.isTrialPending) {
-        toast.info(data.error || "Trial access pending review by Pinterest.");
-        fetchSettings();
+        if (!quiet) toast.info(data.error || "Trial access pending review by Pinterest.");
       } else {
-        toast.error(data.error || "Failed to load boards from Pinterest");
+        if (!quiet) toast.error(data.error || "Failed to load boards from Pinterest");
       }
     } catch {
-      toast.error("Network error fetching boards");
+      if (!quiet) toast.error("Network error fetching boards");
     } finally {
       setLoadingBoards(false);
+    }
+  };
+
+  const handleCreateBoard = async (customName?: string, customDesc?: string) => {
+    const nameToUse = (customName || newBoardName).trim();
+    if (!nameToUse) {
+      toast.error("Please enter a board name");
+      return;
+    }
+    setCreatingBoard(true);
+    try {
+      const res = await fetch("/api/admin/pinterest/boards", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: nameToUse,
+          description:
+            customDesc ||
+            newBoardDescription ||
+            "Shop curated collections and products from YuVara (yuvara.com.ng)",
+          privacy: newBoardPrivacy,
+          setAsDefault: true,
+          pinterestAccessToken: settings.pinterestAccessToken,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.board) {
+        toast.success(data.message || `Board "${data.board.name}" connected!`);
+        setSettings((prev) => ({
+          ...prev,
+          pinterestBoardId: data.board.id,
+          pinterestBoardName: data.board.name,
+        }));
+        setShowCreateBoard(false);
+        setNewBoardName("");
+        setNewBoardDescription("");
+        handleFetchBoards(true);
+      } else {
+        toast.error(data.error || "Failed to create board on Pinterest");
+      }
+    } catch {
+      toast.error("Network error creating board");
+    } finally {
+      setCreatingBoard(false);
+    }
+  };
+
+  const handleGenerateCategoryBoards = async () => {
+    if (!confirm("Auto-generate a Pinterest board for every product category in your store?")) {
+      return;
+    }
+    setCreatingCategories(true);
+    try {
+      const res = await fetch("/api/admin/pinterest/boards/categories", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.message || "Category boards created!");
+        handleFetchBoards(true);
+      } else {
+        toast.error(data.error || "Failed to generate category boards");
+      }
+    } catch {
+      toast.error("Network error generating category boards");
+    } finally {
+      setCreatingCategories(false);
+    }
+  };
+
+  const handleBoardSelect = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedId = e.target.value;
+    const selectedBoard = boards.find((b) => b.id === selectedId);
+    setSettings((prev) => ({
+      ...prev,
+      pinterestBoardId: selectedId,
+      pinterestBoardName: selectedBoard?.name || "",
+    }));
+
+    if (selectedId) {
+      try {
+        await fetch("/api/admin/settings", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            pinterestBoardId: selectedId,
+            pinterestBoardName: selectedBoard?.name || "",
+          }),
+        });
+        toast.success(`Target board set to "${selectedBoard?.name || selectedId}"`);
+      } catch {
+        // quiet fallback
+      }
     }
   };
 
@@ -805,54 +947,257 @@ export default function SettingsPage() {
           </div>
 
           {/* Board Selection */}
-          <div className={styles.field}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.375rem" }}>
-              <label className={styles.label} style={{ margin: 0 }}>Target Pinterest Board</label>
-              <button
-                type="button"
-                onClick={handleFetchBoards}
-                disabled={loadingBoards}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "#E60023",
-                  fontSize: "0.75rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.25rem",
-                }}
-              >
-                <RefreshCw size={12} className={loadingBoards ? "animate-spin" : ""} />
-                {loadingBoards ? "Checking..." : "Load My Boards"}
-              </button>
+          {/* Comprehensive Board Management & Creation */}
+          <div className={styles.boardManagementCard}>
+            <div className={styles.boardHeader}>
+              <div>
+                <label className={styles.label} style={{ margin: 0, fontSize: "0.875rem" }}>
+                  Pinterest Store Board
+                </label>
+                <p style={{ margin: "0.15rem 0 0", fontSize: "0.72rem", color: "var(--color-text-muted)" }}>
+                  Select or create the Pinterest board where your store products will be published.
+                </p>
+              </div>
+
+              <div className={styles.boardActionsBar}>
+                <button
+                  type="button"
+                  onClick={() => setShowCreateBoard(!showCreateBoard)}
+                  className={`${styles.btnActionSmall} ${styles.btnCreateBoardPrimary}`}
+                >
+                  <Plus size={13} />
+                  {showCreateBoard ? "Close Form" : "Create New Board"}
+                </button>
+
+                {!boards.some((b) => b.name?.toLowerCase().includes("yuvara")) && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleCreateBoard(
+                        "YuVara Official Store",
+                        "Shop curated collections, premium fashion, lifestyle and electronics directly from YuVara (yuvara.com.ng)."
+                      )
+                    }
+                    disabled={creatingBoard}
+                    className={`${styles.btnActionSmall} ${styles.btnAutoOfficial}`}
+                  >
+                    <Sparkles size={13} className={creatingBoard ? "animate-spin" : ""} />
+                    {creatingBoard ? "Creating..." : "✨ Auto-Create Official Board"}
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleGenerateCategoryBoards}
+                  disabled={creatingCategories}
+                  className={styles.btnActionSmall}
+                  title="Automatically creates a Pinterest board for each product category in your catalog"
+                >
+                  <FolderPlus size={13} className={creatingCategories ? "animate-spin" : ""} />
+                  {creatingCategories ? "Provisioning..." : "Category Boards"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleFetchBoards(false)}
+                  disabled={loadingBoards}
+                  className={styles.btnActionSmall}
+                >
+                  <RefreshCw size={12} className={loadingBoards ? "animate-spin" : ""} />
+                  {loadingBoards ? "Refreshing..." : "Refresh"}
+                </button>
+              </div>
             </div>
 
-            {boards.length > 0 ? (
-              <select
-                name="pinterestBoardId"
-                value={settings.pinterestBoardId || ""}
-                onChange={handleChange}
-                className={styles.input}
-              >
-                <option value="">-- Select a Board --</option>
-                {boards.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.name}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <input
-                type="text"
-                name="pinterestBoardId"
-                value={settings.pinterestBoardId || ""}
-                onChange={handleChange}
-                className={styles.input}
-                placeholder="Enter Board ID or leave empty to auto-create 'Yuvara Official Store'"
-              />
+            {/* Active Connected Board Display */}
+            {(settings.pinterestBoardId || settings.pinterestBoardName) && (
+              <div className={styles.activeBoardDisplay}>
+                <div className={styles.activeBoardInfo}>
+                  <div className={styles.activeBoardIcon}>
+                    <CheckCircle2 size={18} />
+                  </div>
+                  <div>
+                    <div className={styles.activeBoardName}>
+                      {settings.pinterestBoardName ||
+                        boards.find((b) => b.id === settings.pinterestBoardId)?.name ||
+                        "Selected Board"}
+                      {(() => {
+                        const b = boards.find((x) => x.id === settings.pinterestBoardId);
+                        return (
+                          <>
+                            {b?.privacy && (
+                              <span
+                                style={{
+                                  fontSize: "0.65rem",
+                                  padding: "0.1rem 0.35rem",
+                                  borderRadius: "0.25rem",
+                                  background:
+                                    b.privacy === "PUBLIC"
+                                      ? "rgba(22, 163, 74, 0.12)"
+                                      : "rgba(234, 179, 8, 0.12)",
+                                  color: b.privacy === "PUBLIC" ? "#16a34a" : "#ca8a04",
+                                  fontWeight: 600,
+                                }}
+                              >
+                                {b.privacy}
+                              </span>
+                            )}
+                            {b?.pin_count !== undefined && (
+                              <span
+                                style={{
+                                  fontSize: "0.72rem",
+                                  color: "var(--color-text-muted)",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                ({b.pin_count} pin{b.pin_count === 1 ? "" : "s"})
+                              </span>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </div>
+                    <div className={styles.activeBoardId}>
+                      ID: {settings.pinterestBoardId}
+                    </div>
+                  </div>
+                </div>
+
+                {settings.pinterestAccountUsername && (
+                  <a
+                    href={`https://www.pinterest.com/${settings.pinterestAccountUsername}/`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={styles.btnActionSmall}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <ExternalLink size={12} />
+                    View Profile
+                  </a>
+                )}
+              </div>
             )}
+
+            {/* Create Board Form */}
+            {showCreateBoard && (
+              <div className={styles.createBoardCard}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--color-text-primary)" }}>
+                    Create New Pinterest Board
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setShowCreateBoard(false)}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "var(--color-text-muted)", fontSize: "1rem" }}
+                  >
+                    &times;
+                  </button>
+                </div>
+
+                <div className={styles.createBoardFormGrid}>
+                  <div>
+                    <label className={styles.label} style={{ fontSize: "0.72rem" }}>
+                      Board Name (Max 50 characters)
+                    </label>
+                    <input
+                      type="text"
+                      value={newBoardName}
+                      onChange={(e) => setNewBoardName(e.target.value)}
+                      placeholder="e.g. YuVara Luxury Fashion"
+                      maxLength={50}
+                      className={styles.input}
+                    />
+                  </div>
+                  <div>
+                    <label className={styles.label} style={{ fontSize: "0.72rem" }}>
+                      Privacy
+                    </label>
+                    <select
+                      value={newBoardPrivacy}
+                      onChange={(e) => setNewBoardPrivacy(e.target.value as "PUBLIC" | "SECRET")}
+                      className={styles.input}
+                    >
+                      <option value="PUBLIC">PUBLIC (Visible to all)</option>
+                      <option value="SECRET">SECRET (Only visible to you)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className={styles.label} style={{ fontSize: "0.72rem" }}>
+                    Description (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={newBoardDescription}
+                    onChange={(e) => setNewBoardDescription(e.target.value)}
+                    placeholder="Short description of the products in this board"
+                    maxLength={500}
+                    className={styles.input}
+                  />
+                </div>
+
+                <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowCreateBoard(false)}
+                    className={styles.btnActionSmall}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleCreateBoard()}
+                    disabled={creatingBoard || !newBoardName.trim()}
+                    className={`${styles.btnActionSmall} ${styles.btnCreateBoardPrimary}`}
+                  >
+                    {creatingBoard ? <RefreshCw size={12} className="animate-spin" /> : <Plus size={12} />}
+                    {creatingBoard ? "Creating Board..." : "Create & Set as Active"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Board Selector Dropdown */}
+            <div>
+              <label className={styles.label} style={{ fontSize: "0.75rem", marginBottom: "0.25rem" }}>
+                Switch Target Board ({boards.length} available)
+              </label>
+              {boards.length > 0 ? (
+                <select
+                  name="pinterestBoardId"
+                  value={settings.pinterestBoardId || ""}
+                  onChange={handleBoardSelect}
+                  className={styles.input}
+                >
+                  <option value="">-- Choose a Board --</option>
+                  {boards.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name} {b.privacy === "SECRET" ? "🔒 (Secret)" : ""} {b.pin_count !== undefined ? `• ${b.pin_count} pins` : ""}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <input
+                    type="text"
+                    name="pinterestBoardId"
+                    value={settings.pinterestBoardId || ""}
+                    onChange={handleChange}
+                    className={styles.input}
+                    placeholder="Enter Board ID or click 'Create New Board' above"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSavePinterestSettings}
+                    disabled={savingPinterest}
+                    className={styles.btnActionSmall}
+                  >
+                    Save
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Actions */}

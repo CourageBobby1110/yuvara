@@ -833,4 +833,164 @@
   color: var(--color-text-primary);
 }
 
+/* Board Management Section */
+.boardManagementCard {
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-medium);
+  border-radius: 0.75rem;
+  padding: 1.15rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.boardHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .boardHeader {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.activeBoardDisplay {
+  background: linear-gradient(135deg, rgba(230, 0, 35, 0.05) 0%, rgba(245, 158, 11, 0.05) 100%);
+  border: 1px solid rgba(230, 0, 35, 0.2);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .activeBoardDisplay {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.activeBoardInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.activeBoardIcon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.375rem;
+  background-color: rgba(230, 0, 35, 0.12);
+  color: #E60023;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.activeBoardName {
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.activeBoardId {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  font-family: monospace;
+}
+
+.boardActionsBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.btnActionSmall {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid var(--color-border-medium);
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.btnActionSmall:hover:not(:disabled) {
+  background-color: var(--color-border-light);
+  transform: translateY(-1px);
+}
+
+.btnActionSmall:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btnCreateBoardPrimary {
+  background-color: #E60023;
+  color: #ffffff;
+  border: 1px solid #E60023;
+}
+
+.btnCreateBoardPrimary:hover:not(:disabled) {
+  background-color: #c9001f;
+  border-color: #c9001f;
+}
+
+.btnAutoOfficial {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.btnAutoOfficial:hover:not(:disabled) {
+  background-color: #fee2e2;
+  border-color: #fca5a5;
+}
+
+.createBoardCard {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-medium);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.createBoardFormGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .createBoardFormGrid {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+
 

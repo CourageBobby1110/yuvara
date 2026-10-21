@@ -174,6 +174,59 @@ export async function refreshPinterestToken(
 }
 
 /**
+ * Executes a Pinterest API action with automatic token refresh on 401/expired token errors.
+ */
+export async function withPinterestTokenRefresh<T>(
+  action: (token: string) => Promise<T>,
+  credentials: {
+    accessToken: string;
+    refreshToken?: string;
+    appId?: string;
+    appSecret?: string;
+    onTokenRefreshed?: (newToken: string, newRefreshToken?: string) => Promise<void>;
+  }
+): Promise<T> {
+  try {
+    return await action(credentials.accessToken);
+  } catch (err: any) {
+    const isAuthErr =
+      err?.code === 2 ||
+      err?.status === 401 ||
+      err?.response?.status === 401 ||
+      err?.message?.toLowerCase().includes("authentication failed") ||
+      err?.message?.toLowerCase().includes("invalid or expired");
+
+    if (
+      isAuthErr &&
+      credentials.refreshToken &&
+      credentials.appId &&
+      credentials.appSecret
+    ) {
+      console.log("[Pinterest Token Auto-Refresh] Access token expired. Refreshing token...");
+      try {
+        const tokenRes = await refreshPinterestToken(
+          credentials.refreshToken,
+          credentials.appId,
+          credentials.appSecret
+        );
+        if (tokenRes.access_token) {
+          if (credentials.onTokenRefreshed) {
+            await credentials.onTokenRefreshed(
+              tokenRes.access_token,
+              tokenRes.refresh_token
+            );
+          }
+          return await action(tokenRes.access_token);
+        }
+      } catch (refreshErr) {
+        console.error("[Pinterest Token Auto-Refresh Failed]", refreshErr);
+      }
+    }
+    throw err;
+  }
+}
+
+/**
  * Retrieves the currently authenticated Pinterest user account details
  */
 export async function getPinterestUserAccount(
@@ -201,12 +254,20 @@ export function parsePinterestError(err: any): PinterestApiError {
   const status = err?.response?.status;
   const data = err?.response?.data;
   const code = data?.code;
-  const message =
+  let message =
     data?.message ||
     data?.error_description ||
     data?.error ||
     err?.message ||
     "Unknown Pinterest API error";
+
+  // If Pinterest included specific field validation details
+  if (Array.isArray(data?.details) && data.details.length > 0) {
+    const detailMsg = data.details
+      .map((d: any) => d.message || d.field || JSON.stringify(d))
+      .join("; ");
+    message = `${message} (${detailMsg})`;
+  }
 
   // Code 29 = "Apps with Trial access may not create Pins in production"
   // Code 3 = "Your application consumer type is not supported"
@@ -219,16 +280,31 @@ export function parsePinterestError(err: any): PinterestApiError {
     return {
       code,
       message:
-        "Standard Access Required: Pinterest Trial access does not permit creating live Pins in production. Please record your integration demo video and submit for Standard Access approval.",
+        "Standard Access Required: Pinterest Trial access does not permit creating live Pins in production. Board creation and OAuth are fully active—please submit your integration demo for Standard Access approval to sync Pins.",
       isTrialPending: true,
     };
   }
 
-  if (status === 401) {
+  // Code 58 = Board with name already exists
+  if (code === 58 || message?.toLowerCase().includes("already have a board with this name")) {
+    return {
+      code: 58,
+      message: "A Pinterest board with this name already exists in your account.",
+    };
+  }
+
+  if (status === 401 || code === 2) {
     return {
       code,
       message:
-        "Pinterest authentication failed. Your access token is invalid or expired. Please generate a fresh token in the Pinterest Developer Portal.",
+        "Pinterest authentication failed: Your access token is invalid or expired. Please re-authenticate via OAuth or refresh your token in settings.",
+    };
+  }
+
+  if (status === 403) {
+    return {
+      code,
+      message: `Pinterest permission error (403): ${message}. Verify that your app has the required scopes (boards:read, boards:write).`,
     };
   }
 
@@ -258,20 +334,32 @@ export async function getPinterestBoards(token: string): Promise<PinterestBoard[
 }
 
 /**
- * Create a new board on Pinterest
+ * Create a new board on Pinterest.
+ * If a board with the requested name already exists (code 58), automatically
+ * retrieves and returns that existing board.
  */
 export async function createPinterestBoard(
   token: string,
   name: string,
-  description: string = "Exclusive curated products from YuVara"
+  description: string = "Shop curated collections and products from YuVara",
+  privacy: "PUBLIC" | "PROTECTED" | "SECRET" = "PUBLIC"
 ): Promise<PinterestBoard> {
+  const cleanName = (name || "").trim().slice(0, 50);
+  const cleanDescription = (description || "")
+    .trim()
+    .slice(0, 500);
+
+  if (!cleanName) {
+    throw new Error("Board name is required and cannot be empty.");
+  }
+
   try {
     const res = await axios.post(
       `${PINTEREST_API_BASE}/boards`,
       {
-        name,
-        description,
-        privacy: "PUBLIC",
+        name: cleanName,
+        description: cleanDescription,
+        privacy,
       },
       {
         headers: {
@@ -283,6 +371,23 @@ export async function createPinterestBoard(
 
     return res.data;
   } catch (err: any) {
+    // If board already exists, gracefully locate and return the existing board
+    const errCode = err?.response?.data?.code;
+    const errMsg = err?.response?.data?.message || "";
+    if (errCode === 58 || errMsg.toLowerCase().includes("already have a board with this name")) {
+      try {
+        const existingBoards = await getPinterestBoards(token);
+        const match = existingBoards.find(
+          (b) => b.name?.toLowerCase().trim() === cleanName.toLowerCase()
+        );
+        if (match) {
+          return match;
+        }
+      } catch {
+        // Fall through to normal error parsing if board list fails
+      }
+    }
+
     const parsed = parsePinterestError(err);
     throw parsed;
   }

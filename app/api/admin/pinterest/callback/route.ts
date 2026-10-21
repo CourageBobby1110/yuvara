@@ -6,6 +6,8 @@ import SiteSettings from "@/models/SiteSettings";
 import {
   exchangePinterestCode,
   getPinterestUserAccount,
+  getPinterestBoards,
+  createPinterestBoard,
 } from "@/lib/pinterest";
 
 export const dynamic = "force-dynamic";
@@ -104,6 +106,31 @@ export async function GET(req: Request) {
       console.warn("Could not retrieve Pinterest username:", userErr);
     }
 
+    // Auto-create or link the official YuVara board immediately
+    let activeBoardId = settings?.pinterestBoardId || "";
+    let activeBoardName = settings?.pinterestBoardName || "";
+    try {
+      const boards = await getPinterestBoards(tokenData.access_token);
+      let targetBoard = boards.find((b) =>
+        b.name?.toLowerCase().includes("yuvara")
+      );
+      if (!targetBoard) {
+        targetBoard = await createPinterestBoard(
+          tokenData.access_token,
+          "YuVara Official Store",
+          "Shop curated collections, premium fashion, lifestyle and electronics directly from YuVara (yuvara.com.ng).",
+          "PUBLIC"
+        );
+        console.log("[Pinterest OAuth Callback] Auto-created official board:", targetBoard.id);
+      }
+      if (targetBoard) {
+        activeBoardId = targetBoard.id;
+        activeBoardName = targetBoard.name;
+      }
+    } catch (boardErr) {
+      console.warn("[Pinterest OAuth Callback] Board check/creation notice:", boardErr);
+    }
+
     // Save tokens and account status to SiteSettings
     await SiteSettings.findOneAndUpdate(
       {},
@@ -113,16 +140,20 @@ export async function GET(req: Request) {
           pinterestRefreshToken: tokenData.refresh_token || "",
           pinterestAccountUsername: username,
           pinterestLastSyncStatus: "Connected",
+          ...(activeBoardId ? { pinterestBoardId: activeBoardId } : {}),
+          ...(activeBoardName ? { pinterestBoardName: activeBoardName } : {}),
         },
       },
       { upsert: true }
     );
     console.log("[Pinterest OAuth] Saved tokens successfully to SiteSettings! Account:", username || "(no username)");
 
+    const queryParams = new URLSearchParams({ pinterest: "connected" });
+    if (username) queryParams.set("user", username);
+    if (activeBoardName) queryParams.set("board", activeBoardName);
+
     return NextResponse.redirect(
-      `${adminSettingsUrl}?pinterest=connected${
-        username ? `&user=${encodeURIComponent(username)}` : ""
-      }`
+      `${adminSettingsUrl}?${queryParams.toString()}`
     );
   } catch (error: any) {
     console.error("Pinterest OAuth callback error:", error);
