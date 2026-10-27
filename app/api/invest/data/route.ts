@@ -46,7 +46,7 @@ export async function GET(req: Request) {
         : globalRate;
 
     // --- Maturity Cycle & Rollover Logic ---
-    const CYCLE_DURATION_DAYS = 30; // 30 Days Cycle
+    const CYCLE_DURATION_DAYS = 180; // 6 Months Cycle
     const GRACE_PERIOD_DAYS = 7; // 1 Week Grace Period
     const TOTAL_CYCLE_DAYS = CYCLE_DURATION_DAYS + GRACE_PERIOD_DAYS;
 
@@ -145,9 +145,9 @@ export async function GET(req: Request) {
 
     // Grace Period Logic
     const daysSinceStart = Math.floor(currentDiffTime / (1000 * 60 * 60 * 24));
-    const isMatured = daysSinceStart >= 30;
-    const isGracePeriod = daysSinceStart >= 30 && daysSinceStart < 37;
-    const daysRemainingInGrace = isGracePeriod ? 37 - daysSinceStart : 0;
+    const isMatured = daysSinceStart >= 180;
+    const isGracePeriod = daysSinceStart >= 180 && daysSinceStart < 187;
+    const daysRemainingInGrace = isGracePeriod ? 187 - daysSinceStart : 0;
 
     // Available Profit Logic
     // Users can ONLY withdraw during Grace Period
@@ -156,7 +156,7 @@ export async function GET(req: Request) {
 
     if (isGracePeriod) {
       // Full profit available during grace period (minus what they already took this week)
-      availableProfit = Math.max(0, currentGrowth - withdrawnProfit);
+      availableProfit = Math.max(0, currentGrowth + (investor.accumulatedProfit || 0) - withdrawnProfit);
     } else {
       // Locked outside grace period
       availableProfit = 0;
@@ -189,8 +189,8 @@ export async function GET(req: Request) {
       growth: {
         currentValue: currentValue,
         daysElapsed: daysElapsed,
-        daysRemaining: Math.max(0, 30 - daysElapsed),
-        percentage: (daysElapsed / 30) * 100,
+        daysRemaining: Math.max(0, 180 - daysElapsed),
+        percentage: (daysElapsed / 180) * 100,
         isMatured: isMatured,
         isGracePeriod: isGracePeriod,
         gracePeriodDaysRemaining: daysRemainingInGrace,

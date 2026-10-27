@@ -8,6 +8,7 @@ import {
   createPinterestBoard,
   createPinterestPin,
   withPinterestTokenRefresh,
+  resolveSiteUrl,
 } from "@/lib/pinterest";
 
 export const maxDuration = 300; // 5 minutes timeout for bulk operations
@@ -22,6 +23,9 @@ export async function POST(req: Request) {
     const body = await req.json().catch(() => ({}));
     const forceResync = Boolean(body.forceResync);
     const passedToken = (body.token || body.pinterestAccessToken)?.trim();
+    const productIds: string[] | undefined = Array.isArray(body.productIds)
+      ? body.productIds.map((id: any) => String(id))
+      : undefined;
 
     await dbConnect();
     const settings = await SiteSettings.findOne();
@@ -129,13 +133,20 @@ export async function POST(req: Request) {
       }
     }
 
-    const baseUrl =
-      process.env.NEXTAUTH_URL ||
-      process.env.URL ||
-      "https://yuvara.com.ng";
+    const baseUrl = resolveSiteUrl(
+      process.env.NEXTAUTH_URL || process.env.URL
+    );
 
     // Fetch products
-    const query = forceResync ? {} : { pinterestPinId: { $exists: false } };
+    let query: any = {};
+    if (productIds && productIds.length > 0) {
+      query._id = { $in: productIds };
+      if (!forceResync) {
+        query.pinterestPinId = { $exists: false };
+      }
+    } else {
+      query = forceResync ? {} : { pinterestPinId: { $exists: false } };
+    }
     const products = (await Product.find(query).lean()) as any[];
 
     if (products.length === 0) {

@@ -409,28 +409,17 @@ export default function InvestmentDashboardPage() {
             </div>
           )}
 
-          {/* Accumulated Profit Card (Old Profit) */}
-          <div className={styles.card}>
-            <h3 className={styles.cardLabel}>Accumulated Profit (Old)</h3>
-            <p className={styles.cardValue}>
-              {formatAmount(growth.accumulatedProfit || 0)}
-            </p>
-            <div className="text-xs text-gray-500 mt-1">
-              Profits rolled over from previous cycles.
-            </div>
-            <p className="text-xs text-gray-500 italic mt-2">
-              Withdrawable on a 3-month basis upon request
-            </p>
-          </div>
-
           {/* Current Cycle Profit Card */}
           <div className={styles.card}>
             <h3 className={styles.cardLabel}>
-              Current Cycle Profit ({growth.profitRate}% Growth)
+              New Accruing Profit ({growth.profitRate}% Growth)
             </h3>
             <p className={styles.cardValue}>
               {formatAmount(growth.totalProfit)}
             </p>
+            <div className="text-xs text-gray-500 mt-1">
+              + Old Profit: {formatAmount(growth.accumulatedProfit || 0)}
+            </div>
             <div className={styles.progressBarContainer}>
               <div
                 className={styles.progressBar}
@@ -472,7 +461,7 @@ export default function InvestmentDashboardPage() {
               </div>
               <div className="text-right">
                 <span className={styles.progressText}>
-                  {growth.daysElapsed} / 30 DAYS
+                  {growth.daysElapsed} / 180 DAYS
                 </span>
               </div>
             </div>

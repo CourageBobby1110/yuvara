@@ -51,14 +51,14 @@ export async function POST(req: Request) {
     );
     const diffTime = Math.abs(now.getTime() - cycleStartDate.getTime());
     const daysSinceStart = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    const isGracePeriod = daysSinceStart >= 30 && daysSinceStart < 37;
+    const isGracePeriod = daysSinceStart >= 180 && daysSinceStart < 187;
 
     // Allow admin testing or override? For now strict.
     if (!isWithdrawAll && !isGracePeriod) {
       return NextResponse.json(
         {
           error:
-            "Withdrawals are only allowed during the 7-day grace period after maturity (Day 30-37).",
+            "Withdrawals are only allowed during the 7-day grace period after 6 months (Day 180-187).",
         },
         { status: 403 }
       );
@@ -81,7 +81,7 @@ export async function POST(req: Request) {
           ? investor.customProfitRate / 100
           : globalRate;
 
-      const CYCLE_DURATION_DAYS = 30;
+      const CYCLE_DURATION_DAYS = 180;
       const currentDiffTime = Math.abs(now.getTime() - cycleStartDate.getTime());
       const daysElapsed = Math.min(
         Math.floor(currentDiffTime / (1000 * 60 * 60 * 24)),
@@ -126,7 +126,7 @@ export async function POST(req: Request) {
 
       const activeCapital = investor.activeCapital || investor.initialAmount;
       const currentGrowth = activeCapital * profitRate;
-      const availableProfit = Math.max(0, currentGrowth - withdrawnProfit);
+      const availableProfit = Math.max(0, currentGrowth + (investor.accumulatedProfit || 0) - withdrawnProfit);
 
       if (withdrawalAmount > availableProfit) {
         return NextResponse.json(

@@ -77,9 +77,14 @@ export default function SettingsPage() {
   const [newBoardPrivacy, setNewBoardPrivacy] = useState<"PUBLIC" | "SECRET">("PUBLIC");
   const [creatingBoard, setCreatingBoard] = useState(false);
   const [creatingCategories, setCreatingCategories] = useState(false);
+  const [products, setProducts] = useState<any[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(new Set());
+  const [productSearch, setProductSearch] = useState("");
 
   useEffect(() => {
     fetchSettings();
+    fetchProducts();
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       if (params.get("pinterest") === "connected") {
@@ -119,6 +124,21 @@ export default function SettingsPage() {
       toast.error("Failed to load settings");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchProducts = async () => {
+    setLoadingProducts(true);
+    try {
+      const res = await fetch("/api/products?limit=1000");
+      if (res.ok) {
+        const data = await res.json();
+        setProducts(Array.isArray(data) ? data : []);
+      }
+    } catch {
+      // ignore
+    } finally {
+      setLoadingProducts(false);
     }
   };
 
@@ -376,7 +396,7 @@ export default function SettingsPage() {
     }
   };
 
-  const handlePinterestSync = async (forceResync = false) => {
+  const handlePinterestSync = async (forceResync = false, productIds?: string[]) => {
     const token = settings.pinterestAccessToken?.trim();
     if (!token) {
       toast.error("Please enter your Pinterest Access Token before syncing");
@@ -392,6 +412,7 @@ export default function SettingsPage() {
           forceResync,
           boardId: settings.pinterestBoardId,
           pinterestAccessToken: token,
+          ...(productIds && productIds.length ? { productIds } : {}),
         }),
       });
       const data = await res.json();
@@ -1197,6 +1218,134 @@ export default function SettingsPage() {
                   </button>
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Select Products to Pin */}
+          <div className={styles.boardManagementCard} style={{ marginTop: "1rem" }}>
+            <div className={styles.boardHeader}>
+              <div>
+                <label className={styles.label} style={{ margin: 0, fontSize: "0.875rem" }}>
+                  Select Products to Pin
+                </label>
+                <p style={{ margin: "0.15rem 0 0", fontSize: "0.72rem", color: "var(--color-text-muted)" }}>
+                  Pick 1 or more products to publish to Pinterest instead of the whole catalog.
+                </p>
+              </div>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <button
+                  type="button"
+                  onClick={() => setSelectedProductIds(new Set(products.map((p) => String(p._id))))}
+                  className={styles.btnActionSmall}
+                  disabled={loadingProducts || products.length === 0}
+                >
+                  Select All
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedProductIds(new Set())}
+                  className={styles.btnActionSmall}
+                  disabled={selectedProductIds.size === 0}
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
+
+            <input
+              type="text"
+              value={productSearch}
+              onChange={(e) => setProductSearch(e.target.value)}
+              placeholder="Search products..."
+              className={styles.input}
+              style={{ marginBottom: "0.5rem" }}
+            />
+
+            <div
+              style={{
+                maxHeight: "260px",
+                overflowY: "auto",
+                border: "1px solid var(--color-border, #e5e7eb)",
+                borderRadius: "8px",
+                padding: "0.5rem",
+              }}
+            >
+              {loadingProducts ? (
+                <p style={{ fontSize: "0.8rem", color: "var(--color-text-muted)" }}>Loading products...</p>
+              ) : products.length === 0 ? (
+                <p style={{ fontSize: "0.8rem", color: "var(--color-text-muted)" }}>No products found.</p>
+              ) : (
+                products
+                  .filter((p) =>
+                    (p.name || "").toLowerCase().includes(productSearch.toLowerCase())
+                  )
+                  .map((p) => {
+                    const id = String(p._id);
+                    const checked = selectedProductIds.has(id);
+                    return (
+                      <label
+                        key={id}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.6rem",
+                          padding: "0.4rem 0.25rem",
+                          cursor: "pointer",
+                          borderBottom: "1px solid var(--color-border, #f1f5f9)",
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => {
+                            setSelectedProductIds((prev) => {
+                              const next = new Set(prev);
+                              if (next.has(id)) next.delete(id);
+                              else next.add(id);
+                              return next;
+                            });
+                          }}
+                        />
+                        {Array.isArray(p.images) && p.images[0] && (
+                          <img
+                            src={p.images[0]}
+                            alt={p.name}
+                            style={{ width: 32, height: 32, objectFit: "cover", borderRadius: 4 }}
+                          />
+                        )}
+                        <span style={{ flex: 1, fontSize: "0.8rem" }}>{p.name}</span>
+                        <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)" }}>
+                          ₦{Number(p.price || 0).toLocaleString()}
+                        </span>
+                        {p.pinterestPinId && (
+                          <span
+                            style={{
+                              fontSize: "0.65rem",
+                              padding: "0.1rem 0.35rem",
+                              borderRadius: "0.25rem",
+                              background: "rgba(22,163,74,0.12)",
+                              color: "#16a34a",
+                              fontWeight: 600,
+                            }}
+                          >
+                            Synced
+                          </span>
+                        )}
+                      </label>
+                    );
+                  })
+              )}
+            </div>
+
+            <div style={{ marginTop: "0.75rem", display: "flex", justifyContent: "flex-end" }}>
+              <button
+                type="button"
+                onClick={() => handlePinterestSync(false, [...selectedProductIds])}
+                disabled={syncingPinterest || selectedProductIds.size === 0}
+                className={styles.btnPinterest}
+              >
+                {syncingPinterest ? "Syncing..." : `Sync Selected (${selectedProductIds.size})`}
+              </button>
             </div>
           </div>
 

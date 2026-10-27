@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Product from "@/models/Product";
+import { resolveSiteUrl } from "@/lib/pinterest";
 
 export const dynamic = "force-dynamic";
 
@@ -34,10 +35,9 @@ export async function GET() {
   try {
     await dbConnect();
 
-    const baseUrl =
-      process.env.NEXTAUTH_URL ||
-      process.env.URL ||
-      "https://yuvara.com.ng";
+    const baseUrl = resolveSiteUrl(
+      process.env.NEXTAUTH_URL || process.env.URL
+    );
 
     const products = (await Product.find({}).lean()) as any[];
 

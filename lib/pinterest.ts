@@ -32,6 +32,29 @@ export interface PinterestApiError {
   isTrialPending?: boolean;
 }
 
+/**
+ * Normalizes a site URL so Pinterest-facing links are always valid,
+ * absolute, production-safe URLs (never localhost/127.0.0.1).
+ */
+export const PRODUCTION_SITE_URL = "https://yuvara.com.ng";
+
+export function resolveSiteUrl(raw?: string | null): string {
+  const candidate = (raw || "").trim() || PRODUCTION_SITE_URL;
+  try {
+    const parsed = new URL(candidate);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      return PRODUCTION_SITE_URL;
+    }
+    const host = parsed.hostname.toLowerCase();
+    if (host === "localhost" || host === "127.0.0.1" || host === "::1") {
+      return PRODUCTION_SITE_URL;
+    }
+    return parsed.origin;
+  } catch {
+    return PRODUCTION_SITE_URL;
+  }
+}
+
 export const PINTEREST_OAUTH_SCOPES = [
   "boards:read",
   "boards:write",
@@ -48,6 +71,7 @@ export function getPinterestAuthUrl(
   redirectUri: string,
   state: string = "yuvara_pinterest_auth"
 ): string {
+
   const scopeParam = PINTEREST_OAUTH_SCOPES.join(",");
   const params = new URLSearchParams({
     client_id: clientId,
@@ -422,17 +446,35 @@ export async function createPinterestPin(
       800
     );
 
+    const siteUrl = resolveSiteUrl(baseUrl);
+
     // Pick first valid image URL
     let imageUrl = product.images?.[0] || "";
-    if (imageUrl && !imageUrl.startsWith("http")) {
-      imageUrl = `${baseUrl}${imageUrl.startsWith("/") ? "" : "/"}${imageUrl}`;
+    if (imageUrl) {
+      if (!/^https?:\/\//i.test(imageUrl)) {
+        imageUrl = `${siteUrl}${imageUrl.startsWith("/") ? "" : "/"}${imageUrl}`;
+      } else {
+        try {
+          const parsedImage = new URL(imageUrl);
+          const imageHost = parsedImage.hostname.toLowerCase();
+          if (
+            imageHost === "localhost" ||
+            imageHost === "127.0.0.1" ||
+            imageHost === "::1"
+          ) {
+            imageUrl = `${siteUrl}${parsedImage.pathname}${parsedImage.search}`;
+          }
+        } catch {
+          imageUrl = "";
+        }
+      }
     }
 
     if (!imageUrl) {
-      imageUrl = `${baseUrl}/icon.png`;
+      imageUrl = `${siteUrl}/icon.png`;
     }
 
-    const link = `${baseUrl}/products/${product.slug}`;
+    const link = `${siteUrl}/products/${product.slug}`;
 
     const res = await axios.post(
       `${PINTEREST_API_BASE}/pins`,
